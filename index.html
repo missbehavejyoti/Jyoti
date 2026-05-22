@@ -1431,15 +1431,10 @@ function closeModal(type){
 
 // ── PWA + NOTIFICATIONS ──
 
-// Register service worker
+// Unregister any existing service workers so cached versions never block updates
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        console.log('Jyoti SW registered:', reg.scope);
-        swRegistration = reg;
-      })
-      .catch(err => console.log('SW registration failed:', err));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
   });
 }
 
