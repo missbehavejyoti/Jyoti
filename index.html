@@ -1148,7 +1148,7 @@ async function loadNakshatraReading(){
       })
     });
     const data = await nakResp.json();
-    const text = data.content?.[0]?.text?.trim();
+    const text = (data.text || data.content?.[0]?.text || '').trim();
     if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
   } catch(e){ /* use static fallback already shown */ }
 }
