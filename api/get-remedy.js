@@ -1,42 +1,20 @@
-// Netlify Serverless Function — Jyoti Daily Remedy
+// Vercel Serverless Function — Jyoti Daily Remedy
 // Keeps API key secure server-side, never exposed to browser
 
-exports.handler = async (event, context) => {
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
-  // Handle preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
-  }
+  const { chartSummary, lang, type } = req.body || {};
 
-  let body;
-  try {
-    body = JSON.parse(event.body);
-  } catch(e) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
-  }
+  if (!chartSummary) return res.status(400).json({ error: 'Missing chart data' });
 
-  const { chartSummary, lang, type } = body;
-
-  if (!chartSummary) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing chart data' }) };
-  }
-
-  // API key from Netlify environment variable (never in code)
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'API not configured' }) };
-  }
+  if (!apiKey) return res.status(500).json({ error: 'API not configured' });
 
   const langInstruction = lang === 'hi'
     ? 'Respond entirely in Hindi (Devanagari script).'
@@ -102,23 +80,22 @@ JSON structure:
     if (!response.ok) {
       const err = await response.text();
       console.error('Anthropic API error:', err);
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'API error', detail: err }) };
+      return res.status(502).json({ error: 'API error', detail: err });
     }
 
     const data = await response.json();
     const text = data.content?.[0]?.text || '';
 
     if (isNakshatra) {
-      return { statusCode: 200, headers, body: JSON.stringify({ text: text.trim() }) };
+      return res.status(200).json({ text: text.trim() });
     }
 
-    // Parse JSON response for remedy
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-    return { statusCode: 200, headers, body: JSON.stringify(parsed) };
+    return res.status(200).json(parsed);
 
-  } catch(e) {
+  } catch (e) {
     console.error('Function error:', e);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal error', detail: e.message }) };
+    return res.status(500).json({ error: 'Internal error', detail: e.message });
   }
 };

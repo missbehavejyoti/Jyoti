@@ -1138,7 +1138,7 @@ async function loadNakshatraReading(){
   document.getElementById('nak-reading').textContent = nakData.desc;
   // Try to enhance with Claude for a more personalised touch
   try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
+    const nakResp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -1147,7 +1147,7 @@ async function loadNakshatraReading(){
         type: 'nakshatra'
       })
     });
-    const data = await resp.json();
+    const data = await nakResp.json();
     const text = data.content?.[0]?.text?.trim();
     if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
   } catch(e){ /* use static fallback already shown */ }
@@ -1220,7 +1220,7 @@ JSON structure:
   "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace (null if remedy exists)"
 }`;
   try{
-    const data = await fetch('/.netlify/functions/get-remedy', {
+    const data = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -1593,33 +1593,6 @@ async function installPWA() {
   if (banner) banner.remove();
 }
 
-// Override API calls to use Netlify function in production
-// (falls back to direct API in development/demo)
-async function callJyotiAPI(payload) {
-  // Try Netlify function first (production)
-  try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (resp.ok) return await resp.json();
-  } catch(e) {
-    // Fall through to direct API (dev/demo mode)
-  }
-  // Direct API fallback (demo only — no key in production)
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: payload.system,
-      messages: payload.messages
-    })
-  });
-  return await resp.json();
-}
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
