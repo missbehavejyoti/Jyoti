@@ -1,5 +1,5 @@
 // Jyoti Service Worker — PWA + Push Notifications
-const CACHE = 'jyoti-v1';
+const CACHE = 'jyoti-v2';
 const ASSETS = ['/', '/index.html'];
 
 // ── INSTALL ──
