@@ -1527,7 +1527,7 @@ function scheduleLocalNotifications(evening, morning) {
     if (msUntil < 12 * 60 * 60 * 1000) { // within 12 hours
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification('Jyoti ✨ — Tomorrow's Practice', {
+          new Notification("Jyoti ✨ — Tomorrow's Practice", {
             body: `${userData.name ? userData.name + ', your' : 'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`,
             icon: '/icons/icon-192.png',
             tag: 'evening-prep'
