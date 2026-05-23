@@ -9,7 +9,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --gold:#C8A94A;--gold-l:#E8D070;--gold-d:#7A6120;
+  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
   --text:#F2EBD8;--muted:#A89880;--dim:#6A5F58;
   --ruby:#B02348;--teal:#1A9490;--rose:#C45870;
@@ -62,6 +62,7 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
 input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+input[type=checkbox]{-webkit-appearance:auto;appearance:auto;background:none;border:none;padding:0;transition:none}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
@@ -88,6 +89,7 @@ select option{background:var(--s2);color:var(--text)}
 .check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer}
 .check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
 .check-row span{font-size:.88rem;color:var(--muted);line-height:1.5}
+.check-row label,.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
 
 /* Preview chart */
 .chart-container{display:flex;justify-content:center;margin:1.5rem 0}
@@ -315,60 +317,6 @@ select option{background:var(--s2);color:var(--text)}
     </div>
   </div>
 
-ன்மை">1. Nature of Service</h4>
-        <p data-en="Jyoti provides Nadi astrological readings and daily Vedic remedies for spiritual guidance and personal enrichment purposes only. All content is based on classical Vedic and Nadi astrological tradition." data-hi="ज्योति नाडी ज्योतिष पठन और दैनिक वैदिक उपाय केवल आध्यात्मिक मार्गदर्शन और व्यक्तिगत समृद्धि के उद्देश्य से प्रदान करती है।" data-ta="ஜ்யோதி நாடி ஜோதிட வாசிப்புகளை மற்றும் தினசரி வேத தீர்வுகளை ஆன்மீக வழிகாட்டுதல் மற்றும் தனிப்பட்ட வளர்ச்சிக்காக மட்டுமே வழங்குகிறது.">Jyoti provides Nadi astrological readings and daily Vedic remedies for spiritual guidance and personal enrichment purposes only. All content is based on classical Vedic and Nadi astrological tradition.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="2. Not a Substitute for Professional Advice" data-hi="2. व्यावसायिक सलाह का विकल्प नहीं" data-ta="2. தொழில்முறை ஆலோசனைக்கு மாற்றாகாது">2. Not a Substitute for Professional Advice</h4>
-        <p data-en="Nothing within Jyoti constitutes or replaces medical, psychiatric, psychological, financial, or legal advice, diagnosis, or treatment. Astrological guidance is not a substitute for consultation with a qualified healthcare professional, licensed therapist, financial advisor, or legal practitioner." data-hi="ज्योति के भीतर कुछ भी चिकित्सा, मनोचिकित्सा, मनोवैज्ञानिक, वित्तीय, या कानूनी सलाह, निदान, या उपचार का गठन नहीं करता या उसकी जगह नहीं लेता।" data-ta="ஜ்யோதியில் உள்ள எதுவும் மருத்துவ, மனநல, உளவியல், நிதி அல்லது சட்ட ஆலோசனை, நோயறிதல் அல்லது சிகிச்சையாக கருதப்படாது.">Nothing within Jyoti constitutes or replaces medical, psychiatric, psychological, financial, or legal advice, diagnosis, or treatment. Astrological guidance is not a substitute for consultation with a qualified healthcare professional, licensed therapist, financial advisor, or legal practitioner.</p>
-        <p data-en="Always seek the advice of your doctor, mental health professional, or other qualified provider with any questions you have regarding a medical or mental health condition." data-hi="हमेशा अपने डॉक्टर, मानसिक स्वास्थ्य पेशेवर से सलाह लें।" data-ta="எந்தவொரு மருத்துவ அல்லது மனநல நிலைக்கும் உங்கள் மருத்துவர் அல்லது தகுதிவாய்ந்த வழங்குநரின் ஆலோசனையை எப்போதும் நாடுங்கள்.">Always seek the advice of your doctor, mental health professional, or other qualified provider with any questions you have regarding a medical or mental health condition.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="3. Personal Use Only" data-hi="3. केवल व्यक्तिगत उपयोग" data-ta="3. தனிப்பட்ட பயன்பாட்டிற்கு மட்டுமே">3. Personal Use Only</h4>
-        <p data-en="Your Jyoti subscription and all readings, remedies, and content generated are for your personal, non-commercial use only. Content may not be reproduced, resold, redistributed, or shared commercially. All intellectual property remains with Jyoti." data-hi="आपकी ज्योति सदस्यता और सभी पठन, उपाय, और उत्पन्न सामग्री केवल आपके व्यक्तिगत, गैर-व्यावसायिक उपयोग के लिए है।" data-ta="உங்கள் ஜ்யோதி சந்தா மற்றும் அனைத்து வாசிப்புகளும் தனிப்பட்ட, வணிகரீதியற்ற பயன்பாட்டிற்கு மட்டுமே.">Your Jyoti subscription and all readings, remedies, and content generated are for your personal, non-commercial use only. Content may not be reproduced, resold, redistributed, or shared commercially. All intellectual property remains with Jyoti.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="4. Accuracy & Results" data-hi="4. सटीकता और परिणाम" data-ta="4. துல்லியம் மற்றும் முடிவுகள்">4. Accuracy & Results</h4>
-        <p data-en="Jyoti uses established astronomical ephemeris data for chart calculations. Astrological interpretations are based on classical Nadi and Vedic tradition. No guarantee of specific outcomes is made. Results vary. Jyoti is not liable for decisions made based on readings." data-hi="ज्योति कुंडली गणना के लिए स्थापित खगोलीय पंचांग डेटा का उपयोग करती है। कोई विशिष्ट परिणाम की गारंटी नहीं दी जाती।" data-ta="ஜ்யோதி ஜாதக கணக்கீட்டிற்கு நிறுவப்பட்ட வானியல் தரவைப் பயன்படுத்துகிறது. குறிப்பிட்ட முடிவுகளுக்கு எந்த உத்தரவாதமும் இல்லை.">Jyoti uses established astronomical ephemeris data for chart calculations. Astrological interpretations are based on classical Nadi and Vedic tradition. No guarantee of specific outcomes is made. Results vary. Jyoti is not liable for decisions made based on readings.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="5. Privacy & Data" data-hi="5. गोपनीयता और डेटा" data-ta="5. தனியுரிமை மற்றும் தரவு">5. Privacy & Data</h4>
-        <p data-en="Your birth details and personal data are collected solely to generate your astrological reading. Data is stored securely, never sold to third parties, and handled in accordance with the Australian Privacy Act 1988, GDPR (EU/UK users), and applicable international privacy law. You may request deletion of your data at any time by contacting us." data-hi="आपका जन्म विवरण और व्यक्तिगत डेटा केवल आपकी ज्योतिष पठन उत्पन्न करने के लिए एकत्र किया जाता है। डेटा सुरक्षित रूप से संग्रहीत किया जाता है, कभी भी तीसरे पक्ष को नहीं बेचा जाता।" data-ta="உங்கள் பிறப்பு விவரங்கள் ஜோதிட வாசிப்பை உருவாக்க மட்டுமே சேகரிக்கப்படுகின்றன. தரவு பாதுகாப்பாக சேமிக்கப்படுகிறது, மூன்றாம் தரப்பினருக்கு விற்கப்படவில்லை.">Your birth details and personal data are collected solely to generate your astrological reading. Data is stored securely, never sold to third parties, and handled in accordance with the Australian Privacy Act 1988, GDPR (EU/UK users), and applicable international privacy law. You may request deletion of your data at any time by contacting us.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="6. Subscription & Refunds" data-hi="6. सदस्यता और धनवापसी" data-ta="6. சந்தா மற்றும் பணம் திரும்பப்பெறுதல்">6. Subscription & Refunds</h4>
-        <p data-en="Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition." data-hi="ज्योति एक मासिक सदस्यता सेवा है। आप किसी भी समय रद्द कर सकते हैं। धनवापसी ऑस्ट्रेलियाई उपभोक्ता कानून के अनुसार की जाती है।" data-ta="ஜ்யோதி மாதாந்திர சந்தா சேவை. எந்த நேரத்திலும் ரத்து செய்யலாம். திரும்பப்பெறுதல் ஆஸ்திரேலிய நுகர்வோர் சட்டத்திற்கு இணங்க மதிப்பிடப்படுகிறது.">Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition.</p>
-      </div>
-
-      <div class="check-row" id="check1-row" onclick="toggleCheck('chk1')">
-        <input type="checkbox" id="chk1">
-        <span data-en="I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice." data-hi="मैंने सेवा की शर्तें पढ़ी हैं और सहमत हूं, जिसमें यह शामिल है कि ज्योति केवल आध्यात्मिक मार्गदर्शन के लिए है।" data-ta="சேவை விதிமுறைகளை படித்து ஒப்புக்கொள்கிறேன், ஜ்யோதி ஆன்மீக வழிகாட்டுதலுக்கு மட்டுமே என்பதை உள்ளடக்கியது.">I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
-      </div>
-
-      <div class="check-row" id="check2-row" onclick="toggleCheck('chk2')">
-        <input type="checkbox" id="chk2">
-        <span data-en="I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy." data-hi="मैं अपने जन्म डेटा को ज्योति गोपनीयता नीति के अनुसार संग्रहीत और संसाधित करने के लिए सहमति देता/देती हूं।" data-ta="ஜ்யோதி தனியுரிமைக் கொள்கைக்கு இணங்க என் பிறப்பு தரவு சேமிக்கப்பட்டு செயலாக்கப்படுவதற்கு சம்மதிக்கிறேன்.">I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy.</span>
-      </div>
-
-      <div class="check-row" id="check3-row" onclick="toggleCheck('chk3')">
-        <input type="checkbox" id="chk3">
-        <span data-en="I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing." data-hi="मैं समझता/समझती हूं कि दैनिक उपाय केवल आध्यात्मिक उपयोग के लिए पारंपरिक वैदिक प्रथाएं हैं।" data-ta="தினசரி தீர்வுகள் ஆன்மீக பயன்பாட்டிற்காக மட்டுமே வழங்கப்படுகின்றன என்று புரிந்துகொள்கிறேன்.">I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing.</span>
-      </div>
-
-      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
-        <button class="btn btn-gold" style="flex:1" onclick="goToPanel(3)" id="btn2" disabled>
-          <span data-en="Reveal My Chart" data-hi="मेरी कुंडली देखें" data-ta="என் ஜாதகம் காட்டு">Reveal My Chart</span> ✦
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- PANEL 2: Legal & Consent -->
   <div class="panel" id="panel2">
     <div class="card">
@@ -380,14 +328,14 @@ select option{background:var(--s2);color:var(--text)}
         <p style="font-size:.92rem;color:var(--muted);line-height:1.75">Jyoti offers Nadi astrological readings and daily Vedic remedies for <strong style="color:var(--gold-pale)">spiritual guidance and personal enrichment only</strong>. Our readings are not a substitute for medical, psychiatric, psychological, financial, or legal advice. Always consult a qualified professional for matters of health or wellbeing.</p>
       </div>
 
-      <div class="check-row" onclick="toggleCheck2('chk2a')" style="margin-bottom:.8rem">
-        <input type="checkbox" id="chk2a">
-        <span style="font-size:.92rem;color:var(--muted);line-height:1.6">I agree to the <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a>. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
+      <div class="check-row" style="margin-bottom:.8rem">
+        <input type="checkbox" id="chk2a" onchange="checkConsent()">
+        <label for="chk2a" style="font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer">I agree to the <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a>. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</label>
       </div>
 
-      <div class="check-row" onclick="toggleCheck2('chk2b')" style="margin-bottom:0">
-        <input type="checkbox" id="chk2b">
-        <span style="font-size:.92rem;color:var(--muted);line-height:1.6">I consent to my birth details being securely stored to generate my personalised Nadi reading.</span>
+      <div class="check-row" style="margin-bottom:0">
+        <input type="checkbox" id="chk2b" onchange="checkConsent()">
+        <label for="chk2b" style="font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer">I consent to my birth details being securely stored to generate my personalised Nadi reading.</label>
       </div>
 
       <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap">
@@ -834,21 +782,10 @@ function setLang(lang){
 }
 
 // ── CONSENT ──
-function toggleCheck(id){
-  const cb=document.getElementById(id);
-  if(cb)cb.checked=!cb.checked;
-  checkConsent();
-}
-function toggleCheck2(id){
-  const cb=document.getElementById(id);
-  if(cb)cb.checked=!cb.checked;
-  checkConsent();
-}
 function checkConsent(){
-  const ids=['chk2a','chk2b'];
-  const all=ids.every(id=>{const el=document.getElementById(id);return el&&el.checked;});
-  const btn=document.getElementById('btn2');
-  if(btn)btn.disabled=!all;
+  const ok = ['chk2a','chk2b'].every(id=>{const el=document.getElementById(id);return el&&el.checked;});
+  const btn = document.getElementById('btn2');
+  if(btn) btn.disabled = !ok;
 }
 
 // ── PAYMENT ──
@@ -1138,7 +1075,7 @@ async function loadNakshatraReading(){
   document.getElementById('nak-reading').textContent = nakData.desc;
   // Try to enhance with Claude for a more personalised touch
   try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
+    const nakResp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -1147,8 +1084,8 @@ async function loadNakshatraReading(){
         type: 'nakshatra'
       })
     });
-    const data = await resp.json();
-    const text = data.content?.[0]?.text?.trim();
+    const data = await nakResp.json();
+    const text = (data.text || data.content?.[0]?.text || '').trim();
     if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
   } catch(e){ /* use static fallback already shown */ }
 }
@@ -1220,7 +1157,7 @@ JSON structure:
   "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace (null if remedy exists)"
 }`;
   try{
-    const data = await fetch('/.netlify/functions/get-remedy', {
+    const data = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -1428,18 +1365,21 @@ function closeModal(type){
   document.getElementById('modal-'+type).classList.remove('open');
   document.body.style.overflow='';
 }
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  document.querySelectorAll('.modal.open').forEach(m=>closeModal(m.id.replace('modal-','')));
+  if(document.getElementById('chant-modal').classList.contains('open'))closeChant();
+});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
+  if(e.target===m)closeModal(m.id.replace('modal-',''));
+}));
 
 // ── PWA + NOTIFICATIONS ──
 
-// Register service worker
+// Unregister any existing service workers so cached versions never block updates
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        console.log('Jyoti SW registered:', reg.scope);
-        swRegistration = reg;
-      })
-      .catch(err => console.log('SW registration failed:', err));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
   });
 }
 
@@ -1527,7 +1467,7 @@ function scheduleLocalNotifications(evening, morning) {
     if (msUntil < 12 * 60 * 60 * 1000) { // within 12 hours
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification('Jyoti ✨ — Tomorrow's Practice', {
+          new Notification("Jyoti ✨ — Tomorrow's Practice", {
             body: `${userData.name ? userData.name + ', your' : 'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`,
             icon: '/icons/icon-192.png',
             tag: 'evening-prep'
@@ -1593,33 +1533,6 @@ async function installPWA() {
   if (banner) banner.remove();
 }
 
-// Override API calls to use Netlify function in production
-// (falls back to direct API in development/demo)
-async function callJyotiAPI(payload) {
-  // Try Netlify function first (production)
-  try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (resp.ok) return await resp.json();
-  } catch(e) {
-    // Fall through to direct API (dev/demo mode)
-  }
-  // Direct API fallback (demo only — no key in production)
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: payload.system,
-      messages: payload.messages
-    })
-  });
-  return await resp.json();
-}
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
