@@ -345,19 +345,19 @@ select option{background:var(--s2);color:var(--text)}
         <p data-en="Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition." data-hi="ज्योति एक मासिक सदस्यता सेवा है। आप किसी भी समय रद्द कर सकते हैं। धनवापसी ऑस्ट्रेलियाई उपभोक्ता कानून के अनुसार की जाती है।" data-ta="ஜ்யோதி மாதாந்திர சந்தா சேவை. எந்த நேரத்திலும் ரத்து செய்யலாம். திரும்பப்பெறுதல் ஆஸ்திரேலிய நுகர்வோர் சட்டத்திற்கு இணங்க மதிப்பிடப்படுகிறது.">Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition.</p>
       </div>
 
-      <div class="check-row" id="check1-row" onclick="toggleCheck('chk1')">
-        <input type="checkbox" id="chk1">
-        <span data-en="I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice." data-hi="मैंने सेवा की शर्तें पढ़ी हैं और सहमत हूं, जिसमें यह शामिल है कि ज्योति केवल आध्यात्मिक मार्गदर्शन के लिए है।" data-ta="சேவை விதிமுறைகளை படித்து ஒப்புக்கொள்கிறேன், ஜ்யோதி ஆன்மீக வழிகாட்டுதலுக்கு மட்டுமே என்பதை உள்ளடக்கியது.">I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
+      <div class="check-row" id="check1-row">
+        <input type="checkbox" id="chk1" onchange="checkConsent()">
+        <label for="chk1" style="font-size:.88rem;color:var(--muted);line-height:1.5;cursor:pointer" data-en="I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice." data-hi="मैंने सेवा की शर्तें पढ़ी हैं और सहमत हूं, जिसमें यह शामिल है कि ज्योति केवल आध्यात्मिक मार्गदर्शन के लिए है।" data-ta="சேவை விதிமுறைகளை படித்து ஒப்புக்கொள்கிறேன், ஜ்யோதி ஆன்மீக வழிகாட்டுதலுக்கு மட்டுமே என்பதை உள்ளடக்கியது.">I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</label>
       </div>
 
-      <div class="check-row" id="check2-row" onclick="toggleCheck('chk2')">
-        <input type="checkbox" id="chk2">
-        <span data-en="I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy." data-hi="मैं अपने जन्म डेटा को ज्योति गोपनीयता नीति के अनुसार संग्रहीत और संसाधित करने के लिए सहमति देता/देती हूं।" data-ta="ஜ்யோதி தனியுரிமைக் கொள்கைக்கு இணங்க என் பிறப்பு தரவு சேமிக்கப்பட்டு செயலாக்கப்படுவதற்கு சம்மதிக்கிறேன்.">I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy.</span>
+      <div class="check-row" id="check2-row">
+        <input type="checkbox" id="chk2" onchange="checkConsent()">
+        <label for="chk2" style="font-size:.88rem;color:var(--muted);line-height:1.5;cursor:pointer" data-en="I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy." data-hi="मैं अपने जन्म डेटा को ज्योति गोपनीयता नीति के अनुसार संग्रहीत और संसाधित करने के लिए सहमति देता/देती हूं।" data-ta="ஜ்யோதி தனியுரிமைக் கொள்கைக்கு இணங்க என் பிறப்பு தரவு சேமிக்கப்பட்டு செயலாக்கப்படுவதற்கு சம்மதிக்கிறேன்.">I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy.</label>
       </div>
 
-      <div class="check-row" id="check3-row" onclick="toggleCheck('chk3')">
-        <input type="checkbox" id="chk3">
-        <span data-en="I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing." data-hi="मैं समझता/समझती हूं कि दैनिक उपाय केवल आध्यात्मिक उपयोग के लिए पारंपरिक वैदिक प्रथाएं हैं।" data-ta="தினசரி தீர்வுகள் ஆன்மீக பயன்பாட்டிற்காக மட்டுமே வழங்கப்படுகின்றன என்று புரிந்துகொள்கிறேன்.">I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing.</span>
+      <div class="check-row" id="check3-row">
+        <input type="checkbox" id="chk3" onchange="checkConsent()">
+        <label for="chk3" style="font-size:.88rem;color:var(--muted);line-height:1.5;cursor:pointer" data-en="I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing." data-hi="मैं समझता/समझती हूं कि दैनिक उपाय केवल आध्यात्मिक उपयोग के लिए पारंपरिक वैदिक प्रथाएं हैं।" data-ta="தினசரி தீர்வுகள் ஆன்மீக பயன்பாட்டிற்காக மட்டுமே வழங்கப்படுகின்றன என்று புரிந்துகொள்கிறேன்.">I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing.</label>
       </div>
 
       <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
@@ -845,10 +845,10 @@ function toggleCheck2(id){
   checkConsent();
 }
 function checkConsent(){
-  const ids=['chk2a','chk2b'];
-  const all=ids.every(id=>{const el=document.getElementById(id);return el&&el.checked;});
-  const btn=document.getElementById('btn2');
-  if(btn)btn.disabled=!all;
+  // Check panel1 boxes (chk1+chk2+chk3) or panel2 boxes (chk2a+chk2b)
+  const p1 = ['chk1','chk2','chk3'].every(id=>{const el=document.getElementById(id);return el&&el.checked;});
+  const p2 = ['chk2a','chk2b'].every(id=>{const el=document.getElementById(id);return el&&el.checked;});
+  document.querySelectorAll('#btn2').forEach(btn=>{ btn.disabled = !(p1||p2); });
 }
 
 // ── PAYMENT ──
