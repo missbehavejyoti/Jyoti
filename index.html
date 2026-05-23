@@ -1160,9 +1160,10 @@ async function loadNakshatraReading(){
 function shareNakshatra(){
   const nak = chartData.moonNak;
   const nakName = T[currentLang].nakshatras[nak];
-  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at jyoti.app`;
+  const url = window.location.origin;
+  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at ${url}`;
   if(navigator.share){
-    navigator.share({title:'My Nakshatra — Jyoti',text,url:'https://jyoti.app'}).catch(()=>{});
+    navigator.share({title:'My Nakshatra — Jyoti',text,url}).catch(()=>{});
   } else {
     navigator.clipboard?.writeText(text).then(()=>alert('Copied to clipboard! Share it anywhere ✨')).catch(()=>alert(text));
   }
