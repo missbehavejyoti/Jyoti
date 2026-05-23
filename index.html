@@ -1010,14 +1010,21 @@ async function buildChartAsync(){
     document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
     return;
   }
-  // 2. Server-side JPL-precision calculation — retry up to 3 times, no client fallback
+  // 2. Resolve IANA timezone for birth place (client-side, no server package needed)
+  let birthTZ = null;
+  try{
+    const tzR = await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${coords.lat}&longitude=${coords.lon}`);
+    const tzD = await tzR.json();
+    if(tzD?.timeZone) birthTZ = tzD.timeZone;
+  }catch(e){}
+  // 3. Server-side JPL-precision calculation — retry up to 3 times, no client fallback
   let lastErr='';
   for(let attempt=0;attempt<3;attempt++){
     try{
       if(attempt>0) await new Promise(r=>setTimeout(r,1500*attempt));
       const resp=await fetch('/api/calc-chart',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon})
+        body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon,birthTZ})
       });
       if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
       chartData=await resp.json();

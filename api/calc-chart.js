@@ -27,28 +27,22 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { dob, tob, lat, lon, utcOffset } = req.body || {};
+    const { dob, tob, lat, lon, utcOffset, birthTZ } = req.body || {};
     if (!dob) return res.status(400).json({ error: 'Missing dob' });
 
     const latN = parseFloat(lat);
     const lonN = parseFloat(lon);
     if (isNaN(latN) || isNaN(lonN)) return res.status(400).json({ error: 'Missing or invalid lat/lon' });
 
-    // Determine UTC offset: use provided value, or auto-detect from coordinates + birth datetime
+    // Determine UTC offset — prefer client-supplied IANA timezone (historical DST-aware)
+    const localStr = `${dob}T${(tob || '12:00:00').padEnd(8, '0').slice(0, 8)}`;
     let utcOff, _tzMethod = 'lon/15 fallback';
     if (utcOffset !== undefined && utcOffset !== null && utcOffset !== '') {
       utcOff = parseFloat(utcOffset);
       _tzMethod = 'manual';
-    } else {
-      try {
-        const tzlookup = require('tz-lookup');
-        const tz = tzlookup(latN, lonN);
-        const localStr = `${dob}T${(tob || '12:00:00').padEnd(8, '0').slice(0, 8)}`;
-        utcOff = utcOffsetForTZ(tz, localStr);
-        _tzMethod = `tz-lookup:${tz}`;
-      } catch(e) {
-        console.error('tz-lookup failed:', e.message);
-      }
+    } else if (birthTZ) {
+      utcOff = utcOffsetForTZ(birthTZ, localStr);
+      _tzMethod = `client-tz:${birthTZ}`;
     }
     if (utcOff == null || isNaN(utcOff)) utcOff = Math.round(lonN / 15 * 2) / 2;
 
