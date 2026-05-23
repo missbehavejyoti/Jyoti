@@ -62,6 +62,7 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
 input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+input[type=checkbox]{-webkit-appearance:auto;appearance:auto;background:none;border:none;padding:0;transition:none}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
@@ -86,8 +87,9 @@ select option{background:var(--s2);color:var(--text)}
 .legal-box p{margin-bottom:.5rem}
 .legal-box p:last-child{margin-bottom:0}
 .check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer}
-.check-row input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
+.check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
 .check-row span{font-size:.88rem;color:var(--muted);line-height:1.5}
+.check-row label,.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
 
 /* Preview chart */
 .chart-container{display:flex;justify-content:center;margin:1.5rem 0}
@@ -1363,6 +1365,14 @@ function closeModal(type){
   document.getElementById('modal-'+type).classList.remove('open');
   document.body.style.overflow='';
 }
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  document.querySelectorAll('.modal.open').forEach(m=>closeModal(m.id.replace('modal-','')));
+  if(document.getElementById('chant-modal').classList.contains('open'))closeChant();
+});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
+  if(e.target===m)closeModal(m.id.replace('modal-',''));
+}));
 
 // ── PWA + NOTIFICATIONS ──
 
