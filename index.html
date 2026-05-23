@@ -1230,10 +1230,13 @@ async function loadNakshatraReading(){
 function shareNakshatra(){
   const nak = chartData.moonNak;
   const nakName = T[currentLang].nakshatras[nak];
+  const pada = chartData.planets[1].pada;
+  const nakDesc = NAKSHATRA_DATA[currentLang]?.[nak]?.desc || NAKSHATRA_DATA.en[nak]?.desc || '';
+  const shortDesc = nakDesc.split('.')[0];
   const url = window.location.origin;
-  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at ${url}`;
+  const text = `✨ My Moon Nakshatra is ${nakName} (pada ${pada})\n\n${shortDesc}.\n\nDiscover your Jyotish birth chart at ${url}`;
   if(navigator.share){
-    navigator.share({title:'My Nakshatra — Jyoti',text,url}).catch(()=>{});
+    navigator.share({title:`My Nakshatra: ${nakName} — Jyoti`,text}).catch(()=>{});
   } else {
     navigator.clipboard?.writeText(text).then(()=>alert('Copied to clipboard! Share it anywhere ✨')).catch(()=>alert(text));
   }
