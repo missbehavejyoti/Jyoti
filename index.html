@@ -1048,6 +1048,9 @@ function goToPanel(n){
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
+    // Always clear UTC field so birth place auto-detection runs fresh
+    const utcEl=document.getElementById('utc-offset');
+    if(utcEl) utcEl.value='';
     _activatePanel(3);
     buildChartAsync();
     return;
