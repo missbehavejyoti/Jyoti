@@ -2,7 +2,6 @@
 // Uses astronomy-engine (JPL-accuracy) for all planetary positions
 
 const Astronomy = require('astronomy-engine');
-let tzlookup; try { tzlookup = require('tz-lookup'); } catch(e) {}
 
 function utcOffsetForTZ(ianaZone, localDateStr) {
   try {
@@ -36,15 +35,20 @@ module.exports = async (req, res) => {
     if (isNaN(latN) || isNaN(lonN)) return res.status(400).json({ error: 'Missing or invalid lat/lon' });
 
     // Determine UTC offset: use provided value, or auto-detect from coordinates + birth datetime
-    let utcOff;
+    let utcOff, _tzMethod = 'lon/15 fallback';
     if (utcOffset !== undefined && utcOffset !== null && utcOffset !== '') {
       utcOff = parseFloat(utcOffset);
-    } else if (tzlookup) {
+      _tzMethod = 'manual';
+    } else {
       try {
+        const tzlookup = require('tz-lookup');
         const tz = tzlookup(latN, lonN);
         const localStr = `${dob}T${(tob || '12:00:00').padEnd(8, '0').slice(0, 8)}`;
         utcOff = utcOffsetForTZ(tz, localStr);
-      } catch(e) {}
+        _tzMethod = `tz-lookup:${tz}`;
+      } catch(e) {
+        console.error('tz-lookup failed:', e.message);
+      }
     }
     if (utcOff == null || isNaN(utcOff)) utcOff = Math.round(lonN / 15 * 2) / 2;
 
@@ -175,7 +179,8 @@ module.exports = async (req, res) => {
       ayanamsa: ayanamsa.toFixed(6),
       birthUT:  birthDate.toISOString(),
       _coords:  { lat: latN, lon: lonN },
-      _utcOff:  utcOff
+      _utcOff:  utcOff,
+      _tzMethod
     });
 
   } catch (e) {

@@ -1106,7 +1106,7 @@ function showChart(){
   if(locEl&&chartData._coords){
     const c=chartData._coords;
     const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00',''):'?';
-    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr} &nbsp;·&nbsp; UT: ${chartData.birthUT||''}</span>`;
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr} &nbsp;·&nbsp; ${chartData._tzMethod||''}</span>`;
   }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
