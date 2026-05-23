@@ -380,6 +380,7 @@ select option{background:var(--s2);color:var(--text)}
       <div class="card-title">
         <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-ta="உங்கள் நாடி ஜாதகம்">Your Nadi Birth Chart</span>
       </div>
+      <div id="chart-location-info" style="text-align:center;margin-bottom:.8rem"></div>
 
       <!-- Vedic South Indian Chart -->
       <div class="chart-container">
@@ -984,13 +985,26 @@ async function _detectUTCOffset(lat, lon, dob, tob){
 async function buildChartAsync(){
   document.getElementById('loading-card').style.display='block';
   document.getElementById('chart-card').style.display='none';
-  // 1. Geocode birth place
-  let coords={lat:20.59,lon:78.96};
-  try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=1`,{headers:{'Accept-Language':'en'}});
-    const d=await r.json();
-    if(d?.[0]) coords={lat:+d[0].lat,lon:+d[0].lon};
-  }catch(e){}
+  // 1. Geocode birth place — required for accurate ascendant
+  let coords=null;
+  for(let attempt=0;attempt<3&&!coords;attempt++){
+    try{
+      if(attempt>0) await new Promise(r=>setTimeout(r,1200*attempt));
+      const r=await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=1`,
+        {headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}}
+      );
+      const d=await r.json();
+      if(d?.[0]){coords={lat:+d[0].lat,lon:+d[0].lon,display:d[0].display_name};}
+    }catch(e){}
+  }
+  if(!coords){
+    // Geocoding failed — can't compute ascendant accurately; show error
+    document.getElementById('loading-card').style.display='none';
+    document.getElementById('chart-card').style.display='block';
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
+    return;
+  }
   // 2. Determine UTC offset — manual entry overrides; else auto-detect from birth place/time (includes historical DST)
   let utcOff=parseUTCOffset(document.getElementById('utc-offset')?.value);
   if(utcOff===null||utcOff===undefined){
@@ -1013,6 +1027,8 @@ async function buildChartAsync(){
     chartData=await resp.json();
   }catch(e){
     chartData=calcChart(userData.dob,userData.tob,coords,utcOff);
+    chartData._coords=coords;
+    chartData._utcOff=utcOff;
   }
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);
@@ -1082,6 +1098,13 @@ function showChart(){
   mDiv.innerHTML=chartData.malefics.map(m=>`
     <span class="tag tag-warn">⚠ ${m.name}</span>
   `).join('')+'<span class="tag tag-ok">✓ '+(currentLang==='hi'?'सकारात्मक योग पाए गए':currentLang==='ta'?'நேர்மறை யோகங்கள் கண்டறியப்பட்டன':'Positive yogas present')+'</span>';
+  // Show detected location + UTC for verification
+  const locEl=document.getElementById('chart-location-info');
+  if(locEl&&chartData._coords){
+    const c=chartData._coords;
+    const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00',''):'?';
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr} &nbsp;·&nbsp; UT: ${chartData.birthUT||''}</span>`;
+  }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
   document.getElementById('chart-card').style.display='block';

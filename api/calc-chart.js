@@ -148,7 +148,9 @@ module.exports = async (req, res) => {
       moonNak:  planets[1].nakshatra,
       ascSign:  asc.sign,
       ayanamsa: ayanamsa.toFixed(6),
-      birthUT:  birthDate.toISOString()
+      birthUT:  birthDate.toISOString(),
+      _coords:  { lat: latN, lon: lonN },
+      _utcOff:  utcOff
     });
 
   } catch (e) {
