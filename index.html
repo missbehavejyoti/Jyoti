@@ -300,7 +300,7 @@ select option{background:var(--s2);color:var(--text)}
       </div>
       <div class="field">
         <label data-en="UTC Offset at Birth Place" data-hi="जन्म स्थान का UTC अंतर" data-ta="பிறந்த இடத்தின் UTC ஆஃப்செட்">UTC Offset at Birth Place</label>
-        <input type="text" id="utc-offset" placeholder="+05:30">
+        <input type="text" id="utc-offset" placeholder="auto-detected from birth place" autocomplete="off">
         <p class="hint" data-en="Auto-detected from your birth place — includes daylight saving. Leave blank to let us detect it, or override manually." data-hi="जन्म स्थान से स्वतः पता लगाया गया। रिक्त छोड़ें या मैन्युअल रूप से दर्ज करें।" data-ta="பிறந்த இடத்திலிருந்து தானாகக் கண்டறியப்படும்.">Auto-detected from your birth place — includes historical daylight saving. Leave blank or override manually.</p>
       </div>
       <div class="g2">
@@ -1653,7 +1653,8 @@ async function installPWA() {
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
-// UTC offset is auto-detected from birth place + historical DST in buildChartAsync
+// UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
+(function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
 </script>
 </body>
 </html>
