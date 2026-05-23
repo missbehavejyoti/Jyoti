@@ -73,8 +73,8 @@ module.exports = async (req, res) => {
     const oblR = (23.439291111 - 0.013004167 * T) * Math.PI / 180;
     const latR = latN * Math.PI / 180;
     const lstR = LST * Math.PI / 180;
-    let ascTrop = Math.atan2(Math.cos(lstR), -Math.sin(lstR) * Math.sin(latR) - Math.cos(latR) * Math.tan(oblR)) * 180 / Math.PI;
-    if (Math.cos(lstR) < 0) ascTrop += 180;
+    // Correct formula: tan(ASC) = cos(RAMC) / (-sin(RAMC)·sin(ε) + tan(φ)·cos(ε))
+    let ascTrop = Math.atan2(Math.cos(lstR), -Math.sin(lstR) * Math.sin(oblR) + Math.tan(latR) * Math.cos(oblR)) * 180 / Math.PI;
     ascTrop = (ascTrop % 360 + 360) % 360;
 
     // ── Convert to sidereal ──

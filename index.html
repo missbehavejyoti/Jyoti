@@ -253,6 +253,14 @@ select option{background:var(--s2);color:var(--text)}
   </div>
 </header>
 
+<!-- Vedic vs Western intro -->
+<div class="wrap" style="margin-bottom:1.2rem">
+  <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:14px;padding:1.2rem 1.6rem;text-align:center">
+    <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">Vedic · Sidereal · Jyotish</p>
+    <p style="font-size:.93rem;color:var(--muted);line-height:1.75">Jyoti uses <strong style="color:var(--gold-pale)">Vedic astrology (Jyotish)</strong> — the ancient science of light rooted in India — which measures the sky against the fixed stars, not the sun. If you've always heard you're a Leo or Scorpio, your Vedic chart may show a different sign. This isn't an error. Over thousands of years, Earth's axis has shifted by about 24°. Western astrology never accounted for this drift, so its signs no longer align with the actual sky. Jyotish does — making it far more precise for understanding your soul's nature, karma, and life timing.</p>
+  </div>
+</div>
+
 <!-- Steps -->
 <div class="wrap">
   <div class="steps" id="steps">
@@ -293,7 +301,7 @@ select option{background:var(--s2);color:var(--text)}
       <div class="field">
         <label data-en="UTC Offset at Birth Place" data-hi="जन्म स्थान का UTC अंतर" data-ta="பிறந்த இடத்தின் UTC ஆஃப்செட்">UTC Offset at Birth Place</label>
         <input type="text" id="utc-offset" placeholder="+05:30">
-        <p class="hint" data-en="e.g. +05:30 India · +10:00 Sydney · −05:00 New York · +00:00 London · auto-detected from your device" data-hi="उदा. +05:30 भारत · +10:00 सिडनी · −05:00 न्यूयॉर्क · आपके डिवाइस से स्वतः पता लगाया गया" data-ta="எ.கா. +05:30 இந்தியா · +10:00 சிட்னி · −05:00 நியூயார்க்">Ascendant accuracy depends on this — auto-detected from device</p>
+        <p class="hint" data-en="Auto-detected from your birth place — includes daylight saving. Leave blank to let us detect it, or override manually." data-hi="जन्म स्थान से स्वतः पता लगाया गया। रिक्त छोड़ें या मैन्युअल रूप से दर्ज करें।" data-ta="பிறந்த இடத்திலிருந்து தானாகக் கண்டறியப்படும்.">Auto-detected from your birth place — includes historical daylight saving. Leave blank or override manually.</p>
       </div>
       <div class="g2">
         <div class="field">
@@ -870,8 +878,7 @@ function _ascendant(jd, latDeg, lonDeg){
   const LST=(GMST+lonDeg+360)%360;
   const e=(23.439291111-0.013004167*T)*Math.PI/180;
   const latR=latDeg*Math.PI/180, lstR=LST*Math.PI/180;
-  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.sin(latR)-Math.cos(latR)*Math.tan(e))*180/Math.PI;
-  if(Math.cos(lstR)<0) a+=180;
+  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.sin(e)+Math.tan(latR)*Math.cos(e))*180/Math.PI;
   return (a%360+360)%360;
 }
 
@@ -957,6 +964,23 @@ function _activatePanel(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+async function _detectUTCOffset(lat, lon, dob, tob){
+  // Look up IANA timezone from coordinates, then compute historical offset at birth datetime
+  try{
+    const r=await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`);
+    const d=await r.json();
+    if(!d?.timeZone) return null;
+    const tz=d.timeZone;
+    // Build a Date representing the local birth time (no timezone) so Intl can find the offset
+    const dt=new Date(`${dob}T${(tob||'12:00:00').padEnd(8,'0:00').slice(0,8)}`);
+    const parts=new Intl.DateTimeFormat('en',{timeZone:tz,timeZoneName:'longOffset'}).formatToParts(dt);
+    const tzStr=parts.find(p=>p.type==='timeZoneName')?.value||'';
+    const m=tzStr.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
+    if(m){ const s=m[1]==='+'?1:-1,h=+m[2],mn=+(m[3]||0); return s*(h+mn/60); }
+  }catch(e){}
+  return null;
+}
+
 async function buildChartAsync(){
   document.getElementById('loading-card').style.display='block';
   document.getElementById('chart-card').style.display='none';
@@ -967,8 +991,19 @@ async function buildChartAsync(){
     const d=await r.json();
     if(d?.[0]) coords={lat:+d[0].lat,lon:+d[0].lon};
   }catch(e){}
-  const utcOff=parseUTCOffset(document.getElementById('utc-offset')?.value)??coords.lon/15;
-  // 2. Server-side Swiss-precision calculation (astronomy-engine / JPL accuracy)
+  // 2. Determine UTC offset — manual entry overrides; else auto-detect from birth place/time (includes historical DST)
+  let utcOff=parseUTCOffset(document.getElementById('utc-offset')?.value);
+  if(utcOff===null||utcOff===undefined){
+    utcOff=await _detectUTCOffset(coords.lat,coords.lon,userData.dob,userData.tob);
+  }
+  if(utcOff===null||utcOff===undefined) utcOff=Math.round(coords.lon/15*2)/2; // fallback: nearest 30-min zone
+  // Show detected offset in field so user can verify
+  const utcEl=document.getElementById('utc-offset');
+  if(utcEl&&!utcEl.value){
+    const s=utcOff>=0?'+':'-', a=Math.abs(utcOff), h=Math.floor(a), m=Math.round((a-h)*60);
+    utcEl.value=`${s}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+  // 3. Server-side Swiss-precision calculation (astronomy-engine / JPL accuracy)
   try{
     const resp=await fetch('/api/calc-chart',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -977,7 +1012,6 @@ async function buildChartAsync(){
     if(!resp.ok) throw new Error('api');
     chartData=await resp.json();
   }catch(e){
-    // Fallback: client-side Meeus (still accurate to ~0.3°)
     chartData=calcChart(userData.dob,userData.tob,coords,utcOff);
   }
   showChart();
@@ -1590,16 +1624,7 @@ async function installPWA() {
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
-(function(){
-  const el=document.getElementById('utc-offset');
-  if(el&&!el.value){
-    const off=-(new Date().getTimezoneOffset())/60;
-    const sign=off>=0?'+':'-';
-    const h=Math.floor(Math.abs(off));
-    const m=Math.round((Math.abs(off)-h)*60);
-    el.value=`${sign}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  }
-})();
+// UTC offset is auto-detected from birth place + historical DST in buildChartAsync
 </script>
 </body>
 </html>
