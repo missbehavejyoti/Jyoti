@@ -5,6 +5,7 @@
     "node": "24.x"
   },
   "dependencies": {
-    "astronomy-engine": "^2.1.19"
+    "astronomy-engine": "^2.1.19",
+    "tz-lookup": "^6.1.25"
   }
 }

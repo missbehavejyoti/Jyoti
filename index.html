@@ -1005,30 +1005,33 @@ async function buildChartAsync(){
     document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
     return;
   }
-  // 2. Determine UTC offset — manual entry overrides; else auto-detect from birth place/time (includes historical DST)
-  let utcOff=parseUTCOffset(document.getElementById('utc-offset')?.value);
-  if(utcOff===null||utcOff===undefined){
-    utcOff=await _detectUTCOffset(coords.lat,coords.lon,userData.dob,userData.tob);
-  }
-  if(utcOff===null||utcOff===undefined) utcOff=Math.round(coords.lon/15*2)/2; // fallback: nearest 30-min zone
-  // Show detected offset in field so user can verify
-  const utcEl=document.getElementById('utc-offset');
-  if(utcEl&&!utcEl.value){
-    const s=utcOff>=0?'+':'-', a=Math.abs(utcOff), h=Math.floor(a), m=Math.round((a-h)*60);
-    utcEl.value=`${s}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  }
-  // 3. Server-side Swiss-precision calculation (astronomy-engine / JPL accuracy)
+  // 2. Manual UTC override (if user filled in the field) — otherwise server auto-detects from coordinates
+  const manualUTC=parseUTCOffset(document.getElementById('utc-offset')?.value);
+  // 3. Server-side Swiss-precision calculation (astronomy-engine / JPL accuracy + tz-lookup for UTC)
   try{
     const resp=await fetch('/api/calc-chart',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon,utcOffset:utcOff})
+      body:JSON.stringify({
+        dob:userData.dob,tob:userData.tob,
+        lat:coords.lat,lon:coords.lon,
+        utcOffset:manualUTC??undefined
+      })
     });
     if(!resp.ok) throw new Error('api');
     chartData=await resp.json();
+    // Show detected UTC offset in field so user can verify / override
+    if(chartData._utcOff!=null){
+      const utcEl=document.getElementById('utc-offset');
+      if(utcEl){
+        const s=chartData._utcOff>=0?'+':'-',a=Math.abs(chartData._utcOff),h=Math.floor(a),m=Math.round((a-h)*60);
+        utcEl.value=`${s}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      }
+    }
   }catch(e){
-    chartData=calcChart(userData.dob,userData.tob,coords,utcOff);
+    const fb=manualUTC??Math.round(coords.lon/15*2)/2;
+    chartData=calcChart(userData.dob,userData.tob,coords,fb);
     chartData._coords=coords;
-    chartData._utcOff=utcOff;
+    chartData._utcOff=fb;
   }
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);

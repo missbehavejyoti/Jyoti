@@ -2,6 +2,18 @@
 // Uses astronomy-engine (JPL-accuracy) for all planetary positions
 
 const Astronomy = require('astronomy-engine');
+let tzlookup; try { tzlookup = require('tz-lookup'); } catch(e) {}
+
+function utcOffsetForTZ(ianaZone, localDateStr) {
+  try {
+    const dt = new Date(localDateStr);
+    const parts = new Intl.DateTimeFormat('en', { timeZone: ianaZone, timeZoneName: 'longOffset' }).formatToParts(dt);
+    const tzStr = parts.find(p => p.type === 'timeZoneName')?.value || '';
+    const m = tzStr.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
+    if (m) return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) + parseInt(m[3] || 0) / 60);
+  } catch(e) {}
+  return null;
+}
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const NAKSHATRAS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
@@ -19,9 +31,22 @@ module.exports = async (req, res) => {
     const { dob, tob, lat, lon, utcOffset } = req.body || {};
     if (!dob) return res.status(400).json({ error: 'Missing dob' });
 
-    const latN = parseFloat(lat) || 20.59;
-    const lonN = parseFloat(lon) || 78.96;
-    const utcOff = (utcOffset !== undefined && utcOffset !== null) ? parseFloat(utcOffset) : lonN / 15;
+    const latN = parseFloat(lat);
+    const lonN = parseFloat(lon);
+    if (isNaN(latN) || isNaN(lonN)) return res.status(400).json({ error: 'Missing or invalid lat/lon' });
+
+    // Determine UTC offset: use provided value, or auto-detect from coordinates + birth datetime
+    let utcOff;
+    if (utcOffset !== undefined && utcOffset !== null && utcOffset !== '') {
+      utcOff = parseFloat(utcOffset);
+    } else if (tzlookup) {
+      try {
+        const tz = tzlookup(latN, lonN);
+        const localStr = `${dob}T${(tob || '12:00:00').padEnd(8, '0').slice(0, 8)}`;
+        utcOff = utcOffsetForTZ(tz, localStr);
+      } catch(e) {}
+    }
+    if (utcOff == null || isNaN(utcOff)) utcOff = Math.round(lonN / 15 * 2) / 2;
 
     // Parse birth time to UT hours
     const parts = (tob || '12:00:00').split(':').map(Number);
