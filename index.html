@@ -876,7 +876,7 @@ function _ascendant(jd, latDeg, lonDeg){
   const LST=(GMST+lonDeg+360)%360;
   const e=(23.439291111-0.013004167*T)*Math.PI/180;
   const latR=latDeg*Math.PI/180, lstR=LST*Math.PI/180;
-  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.sin(e)+Math.tan(latR)*Math.cos(e))*180/Math.PI;
+  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.cos(e)-Math.tan(latR)*Math.sin(e))*180/Math.PI;
   return (a%360+360)%360;
 }
 
