@@ -98,8 +98,8 @@ module.exports = async (req, res) => {
     const oblR = (23.439291111 - 0.013004167 * T) * Math.PI / 180;
     const latR = latN * Math.PI / 180;
     const lstR = LST * Math.PI / 180;
-    // Correct formula: tan(ASC) = cos(RAMC) / (-sin(RAMC)·sin(ε) + tan(φ)·cos(ε))
-    let ascTrop = Math.atan2(Math.cos(lstR), -Math.sin(lstR) * Math.sin(oblR) + Math.tan(latR) * Math.cos(oblR)) * 180 / Math.PI;
+    // ASC = atan2(cos θ, -sin θ·cos ε - tan φ·sin ε)  [standard Placidus/ecliptic horizon formula]
+    let ascTrop = Math.atan2(Math.cos(lstR), -Math.sin(lstR) * Math.cos(oblR) - Math.tan(latR) * Math.sin(oblR)) * 180 / Math.PI;
     ascTrop = (ascTrop % 360 + 360) % 360;
 
     // ── Convert to sidereal ──
