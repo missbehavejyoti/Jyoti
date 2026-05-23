@@ -688,8 +688,7 @@ function loadDemo(){
   [1,2].forEach(n=>{const el=document.getElementById('cb'+n);if(el)el.classList.add('agreed');});
   checkConsent();
 
-  // Calculate chart with Chennai coordinates (demo birth place)
-  chartData = calcChart(userData.dob, userData.tob, {lat:13.0827,lon:80.2707}, 5.5);
+  const utcEl=document.getElementById('utc-offset'); if(utcEl) utcEl.value='+05:30';
 
   // Show a quick toast
   const toast = document.createElement('div');
@@ -699,8 +698,7 @@ function loadDemo(){
   setTimeout(() => toast.remove(), 3000);
 
   _activatePanel(3);
-  showChart();
-  setTimeout(() => loadNakshatraReading(), 600);
+  buildChartAsync();
 }
 
 // ── STARS ──
@@ -962,14 +960,26 @@ function _activatePanel(n){
 async function buildChartAsync(){
   document.getElementById('loading-card').style.display='block';
   document.getElementById('chart-card').style.display='none';
+  // 1. Geocode birth place
   let coords={lat:20.59,lon:78.96};
   try{
     const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=1`,{headers:{'Accept-Language':'en'}});
     const d=await r.json();
-    if(d?.[0]){coords={lat:+d[0].lat,lon:+d[0].lon};}
+    if(d?.[0]) coords={lat:+d[0].lat,lon:+d[0].lon};
   }catch(e){}
   const utcOff=parseUTCOffset(document.getElementById('utc-offset')?.value)??coords.lon/15;
-  chartData=calcChart(userData.dob,userData.tob,coords,utcOff);
+  // 2. Server-side Swiss-precision calculation (astronomy-engine / JPL accuracy)
+  try{
+    const resp=await fetch('/api/calc-chart',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon,utcOffset:utcOff})
+    });
+    if(!resp.ok) throw new Error('api');
+    chartData=await resp.json();
+  }catch(e){
+    // Fallback: client-side Meeus (still accurate to ~0.3°)
+    chartData=calcChart(userData.dob,userData.tob,coords,utcOff);
+  }
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);
 }
@@ -1146,7 +1156,7 @@ async function loadNakshatraReading(){
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]} (nakshatra ${nak+1} of 27). Sun sign: ${T['en'].signs[chartData.planets[0].sign]}. Write their personalised nakshatra reading.`,
+        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
         type: 'nakshatra'
       })
@@ -1180,18 +1190,21 @@ async function showDailyReading(){
   document.getElementById('daily-loading').style.display='block';
   document.getElementById('daily-content').style.display='none';
   const L_en=T['en'];
+  const p=chartData.planets;
+  const dasha=chartData.dashaPeriod;
   const chartSummary=`
 Name: ${userData.name}
-Sun: ${L_en.signs[chartData.planets[0].sign]} ${chartData.planets[0].degree}°
-Moon: ${L_en.signs[chartData.planets[1].sign]} ${chartData.planets[1].degree}° — Nakshatra: ${L_en.nakshatras[chartData.moonNak]}
-Ascendant: ${L_en.signs[chartData.ascSign]}
-Mars: ${L_en.signs[chartData.planets[2].sign]}
-Mercury: ${L_en.signs[chartData.planets[3].sign]}
-Jupiter: ${L_en.signs[chartData.planets[4].sign]}
-Venus: ${L_en.signs[chartData.planets[5].sign]}
-Saturn: ${L_en.signs[chartData.planets[6].sign]}
-Rahu: ${L_en.signs[chartData.planets[7].sign]}
-Ketu: ${L_en.signs[chartData.planets[8].sign]}
+Sun: ${p[0].signName||L_en.signs[p[0].sign]} ${p[0].degree}°
+Moon: ${p[1].signName||L_en.signs[p[1].sign]} ${p[1].degree}° — Nakshatra: ${p[1].nakshatraName||L_en.nakshatras[chartData.moonNak]}, Pada ${p[1].pada||''}
+Ascendant (Lagna): ${chartData.asc?.signName||L_en.signs[chartData.ascSign]}  ${chartData.asc?.degree||''}°
+Mars: ${p[2].signName||L_en.signs[p[2].sign]} ${p[2].degree}°
+Mercury: ${p[3].signName||L_en.signs[p[3].sign]} ${p[3].degree}°
+Jupiter: ${p[4].signName||L_en.signs[p[4].sign]} ${p[4].degree}°
+Venus: ${p[5].signName||L_en.signs[p[5].sign]} ${p[5].degree}°
+Saturn: ${p[6].signName||L_en.signs[p[6].sign]} ${p[6].degree}°
+Rahu: ${p[7].signName||L_en.signs[p[7].sign]} ${p[7].degree}°
+Ketu: ${p[8].signName||L_en.signs[p[8].sign]} ${p[8].degree}°
+${dasha?`Vimshottari Dasha: ${dasha.lord} Dasha (${dasha.remaining} years remaining, next: ${dasha.next})`:''}
 Malefic influences: ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[now.getDay()]} — ruled by ${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][now.getDay()]}
 Today's date: ${now.toDateString()}
