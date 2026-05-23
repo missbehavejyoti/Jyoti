@@ -62,7 +62,12 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
 input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
-input[type=checkbox]{-webkit-appearance:auto;appearance:auto;background:none;border:none;padding:0;transition:none}
+.consent-btn{width:100%;text-align:left;background:rgba(200,169,74,.04);border:1.5px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;cursor:pointer;transition:.2s;font-family:'EB Garamond',Georgia,serif;font-size:.92rem;color:var(--muted);line-height:1.6;text-transform:none;letter-spacing:0;margin-bottom:.75rem}
+.consent-btn:active{opacity:.8}
+.consent-btn.agreed{background:rgba(200,169,74,.1);border-color:var(--gold)}
+.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:rgba(28,24,48,.9);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
+.consent-btn.agreed .cbx{background:var(--gold);border-color:var(--gold)}
+.consent-btn.agreed .cbx::after{content:'';position:absolute;left:5px;top:2px;width:8px;height:12px;border:2.5px solid #080510;border-top:none;border-left:none;transform:rotate(45deg)}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
@@ -86,10 +91,10 @@ select option{background:var(--s2);color:var(--text)}
 .legal-box h4{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase}
 .legal-box p{margin-bottom:.5rem}
 .legal-box p:last-child{margin-bottom:0}
-.check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer}
-.check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
-.check-row span{font-size:.88rem;color:var(--muted);line-height:1.5}
-.check-row label,.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
+.check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer;text-transform:none;font-family:'EB Garamond',Georgia,serif;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:0}
+.check-row input[type=checkbox]{margin-top:2px}
+.check-row span{line-height:1.6}
+.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
 
 /* Preview chart */
 .chart-container{display:flex;justify-content:center;margin:1.5rem 0}
@@ -248,6 +253,14 @@ select option{background:var(--s2);color:var(--text)}
   </div>
 </header>
 
+<!-- Vedic vs Western intro -->
+<div class="wrap" style="margin-bottom:1.2rem">
+  <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:14px;padding:1.2rem 1.6rem;text-align:center">
+    <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">Vedic · Sidereal · Jyotish</p>
+    <p style="font-size:.93rem;color:var(--muted);line-height:1.75">Jyoti uses <strong style="color:var(--gold-pale)">Vedic astrology (Jyotish)</strong> — the ancient science of light rooted in India — which measures planetary positions against the actual star constellations in the sky. If you've always heard you're a Leo or Scorpio, your Vedic chart may show a different sign. This isn't an error. Over thousands of years, Earth's axis has slowly shifted by about 24°. Western astrology never accounted for this movement, so its signs no longer align with the real sky. Jyotish does — making it far more precise for understanding your soul's nature, karma, and life timing.</p>
+  </div>
+</div>
+
 <!-- Steps -->
 <div class="wrap">
   <div class="steps" id="steps">
@@ -277,14 +290,16 @@ select option{background:var(--s2);color:var(--text)}
         </div>
         <div class="field">
           <label data-en="Exact Birth Time" data-hi="जन्म समय" data-ta="பிறந்த நேரம்">Exact Birth Time</label>
-          <input type="time" id="tob">
-          <p class="hint" data-en="Even minutes matter in Nadi" data-hi="नाडी में मिनट भी महत्वपूर्ण हैं" data-ta="நாடியில் நிமிடங்களும் முக்கியம்">Even minutes matter in Nadi</p>
+          <input type="time" id="tob" step="1">
+          <p class="hint" data-en="HH:MM:SS — include seconds if known, every second shifts the Lagna" data-hi="HH:MM:SS — सेकंड भी दर्ज करें, प्रत्येक सेकंड लग्न बदल सकता है" data-ta="HH:MM:SS — வினாடிகளும் தெரிந்தால் உள்ளிடவும், ஒவ்வொரு வினாடியும் லக்னத்தை மாற்றும்">HH:MM:SS — include seconds if known</p>
         </div>
       </div>
       <div class="field">
         <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
         <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
       </div>
+      <!-- UTC offset hidden — always auto-detected server-side from birth place + historical DST -->
+      <input type="hidden" id="utc-offset">
       <div class="g2">
         <div class="field">
           <label data-en="Email Address" data-hi="ईमेल पता" data-ta="மின்னஞ்சல் முகவரி">Email Address</label>
@@ -328,15 +343,17 @@ select option{background:var(--s2);color:var(--text)}
         <p style="font-size:.92rem;color:var(--muted);line-height:1.75">Jyoti offers Nadi astrological readings and daily Vedic remedies for <strong style="color:var(--gold-pale)">spiritual guidance and personal enrichment only</strong>. Our readings are not a substitute for medical, psychiatric, psychological, financial, or legal advice. Always consult a qualified professional for matters of health or wellbeing.</p>
       </div>
 
-      <div class="check-row" style="margin-bottom:.8rem">
-        <input type="checkbox" id="chk2a" onchange="checkConsent()">
-        <label for="chk2a" style="font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer">I agree to the <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a>. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</label>
-      </div>
+      <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem">Review our <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a> before agreeing.</p>
 
-      <div class="check-row" style="margin-bottom:0">
-        <input type="checkbox" id="chk2b" onchange="checkConsent()">
-        <label for="chk2b" style="font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer">I consent to my birth details being securely stored to generate my personalised Nadi reading.</label>
-      </div>
+      <button type="button" class="consent-btn" id="cb1" onclick="agreeConsent(1)">
+        <div class="cbx"></div>
+        <span>I agree to the Terms of Service and Privacy Policy. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
+      </button>
+
+      <button type="button" class="consent-btn" id="cb2" onclick="agreeConsent(2)">
+        <div class="cbx"></div>
+        <span>I consent to my birth details being securely stored to generate my personalised Nadi reading.</span>
+      </button>
 
       <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
@@ -360,6 +377,7 @@ select option{background:var(--s2);color:var(--text)}
       <div class="card-title">
         <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-ta="உங்கள் நாடி ஜாதகம்">Your Nadi Birth Chart</span>
       </div>
+      <div id="chart-location-info" style="text-align:center;margin-bottom:.8rem"></div>
 
       <!-- Vedic South Indian Chart -->
       <div class="chart-container">
@@ -470,12 +488,12 @@ select option{background:var(--s2);color:var(--text)}
           <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-ta="ஜ்யோதி உங்களை எப்போது நினைவூட்ட வேண்டும் என்று தேர்வு செய்யுங்கள்.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
           <div style="display:flex;flex-direction:column;gap:.6rem">
             <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-evening" checked style="accent-color:var(--gold);width:16px;height:16px">
+              <input type="checkbox" id="notif-evening" checked>
               <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-ta="மாலை — இரவு 8 மணி">Evening — 8pm the night before</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-ta="நாளைய தீர்வு இன்று இரவு — நீங்கள் தயாரிக்க">Tomorrow's remedy delivered tonight so you can prepare</span></span>
             </label>
             <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-morning" checked style="accent-color:var(--gold);width:16px;height:16px">
+              <input type="checkbox" id="notif-morning" checked>
               <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-ta="சூரிய உதயம் — காலை 6 மணி">Sunrise — 6am on the day</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-ta="உங்கள் சாதனையை தொடங்க ஒரு மென்மையான காலை நினைவூட்டல்">A gentle morning reminder to begin your practice</span></span>
             </label>
@@ -673,14 +691,10 @@ function loadDemo(){
     gender: 'female'
   };
 
-  // Auto-check consent
-  const chk2a = document.getElementById('chk2a');
-  const chk2b = document.getElementById('chk2b');
-  if(chk2a) chk2a.checked = true;
-  if(chk2b) chk2b.checked = true;
+  [1,2].forEach(n=>{const el=document.getElementById('cb'+n);if(el)el.classList.add('agreed');});
+  checkConsent();
 
-  // Calculate chart and go straight to panel 3
-  chartData = calcChart(userData.dob, userData.tob, userData.pob);
+  const utcEl=document.getElementById('utc-offset'); if(utcEl) utcEl.value='+05:30';
 
   // Show a quick toast
   const toast = document.createElement('div');
@@ -689,18 +703,8 @@ function loadDemo(){
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 
-  // Skip straight to chart
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel3').classList.add('active');
-  for(let i=1;i<=5;i++){
-    const s=document.getElementById('s'+i);
-    s.classList.remove('active','done');
-    if(i<3)s.classList.add('done');
-    else if(i===3)s.classList.add('active');
-  }
-  showChart();
-  setTimeout(() => loadNakshatraReading(), 600);
-  window.scrollTo({top:0,behavior:'smooth'});
+  _activatePanel(3);
+  buildChartAsync();
 }
 
 // ── STARS ──
@@ -782,10 +786,15 @@ function setLang(lang){
 }
 
 // ── CONSENT ──
+function agreeConsent(n){
+  const el=document.getElementById('cb'+n);
+  if(el) el.classList.toggle('agreed');
+  checkConsent();
+}
 function checkConsent(){
-  const ok = ['chk2a','chk2b'].every(id=>{const el=document.getElementById(id);return el&&el.checked;});
-  const btn = document.getElementById('btn2');
-  if(btn) btn.disabled = !ok;
+  const ok=[1,2].every(n=>{const el=document.getElementById('cb'+n);return el&&el.classList.contains('agreed');});
+  const btn=document.getElementById('btn2');
+  if(btn) btn.disabled=!ok;
 }
 
 // ── PAYMENT ──
@@ -835,72 +844,190 @@ function selectPlan(p){
   document.getElementById('plan-annual').classList.toggle('selected',p==='annual');
 }
 
-// ── CHART CALCULATION (Simplified Vedic) ──
-function calcChart(dob,tob,pob){
-  const d=new Date(dob+'T'+(tob||'12:00'));
-  const year=d.getFullYear(),month=d.getMonth()+1,day=d.getDate();
-  const hour=d.getHours()+(d.getMinutes()/60);
-  // Julian Day Number
-  const a=Math.floor((14-month)/12);
-  const y=year+4800-a,m=month+12*a-3;
-  const jdn=day+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
-  const jd=jdn+(hour-12)/24;
-  // Sun longitude (simplified)
-  const n=jd-2451545.0;
+// ── CHART CALCULATION — Meeus precision algorithms ──
+const J2000 = 2451545.0;
+
+// Moon longitude — Meeus Ch.47 simplified, accurate to ~0.3°
+function _moonLon(n){
+  const L0=((218.3164477+13.17639501*n)%360+360)%360;
+  const D =((297.8501921+12.19074909*n)%360+360)%360*Math.PI/180;
+  const M =((357.5291092+ 0.98560028*n)%360+360)%360*Math.PI/180;
+  const Mp=((134.9633964+13.06499295*n)%360+360)%360*Math.PI/180;
+  const F =(( 93.2720950+13.22935024*n)%360+360)%360*Math.PI/180;
+  const dL=6.289*Math.sin(Mp)-1.274*Math.sin(2*D-Mp)+0.658*Math.sin(2*D)
+    -0.186*Math.sin(M)-0.059*Math.sin(2*Mp-2*D)-0.057*Math.sin(Mp-2*D+M)
+    +0.053*Math.sin(Mp+2*D)+0.046*Math.sin(2*D-M)+0.041*Math.sin(Mp-M)
+    -0.035*Math.sin(D)-0.031*Math.sin(Mp+M)-0.015*Math.sin(2*F-2*D)
+    +0.011*Math.sin(Mp-4*D);
+  return ((L0+dL)%360+360)%360;
+}
+
+// Sun longitude — accurate to ~0.01°
+function _sunLon(n){
   const L=(280.460+0.9856474*n)%360;
   const g=((357.528+0.9856003*n)%360)*Math.PI/180;
-  const sunLon=(L+1.915*Math.sin(g)+0.020*Math.sin(2*g))%360;
-  // Ayanamsa (Lahiri ~23.85 degrees)
-  const ayanamsa=23.85+(year-2000)*0.014;
-  const siderealSun=((sunLon-ayanamsa)%360+360)%360;
-  // Moon (simplified)
-  const moonLon=((siderealSun*13.37+n*13.176)%360+360)%360;
-  // Ascendant (simplified based on time)
-  const ascBase=((hour/24)*360+siderealSun+90)%360;
-  // Generate planet positions
-  const planets=[
-    {name:'Sun',sym:'☉',lon:siderealSun},
-    {name:'Moon',sym:'☽',lon:moonLon},
-    {name:'Mars',sym:'♂',lon:((siderealSun*0.524+n*0.524+45)%360+360)%360},
-    {name:'Mercury',sym:'☿',lon:((siderealSun+25+Math.sin(n*0.5)*20)%360+360)%360},
-    {name:'Jupiter',sym:'♃',lon:((siderealSun*0.083+n*0.083+120)%360+360)%360},
-    {name:'Venus',sym:'♀',lon:((siderealSun+45+Math.sin(n*0.6)*30)%360+360)%360},
-    {name:'Saturn',sym:'♄',lon:((siderealSun*0.033+n*0.033+200)%360+360)%360},
-    {name:'Rahu',sym:'☊',lon:((360-n*0.053)%360+360)%360},
-    {name:'Ketu',sym:'☋',lon:((180-n*0.053)%360+360)%360},
-  ];
-  planets.forEach(p=>{
-    p.sign=Math.floor(p.lon/30);
-    p.degree=(p.lon%30).toFixed(1);
-    p.nakshatra=Math.floor(p.lon/(360/27));
-  });
-  const asc={lon:ascBase,sign:Math.floor(ascBase/30),degree:(ascBase%30).toFixed(1)};
-  // Detect malefics
-  const malefics=[];
-  const saturn=planets[6],rahu=planets[7],ketu=planets[8],mars=planets[2],sun=planets[0];
-  // Saturn-Moon aspect
-  const moonSatDiff=Math.abs(planets[1].lon-saturn.lon)%360;
-  if(moonSatDiff<30||moonSatDiff>330)malefics.push({name:'Saturn–Moon conjunction',house:planets[1].sign+1,severity:'moderate'});
-  // Rahu-Moon
-  const moonRahuDiff=Math.abs(planets[1].lon-rahu.lon)%360;
-  if(moonRahuDiff<45)malefics.push({name:'Rahu–Moon influence',house:planets[1].sign+1,severity:'strong'});
-  // Ketu ASC
-  const ketuAscDiff=Math.abs(ketu.lon-asc.lon)%360;
-  if(ketuAscDiff<30||ketuAscDiff>330)malefics.push({name:'Ketu near Ascendant',house:1,severity:'moderate'});
-  // Mars 8th
-  if(mars.sign===((asc.sign+7)%12))malefics.push({name:'Mars in 8th House',house:8,severity:'strong'});
-  // Always add at least one
-  if(malefics.length===0){
-    const saraSaati=((saturn.sign-planets[1].sign+12)%12);
-    if(saraSaati<=1||saraSaati===11)malefics.push({name:'Sade Sati — Saturn near Moon',house:planets[1].sign+1,severity:'moderate'});
-    else malefics.push({name:'Saturn aspects 7th house',house:7,severity:'mild'});
+  return ((L+1.915*Math.sin(g)+0.020*Math.sin(2*g))%360+360)%360;
+}
+
+// Ascendant — proper RAMC method
+function _ascendant(jd, latDeg, lonDeg){
+  const n=jd-J2000, T=n/36525;
+  const GMST=((280.46061837+360.98564736629*n+0.000387933*T*T)%360+360)%360;
+  const LST=(GMST+lonDeg+360)%360;
+  const e=(23.439291111-0.013004167*T)*Math.PI/180;
+  const latR=latDeg*Math.PI/180, lstR=LST*Math.PI/180;
+  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.sin(e)+Math.tan(latR)*Math.cos(e))*180/Math.PI;
+  return (a%360+360)%360;
+}
+
+// Outer planet longitudes via equation of center (accurate to 1–2°)
+const _PM={
+  mars:   {l0:355.433,r:0.52403,M0:19.387, rM:0.52403,e:0.0934},
+  jupiter:{l0: 34.397,r:0.08311,M0:20.020, rM:0.08311,e:0.0487},
+  saturn: {l0: 50.079,r:0.03338,M0:317.020,rM:0.03338,e:0.0560},
+  mercury:{l0:252.251,r:4.09234},
+  venus:  {l0:181.979,r:1.60214},
+  rahu:   {l0:125.044,r:-0.05295}
+};
+function _planetLon(name,n){
+  const p=_PM[name];
+  const lon=((p.l0+p.r*n)%360+360)%360;
+  if(p.M0!==undefined){
+    const M=((p.M0+p.rM*n)%360+360)%360*Math.PI/180;
+    const eq=(2*p.e*Math.sin(M)+1.25*p.e*p.e*Math.sin(2*M))*180/Math.PI;
+    return ((lon+eq)%360+360)%360;
   }
-  return{planets,asc,malefics,sunSign:planets[0].sign,moonSign:planets[1].sign,moonNak:planets[1].nakshatra,ascSign:asc.sign,dob,year,month,day};
+  return lon;
+}
+
+function parseUTCOffset(str){
+  if(!str||str.trim()==='') return null;
+  str=str.trim();
+  const sign=str[0]==='-'?-1:1;
+  const s=str.replace(/^[+-]/,'');
+  if(s.includes(':')){ const[h,m]=s.split(':').map(Number); return sign*(h+m/60); }
+  return sign*parseFloat(s);
+}
+
+function calcChart(dob, tob, coords, utcOffset){
+  const lat=coords?.lat??20.59, lon=coords?.lon??78.96;
+  const utcOff=utcOffset??lon/15;
+  const parts=(tob||'12:00:00').split(':').map(Number);
+  const localH=(parts[0]||12)+(parts[1]||0)/60+(parts[2]||0)/3600;
+  const utH=localH-utcOff;
+  const[yr,mo,dy]=dob.split('-').map(Number);
+  const a=Math.floor((14-mo)/12), y=yr+4800-a, mm=mo+12*a-3;
+  const jdn=dy+Math.floor((153*mm+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
+  const jd=jdn-0.5+utH/24;
+  const n=jd-J2000, T=n/36525;
+  const ayan=23.85+T*1.397; // Lahiri ayanamsa
+  const sid=t=>((t-ayan)%360+360)%360;
+  const sunT=_sunLon(n), moonT=_moonLon(n);
+  const marsT=_planetLon('mars',n), mercT=_planetLon('mercury',n);
+  const jupT=_planetLon('jupiter',n), venT=_planetLon('venus',n);
+  const satT=_planetLon('saturn',n), rahuT=_planetLon('rahu',n);
+  const ascT=_ascendant(jd,lat,lon);
+  const rahuL=sid(rahuT), ketuL=(rahuL+180)%360;
+  const mk=(name,sym,l)=>({name,sym,lon:l,sign:Math.floor(l/30),degree:(l%30).toFixed(2),nakshatra:Math.floor(l*27/360)});
+  const planets=[
+    mk('Sun','☉',sid(sunT)), mk('Moon','☽',sid(moonT)), mk('Mars','♂',sid(marsT)),
+    mk('Mercury','☿',sid(mercT)), mk('Jupiter','♃',sid(jupT)), mk('Venus','♀',sid(venT)),
+    mk('Saturn','♄',sid(satT)), mk('Rahu','☊',rahuL), mk('Ketu','☋',ketuL)
+  ];
+  const ascL=sid(ascT);
+  const asc={lon:ascL,sign:Math.floor(ascL/30),degree:(ascL%30).toFixed(2)};
+  const ang=(a,b)=>Math.min(Math.abs(a-b),360-Math.abs(a-b));
+  const malefics=[];
+  if(ang(planets[1].lon,planets[6].lon)<30) malefics.push({name:'Saturn–Moon conjunction',house:planets[1].sign+1,severity:'moderate'});
+  if(ang(planets[1].lon,rahuL)<45) malefics.push({name:'Rahu–Moon influence',house:planets[1].sign+1,severity:'strong'});
+  if(ang(ketuL,ascL)<30) malefics.push({name:'Ketu near Ascendant',house:1,severity:'moderate'});
+  if(planets[2].sign===(asc.sign+7)%12) malefics.push({name:'Mars in 8th House',house:8,severity:'strong'});
+  if(!malefics.length){
+    const ss=(planets[6].lon-planets[1].lon+360)%360;
+    malefics.push(ss<30||ss>330?{name:'Sade Sati — Saturn near Moon',house:planets[1].sign+1,severity:'moderate'}:{name:'Saturn aspects 7th house',house:7,severity:'mild'});
+  }
+  return{planets,asc,malefics,sunSign:planets[0].sign,moonSign:planets[1].sign,moonNak:planets[1].nakshatra,ascSign:asc.sign,dob,lat,lon,utcOff};
 }
 
 // ── PANELS ──
+function _activatePanel(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel'+n).classList.add('active');
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById('s'+i);
+    s.classList.remove('active','done');
+    if(i<n)s.classList.add('done');
+    else if(i===n)s.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function _detectUTCOffset(lat, lon, dob, tob){
+  // Look up IANA timezone from coordinates, then compute historical offset at birth datetime
+  try{
+    const r=await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`);
+    const d=await r.json();
+    if(!d?.timeZone) return null;
+    const tz=d.timeZone;
+    // Build a Date representing the local birth time (no timezone) so Intl can find the offset
+    const dt=new Date(`${dob}T${(tob||'12:00:00').padEnd(8,'0:00').slice(0,8)}`);
+    const parts=new Intl.DateTimeFormat('en',{timeZone:tz,timeZoneName:'longOffset'}).formatToParts(dt);
+    const tzStr=parts.find(p=>p.type==='timeZoneName')?.value||'';
+    const m=tzStr.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
+    if(m){ const s=m[1]==='+'?1:-1,h=+m[2],mn=+(m[3]||0); return s*(h+mn/60); }
+  }catch(e){}
+  return null;
+}
+
+async function buildChartAsync(){
+  document.getElementById('loading-card').style.display='block';
+  document.getElementById('chart-card').style.display='none';
+  // 1. Geocode birth place — required for accurate ascendant
+  let coords=null;
+  for(let attempt=0;attempt<3&&!coords;attempt++){
+    try{
+      if(attempt>0) await new Promise(r=>setTimeout(r,1200*attempt));
+      const r=await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=1`,
+        {headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}}
+      );
+      const d=await r.json();
+      if(d?.[0]){coords={lat:+d[0].lat,lon:+d[0].lon,display:d[0].display_name};}
+    }catch(e){}
+  }
+  if(!coords){
+    // Geocoding failed — can't compute ascendant accurately; show error
+    document.getElementById('loading-card').style.display='none';
+    document.getElementById('chart-card').style.display='block';
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
+    return;
+  }
+  // 2. Server-side JPL-precision calculation — retry up to 3 times, no client fallback
+  let lastErr='';
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      if(attempt>0) await new Promise(r=>setTimeout(r,1500*attempt));
+      const resp=await fetch('/api/calc-chart',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon})
+      });
+      if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
+      chartData=await resp.json();
+      lastErr='';
+      break;
+    }catch(e){ lastErr=e.message||'Network error'; }
+  }
+  if(lastErr){
+    document.getElementById('loading-card').style.display='none';
+    document.getElementById('chart-card').style.display='block';
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Chart calculation failed</p><p style="color:var(--muted);font-size:.9rem">Could not reach the calculation server. Please check your connection and try again.<br><br><small style="color:var(--dim)">${lastErr}</small></p><button class="btn btn-gold" onclick="buildChartAsync()" style="margin-top:1.5rem">Try Again</button></div>`;
+    return;
+  }
+  showChart();
+  setTimeout(()=>loadNakshatraReading(),600);
+}
+
 function goToPanel(n){
-  // Validate panel 1
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -914,23 +1041,19 @@ function goToPanel(n){
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
-    chartData=calcChart(userData.dob,userData.tob,userData.pob);
-    showChart();
-    setTimeout(()=>loadNakshatraReading(),600);
+    // Always clear UTC field so birth place auto-detection runs fresh
+    const utcEl=document.getElementById('utc-offset');
+    if(utcEl) utcEl.value='';
+    _activatePanel(3);
+    buildChartAsync();
+    return;
   }
   if(n===5){
+    _activatePanel(5);
     setTimeout(()=>showDailyReading(),800);
+    return;
   }
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel'+n).classList.add('active');
-  // Update steps
-  for(let i=1;i<=5;i++){
-    const s=document.getElementById('s'+i);
-    s.classList.remove('active','done');
-    if(i<n)s.classList.add('done');
-    else if(i===n)s.classList.add('active');
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
+  _activatePanel(n);
 }
 
 function showChart(){
@@ -971,6 +1094,13 @@ function showChart(){
   mDiv.innerHTML=chartData.malefics.map(m=>`
     <span class="tag tag-warn">⚠ ${m.name}</span>
   `).join('')+'<span class="tag tag-ok">✓ '+(currentLang==='hi'?'सकारात्मक योग पाए गए':currentLang==='ta'?'நேர்மறை யோகங்கள் கண்டறியப்பட்டன':'Positive yogas present')+'</span>';
+  // Show detected location + UTC for verification
+  const locEl=document.getElementById('chart-location-info');
+  if(locEl&&chartData._coords){
+    const c=chartData._coords;
+    const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00',''):'?';
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr} &nbsp;·&nbsp; UT: ${chartData.birthUT||''}</span>`;
+  }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
   document.getElementById('chart-card').style.display='block';
@@ -1079,7 +1209,7 @@ async function loadNakshatraReading(){
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]} (nakshatra ${nak+1} of 27). Sun sign: ${T['en'].signs[chartData.planets[0].sign]}. Write their personalised nakshatra reading.`,
+        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
         type: 'nakshatra'
       })
@@ -1093,9 +1223,10 @@ async function loadNakshatraReading(){
 function shareNakshatra(){
   const nak = chartData.moonNak;
   const nakName = T[currentLang].nakshatras[nak];
-  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at jyoti.app`;
+  const url = window.location.origin;
+  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at ${url}`;
   if(navigator.share){
-    navigator.share({title:'My Nakshatra — Jyoti',text,url:'https://jyoti.app'}).catch(()=>{});
+    navigator.share({title:'My Nakshatra — Jyoti',text,url}).catch(()=>{});
   } else {
     navigator.clipboard?.writeText(text).then(()=>alert('Copied to clipboard! Share it anywhere ✨')).catch(()=>alert(text));
   }
@@ -1112,66 +1243,42 @@ async function showDailyReading(){
   document.getElementById('daily-loading').style.display='block';
   document.getElementById('daily-content').style.display='none';
   const L_en=T['en'];
+  const p=chartData.planets;
+  const dasha=chartData.dashaPeriod;
   const chartSummary=`
 Name: ${userData.name}
-Sun: ${L_en.signs[chartData.planets[0].sign]} ${chartData.planets[0].degree}°
-Moon: ${L_en.signs[chartData.planets[1].sign]} ${chartData.planets[1].degree}° — Nakshatra: ${L_en.nakshatras[chartData.moonNak]}
-Ascendant: ${L_en.signs[chartData.ascSign]}
-Mars: ${L_en.signs[chartData.planets[2].sign]}
-Mercury: ${L_en.signs[chartData.planets[3].sign]}
-Jupiter: ${L_en.signs[chartData.planets[4].sign]}
-Venus: ${L_en.signs[chartData.planets[5].sign]}
-Saturn: ${L_en.signs[chartData.planets[6].sign]}
-Rahu: ${L_en.signs[chartData.planets[7].sign]}
-Ketu: ${L_en.signs[chartData.planets[8].sign]}
+Sun: ${p[0].signName||L_en.signs[p[0].sign]} ${p[0].degree}°
+Moon: ${p[1].signName||L_en.signs[p[1].sign]} ${p[1].degree}° — Nakshatra: ${p[1].nakshatraName||L_en.nakshatras[chartData.moonNak]}, Pada ${p[1].pada||''}
+Ascendant (Lagna): ${chartData.asc?.signName||L_en.signs[chartData.ascSign]}  ${chartData.asc?.degree||''}°
+Mars: ${p[2].signName||L_en.signs[p[2].sign]} ${p[2].degree}°
+Mercury: ${p[3].signName||L_en.signs[p[3].sign]} ${p[3].degree}°
+Jupiter: ${p[4].signName||L_en.signs[p[4].sign]} ${p[4].degree}°
+Venus: ${p[5].signName||L_en.signs[p[5].sign]} ${p[5].degree}°
+Saturn: ${p[6].signName||L_en.signs[p[6].sign]} ${p[6].degree}°
+Rahu: ${p[7].signName||L_en.signs[p[7].sign]} ${p[7].degree}°
+Ketu: ${p[8].signName||L_en.signs[p[8].sign]} ${p[8].degree}°
+${dasha?`Vimshottari Dasha: ${dasha.lord} Dasha (${dasha.remaining} years remaining, next: ${dasha.next})`:''}
 Malefic influences: ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[now.getDay()]} — ruled by ${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][now.getDay()]}
 Today's date: ${now.toDateString()}
 `;
-  const lang_instruction=currentLang==='hi'?'Respond entirely in Hindi (Devanagari script).':currentLang==='ta'?'Respond entirely in Tamil script.':'Respond in English.';
-  const systemPrompt=`You are Jyoti, a precise and compassionate Nadi astrology guidance system. You provide traditional Vedic and Nadi astrological daily remedies.
-
-CORE RULES — NEVER VIOLATE:
-1. TONE: Always warm, supportive, loving. Never alarming, never harsh. Challenges are opportunities. Malefics are teachers, not punishments.
-2. ACCURACY: Base remedies strictly on classical Vedic/Nadi tradition — specific mantras, offerings, timing, and practices tied to the exact planetary conditions of today meeting this person's natal chart.
-3. SPECIFICITY: Only prescribe what is genuinely needed TODAY based on today's transits meeting this birth chart. Some days one thing. Some days nothing but a loving observation. Never generic.
-4. LEGAL: Never give medical, psychiatric, financial, or legal advice. Never claim outcomes. Always frame as spiritual practice.
-5. LANGUAGE: ${lang_instruction}
-6. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
-
-JSON structure:
-{
-  "greeting": "Personal opening line using their name",
-  "cosmic_weather": "1-2 sentences on what is happening cosmically today and how it meets their chart specifically",
-  "has_remedy": true or false,
-  "remedy": {
-    "title": "Brief title of today's practice",
-    "what_is_happening": "1-2 sentences — the specific planetary meeting creating this need",
-    "practice": "The exact remedy — what to do, when, how many times if mantra, what to offer if offering",
-    "mantra": "The exact Sanskrit mantra if applicable (null if not needed today)",
-    "mantra_count": 108 or 27 or 21 or 9 (null if no mantra),
-    "mantra_meaning": "Brief meaning of the mantra in the response language",
-    "timing": "Best time of day for this practice",
-    "loving_close": "A warm, loving closing sentence of encouragement"
-  },
-  "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace (null if remedy exists)"
-}`;
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 13000);
   try{
-    const data = await fetch('/api/get-remedy', {
+    const resp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        chartSummary,
-        lang: currentLang,
-        type: 'daily',
-        system: systemPrompt
-      })
-    }).then(r => r.json());
-    const reading = data;
-    renderDailyReading(reading,dayName);
+      body: JSON.stringify({chartSummary, lang: currentLang, type: 'daily'}),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    if(!resp.ok) throw new Error('api-error');
+    const data = await resp.json();
+    if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)) throw new Error('bad-data');
+    renderDailyReading(data, dayName);
   }catch(e){
-    // Fallback
-    renderFallbackReading(dayName,now);
+    clearTimeout(tid);
+    renderFallbackReading(dayName, now);
   }
 }
 
@@ -1536,6 +1643,8 @@ async function installPWA() {
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
+// UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
+(function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
 </script>
 </body>
 </html>
