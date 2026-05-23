@@ -62,7 +62,9 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
 input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
-input[type=checkbox]{all:revert;width:20px;min-width:20px;height:20px;cursor:pointer;accent-color:var(--gold);flex-shrink:0;vertical-align:middle;margin:0}
+.fake-check{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:rgba(28,24,48,.9);cursor:pointer;flex-shrink:0;margin-top:1px;transition:.15s;position:relative}
+.fake-check.on{background:var(--gold);border-color:var(--gold)}
+.fake-check.on::after{content:'';position:absolute;left:5px;top:2px;width:8px;height:12px;border:2.5px solid #080510;border-top:none;border-left:none;transform:rotate(45deg)}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
@@ -328,15 +330,15 @@ select option{background:var(--s2);color:var(--text)}
         <p style="font-size:.92rem;color:var(--muted);line-height:1.75">Jyoti offers Nadi astrological readings and daily Vedic remedies for <strong style="color:var(--gold-pale)">spiritual guidance and personal enrichment only</strong>. Our readings are not a substitute for medical, psychiatric, psychological, financial, or legal advice. Always consult a qualified professional for matters of health or wellbeing.</p>
       </div>
 
-      <label class="check-row" style="margin-bottom:.8rem">
-        <input type="checkbox" id="chk2a" onclick="checkConsent()">
+      <div class="check-row" style="margin-bottom:.8rem" onclick="toggleConsent('chk2a')">
+        <div class="fake-check" id="chk2a"></div>
         <span>I agree to the <a href="#" onclick="openModal('terms');event.preventDefault();event.stopPropagation();" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');event.preventDefault();event.stopPropagation();" style="color:var(--gold)">Privacy Policy</a>. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
-      </label>
+      </div>
 
-      <label class="check-row" style="margin-bottom:0">
-        <input type="checkbox" id="chk2b" onclick="checkConsent()">
+      <div class="check-row" style="margin-bottom:0" onclick="toggleConsent('chk2b')">
+        <div class="fake-check" id="chk2b"></div>
         <span>I consent to my birth details being securely stored to generate my personalised Nadi reading.</span>
-      </label>
+      </div>
 
       <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
@@ -673,11 +675,10 @@ function loadDemo(){
     gender: 'female'
   };
 
-  // Auto-check consent
   const chk2a = document.getElementById('chk2a');
   const chk2b = document.getElementById('chk2b');
-  if(chk2a) chk2a.checked = true;
-  if(chk2b) chk2b.checked = true;
+  if(chk2a) chk2a.classList.add('on');
+  if(chk2b) chk2b.classList.add('on');
 
   // Calculate chart and go straight to panel 3
   chartData = calcChart(userData.dob, userData.tob, userData.pob);
@@ -782,10 +783,15 @@ function setLang(lang){
 }
 
 // ── CONSENT ──
+function toggleConsent(id){
+  const el=document.getElementById(id);
+  if(el) el.classList.toggle('on');
+  checkConsent();
+}
 function checkConsent(){
-  const ok = ['chk2a','chk2b'].every(id=>{const el=document.getElementById(id);return el&&el.checked;});
-  const btn = document.getElementById('btn2');
-  if(btn) btn.disabled = !ok;
+  const ok=['chk2a','chk2b'].every(id=>{const el=document.getElementById(id);return el&&el.classList.contains('on');});
+  const btn=document.getElementById('btn2');
+  if(btn) btn.disabled=!ok;
 }
 
 // ── PAYMENT ──
