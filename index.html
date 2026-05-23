@@ -62,7 +62,9 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
 input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
-input[type=checkbox]{-webkit-appearance:auto;appearance:auto;background:none;border:none;padding:0;transition:none}
+input[type=checkbox]{-webkit-appearance:none;appearance:none;width:20px;min-width:20px;height:20px;padding:0;background:rgba(28,24,48,.9);border:1.5px solid var(--gold-d);border-radius:4px;cursor:pointer;transition:.15s;vertical-align:middle;flex-shrink:0}
+input[type=checkbox]:checked{background:var(--gold);border-color:var(--gold);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 6l3 3 6-6' stroke='%23080510' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:12px;background-repeat:no-repeat;background-position:center}
+input[type=checkbox]:focus{outline:2px solid rgba(200,169,74,.4);outline-offset:2px}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
@@ -87,7 +89,7 @@ select option{background:var(--s2);color:var(--text)}
 .legal-box p{margin-bottom:.5rem}
 .legal-box p:last-child{margin-bottom:0}
 .check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer}
-.check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
+.check-row input[type=checkbox]{margin-top:2px}
 .check-row span{font-size:.88rem;color:var(--muted);line-height:1.5}
 .check-row label,.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
 
@@ -470,12 +472,12 @@ select option{background:var(--s2);color:var(--text)}
           <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-ta="ஜ்யோதி உங்களை எப்போது நினைவூட்ட வேண்டும் என்று தேர்வு செய்யுங்கள்.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
           <div style="display:flex;flex-direction:column;gap:.6rem">
             <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-evening" checked style="accent-color:var(--gold);width:16px;height:16px">
+              <input type="checkbox" id="notif-evening" checked>
               <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-ta="மாலை — இரவு 8 மணி">Evening — 8pm the night before</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-ta="நாளைய தீர்வு இன்று இரவு — நீங்கள் தயாரிக்க">Tomorrow's remedy delivered tonight so you can prepare</span></span>
             </label>
             <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-morning" checked style="accent-color:var(--gold);width:16px;height:16px">
+              <input type="checkbox" id="notif-morning" checked>
               <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-ta="சூரிய உதயம் — காலை 6 மணி">Sunrise — 6am on the day</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-ta="உங்கள் சாதனையை தொடங்க ஒரு மென்மையான காலை நினைவூட்டல்">A gentle morning reminder to begin your practice</span></span>
             </label>
