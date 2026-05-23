@@ -298,11 +298,8 @@ select option{background:var(--s2);color:var(--text)}
         <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
         <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
       </div>
-      <div class="field">
-        <label data-en="UTC Offset at Birth Place" data-hi="जन्म स्थान का UTC अंतर" data-ta="பிறந்த இடத்தின் UTC ஆஃப்செட்">UTC Offset at Birth Place</label>
-        <input type="text" id="utc-offset" placeholder="auto-detected from birth place" autocomplete="off">
-        <p class="hint" data-en="Auto-detected from your birth place — includes daylight saving. Leave blank to let us detect it, or override manually." data-hi="जन्म स्थान से स्वतः पता लगाया गया। रिक्त छोड़ें या मैन्युअल रूप से दर्ज करें।" data-ta="பிறந்த இடத்திலிருந்து தானாகக் கண்டறியப்படும்.">Auto-detected from your birth place — includes historical daylight saving. Leave blank or override manually.</p>
-      </div>
+      <!-- UTC offset hidden — always auto-detected server-side from birth place + historical DST -->
+      <input type="hidden" id="utc-offset">
       <div class="g2">
         <div class="field">
           <label data-en="Email Address" data-hi="ईमेल पता" data-ta="மின்னஞ்சல் முகவரி">Email Address</label>
