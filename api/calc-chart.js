@@ -35,7 +35,8 @@ module.exports = async (req, res) => {
     if (isNaN(latN) || isNaN(lonN)) return res.status(400).json({ error: 'Missing or invalid lat/lon' });
 
     // Determine UTC offset — prefer client-supplied IANA timezone (historical DST-aware)
-    const localStr = `${dob}T${(tob || '12:00:00').padEnd(8, '0').slice(0, 8)}`;
+    const tp = (tob || '12:00:00').split(':');
+    const localStr = `${dob}T${(tp[0]||'12').padStart(2,'0')}:${(tp[1]||'00').padStart(2,'0')}:${(tp[2]||'00').padStart(2,'0')}`;
     let utcOff, _tzMethod = 'lon/15 fallback';
     if (utcOffset !== undefined && utcOffset !== null && utcOffset !== '') {
       utcOff = parseFloat(utcOffset);
