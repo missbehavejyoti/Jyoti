@@ -203,9 +203,20 @@ select option{background:var(--s2);color:var(--text)}
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
 .crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
-/* Malefic section */
-.malefic-section{background:rgba(176,35,72,.05);border:1px solid rgba(176,35,72,.15);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
-.malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:#E07090;margin-bottom:.8rem;text-transform:uppercase}
+/* Karmic intensities section */
+.malefic-section{background:rgba(122,97,32,.06);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
+.malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.8rem;text-transform:uppercase}
+
+/* 24-hour time wheel */
+.time-wheel{display:flex;align-items:stretch;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;height:132px;position:relative;overflow:hidden}
+.tw-col{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:44px 0;text-align:center}
+.tw-col::-webkit-scrollbar{display:none}
+.tw-item{height:44px;line-height:44px;font-size:1.25rem;color:var(--dim);scroll-snap-align:center}
+.tw-sep{display:flex;align-items:center;padding:0 3px;font-size:1.1rem;color:var(--gold-d);font-family:'Cinzel',serif;flex-shrink:0;position:relative;z-index:3}
+.tw-top-fade,.tw-bot-fade{position:absolute;left:0;right:0;height:48px;pointer-events:none;z-index:2}
+.tw-top-fade{top:0;background:linear-gradient(to bottom,rgba(12,9,24,.97) 55%,transparent)}
+.tw-bot-fade{bottom:0;background:linear-gradient(to top,rgba(12,9,24,.97) 55%,transparent)}
+.tw-sel{position:absolute;left:6px;right:6px;top:50%;transform:translateY(-50%);height:44px;border-top:1px solid rgba(200,169,74,.35);border-bottom:1px solid rgba(200,169,74,.35);background:rgba(200,169,74,.04);border-radius:4px;pointer-events:none;z-index:1}
 
 /* Summary row */
 .summary-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--s3);font-size:.9rem}
@@ -293,8 +304,18 @@ select option{background:var(--s2);color:var(--text)}
         </div>
         <div class="field">
           <label data-en="Exact Birth Time" data-hi="जन्म समय" data-ta="பிறந்த நேரம்">Exact Birth Time</label>
-          <input type="time" id="tob" step="1">
-          <p class="hint" data-en="HH:MM:SS — include seconds if known, every second shifts the Lagna" data-hi="HH:MM:SS — सेकंड भी दर्ज करें, प्रत्येक सेकंड लग्न बदल सकता है" data-ta="HH:MM:SS — வினாடிகளும் தெரிந்தால் உள்ளிடவும், ஒவ்வொரு வினாடியும் லக்னத்தை மாற்றும்">HH:MM:SS — include seconds if known</p>
+          <div class="time-wheel" id="tw-wrap">
+            <div class="tw-col" id="tw-h"></div>
+            <div class="tw-sep">:</div>
+            <div class="tw-col" id="tw-m"></div>
+            <div class="tw-sep">:</div>
+            <div class="tw-col" id="tw-s"></div>
+            <div class="tw-top-fade"></div>
+            <div class="tw-bot-fade"></div>
+            <div class="tw-sel"></div>
+          </div>
+          <input type="hidden" id="tob" value="12:00:00">
+          <p class="hint" data-en="Scroll to set · 24-hour · seconds refine the Lagna" data-hi="स्क्रॉल करें · 24 घंटे · सेकंड लग्न को परिष्कृत करता है" data-ta="உருட்டி அமையுங்கள் · 24 மணி நேரம் · வினாடிகள் லக்னத்தை மேம்படுத்தும்">Scroll to set · 24-hour · seconds refine the Lagna</p>
         </div>
       </div>
       <div class="field">
@@ -436,9 +457,9 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Malefic teaser -->
       <div class="malefic-section">
-        <h4 data-en="⚠ Malefic Influences Detected" data-hi="⚠ पाप ग्रह प्रभाव पाए गए" data-ta="⚠ பாபக் கிரக தாக்கங்கள் கண்டறியப்பட்டன">⚠ Malefic Influences Detected</h4>
+        <h4 data-en="✦ Karmic Intensities" data-hi="✦ कार्मिक तीव्रताएं" data-ta="✦ கார்மீக தீவிரங்கள்">✦ Karmic Intensities</h4>
         <div id="malefic-tags"></div>
-        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to unlock your full malefic analysis and personalised daily remedies" data-hi="अपना पूर्ण विश्लेषण और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை அணலாக சந்தா செலுத்துங்கள்">Subscribe to unlock your full malefic analysis and personalised daily remedies</p>
+        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to reveal your full karmic chart and receive your personalised daily remedies" data-hi="अपनी पूर्ण कार्मिक कुंडली और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு கார்மீக ஜாதகம் மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை வெளிப்படுத்த சந்தா செலுத்துங்கள்">Subscribe to reveal your full karmic chart and receive your personalised daily remedies</p>
       </div>
 
       <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
@@ -466,7 +487,7 @@ select option{background:var(--s2);color:var(--text)}
           <div class="plan-period" data-en="per month" data-hi="प्रति माह" data-ta="மாதத்திற்கு">per month</div>
           <ul class="plan-features">
             <li data-en="Full birth chart analysis" data-hi="पूर्ण जन्म कुंडली विश्लेषण" data-ta="முழு ஜாதக பகுப்பாய்வு">Full birth chart analysis</li>
-            <li data-en="All malefic influences revealed" data-hi="सभी पाप ग्रह प्रभाव" data-ta="அனைத்து பாபக் கிரக தாக்கங்கள்">All malefic influences revealed</li>
+            <li data-en="Full karmic intensity chart" data-hi="पूर्ण कार्मिक तीव्रता कुंडली" data-ta="முழு கார்மீக தீவிர ஜாதகம்">Full karmic intensity chart</li>
             <li data-en="Precise daily remedy" data-hi="सटीक दैनिक उपाय" data-ta="துல்லியமான தினசரி தீர்வு">Precise daily remedy</li>
             <li data-en="Listen or chant mode" data-hi="सुनें या जपें" data-ta="கேளுங்கள் அல்லது ஜபிக்கவும்">Listen or chant mode</li>
             <li data-en="Daily push notifications" data-hi="दैनिक पुश सूचनाएं" data-ta="தினசரி அறிவிப்புகள்">Daily push notifications</li>
@@ -1423,12 +1444,12 @@ function showFullChart(){
       <span class="summary-label">⬆ ${currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant'}</span>
       <span class="summary-value">${L.signs[chartData2.ascSign]} ${chartData2.asc.degree}°</span>
     </div>
-    <div class="divider" style="margin-top:1.2rem"><span>${currentLang==='hi'?'पाप ग्रह प्रभाव':currentLang==='ta'?'பாபக் கிரக தாக்கங்கள்':'Malefic Influences'}</span></div>
+    <div class="divider" style="margin-top:1.2rem"><span>${currentLang==='hi'?'कार्मिक तीव्रताएं':currentLang==='ta'?'கார்மீக தீவிரங்கள்':'Karmic Intensities'}</span></div>
     <div class="malefic-section">
       ${chartData2.malefics.map(m=>`
         <div style="margin-bottom:.8rem">
-          <span class="tag tag-warn">⚠ ${m.name}</span>
-          <p style="font-size:.85rem;color:var(--muted);margin-top:.3rem;padding-left:.5rem">${currentLang==='hi'?'यह प्रभाव आपके जीवन के एक क्षेत्र में ध्यान मांगता है। दैनिक उपाय इसे संतुलित करने में सहायक हैं।':currentLang==='ta'?'இந்த தாக்கம் உங்கள் வாழ்வின் ஒரு பகுதியில் கவனம் தேவைப்படுகிறது.':'This influence calls for attention in a specific area of your life. Your daily remedy supports balance and healing.'}</p>
+          <span class="tag tag-warn">✦ ${m.name}</span>
+          <p style="font-size:.85rem;color:var(--muted);margin-top:.3rem;padding-left:.5rem">${currentLang==='hi'?'यह एक कार्मिक शिक्षक है — इसका घर्षण ही विकास है। दैनिक उपाय इस ऊर्जा को सचेत रूप से काम करने में मदद करते हैं।':currentLang==='ta'?'இது ஒரு கார்மீக ஆசிரியர் — இதன் தீவிரம் வளர்ச்சியின் வழி. தினசரி தீர்வுகள் இந்த ஆற்றலை அறிவுடன் வழிநடத்த உதவுகின்றன.':'This is a karmic teacher — the intensity it brings is the growth itself. Your daily remedy helps work with this energy consciously.'}</p>
         </div>
       `).join('')}
     </div>
@@ -1685,8 +1706,33 @@ async function installPWA() {
 }
 
 
+// ── TIME WHEEL ──
+function initTimeWheel(){
+  const hCol=document.getElementById('tw-h');
+  const mCol=document.getElementById('tw-m');
+  const sCol=document.getElementById('tw-s');
+  if(!hCol||!mCol||!sCol) return;
+  const IH=44;
+  for(let i=0;i<24;i++) hCol.innerHTML+=`<div class="tw-item">${String(i).padStart(2,'0')}</div>`;
+  for(let i=0;i<60;i++) mCol.innerHTML+=`<div class="tw-item">${String(i).padStart(2,'0')}</div>`;
+  for(let i=0;i<60;i++) sCol.innerHTML+=`<div class="tw-item">${String(i).padStart(2,'0')}</div>`;
+  setTimeout(()=>{ hCol.scrollTop=12*IH; mCol.scrollTop=0; sCol.scrollTop=0; },50);
+  let _tw;
+  function readTob(){
+    clearTimeout(_tw);
+    _tw=setTimeout(()=>{
+      const h=Math.max(0,Math.min(23,Math.round(hCol.scrollTop/IH)));
+      const m=Math.max(0,Math.min(59,Math.round(mCol.scrollTop/IH)));
+      const s=Math.max(0,Math.min(59,Math.round(sCol.scrollTop/IH)));
+      document.getElementById('tob').value=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    },80);
+  }
+  [hCol,mCol,sCol].forEach(c=>c.addEventListener('scroll',readTob,{passive:true}));
+}
+
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
+initTimeWheel();
 // UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
 (function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
 </script>
