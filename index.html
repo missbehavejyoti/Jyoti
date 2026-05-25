@@ -210,7 +210,7 @@ select option{background:var(--s2);color:var(--text)}
 
 /* 24-hour time wheel */
 .time-wheel{display:flex;align-items:stretch;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;height:132px;position:relative;overflow:hidden}
-.tw-col{flex:1;min-height:0;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:44px 0;text-align:center}
+.tw-col{flex:1;min-height:0;height:132px;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;touch-action:pan-y;scrollbar-width:none;padding:44px 0;text-align:center}
 .tw-col::-webkit-scrollbar{display:none}
 .tw-item{height:44px;line-height:44px;font-size:1.25rem;color:var(--dim);scroll-snap-align:center}
 .tw-sep{display:flex;align-items:center;padding:0 3px;font-size:1.1rem;color:var(--gold-d);font-family:'Cinzel',serif;flex-shrink:0;position:relative;z-index:3}
@@ -1712,7 +1712,7 @@ function initTimeWheel(){
   const h24=Array.from({length:24},(_,i)=>`<div class="tw-item">${String(i).padStart(2,'0')}</div>`).join('');
   const m60=Array.from({length:60},(_,i)=>`<div class="tw-item">${String(i).padStart(2,'0')}</div>`).join('');
   hCol.innerHTML=h24; mCol.innerHTML=m60; sCol.innerHTML=m60;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ hCol.scrollTop=12*IH; mCol.scrollTop=0; sCol.scrollTop=0; }));
+  setTimeout(()=>{ hCol.scrollTop=12*IH; mCol.scrollTop=0; sCol.scrollTop=0; },120);
   let _tw;
   function readTob(){
     clearTimeout(_tw);
@@ -1721,9 +1721,12 @@ function initTimeWheel(){
       const m=Math.max(0,Math.min(59,Math.round(mCol.scrollTop/IH)));
       const s=Math.max(0,Math.min(59,Math.round(sCol.scrollTop/IH)));
       document.getElementById('tob').value=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    },80);
+    },150);
   }
-  [hCol,mCol,sCol].forEach(c=>c.addEventListener('scroll',readTob,{passive:true}));
+  [hCol,mCol,sCol].forEach(c=>{
+    c.addEventListener('scroll',readTob,{passive:true});
+    if('onscrollend' in c) c.addEventListener('scrollend',readTob,{passive:true});
+  });
 }
 
 // ── BETA ACCESS ──
