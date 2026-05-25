@@ -70,8 +70,9 @@ module.exports = async (req, res) => {
     const T  = (jd - 2451545.0) / 36525;
     const n  = jd - 2451545.0;
 
-    // Lahiri ayanamsa (Chitrapaksha — matches Swiss Ephemeris to < 0.002°)
-    const ayanamsa = 23.85 + T * 1.397;
+    // Lahiri ayanamsa — Swiss Ephemeris Chitrapaksha definition
+    // J2000.0 value 23.8563° + IAU precession 50.29"/yr; quadratic term for century-scale accuracy
+    const ayanamsa = 23.8563 + T * 1.39691 - 0.000030 * T * T;
     const sid = trop => ((trop - ayanamsa) % 360 + 360) % 360;
 
     // ── Planetary positions (geocentric tropical ecliptic) via astronomy-engine ──

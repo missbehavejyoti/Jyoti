@@ -968,23 +968,6 @@ function _activatePanel(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-async function _detectUTCOffset(lat, lon, dob, tob){
-  // Look up IANA timezone from coordinates, then compute historical offset at birth datetime
-  try{
-    const r=await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`);
-    const d=await r.json();
-    if(!d?.timeZone) return null;
-    const tz=d.timeZone;
-    // Build a Date representing the local birth time (no timezone) so Intl can find the offset
-    const tp2=(tob||'12:00:00').split(':');
-    const dt=new Date(`${dob}T${(tp2[0]||'12').padStart(2,'0')}:${(tp2[1]||'00').padStart(2,'0')}:${(tp2[2]||'00').padStart(2,'0')}`);
-    const parts=new Intl.DateTimeFormat('en',{timeZone:tz,timeZoneName:'longOffset'}).formatToParts(dt);
-    const tzStr=parts.find(p=>p.type==='timeZoneName')?.value||'';
-    const m=tzStr.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
-    if(m){ const s=m[1]==='+'?1:-1,h=+m[2],mn=+(m[3]||0); return s*(h+mn/60); }
-  }catch(e){}
-  return null;
-}
 
 async function buildChartAsync(){
   document.getElementById('loading-card').style.display='block';
@@ -995,11 +978,15 @@ async function buildChartAsync(){
     try{
       if(attempt>0) await new Promise(r=>setTimeout(r,1200*attempt));
       const r=await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=1`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=5&featuretype=city`,
         {headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}}
       );
       const d=await r.json();
-      if(d?.[0]){coords={lat:+d[0].lat,lon:+d[0].lon,display:d[0].display_name};}
+      if(d?.length){
+        // Prefer city/town/village over suburb/neighbourhood for accurate timezone centre
+        const best=d.find(r=>['city','town','village','municipality'].includes(r.type))||d[0];
+        coords={lat:+best.lat,lon:+best.lon,display:best.display_name,type:best.type};
+      }
     }catch(e){}
   }
   if(!coords){
@@ -1039,6 +1026,7 @@ async function buildChartAsync(){
       });
       if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
       chartData=await resp.json();
+      chartData._geocodedPlace=coords.display||null;
       lastErr='';
       break;
     }catch(e){ lastErr=e.message||'Network error'; }
@@ -1124,7 +1112,8 @@ function showChart(){
   if(locEl&&chartData._coords){
     const c=chartData._coords;
     const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00',''):'?';
-    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr} &nbsp;·&nbsp; ${chartData._tzMethod||''}</span>`;
+    const place=chartData._geocodedPlace?chartData._geocodedPlace.split(',').slice(0,2).join(','):'';
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${place?place+' &nbsp;·&nbsp; ':''}${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr}</span>`;
   }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
