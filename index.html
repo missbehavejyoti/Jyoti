@@ -478,15 +478,14 @@ select option{background:var(--s2);color:var(--text)}
       </div>
 
       <!-- Beta access -->
-      <div style="text-align:center;margin:0 0 1.2rem">
-        <button onclick="toggleBetaField()" style="background:none;border:none;color:var(--dim);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;cursor:pointer;text-decoration:underline;text-transform:uppercase">Beta tester? Enter your access code</button>
-        <div id="beta-box" style="display:none;margin-top:.7rem">
-          <div style="display:flex;gap:.5rem;max-width:300px;margin:0 auto">
-            <input type="text" id="beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem">
-            <button class="btn btn-ghost" onclick="redeemBeta()" style="font-size:.72rem;padding:.6rem 1rem;white-space:nowrap">Enter ✦</button>
-          </div>
-          <p id="beta-msg" style="font-size:.78rem;margin-top:.5rem;min-height:1.2em"></p>
+      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.3);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.4rem;text-align:center">
+        <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ BETA TESTER ACCESS ✦</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Have an access code? Enter it below to use Jyoti free during the beta.</p>
+        <div style="display:flex;gap:.5rem;max-width:320px;margin:0 auto">
+          <input type="text" id="beta-input" placeholder="Your access code" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem">
+          <button class="btn btn-gold" onclick="redeemBeta()" style="font-size:.72rem;padding:.6rem 1.2rem;white-space:nowrap">Enter ✦</button>
         </div>
+        <p id="beta-msg" style="font-size:.82rem;margin-top:.6rem;min-height:1.2em"></p>
       </div>
 
       <div class="notif-box">
@@ -1688,10 +1687,6 @@ async function installPWA() {
 // ── BETA ACCESS ──
 const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F:1,NADI2026G:1,NADI2026H:1,NADI2026I:1,NADI2026J:1,NADI2026K:1,NADI2026L:1,NADI2026M:1,NADI2026N:1,NADI2026O:1,NADI2026P:1,NADI2026Q:1,NADI2026R:1,NADI2026S:1,NADI2026T:1,NADI2026U:1,NADI2026V:1,NADI2026W:1,NADI2026X:1,NADI2026Y:1,NADI2026Z:1};
 const _BE=new Date('2026-06-02T00:00:00').getTime();
-function toggleBetaField(){
-  const b=document.getElementById('beta-box');
-  b.style.display=b.style.display==='none'?'block':'none';
-}
 function redeemBeta(){
   const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
   const msg=document.getElementById('beta-msg');
