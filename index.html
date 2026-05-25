@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jyoti — Nadi Astrology</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+/* Non-Latin script support — override Cinzel/EB Garamond which lack these glyphs */
+:lang(hi) *{font-family:'Noto Sans Devanagari',Georgia,sans-serif!important;letter-spacing:0!important}
+:lang(ta) *{font-family:'Noto Sans Tamil',Georgia,sans-serif!important;letter-spacing:0!important}
 :root{
   --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
@@ -780,6 +783,7 @@ const T={
 // ── LANGUAGE ──
 function setLang(lang){
   currentLang=lang;
+  document.documentElement.lang=lang==='hi'?'hi':lang==='ta'?'ta':'en';
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.lbtn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.querySelectorAll('[data-en]').forEach(el=>{
@@ -1379,11 +1383,11 @@ function renderFallbackReading(dayName,now){
       <div class="remedy-text">${currentLang==='hi'?`आज ${dayPlanet} का दिन है। इस मंत्र का जप करें और शांति से बैठें।`:currentLang==='ta'?`இன்று ${dayPlanet} நாள். இந்த மந்திரத்தை ஜபியுங்கள்.`:`Today is ruled by ${dayPlanet}. Sit quietly and offer your practice.`}</div>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
         <div style="font-size:1.1rem;color:var(--gold);font-style:italic">${mt.m}</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mt.c} ${currentLang==='ta'?'முறை':'times'}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mt.c} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="audio-btn" onclick="listenMantra('${mt.m}',${mt.c})">▶ ${currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
-        <button class="chant-btn" onclick="openChant('${mt.m}','Sacred mantra for ${dayName}',${mt.c})">🙏 ${currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+        <button class="audio-btn" onclick="listenMantra('${mt.m}',${mt.c})">▶ ${currentLang==='hi'?'सुनें':currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
+        <button class="chant-btn" onclick="openChant('${mt.m}','Sacred mantra for ${dayName}',${mt.c})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
     </div>
   `;
