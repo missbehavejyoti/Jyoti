@@ -208,16 +208,6 @@ select option{background:var(--s2);color:var(--text)}
 .malefic-section{background:rgba(122,97,32,.06);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
 .malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.8rem;text-transform:uppercase}
 
-/* 24-hour time wheel */
-.time-wheel{display:flex;align-items:stretch;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;height:132px;position:relative;overflow:hidden}
-.tw-col{flex:1;min-height:0;height:132px;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;touch-action:pan-y;scrollbar-width:none;padding:44px 0;text-align:center}
-.tw-col::-webkit-scrollbar{display:none}
-.tw-item{height:44px;line-height:44px;font-size:1.25rem;color:var(--dim);scroll-snap-align:center}
-.tw-sep{display:flex;align-items:center;padding:0 3px;font-size:1.1rem;color:var(--gold-d);font-family:'Cinzel',serif;flex-shrink:0;position:relative;z-index:3}
-.tw-top-fade,.tw-bot-fade{position:absolute;left:0;right:0;height:48px;pointer-events:none;z-index:2}
-.tw-top-fade{top:0;background:linear-gradient(to bottom,rgba(12,9,24,.97) 55%,transparent)}
-.tw-bot-fade{bottom:0;background:linear-gradient(to top,rgba(12,9,24,.97) 55%,transparent)}
-.tw-sel{position:absolute;left:6px;right:6px;top:50%;transform:translateY(-50%);height:44px;border-top:1px solid rgba(200,169,74,.35);border-bottom:1px solid rgba(200,169,74,.35);background:rgba(200,169,74,.04);border-radius:4px;pointer-events:none;z-index:1}
 
 /* Summary row */
 .summary-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--s3);font-size:.9rem}
@@ -305,18 +295,8 @@ select option{background:var(--s2);color:var(--text)}
         </div>
         <div class="field">
           <label data-en="Exact Birth Time" data-hi="जन्म समय" data-ta="பிறந்த நேரம்">Exact Birth Time</label>
-          <div class="time-wheel" id="tw-wrap">
-            <div class="tw-col" id="tw-h"></div>
-            <div class="tw-sep">:</div>
-            <div class="tw-col" id="tw-m"></div>
-            <div class="tw-sep">:</div>
-            <div class="tw-col" id="tw-s"></div>
-            <div class="tw-top-fade"></div>
-            <div class="tw-bot-fade"></div>
-            <div class="tw-sel"></div>
-          </div>
-          <input type="hidden" id="tob" value="12:00:00">
-          <p class="hint" data-en="Scroll to set · 24-hour · seconds refine the Lagna" data-hi="स्क्रॉल करें · 24 घंटे · सेकंड लग्न को परिष्कृत करता है" data-ta="உருட்டி அமையுங்கள் · 24 மணி நேரம் · வினாடிகள் லக்னத்தை மேம்படுத்தும்">Scroll to set · 24-hour · seconds refine the Lagna</p>
+          <input type="time" id="tob" value="12:00:00" step="1">
+          <p class="hint" data-en="24-hour format · seconds refine the Lagna" data-hi="24 घंटे का प्रारूप · सेकंड लग्न को परिष्कृत करता है" data-ta="24 மணி நேர வடிவம் · வினாடிகள் லக்னத்தை மேம்படுத்தும்">24-hour format · seconds refine the Lagna</p>
         </div>
       </div>
       <div class="field">
@@ -1703,31 +1683,6 @@ async function installPWA() {
 
 
 // ── TIME WHEEL ──
-function initTimeWheel(){
-  const hCol=document.getElementById('tw-h');
-  const mCol=document.getElementById('tw-m');
-  const sCol=document.getElementById('tw-s');
-  if(!hCol||!mCol||!sCol) return;
-  const IH=44;
-  const h24=Array.from({length:24},(_,i)=>`<div class="tw-item">${String(i).padStart(2,'0')}</div>`).join('');
-  const m60=Array.from({length:60},(_,i)=>`<div class="tw-item">${String(i).padStart(2,'0')}</div>`).join('');
-  hCol.innerHTML=h24; mCol.innerHTML=m60; sCol.innerHTML=m60;
-  setTimeout(()=>{ hCol.scrollTop=12*IH; mCol.scrollTop=0; sCol.scrollTop=0; },120);
-  let _tw;
-  function readTob(){
-    clearTimeout(_tw);
-    _tw=setTimeout(()=>{
-      const h=Math.max(0,Math.min(23,Math.round(hCol.scrollTop/IH)));
-      const m=Math.max(0,Math.min(59,Math.round(mCol.scrollTop/IH)));
-      const s=Math.max(0,Math.min(59,Math.round(sCol.scrollTop/IH)));
-      document.getElementById('tob').value=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    },150);
-  }
-  [hCol,mCol,sCol].forEach(c=>{
-    c.addEventListener('scroll',readTob,{passive:true});
-    if('onscrollend' in c) c.addEventListener('scrollend',readTob,{passive:true});
-  });
-}
 
 // ── BETA ACCESS ──
 const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F:1,NADI2026G:1,NADI2026H:1,NADI2026I:1,NADI2026J:1,NADI2026K:1,NADI2026L:1,NADI2026M:1,NADI2026N:1,NADI2026O:1,NADI2026P:1,NADI2026Q:1,NADI2026R:1,NADI2026S:1,NADI2026T:1,NADI2026U:1,NADI2026V:1,NADI2026W:1,NADI2026X:1,NADI2026Y:1,NADI2026Z:1};
@@ -1748,7 +1703,6 @@ function redeemBeta(){
 
 // ── INIT ──
 window.speechSynthesis&&window.speechSynthesis.getVoices();
-initTimeWheel();
 // UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
 (function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
 </script>
