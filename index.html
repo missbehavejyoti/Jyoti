@@ -495,16 +495,16 @@ select option{background:var(--s2);color:var(--text)}
           <h4 data-en="Sacred Practice Reminders" data-hi="पवित्र साधना अनुस्मारक" data-ta="புனித சாதனை நினைவூட்டல்கள்">Sacred Practice Reminders</h4>
           <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-ta="ஜ்யோதி உங்களை எப்போது நினைவூட்ட வேண்டும் என்று தேர்வு செய்யுங்கள்.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
           <div style="display:flex;flex-direction:column;gap:.6rem">
-            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-evening" checked>
+            <button type="button" class="consent-btn agreed" id="nb-evening" onclick="toggleNotif('evening')">
+              <div class="cbx"></div>
               <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-ta="மாலை — இரவு 8 மணி">Evening — 8pm the night before</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-ta="நாளைய தீர்வு இன்று இரவு — நீங்கள் தயாரிக்க">Tomorrow's remedy delivered tonight so you can prepare</span></span>
-            </label>
-            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-morning" checked>
+            </button>
+            <button type="button" class="consent-btn agreed" id="nb-morning" onclick="toggleNotif('morning')">
+              <div class="cbx"></div>
               <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-ta="சூரிய உதயம் — காலை 6 மணி">Sunrise — 6am on the day</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-ta="உங்கள் சாதனையை தொடங்க ஒரு மென்மையான காலை நினைவூட்டல்">A gentle morning reminder to begin your practice</span></span>
-            </label>
+            </button>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
             🔔 Enable Notifications
@@ -799,6 +799,10 @@ function setLang(lang){
 }
 
 // ── CONSENT ──
+function toggleNotif(which){
+  const el=document.getElementById('nb-'+which);
+  if(el) el.classList.toggle('agreed');
+}
 function agreeConsent(n){
   const el=document.getElementById('cb'+n);
   if(el) el.classList.toggle('agreed');
@@ -1551,8 +1555,8 @@ async function requestNotifications() {
     return;
   }
 
-  const evening = document.getElementById('notif-evening')?.checked || false;
-  const morning = document.getElementById('notif-morning')?.checked || false;
+  const evening = document.getElementById('nb-evening')?.classList.contains('agreed') || false;
+  const morning = document.getElementById('nb-morning')?.classList.contains('agreed') || false;
 
   if (!evening && !morning) {
     if(status){ status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
