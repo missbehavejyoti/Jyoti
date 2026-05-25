@@ -470,7 +470,7 @@ select option{background:var(--s2);color:var(--text)}
             <li data-en="Full birth chart analysis" data-hi="पूर्ण जन्म कुंडली विश्लेषण" data-ta="முழு ஜாதக பகுப்பாய்வு">Full birth chart analysis</li>
             <li data-en="Full karmic intensity chart" data-hi="पूर्ण कार्मिक तीव्रता कुंडली" data-ta="முழு கார்மீக தீவிர ஜாதகம்">Full karmic intensity chart</li>
             <li data-en="Precise daily remedy" data-hi="सटीक दैनिक उपाय" data-ta="துல்லியமான தினசரி தீர்வு">Precise daily remedy</li>
-            <li data-en="Listen or chant mode" data-hi="सुनें या जपें" data-ta="கேளுங்கள் அல்லது ஜபிக்கவும்">Listen or chant mode</li>
+            <li data-en="Sacred chant counter" data-hi="पवित्र जप काउंटर" data-ta="புனித ஜப கவுண்டர்">Sacred chant counter</li>
             <li data-en="Daily practice reminders" data-hi="दैनिक साधना अनुस्मारक" data-ta="தினசரி சாதனை நினைவூட்டல்கள்">Daily practice reminders</li>
             <li data-en="3 languages supported" data-hi="3 भाषाएं समर्थित" data-ta="3 மொழிகள் ஆதரிக்கப்படுகின்றன">3 languages supported</li>
           </ul>
@@ -1325,7 +1325,6 @@ function renderDailyReading(r,dayName){
           <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${rem.mantra_count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
         </div>
         <div class="remedy-actions">
-          <button class="audio-btn" onclick="listenMantra('${rem.mantra}',${rem.mantra_count})">▶ ${currentLang==='hi'?'सुनें':currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
           <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${rem.mantra_count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
         </div>`:''}
         <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>
@@ -1372,7 +1371,6 @@ function renderFallbackReading(dayName,now){
         <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mt.c} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="audio-btn" onclick="listenMantra('${mt.m}',${mt.c})">▶ ${currentLang==='hi'?'सुनें':currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
         <button class="chant-btn" onclick="openChant('${mt.m}','Sacred mantra for ${dayName}',${mt.c})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
     </div>
@@ -1474,24 +1472,9 @@ function tapChant(){
 }
 function closeChant(){
   document.getElementById('chant-modal').classList.remove('open');
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
-// ── LISTEN (Text to Speech) ──
-function listenMantra(mantra,count){
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
-    const parts=[];
-    for(let i=0;i<Math.min(count,9);i++)parts.push(mantra);
-    const utt=new SpeechSynthesisUtterance(parts.join('. '));
-    utt.rate=0.7;utt.pitch=0.9;utt.volume=1;
-    const voices=window.speechSynthesis.getVoices();
-    const preferred=voices.find(v=>v.lang.startsWith('en')&&v.name.toLowerCase().includes('female'))||voices[0];
-    if(preferred)utt.voice=preferred;
-    window.speechSynthesis.speak(utt);
-  } else {
-    alert('Audio not supported in this browser. Please use the Chant mode.');
-  }
-}
 
 // ── MODALS ──
 function openModal(type){
@@ -1698,7 +1681,6 @@ function redeemBeta(){
 }
 
 // ── INIT ──
-window.speechSynthesis&&window.speechSynthesis.getVoices();
 // UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
 (function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
 </script>
