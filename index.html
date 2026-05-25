@@ -1550,45 +1550,56 @@ async function requestNotifications() {
   const btn = document.getElementById('notif-btn');
   const status = document.getElementById('notif-status');
 
-  if (!('Notification' in window)) {
-    if(status){ status.textContent = 'Notifications not supported in this browser.'; status.style.display='block'; }
-    return;
-  }
-
   const evening = document.getElementById('nb-evening')?.classList.contains('agreed') || false;
   const morning = document.getElementById('nb-morning')?.classList.contains('agreed') || false;
 
   if (!evening && !morning) {
-    if(status){ status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
+    if(status){ status.style.color='var(--dim)'; status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
+    return;
+  }
+
+  // Always save preferences first
+  await saveNotifPrefs(evening, morning);
+
+  // iOS Safari and some browsers don't support the Notification API in a regular tab
+  if (!('Notification' in window)) {
+    if(btn) btn.style.display='none';
+    if(status){
+      status.style.color='var(--teal)';
+      status.textContent = '✦ Preferences saved. Add Jyoti to your Home Screen to receive reminders.';
+      status.style.display='block';
+    }
     return;
   }
 
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      await saveNotifPrefs(evening, morning);
-
-      // Schedule local notifications as fallback
       scheduleLocalNotifications(evening, morning);
-
       if(btn) btn.style.display = 'none';
       if(status){
         const parts = [];
         if(evening) parts.push('🌙 8pm evenings');
         if(morning) parts.push('🌅 6am mornings');
+        status.style.color='var(--teal)';
         status.textContent = `✦ Reminders set for ${parts.join(' and ')}`;
         status.style.display = 'block';
-        status.style.color = 'var(--teal)';
       }
     } else {
+      if(btn) btn.style.display='none';
       if(status){
-        status.textContent = 'Notifications blocked. You can enable them in your browser settings.';
+        status.style.color='var(--teal)';
+        status.textContent = '✦ Preferences saved. Enable notifications in your browser settings to receive reminders.';
         status.style.display = 'block';
-        status.style.color = 'var(--dim)';
       }
     }
   } catch(e) {
-    console.error('Notification error:', e);
+    if(btn) btn.style.display='none';
+    if(status){
+      status.style.color='var(--teal)';
+      status.textContent = '✦ Preferences saved.';
+      status.style.display='block';
+    }
   }
 }
 
