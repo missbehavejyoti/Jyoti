@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Jyoti — Nadi Astrology</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C8A94A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jyoti">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Your precise Nadi birth chart and daily sacred practice. Ancient Vedic wisdom, delivered daily.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1408,28 +1416,95 @@ function showFullChart(){
   });
   // Full reading
   const fullDiv=document.getElementById('full-reading');
+  const cd=chartData2;
+  const L2=T['en'];
+  const houseNames=['Self & Body','Wealth & Speech','Siblings & Courage','Home & Mother','Children & Creativity','Health & Service','Partnership & Others','Transformation & Longevity','Dharma & Higher Learning','Career & Status','Gains & Community','Loss & Liberation'];
+  // Dasha timeline
+  const DASHA_LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+  const DASHA_YEARS=[7,20,6,10,7,18,16,19,17];
+  const DASHA_SYM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
+  const birthDateObj=cd.birthUT?new Date(cd.birthUT):null;
+  let dashaRows='';
+  if(cd.dashaPeriod&&birthDateObj){
+    const currentLordIdx=DASHA_LORDS.indexOf(cd.dashaPeriod.lord);
+    const remaining=parseFloat(cd.dashaPeriod.remaining);
+    const endCurrent=new Date(Date.now()+remaining*365.25*24*3600*1000);
+    dashaRows=`<div style="margin-bottom:.4rem"><span class="tag tag-karmic" style="margin:0">▶ ${cd.dashaPeriod.lord} Dasha</span> <span style="color:var(--muted);font-size:.82rem">ends ${endCurrent.toLocaleDateString('en',{month:'short',year:'numeric'})}</span></div>`;
+    let cursor=endCurrent;
+    for(let i=1;i<=3;i++){
+      const idx=(currentLordIdx+i)%9;
+      const yrs=DASHA_YEARS[idx];
+      const end2=new Date(cursor.getTime()+yrs*365.25*24*3600*1000);
+      dashaRows+=`<div style="color:var(--dim);font-size:.82rem;padding:.2rem 0">${DASHA_SYM[DASHA_LORDS[idx]]||''} ${DASHA_LORDS[idx]} · ${yrs} yrs · ${cursor.toLocaleDateString('en',{month:'short',year:'numeric'})} – ${end2.toLocaleDateString('en',{month:'short',year:'numeric'})}</div>`;
+      cursor=end2;
+    }
+  }
+  // Planet dignity labels
+  const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const EXALT={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const DEBIL={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  function dignity(name,signIdx){
+    if(EXALT[name]===signIdx)return'<span style="color:var(--teal);font-size:.7rem"> ★ Exalted</span>';
+    if(DEBIL[name]===signIdx)return'<span style="color:var(--rose);font-size:.7rem"> ↓ Debilitated</span>';
+    if((OWN[name]||[]).includes(signIdx))return'<span style="color:var(--gold-pale);font-size:.7rem"> ◉ Own</span>';
+    return'';
+  }
   fullDiv.innerHTML=`
-    <div class="divider"><span>${currentLang==='hi'?'ग्रह स्थिति':currentLang==='ta'?'கிரக நிலைகள்':'Planetary Positions'}</span></div>
-    ${chartData2.planets.map(p=>`
-      <div class="summary-row">
-        <span class="summary-label">${p.sym} ${L.planets[chartData2.planets.indexOf(p)]}</span>
-        <span class="summary-value">${L.signs[p.sign]} ${p.degree}° — ${L.nakshatras[p.nakshatra]}</span>
-      </div>
-    `).join('')}
-    <div class="summary-row">
-      <span class="summary-label">⬆ ${currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant'}</span>
-      <span class="summary-value">${L.signs[chartData2.ascSign]} ${chartData2.asc.degree}°</span>
+    <!-- Birth Summary -->
+    <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:var(--gold);margin-bottom:.6rem">BIRTH DETAILS</div>
+      <div class="summary-row"><span class="summary-label">Name</span><span class="summary-value">${userData.name}</span></div>
+      <div class="summary-row"><span class="summary-label">Date</span><span class="summary-value">${userData.dob}</span></div>
+      <div class="summary-row"><span class="summary-label">Time</span><span class="summary-value">${userData.tob}</span></div>
+      <div class="summary-row"><span class="summary-label">Place</span><span class="summary-value">${userData.pob}</span></div>
+      ${cd._birthTZ?`<div class="summary-row"><span class="summary-label">Timezone</span><span class="summary-value">${cd._birthTZ}${cd._utcOff!=null?' (UTC'+(cd._utcOff>=0?'+':'')+cd._utcOff+')':''}</span></div>`:''}
+      <div class="summary-row"><span class="summary-label">Ayanamsa</span><span class="summary-value">Lahiri ${parseFloat(cd.ayanamsa).toFixed(2)}°</span></div>
     </div>
-    <div class="divider" style="margin-top:1.2rem"><span>${currentLang==='hi'?'कार्मिक तीव्रताएं':currentLang==='ta'?'கார்மீக தீவிரங்கள்':'Karmic Intensities'}</span></div>
+
+    <!-- Planetary Positions -->
+    <div class="divider"><span>Planetary Positions</span></div>
+    ${cd.planets.map((p,i)=>{
+      const house=(p.sign-cd.ascSign+12)%12+1;
+      const dg=dignity(['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'][i],p.sign);
+      return`<div class="summary-row">
+        <span class="summary-label">${p.sym} ${L2.planets[i]}</span>
+        <span class="summary-value" style="text-align:right">${L2.signs[p.sign]} ${parseFloat(p.degree).toFixed(1)}° · H${house} · ${L2.nakshatras[p.nakshatra]} p${p.pada}${dg}</span>
+      </div>`;
+    }).join('')}
+    <div class="summary-row">
+      <span class="summary-label">⬆ Ascendant (Lagna)</span>
+      <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
+    </div>
+
+    <!-- Occupied Houses -->
+    <div class="divider" style="margin-top:1.2rem"><span>House Themes</span></div>
+    ${Array.from({length:12},(_,i)=>{
+      const planetsInHouse=cd.planets.filter(p=>(p.sign-cd.ascSign+12)%12===i);
+      if(!planetsInHouse.length)return'';
+      return`<div class="summary-row">
+        <span class="summary-label">H${i+1} — ${houseNames[i]}</span>
+        <span class="summary-value">${planetsInHouse.map(p=>p.sym+' '+L2.planets[cd.planets.indexOf(p)]).join(', ')}</span>
+      </div>`;
+    }).join('')}
+
+    <!-- Vimshottari Dasha -->
+    <div class="divider" style="margin-top:1.2rem"><span>Vimshottari Dasha</span></div>
+    <div style="background:rgba(26,148,144,.06);border:1px solid rgba(26,148,144,.2);border-radius:12px;padding:1rem 1.2rem;margin:.6rem 0">
+      <p style="font-size:.8rem;color:var(--dim);margin-bottom:.6rem">Your soul's current chapter and what lies ahead:</p>
+      ${dashaRows||`<p style="color:var(--muted);font-size:.85rem">${cd.dashaPeriod?.lord||''} Dasha · ${cd.dashaPeriod?.remaining||''} years remaining</p>`}
+    </div>
+
+    <!-- Karmic Intensities -->
+    <div class="divider" style="margin-top:1.2rem"><span>Karmic Intensities</span></div>
     <div class="malefic-section">
-      ${chartData2.malefics.map(m=>`
-        <div style="margin-bottom:.8rem">
-          <span class="tag tag-warn">✦ ${m.name}</span>
-          <p style="font-size:.85rem;color:var(--muted);margin-top:.3rem;padding-left:.5rem">${currentLang==='hi'?'यह एक कार्मिक शिक्षक है — इसका घर्षण ही विकास है। दैनिक उपाय इस ऊर्जा को सचेत रूप से काम करने में मदद करते हैं।':currentLang==='ta'?'இது ஒரு கார்மீக ஆசிரியர் — இதன் தீவிரம் வளர்ச்சியின் வழி. தினசரி தீர்வுகள் இந்த ஆற்றலை அறிவுடன் வழிநடத்த உதவுகின்றன.':'This is a karmic teacher — the intensity it brings is the growth itself. Your daily remedy helps work with this energy consciously.'}</p>
+      ${cd.malefics.map(m=>`
+        <div style="margin-bottom:.7rem">
+          <span class="tag tag-karmic">✦ ${m.name}</span>
+          <p style="font-size:.83rem;color:var(--muted);margin-top:.3rem;padding-left:.3rem">A karmic teacher — this intensity holds your deepest growth. Daily practice works consciously with this energy.</p>
         </div>
       `).join('')}
     </div>
-    <p style="font-size:.8rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${currentLang==='hi'?'यह पठन शास्त्रीय नाडी और वैदिक ज्योतिष परंपरा पर आधारित है।':currentLang==='ta'?'இந்த வாசிப்பு பண்டைய நாடி மற்றும் வேத ஜோதிட மரபின் அடிப்படையில் வழங்கப்படுகிறது.':'This reading is based on classical Nadi and Vedic astrological tradition. For spiritual guidance only.'}</p>
+    <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">Classical Nadi &amp; Vedic tradition · Lahiri ayanamsa · For spiritual guidance only</p>
   `;
 }
 
@@ -1507,16 +1582,13 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
   if(e.target===m)closeModal(m.id.replace('modal-',''));
 }));
 
-// ── PWA + NOTIFICATIONS ──
-
-// Unregister any existing service workers so cached versions never block updates
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(reg => reg.unregister());
-  });
-}
-
+// ── PWA ──
 let swRegistration = null;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    swRegistration = reg;
+  }).catch(()=>{});
+}
 
 // Save notification prefs to IndexedDB
 function saveNotifPrefs(evening, morning) {
