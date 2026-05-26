@@ -5,11 +5,20 @@ const Astronomy = require('astronomy-engine');
 
 function utcOffsetForTZ(ianaZone, localDateStr) {
   try {
-    const dt = new Date(localDateStr);
-    const parts = new Intl.DateTimeFormat('en', { timeZone: ianaZone, timeZoneName: 'longOffset' }).formatToParts(dt);
-    const tzStr = parts.find(p => p.type === 'timeZoneName')?.value || '';
-    const m = tzStr.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
-    if (m) return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) + parseInt(m[3] || 0) / 60);
+    const getOff = dt => {
+      const parts = new Intl.DateTimeFormat('en', { timeZone: ianaZone, timeZoneName: 'longOffset' }).formatToParts(dt);
+      const s = parts.find(p => p.type === 'timeZoneName')?.value || '';
+      const m = s.match(/([+-])(\d{1,2})(?::(\d{2}))?/);
+      if (!m) return null;
+      return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) + parseInt(m[3] || 0) / 60);
+    };
+    // Pass 1: treat local time as UTC → approximate offset
+    const dtApprox = new Date(localDateStr + 'Z');
+    const off1 = getOff(dtApprox);
+    if (off1 === null) return null;
+    // Pass 2: subtract offset → closer to true UTC → accurate historical offset (handles DST boundaries)
+    const off2 = getOff(new Date(dtApprox.getTime() - off1 * 3600000));
+    return off2 ?? off1;
   } catch(e) {}
   return null;
 }
@@ -176,6 +185,7 @@ module.exports = async (req, res) => {
       birthUT:  birthDate.toISOString(),
       _coords:  { lat: latN, lon: lonN },
       _utcOff:  utcOff,
+      _birthTZ: birthTZ || null,
       _tzMethod
     });
 

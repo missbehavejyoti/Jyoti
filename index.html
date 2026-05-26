@@ -1008,13 +1008,27 @@ async function buildChartAsync(){
     ]);
     if(tzR.ok){const tzD=await tzR.json();if(tzD?.timeZone)birthTZ=tzD.timeZone;}
   }catch(e){}}
-  // Fallback: Open-Meteo (free, no key, highly reliable)
+  // Fallback 1: Open-Meteo (free, no key, highly reliable)
   if(!birthTZ){try{
     const tzR=await Promise.race([
       fetch(`https://api.open-meteo.com/v1/forecast?latitude=${_tlat}&longitude=${_tlon}&hourly=temperature_2m&forecast_days=1&timezone=auto`),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
     ]);
     if(tzR.ok){const tzD=await tzR.json();if(tzD?.timezone&&tzD.timezone!=='GMT')birthTZ=tzD.timezone;}
+  }catch(e){}}
+  // Fallback 2: WorldTimeAPI by lat/lon approximation via timezone name list
+  if(!birthTZ){try{
+    const tzR=await Promise.race([
+      fetch(`https://worldtimeapi.org/api/timezone`),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(tzR.ok){
+      const zones=await tzR.json();
+      // Find closest matching zone by checking known country from geocoded place
+      const country=(coords.display||'').split(',').pop().trim().toLowerCase();
+      const match=zones.find(z=>z.toLowerCase().includes(country.split(' ')[0]));
+      if(match)birthTZ=match;
+    }
   }catch(e){}}
   // 3. Server-side JPL-precision calculation — retry up to 3 times, no client fallback
   let lastErr='';
@@ -1112,9 +1126,10 @@ function showChart(){
   const locEl=document.getElementById('chart-location-info');
   if(locEl&&chartData._coords){
     const c=chartData._coords;
-    const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00',''):'?';
+    const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00','').replace('.50',':30').replace('.75',':45').replace('.25',':15'):'?';
     const place=chartData._geocodedPlace?chartData._geocodedPlace.split(',').slice(0,2).join(','):'';
-    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${place?place+' &nbsp;·&nbsp; ':''}${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° &nbsp;·&nbsp; UTC${utcStr}</span>`;
+    const tz=chartData._birthTZ?` &nbsp;·&nbsp; ${chartData._birthTZ}`:'';
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${place?place+' &nbsp;·&nbsp; ':''}UTC${utcStr}${tz}</span>`;
   }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
