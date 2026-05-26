@@ -1372,27 +1372,69 @@ function renderDailyReading(r,dayName){
 function renderFallbackReading(dayName,now){
   document.getElementById('daily-loading').style.display='none';
   document.getElementById('daily-content').style.display='block';
-  const L=T[currentLang];
   const dayIdx=now.getDay();
-  const dayPlanet=[L.planets[0],L.planets[1],L.planets[2],L.planets[3],L.planets[4],L.planets[5],L.planets[6]][dayIdx];
-  const mantras=[
-    {m:'Om Suryaya Namaha',c:108},{m:'Om Chandraya Namaha',c:108},{m:'Om Angarakaya Namaha',c:27},
-    {m:'Om Budhaya Namaha',c:21},{m:'Om Brihaspataye Namaha',c:108},{m:'Om Shukraya Namaha',c:108},{m:'Om Shanaischaraya Namaha',c:108}
-  ];
-  const mt=mantras[dayIdx];
+
+  // Dasha-lord specific remedies — each is genuinely different
+  const DASHA_DATA={
+    Sun:{mantra:'Om Suryaya Namaha',count:108,color:'saffron or gold',timing:'Sunrise',
+      practice:'Face east at sunrise and offer water slowly from a copper or clay vessel, pouring in a gentle arc as you recite. The Sun — your current dasha lord — governs clarity, authority, and your deepest sense of purpose. As the water falls, feel any confusion or dimness in your sense of self releasing with it.',
+      whatIsHappening:'Your Sun Dasha is asking you to step into your own authority — not the authority others gave you, but the one that lives in your core. This is a period of becoming visible, of owning your presence.'},
+    Moon:{mantra:'Om Chandraya Namaha',count:108,color:'white or silver',timing:'Dusk or before sleep',
+      practice:'At dusk, light a white candle or oil lamp near water — a glass of water will do. Sit quietly and let yourself feel whatever is present without trying to change it. The Moon dasha deepens emotional intelligence; your feelings are messengers, not obstacles. Drink warm milk or a soothing herbal tea before sleep tonight.',
+      whatIsHappening:'Your Moon Dasha turns the volume up on your inner world — emotions, memories, and dreams all carry guidance now. What feels tender is asking for care.'},
+    Mars:{mantra:'Om Angarakaya Namaha',count:27,color:'red',timing:'Morning',
+      practice:'Light a ghee lamp with something red nearby — red flowers, a red cloth, or red lentils. Move your body with full intention: walk briskly, exercise, or simply stand in the sun and breathe deeply three times. Mars dasha sharpens courage — offer your energy consciously rather than letting it accumulate as frustration.',
+      whatIsHappening:'Your Mars Dasha is forging decisive action and raw courage in you. Where you have been hesitating, this period asks you to move. Where you have been scattered, it asks you to cut clean.'},
+    Mercury:{mantra:'Om Budhaya Namaha',count:21,color:'green',timing:'Morning',
+      practice:'Before anything else today, write three truths you know in your bones — not what others have told you, what you have directly discovered. Then read something sacred, historical, or truly educational. Mercury dasha sharpens intelligence and rewards deliberate learning. Wear or carry something green.',
+      whatIsHappening:'Your Mercury Dasha is sharpening the mind and the voice. Communication — written, spoken, and silent — carries unusual power in this period. What you say now has reach.'},
+    Jupiter:{mantra:'Om Brihaspataye Namaha',count:108,color:'yellow',timing:'Morning',
+      practice:'Offer yellow flowers, a pinch of turmeric, or a yellow fruit to your altar or a sacred space in nature. Give something freely today — food to someone hungry, a kind word, time to someone who needs it. Jupiter dasha responds to generosity with expansion; what you give now returns multiplied.',
+      whatIsHappening:'Your Jupiter Dasha is the great opening — wisdom, grace, and opportunity are available in unusual measure. This is a period when doors that were closed quietly open, and teachers appear when you are ready.'},
+    Venus:{mantra:'Om Shukraya Namaha',count:108,color:'white or pink',timing:'Dusk',
+      practice:'Place fresh flowers on your altar or your table. Light incense — rose, jasmine, or sandalwood. Offer something beautiful today: arrange your space with care, cook something nourishing, or simply pause to truly receive beauty when you encounter it. Venus dasha asks you to receive as well as give.',
+      whatIsHappening:'Your Venus Dasha is weaving beauty, love, and creative flow through your life. This is a period when relationships, arts, and the senses carry unusual depth and grace — if you slow down enough to feel them.'},
+    Saturn:{mantra:'Om Shanaischaraya Namaha',count:108,color:'dark blue or black',timing:'Morning, before eating',
+      practice:'Before you eat this morning, feed crows or birds with a handful of grain, sesame seeds, or rice. Saturn responds profoundly to this simple act. Light a sesame oil lamp if you have one. Wear dark blue or black today. Saturn dasha does not rush — it rewards patient, careful, sustained effort above all else.',
+      whatIsHappening:'Your Saturn Dasha is the great refining fire — nothing inessential survives it, and that is its gift. What remains at the end of this period is real, tested, and genuinely yours.'},
+    Rahu:{mantra:'Om Rahave Namaha',count:18,color:'smoke grey or deep blue',timing:'Late afternoon',
+      practice:'Find an anthill or a place where ants gather, and offer a small pinch of sugar or flour. Light sandalwood or camphor incense and sit quietly for five minutes, watching your thoughts move without following any of them. Rahu dasha intensifies desire — today, simply observe what you want without acting on it.',
+      whatIsHappening:'Your Rahu Dasha amplifies ambition, restlessness, and the hunger for new experience. It is not a time for stillness — it is a time for conscious movement, aware of where the hunger leads.'},
+    Ketu:{mantra:'Om Ketave Namaha',count:18,color:'grey or brown',timing:'Evening',
+      practice:'Sit in complete silence for ten minutes — no music, no phone, no task. Watch a candle or camphor flame if one is available. Choose one thing you have been holding tightly — a plan, an expectation, a worry — and consciously release it. Ketu dasha draws you toward liberation; every attachment you release is a doorway.',
+      whatIsHappening:'Your Ketu Dasha is dissolving what is no longer truly you. This can feel like loss, but it is refinement — the soul is finding its original shape.'}
+  };
+
+  const dasha=chartData?.dashaPeriod?.lord;
+  const di=DASHA_DATA[dasha]||DASHA_DATA.Sun;
+  const moonNak=chartData?.planets?.[1]?.nakshatraName||'';
+  const moonSign=chartData?.planets?.[1]?.signName||'';
+  const ascSign=chartData?.asc?.signName||'';
+
   const greeting=currentLang==='hi'?`नमस्ते, ${userData.name}`:currentLang==='ta'?`வணக்கம், ${userData.name}`:`Namaste, ${userData.name}`;
+
+  let cosmicLine='';
+  if(dasha&&moonSign){
+    cosmicLine=`You are moving through your ${dasha} Dasha${moonNak?` — your Moon in ${moonSign} (${moonNak} Nakshatra) shapes how you receive this energy`:''}.`;
+  }
+
   const html=`
     <div class="remedy-card">
       <div class="remedy-day">${dayName}</div>
       <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${greeting}</p>
-      <div class="remedy-text">${currentLang==='hi'?`आज ${dayPlanet} का दिन है। इस मंत्र का जप करें और शांति से बैठें।`:currentLang==='ta'?`இன்று ${dayPlanet} நாள். இந்த மந்திரத்தை ஜபியுங்கள்.`:`Today is ruled by ${dayPlanet}. Sit quietly and offer your practice.`}</div>
+      ${cosmicLine?`<p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${cosmicLine}</p>`:''}
+      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${di.whatIsHappening}</p>
+      <div class="remedy-text">${di.practice}</div>
+      <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-        <div style="font-size:1.1rem;color:var(--gold);font-style:italic">${mt.m}</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mt.c} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='ta'?'மந்திரம்':'MANTRA'}</div>
+        <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${di.mantra}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="chant-btn" onclick="openChant('${mt.m}','Sacred mantra for ${dayName}',${mt.c})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+        <button class="chant-btn" onclick="openChant('${di.mantra}','${dasha||''} Dasha mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.</p>
     </div>
   `;
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
@@ -1475,16 +1517,37 @@ function showFullChart(){
       <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
     </div>
 
-    <!-- Occupied Houses -->
-    <div class="divider" style="margin-top:1.2rem"><span>House Themes</span></div>
-    ${Array.from({length:12},(_,i)=>{
-      const planetsInHouse=cd.planets.filter(p=>(p.sign-cd.ascSign+12)%12===i);
-      if(!planetsInHouse.length)return'';
-      return`<div class="summary-row">
-        <span class="summary-label">H${i+1} — ${houseNames[i]}</span>
-        <span class="summary-value">${planetsInHouse.map(p=>p.sym+' '+L2.planets[cd.planets.indexOf(p)]).join(', ')}</span>
-      </div>`;
-    }).join('')}
+    <!-- Planet Story -->
+    <div class="divider" style="margin-top:1.2rem"><span>What Your Chart Reveals</span></div>
+    ${(()=>{
+      const PHM={
+        Sun:['radiates your identity and vitality — you lead from sheer presence','illuminates your relationship with wealth and the power of your voice','shines through courage, communication, and the bonds with siblings','warms your home, your mother, and your need for emotional roots','glows in creative fire — romance, self-expression, and pride in your gifts','is devoted to health, service, and the refinement of daily life','finds itself through partnership and what others reflect back to you','empowers you through transformation, depth, and the hidden realm','seeks meaning through philosophy, teaching, and distant horizons','drives career ambition, authority, and your place in public life','brightens community, aspirations, and your circle of influence','seeks its fullest self through solitude, retreat, and spiritual surrender'],
+        Moon:['carries your emotional identity — you feel the world before you think it','nurtures wealth and family through memory, care, and comfort','flows through siblings, daily routines, and quiet acts of communication','roots deepest in home, ancestry, and the bond with your mother','blossoms in creative joy and emotional connection with children','finds peace through humble service, wellness rituals, and caring for others','seeks emotional fulfilment through close partnership and deep bonds','dives into emotional depth, ancestral healing, and what lives beneath the surface','wanders toward wisdom, faith, and meaning in faraway places','invests emotionally in reputation, career, and public duty','connects through friendship, community, and shared dreams','retreats into the inner world — dreams, solitude, and quiet spiritual depths'],
+        Mars:['asserts identity, courage, and physical presence with direct force','drives the pursuit of wealth through bold, decisive action','sharpens speech, debate, and the courage to say the difficult thing','protects home and family with fierce, territorial instinct','pours passion into romance, creativity, and competitive spirit','disciplines the body through rigorous health and precise daily habits','challenges and energises partnerships through directness and honesty','plunges into crisis management, the occult, and radical transformation','drives the search for truth through adventure and philosophical debate','fuels career ambition with relentless drive and competitive edge','energises your network, community causes, and ambitious goals','works quietly behind the scenes — hidden effort and solitary discipline'],
+        Mercury:['expresses the self through quick wit, language, and adaptability','builds wealth through business acumen, skilled speech, and clever strategy','thrives in communication, learning, and the company of curious minds','thinks deeply about home, family history, and private matters','creates through playful ideas, teaching, and artistic writing','analyses health, work systems, and daily life with precision and care','navigates partnerships through diplomacy, contracts, and thoughtful exchange','researches what is hidden — psychology, the occult, and transformative knowledge','teaches philosophy, publishes ideas, and translates across cultures','strategises career moves with intelligence, planning, and adaptability','networks brilliantly — connecting ideas and people with ease and charm','thinks quietly, writes privately, and processes the world through solitude'],
+        Jupiter:['blesses your presence with natural wisdom, optimism, and generosity','brings fortunate wealth, generous values, and a voice others trust','expands learning, blesses sibling bonds, and brings good fortune through courage','protects home with ancestral grace, spiritual lineage, and deep blessings','brings the great gift of creative joy, blessed children, and romantic fulfilment','serves with wisdom — blesses health, humility, and devotion to work','brings fortunate, expansive partnerships and grace through others','holds hidden blessings — inheritance gifts and transformation through grace','brings the deepest philosophical wisdom, pilgrimage, and spiritual expansion','brings career blessings, public honour, and the mark of a natural leader','brings fortunate gains, a wide noble community, and visionary purpose','brings spiritual liberation, inner peace, and grace in retreat and solitude'],
+        Venus:['graces personal appearance with charm, beauty, and magnetic warmth','brings refined wealth, artistic values, and a melodious, persuasive voice','charms through graceful speech, artistic connections, and social skill','beautifies home with care, harmony, and the warmth of a loving presence','pours joy into romance, creative arts, and the beauty of expression','brings elegance to health practices, work spaces, and acts of service','creates harmonious, loving partnerships filled with beauty and devotion','finds beauty in the unseen — in intimacy, transformation, and hidden pleasure','seeks beauty through travel, culture, foreign love, and sacred knowledge','brings grace, elegance, and artistic recognition to career and public life','adorns community with beauty and brings fortunate, lasting friendships','retreats into private beauty, contemplation, and hidden artistic devotion'],
+        Saturn:['teaches the self through discipline, solitude, and the slow forging of character','builds wealth through patience, hard work, and rewards that come in their own time','structures learning with duty — responsibilities in communication and with siblings','brings karmic weight to home and family — deep ancestral duties to fulfill','delays creative joy and children — but builds something enduring when it finally comes','disciplines daily health through precise, demanding routines — chronic patterns to face','brings serious, committed, karmic partnerships — bonds that teach through endurance','brings deep karmic transformation and the weight of long-gestating change','delays higher learning but builds mastery of rare depth when it arrives','builds career step by patient step through pure discipline and sustained effort','brings structured community service and gains that come slowly but surely','brings the deepest spiritual practice, solitary discipline, and the release of karma'],
+        Rahu:['amplifies the ego with worldly hunger and intense ambition for identity','obsesses over accumulation — wealth, possessions, and what has value','craves information, multitasking, and unconventional communication and connection','carries unusual longing for home — possibly foreign roots or a restless family','pursues creative risks and recognition with unusual intensity','intensifies focus on health — possible obsession with diet, work, or foreign methods','desires powerful, unusual partnerships — the hunger for deep merger and magnetic connection','obsesses over the occult, the taboo, and the power that lives in hidden places','relentlessly seeks meaning — through philosophy, foreign places, and radical belief','drives intense career ambition — the desire for fame, foreign recognition, and power','brings unconventional community, radical goals, and the possibility of sudden gains','creates confusion in the spiritual path — purification comes through honest surrender'],
+        Ketu:['carries past-life mastery in self-expression — now learning to release ego','detaches from materialism — carries spiritual simplicity and karmic release of possessive hunger','brings past-life knowledge of learning — intuition now transcends what books can teach','carries the karma of many homes — solitude and inner peace heal what roots cannot','detaches from ego-based creativity — spiritual gifts expressed without need for recognition','brings past-life mastery in service or healing — now learning to trust rather than control','detaches from conventional partnership — the deepest bonds are spiritual and invisible','brings deep occult gifts from past lives — the unseen and the invisible are your domain','carries vast past-life wisdom — now the spiritual teacher who questions all dogma','detaches from worldly ambition — career finds meaning only through service and soul purpose','detaches from social gains — spiritual community and selfless service are the true calling','brings the closest soul to moksha — the deepest spiritual inclination of all placements']
+      };
+      const houseLabels=['Self & Presence','Wealth & Voice','Communication & Courage','Home & Roots','Creativity & Joy','Health & Service','Partnership & Others','Transformation & Depth','Wisdom & Philosophy','Career & Purpose','Community & Gains','Solitude & Liberation'];
+      const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+      return Array.from({length:12},(_,i)=>{
+        const planetsInHouse=cd.planets.filter(p=>(p.sign-cd.ascSign+12)%12===i);
+        if(!planetsInHouse.length)return'';
+        const items=planetsInHouse.map(p=>{
+          const pIdx=cd.planets.indexOf(p);
+          const pName=pnames[pIdx];
+          const meaning=PHM[pName]?PHM[pName][i]:'';
+          return`<div style="padding:.35rem 0;border-bottom:1px solid rgba(200,169,74,.07);font-size:.85rem"><span style="color:var(--gold)">${p.sym} ${L2.planets[pIdx]}</span><span style="color:var(--muted)"> — ${meaning}</span></div>`;
+        }).join('');
+        return`<div style="margin-bottom:1rem;background:rgba(200,169,74,.03);border-radius:10px;padding:.7rem 1rem">
+          <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:var(--gold-l);margin-bottom:.4rem">${houseLabels[i].toUpperCase()}</div>
+          ${items}
+        </div>`;
+      }).join('');
+    })()}
 
     <!-- Vimshottari Dasha -->
     <div class="divider" style="margin-top:1.2rem"><span>Vimshottari Dasha</span></div>
