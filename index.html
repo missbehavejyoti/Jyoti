@@ -216,7 +216,15 @@ select option{background:var(--s2);color:var(--text)}
 .summary-value{color:var(--text)}
 
 /* Responsive */
-@media(max-width:600px){.card{padding:1.5rem 1.2rem}.wrap{padding:0 1rem}}
+@media(max-width:600px){
+  .card{padding:1.5rem 1.2rem}
+  .wrap{padding:0 1rem}
+  body{font-size:17px}
+  .p-pos{font-size:.9rem}
+  .remedy-section p,.remedy-section div{font-size:1rem;line-height:1.75}
+  .planet-card .p-name{font-size:.8rem}
+  input,select{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -344,9 +352,7 @@ select option{background:var(--s2);color:var(--text)}
 
       <p style="text-align:center;font-style:italic;color:var(--muted);margin-bottom:1.8rem;font-size:.95rem" data-en="Before we reveal the stars, one moment of intention." data-hi="तारों को प्रकट करने से पहले, एक पल का संकल्प।" data-ta="நட்சத்திரங்களை வெளிப்படுத்துவதற்கு முன், ஒரு நிமிட நோக்கம்.">Before we reveal the stars, one moment of intention.</p>
 
-      <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.4rem">
-        <p style="font-size:.92rem;color:var(--muted);line-height:1.75">Jyoti offers Nadi astrological readings and daily Vedic remedies for <strong style="color:var(--gold-pale)">spiritual guidance and personal enrichment only</strong>. Our readings are not a substitute for medical, psychiatric, psychological, financial, or legal advice. Always consult a qualified professional for matters of health or wellbeing.</p>
-      </div>
+      <p style="font-size:.82rem;color:var(--dim);line-height:1.65;margin-bottom:1.2rem;text-align:center">Jyoti offers Nadi astrological readings for <strong style="color:var(--gold-pale)">spiritual guidance only</strong> — not a substitute for professional advice.</p>
 
       <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem">Review our <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a> before agreeing.</p>
 
@@ -600,15 +606,9 @@ select option{background:var(--s2);color:var(--text)}
 
   <!-- Legal Footer -->
   <div class="legal-footer">
-    <div class="crisis-banner" style="max-width:600px;margin:0 auto 1rem">
-      <span>💙</span>
-      <div style="font-size:.8rem">
-        <strong data-en="Need support?" data-hi="सहायता चाहिए?" data-ta="ஆதரவு தேவையா?">Need support?</strong>
-        <span data-en=" Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info" data-hi=" iCall (India): 9152987821 · Vandrevala Foundation: 1860-2662-345" data-ta=" iCall (India): 9152987821 · Lifeline (AU): 13 11 14"> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info</span>
-      </div>
-    </div>
-    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only. Content is not a substitute for professional medical, psychiatric, psychological, financial or legal advice." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-ta="ஜ்யோதி ஆன்மீக மற்றும் தனிப்பட்ட வளர்ச்சி நோக்கங்களுக்காக மட்டுமே ஜோதிட வழிகாட்டுதலை வழங்குகிறது.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only. Content is not a substitute for professional medical, psychiatric, psychological, financial or legal advice.</p>
-    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia. Worldwide service." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-ta="© 2025 ஜ்யோதி. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.">© 2025 Jyoti. All rights reserved. ABN registered Australia. Worldwide service.</p>
+    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-ta="ஜ்யோதி ஆன்மீக மற்றும் தனிப்பட்ட வளர்ச்சி நோக்கங்களுக்காக மட்டுமே ஜோதிட வழிகாட்டுதலை வழங்குகிறது.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only.</p>
+    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-ta="© 2025 ஜ்யோதி. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.">© 2025 Jyoti. All rights reserved. ABN registered Australia.</p>
+    <p style="margin-top:.3rem;font-size:.68rem;color:var(--s5)">If you need support: Lifeline 13 11 14 · Beyond Blue 1300 22 4636</p>
     <div class="legal-links">
       <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-ta="சேவை விதிமுறைகள்">Terms of Service</a>
       <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-ta="தனியுரிமைக் கொள்கை">Privacy Policy</a>
@@ -616,8 +616,6 @@ select option{background:var(--s2);color:var(--text)}
       <a href="mailto:hello@jyoti.app" data-en="Contact" data-hi="संपर्क" data-ta="தொடர்பு">Contact</a>
     </div>
   </div>
-</div>
-
 <!-- Chant Modal -->
 <div class="chant-modal" id="chant-modal">
   <div class="chant-inner">
