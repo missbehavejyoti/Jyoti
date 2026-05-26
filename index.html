@@ -273,8 +273,8 @@ select option{background:var(--s2);color:var(--text)}
   </div>
 </header>
 
-<!-- Vedic vs Western intro -->
-<div class="wrap" style="margin-bottom:1.2rem">
+<!-- Vedic vs Western intro — shown on first panel only -->
+<div class="wrap" id="vedic-intro" style="margin-bottom:1.2rem">
   <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:14px;padding:1.2rem 1.6rem;text-align:center">
     <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">Vedic · Sidereal · Jyotish</p>
     <p style="font-size:.93rem;color:var(--muted);line-height:1.75">Jyoti is rooted in <strong style="color:var(--gold-pale)">Vedic astrology (Jyotish)</strong> — the ancient science of light from India — which reads the planets against the actual star constellations as they appear in the sky. If you know your Western sun sign, you may find your Vedic sign is different. This is perfectly natural: over thousands of years, a gradual wobble in Earth's axis has created a 24° shift between two great astrological traditions, each carrying its own beauty and wisdom. Jyotish follows the living sky, your birth star (nakshatra), and the sacred mathematics of karma and timing. We walk this path with love and deep respect for all traditions that seek the light.</p>
@@ -967,6 +967,8 @@ function calcChart(dob, tob, coords, utcOffset){
 function _activatePanel(n){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel'+n).classList.add('active');
+  const intro=document.getElementById('vedic-intro');
+  if(intro) intro.style.display=n===1?'':'none';
   for(let i=1;i<=5;i++){
     const s=document.getElementById('s'+i);
     s.classList.remove('active','done');
