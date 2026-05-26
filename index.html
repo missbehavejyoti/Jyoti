@@ -1591,11 +1591,10 @@ function showFullChart(){
     <!-- Planetary Positions -->
     <div class="divider"><span>Planetary Positions</span></div>
     ${cd.planets.map((p,i)=>{
-      const house=(p.sign-cd.ascSign+12)%12+1;
       const dg=dignity(['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'][i],p.sign);
       return`<div class="summary-row">
         <span class="summary-label">${p.sym} ${L2.planets[i]}</span>
-        <span class="summary-value" style="text-align:right">${L2.signs[p.sign]} ${parseFloat(p.degree).toFixed(1)}° · H${house} · ${L2.nakshatras[p.nakshatra]} p${p.pada}${dg}</span>
+        <span class="summary-value" style="text-align:right">${L2.signs[p.sign]} ${parseFloat(p.degree).toFixed(1)}° · ${L2.nakshatras[p.nakshatra]}${dg}</span>
       </div>`;
     }).join('')}
     <div class="summary-row">
