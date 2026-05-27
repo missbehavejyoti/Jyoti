@@ -764,6 +764,7 @@ let currentLang='en';
 let userData={};
 let chartData={};
 let chantCurrent=0,chantTarget=108;
+let soulReadingCache=null; // cached per session so we don't re-fetch on every tab switch
 
 const T={
   en:{
@@ -1851,6 +1852,21 @@ function showFullChart(){
       }).join('');
     })()}
 
+    <!-- Soul Map & Karmic Blueprint -->
+    <div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आत्मा का मानचित्र और कार्मिक खाका':currentLang==='ta'?'ஆத்ம வரைபடம் & கர்ம வடிவமைப்பு':'Soul Map & Karmic Blueprint'}</span></div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् पाराशर होरा शास्त्र, फलदीपिका, सारावली और नाडी परंपरा से।':currentLang==='ta'?'பரிஹாட பராஸர ஹோரா சாஸ்திரம், பலதீபிகா, சாரவலி மற்றும் நாடி மரபிலிருந்து.':'Drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali &amp; the Nadi tradition.'}</p>
+    <div id="soul-reading-wrap">
+      <div id="soul-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
+        ${currentLang==='hi'?'शास्त्रीय ग्रंथों से परामर्श…':currentLang==='ta'?'பழங்கால நூல்களை ஆராய்கிறது…':'Consulting the classical texts…'}
+        <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span>
+        </div>
+      </div>
+      <div id="soul-content" style="display:none"></div>
+    </div>
+
     <!-- Vimshottari Dasha -->
     <div class="divider" style="margin-top:1.2rem"><span>${FC.dashaTitle}</span></div>
     <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${FC.dashaDesc}</p>
@@ -1870,6 +1886,59 @@ function showFullChart(){
     </div>
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
+  // Trigger soul reading after HTML is set (defer so DOM is ready)
+  setTimeout(()=>loadSoulReading(),50);
+}
+
+// ── SOUL MAP & KARMIC BLUEPRINT ──
+async function loadSoulReading(){
+  // Render cached result if available
+  if(soulReadingCache){
+    renderSoulReading(soulReadingCache);
+    return;
+  }
+  // Build comprehensive chart summary including house positions
+  const cd=chartData;
+  if(!cd||!cd.planets||!cd.asc)return;
+  const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+  const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
+  const soulSummary=`Name: ${userData.name||'the seeker'}
+Ascendant (Lagna): ${cd.asc.signName} ${cd.asc.degree}° — House 1
+${pnames.map((n,i)=>`${n}: ${cd.planets[i].signName} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${cd.planets[i].nakshatraName} Pada ${cd.planets[i].pada}`).join('\n')}
+Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
+Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
+  try{
+    const resp=await fetch('/api/get-remedy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary:soulSummary, lang:currentLang, type:'soul'})
+    });
+    if(!resp.ok)throw new Error('api');
+    const data=await resp.json();
+    const text=data.text||'';
+    if(text){
+      soulReadingCache=text;
+      renderSoulReading(text);
+    } else {
+      hideSoulLoading();
+    }
+  }catch(e){
+    hideSoulLoading();
+  }
+}
+function renderSoulReading(text){
+  const loadEl=document.getElementById('soul-loading');
+  const contentEl=document.getElementById('soul-content');
+  if(!loadEl||!contentEl)return;
+  loadEl.style.display='none';
+  // Split into paragraphs and wrap each
+  const paras=text.split(/\n\n+/).filter(p=>p.trim());
+  contentEl.innerHTML=paras.map(p=>`<p style="font-size:.88rem;color:var(--muted);line-height:1.85;margin-bottom:1rem">${p.trim()}</p>`).join('');
+  contentEl.style.display='';
+}
+function hideSoulLoading(){
+  const loadEl=document.getElementById('soul-loading');
+  if(loadEl)loadEl.style.display='none';
 }
 
 // ── ARCHIVE ──
