@@ -163,17 +163,40 @@ module.exports = async (req, res) => {
     }
 
     // ── Vimshottari Dasha ──
-    const moonNakIdx  = planets[1].nakshatra;
-    const progressInNak = (planets[1].lon * 27 / 360) % 1;
-    const lordIdx     = moonNakIdx % 9;
-    const elapsed     = progressInNak * DASHA_YEARS[lordIdx];
-    const remaining   = DASHA_YEARS[lordIdx] - elapsed;
-    const dashaPeriod = {
-      lord:      DASHA_LORDS[lordIdx],
-      years:     DASHA_YEARS[lordIdx],
-      remaining: remaining.toFixed(2),
-      next:      DASHA_LORDS[(lordIdx + 1) % 9]
-    };
+    // Step 1: Find the dasha lord active at birth from Moon nakshatra
+    const moonNakIdx     = planets[1].nakshatra;
+    const progressInNak  = (planets[1].lon * 27 / 360) % 1;   // fraction through the nakshatra
+    const birthLordIdx   = moonNakIdx % 9;
+    const elapsedAtBirth = progressInNak * DASHA_YEARS[birthLordIdx]; // years of birth dasha already consumed
+    const remainingAtBirth = DASHA_YEARS[birthLordIdx] - elapsedAtBirth;
+
+    // Step 2: Advance from birth date to today to find the CURRENT dasha
+    const yearsFromBirth = (Date.now() - birthDate.getTime()) / (365.25 * 24 * 3600 * 1000);
+
+    let dashaPeriod;
+    if (yearsFromBirth <= remainingAtBirth) {
+      // Still in the birth dasha
+      dashaPeriod = {
+        lord:      DASHA_LORDS[birthLordIdx],
+        years:     DASHA_YEARS[birthLordIdx],
+        remaining: (remainingAtBirth - yearsFromBirth).toFixed(2),
+        next:      DASHA_LORDS[(birthLordIdx + 1) % 9]
+      };
+    } else {
+      // Advance through subsequent dashas until we land on the current one
+      let yrsLeft = yearsFromBirth - remainingAtBirth;
+      let curIdx  = (birthLordIdx + 1) % 9;
+      while (yrsLeft >= DASHA_YEARS[curIdx]) {
+        yrsLeft -= DASHA_YEARS[curIdx];
+        curIdx   = (curIdx + 1) % 9;
+      }
+      dashaPeriod = {
+        lord:      DASHA_LORDS[curIdx],
+        years:     DASHA_YEARS[curIdx],
+        remaining: (DASHA_YEARS[curIdx] - yrsLeft).toFixed(2),
+        next:      DASHA_LORDS[(curIdx + 1) % 9]
+      };
+    }
 
     return res.status(200).json({
       planets, asc, malefics, dashaPeriod,
