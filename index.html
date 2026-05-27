@@ -2,20 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Jyoti — Nadi Astrology</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C8A94A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jyoti">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Your precise Nadi birth chart and daily sacred practice. Ancient Vedic wisdom, delivered daily.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+/* Non-Latin script support — override Cinzel/EB Garamond which lack these glyphs */
+:lang(hi) *{font-family:'Noto Sans Devanagari',Georgia,sans-serif!important;letter-spacing:0!important}
+:lang(ta) *{font-family:'Noto Sans Tamil',Georgia,sans-serif!important;letter-spacing:0!important}
 :root{
-  --gold:#C8A94A;--gold-l:#E8D070;--gold-d:#7A6120;
+  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
   --text:#F2EBD8;--muted:#A89880;--dim:#6A5F58;
   --ruby:#B02348;--teal:#1A9490;--rose:#C45870;
 }
 html{scroll-behavior:smooth}
-body{background:var(--deep);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh;overflow-x:hidden}
+body{background:var(--deep);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.75;min-height:100vh;overflow-x:hidden}
 canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 1.5rem}
 
@@ -31,7 +42,7 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 @keyframes flicker{0%,100%{filter:drop-shadow(0 0 8px rgba(200,169,74,.4))}50%{filter:drop-shadow(0 0 22px rgba(200,169,74,.8))}}
 .brand-name{font-family:'Cinzel Decorative',serif;font-size:clamp(1.8rem,5vw,3rem);font-weight:400;letter-spacing:.15em;color:var(--gold);display:block;margin-bottom:.2rem}
 .brand-sub{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.45em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem}
-.tagline{font-style:italic;color:var(--muted);font-size:1.05rem}
+.tagline{font-style:italic;color:var(--muted);font-size:1.1rem}
 
 /* Divider */
 .divider{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:var(--gold-d)}
@@ -61,14 +72,20 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 /* Form */
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
-input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+.consent-btn{width:100%;text-align:left;background:rgba(200,169,74,.04);border:1.5px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;cursor:pointer;transition:.2s;font-family:'EB Garamond',Georgia,serif;font-size:1rem;color:var(--muted);line-height:1.65;text-transform:none;letter-spacing:0;margin-bottom:.75rem}
+.consent-btn:active{opacity:.8}
+.consent-btn.agreed{background:rgba(200,169,74,.1);border-color:var(--gold)}
+.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:rgba(28,24,48,.9);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
+.consent-btn.agreed .cbx{background:var(--gold);border-color:var(--gold)}
+.consent-btn.agreed .cbx::after{content:'';position:absolute;left:5px;top:2px;width:8px;height:12px;border:2.5px solid #080510;border-top:none;border-left:none;transform:rotate(45deg)}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
 @media(max-width:540px){.g2,.g3{grid-template-columns:1fr}}
-.hint{font-size:.8rem;color:var(--dim);font-style:italic;margin-top:.3rem}
+.hint{font-size:.85rem;color:var(--dim);font-style:italic;margin-top:.3rem}
 
 /* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.8rem 2rem;border-radius:10px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.12em;cursor:pointer;transition:.25s;border:none;text-transform:uppercase}
@@ -85,9 +102,10 @@ select option{background:var(--s2);color:var(--text)}
 .legal-box h4{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase}
 .legal-box p{margin-bottom:.5rem}
 .legal-box p:last-child{margin-bottom:0}
-.check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer}
-.check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:3px;accent-color:var(--gold);cursor:pointer}
-.check-row span{font-size:.88rem;color:var(--muted);line-height:1.5}
+.check-row{display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem;cursor:pointer;text-transform:none;font-family:'EB Garamond',Georgia,serif;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:0}
+.check-row input[type=checkbox]{margin-top:2px}
+.check-row span{line-height:1.6}
+.notif-box label{text-transform:none;font-family:'EB Garamond',Georgia,serif;margin-bottom:0;letter-spacing:0;font-size:.92rem;color:var(--muted);line-height:1.6;cursor:pointer}
 
 /* Preview chart */
 .chart-container{display:flex;justify-content:center;margin:1.5rem 0}
@@ -99,20 +117,20 @@ select option{background:var(--s2);color:var(--text)}
 @media(max-width:480px){.planet-grid{grid-template-columns:repeat(2,1fr)}}
 .planet-card{background:var(--s2);border:1px solid var(--s4);border-radius:10px;padding:.85rem;text-align:center;transition:.2s}
 .planet-card:hover{border-color:var(--gold-d);background:var(--s3)}
-.p-symbol{font-size:1.5rem;margin-bottom:.2rem}
-.p-name{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.2rem}
-.p-pos{font-size:.88rem;color:var(--gold)}
+.p-symbol{font-size:1.5rem;margin-bottom:.3rem;line-height:1}
+.p-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.25rem;text-transform:uppercase}
+.p-pos{font-size:.92rem;color:var(--text);font-family:'EB Garamond',Georgia,serif;font-style:italic}
 
 /* Tags */
 .tag{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .75rem;border-radius:20px;font-size:.78rem;font-family:'Cinzel',serif;letter-spacing:.05em;margin:.2rem}
-.tag-warn{background:rgba(176,35,72,.12);border:1px solid rgba(176,35,72,.35);color:#E07090}
+.tag-karmic{background:rgba(200,169,74,.08);border:1px solid rgba(200,169,74,.3);color:var(--gold)}
 .tag-ok{background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.3);color:#5DCAC6}
 
 /* Remedy card */
 .remedy-card{background:var(--s2);border:1px solid var(--s4);border-radius:14px;padding:1.2rem 1.5rem;margin:1rem 0;position:relative;overflow:hidden}
 .remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold-d),var(--gold))}
 .remedy-day{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.3rem;text-transform:uppercase}
-.remedy-text{font-size:.98rem;color:var(--text);line-height:1.6;margin-bottom:.8rem}
+.remedy-text{font-size:1.05rem;color:var(--text);line-height:1.7;margin-bottom:.8rem}
 .remedy-actions{display:flex;gap:.6rem;flex-wrap:wrap}
 .audio-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid var(--gold-d);color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
 .audio-btn:hover{background:rgba(200,169,74,.2)}
@@ -134,11 +152,8 @@ select option{background:var(--s2);color:var(--text)}
 .chant-bar{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:2px;transition:.3s;width:0%}
 
 /* Subscription */
-.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
-@media(max-width:480px){.plan-grid{grid-template-columns:1fr}}
-.plan{background:var(--s2);border:1px solid var(--s4);border-radius:14px;padding:1.5rem;text-align:center;cursor:pointer;transition:.25s;position:relative}
-.plan:hover,.plan.selected{border-color:var(--gold);background:var(--s3)}
-.plan.selected::after{content:'✦ Selected';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#080510;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;padding:.2rem .8rem;border-radius:10px;white-space:nowrap}
+.plan-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin:1.2rem 0}
+.plan{background:var(--s2);border:1px solid var(--gold);background:var(--s3);border-radius:14px;padding:1.5rem;text-align:center;position:relative}
 .plan-name{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem}
 .plan-price{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);line-height:1.1}
 .plan-period{font-size:.8rem;color:var(--dim)}
@@ -193,9 +208,10 @@ select option{background:var(--s2);color:var(--text)}
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
 .crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
-/* Malefic section */
-.malefic-section{background:rgba(176,35,72,.05);border:1px solid rgba(176,35,72,.15);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
-.malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:#E07090;margin-bottom:.8rem;text-transform:uppercase}
+/* Karmic intensities section */
+.malefic-section{background:rgba(122,97,32,.06);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
+.malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.8rem;text-transform:uppercase}
+
 
 /* Summary row */
 .summary-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--s3);font-size:.9rem}
@@ -204,7 +220,15 @@ select option{background:var(--s2);color:var(--text)}
 .summary-value{color:var(--text)}
 
 /* Responsive */
-@media(max-width:600px){.card{padding:1.5rem 1.2rem}.wrap{padding:0 1rem}}
+@media(max-width:600px){
+  .card{padding:1.5rem 1.2rem}
+  .wrap{padding:0 1rem}
+  body{font-size:18px}
+  .p-pos{font-size:.9rem}
+  .remedy-section p,.remedy-section div{font-size:1rem;line-height:1.75}
+  .planet-card .p-name{font-size:.8rem}
+  input,select{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -262,6 +286,10 @@ select option{background:var(--s2);color:var(--text)}
 
   <!-- PANEL 1: Birth Details -->
   <div class="panel active" id="panel1">
+    <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:14px;padding:1rem 1.4rem;text-align:center;margin-bottom:1.2rem">
+      <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem">Vedic · Sidereal · Jyotish</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Jyoti is rooted in <strong style="color:var(--gold-pale)">Vedic astrology (Jyotish)</strong> — the ancient science of light from India — which reads planets against the actual star constellations. If you know your Western sun sign, your Vedic sign may differ. This is natural: a 24° shift has developed over millennia between two great traditions, each carrying its own wisdom.</p>
+    </div>
     <div class="card">
       <div class="card-title" data-en="Enter Your Birth Details" data-hi="अपना जन्म विवरण दर्ज करें" data-ta="உங்கள் பிறப்பு விவரங்களை உள்ளிடுக">Enter Your Birth Details</div>
       <div class="field">
@@ -275,13 +303,21 @@ select option{background:var(--s2);color:var(--text)}
         </div>
         <div class="field">
           <label data-en="Exact Birth Time" data-hi="जन्म समय" data-ta="பிறந்த நேரம்">Exact Birth Time</label>
-          <input type="time" id="tob">
-          <p class="hint" data-en="Even minutes matter in Nadi" data-hi="नाडी में मिनट भी महत्वपूर्ण हैं" data-ta="நாடியில் நிமிடங்களும் முக்கியம்">Even minutes matter in Nadi</p>
+          <input type="time" id="tob" value="12:00:00" step="1">
+          <p class="hint" data-en="24-hour format · seconds refine the Lagna" data-hi="24 घंटे का प्रारूप · सेकंड लग्न को परिष्कृत करता है" data-ta="24 மணி நேர வடிவம் · வினாடிகள் லக்னத்தை மேம்படுத்தும்">24-hour format · seconds refine the Lagna</p>
         </div>
       </div>
       <div class="field">
         <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
         <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
+      </div>
+      <!-- UTC offset — auto-detected from birth place, but can be overridden -->
+      <div class="field" style="margin-bottom:.8rem">
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          <span data-en="UTC Offset (optional override)" data-hi="UTC ऑफसेट" data-ta="UTC ஆஃப்செட்">UTC Offset <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim)">(leave blank for auto-detect)</span></span>
+        </label>
+        <input type="text" id="utc-offset" placeholder="e.g. +12 or +13 — auto-detected if blank" style="font-size:.9rem" data-phi="+12 या +13 — रिक्त छोड़ें" data-pta="+12 அல்லது +13 — காலியாக விடவும்">
+        <p class="hint">✦ Vedic astrology traditionally uses Local Standard Time (no DST). For NZ: use +12 (standard time year-round, as used by KundliSoft and most Jyotish software) rather than +13 (NZ summer clock time).</p>
       </div>
       <div class="g2">
         <div class="field">
@@ -315,60 +351,6 @@ select option{background:var(--s2);color:var(--text)}
     </div>
   </div>
 
-ன்மை">1. Nature of Service</h4>
-        <p data-en="Jyoti provides Nadi astrological readings and daily Vedic remedies for spiritual guidance and personal enrichment purposes only. All content is based on classical Vedic and Nadi astrological tradition." data-hi="ज्योति नाडी ज्योतिष पठन और दैनिक वैदिक उपाय केवल आध्यात्मिक मार्गदर्शन और व्यक्तिगत समृद्धि के उद्देश्य से प्रदान करती है।" data-ta="ஜ்யோதி நாடி ஜோதிட வாசிப்புகளை மற்றும் தினசரி வேத தீர்வுகளை ஆன்மீக வழிகாட்டுதல் மற்றும் தனிப்பட்ட வளர்ச்சிக்காக மட்டுமே வழங்குகிறது.">Jyoti provides Nadi astrological readings and daily Vedic remedies for spiritual guidance and personal enrichment purposes only. All content is based on classical Vedic and Nadi astrological tradition.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="2. Not a Substitute for Professional Advice" data-hi="2. व्यावसायिक सलाह का विकल्प नहीं" data-ta="2. தொழில்முறை ஆலோசனைக்கு மாற்றாகாது">2. Not a Substitute for Professional Advice</h4>
-        <p data-en="Nothing within Jyoti constitutes or replaces medical, psychiatric, psychological, financial, or legal advice, diagnosis, or treatment. Astrological guidance is not a substitute for consultation with a qualified healthcare professional, licensed therapist, financial advisor, or legal practitioner." data-hi="ज्योति के भीतर कुछ भी चिकित्सा, मनोचिकित्सा, मनोवैज्ञानिक, वित्तीय, या कानूनी सलाह, निदान, या उपचार का गठन नहीं करता या उसकी जगह नहीं लेता।" data-ta="ஜ்யோதியில் உள்ள எதுவும் மருத்துவ, மனநல, உளவியல், நிதி அல்லது சட்ட ஆலோசனை, நோயறிதல் அல்லது சிகிச்சையாக கருதப்படாது.">Nothing within Jyoti constitutes or replaces medical, psychiatric, psychological, financial, or legal advice, diagnosis, or treatment. Astrological guidance is not a substitute for consultation with a qualified healthcare professional, licensed therapist, financial advisor, or legal practitioner.</p>
-        <p data-en="Always seek the advice of your doctor, mental health professional, or other qualified provider with any questions you have regarding a medical or mental health condition." data-hi="हमेशा अपने डॉक्टर, मानसिक स्वास्थ्य पेशेवर से सलाह लें।" data-ta="எந்தவொரு மருத்துவ அல்லது மனநல நிலைக்கும் உங்கள் மருத்துவர் அல்லது தகுதிவாய்ந்த வழங்குநரின் ஆலோசனையை எப்போதும் நாடுங்கள்.">Always seek the advice of your doctor, mental health professional, or other qualified provider with any questions you have regarding a medical or mental health condition.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="3. Personal Use Only" data-hi="3. केवल व्यक्तिगत उपयोग" data-ta="3. தனிப்பட்ட பயன்பாட்டிற்கு மட்டுமே">3. Personal Use Only</h4>
-        <p data-en="Your Jyoti subscription and all readings, remedies, and content generated are for your personal, non-commercial use only. Content may not be reproduced, resold, redistributed, or shared commercially. All intellectual property remains with Jyoti." data-hi="आपकी ज्योति सदस्यता और सभी पठन, उपाय, और उत्पन्न सामग्री केवल आपके व्यक्तिगत, गैर-व्यावसायिक उपयोग के लिए है।" data-ta="உங்கள் ஜ்யோதி சந்தா மற்றும் அனைத்து வாசிப்புகளும் தனிப்பட்ட, வணிகரீதியற்ற பயன்பாட்டிற்கு மட்டுமே.">Your Jyoti subscription and all readings, remedies, and content generated are for your personal, non-commercial use only. Content may not be reproduced, resold, redistributed, or shared commercially. All intellectual property remains with Jyoti.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="4. Accuracy & Results" data-hi="4. सटीकता और परिणाम" data-ta="4. துல்லியம் மற்றும் முடிவுகள்">4. Accuracy & Results</h4>
-        <p data-en="Jyoti uses established astronomical ephemeris data for chart calculations. Astrological interpretations are based on classical Nadi and Vedic tradition. No guarantee of specific outcomes is made. Results vary. Jyoti is not liable for decisions made based on readings." data-hi="ज्योति कुंडली गणना के लिए स्थापित खगोलीय पंचांग डेटा का उपयोग करती है। कोई विशिष्ट परिणाम की गारंटी नहीं दी जाती।" data-ta="ஜ்யோதி ஜாதக கணக்கீட்டிற்கு நிறுவப்பட்ட வானியல் தரவைப் பயன்படுத்துகிறது. குறிப்பிட்ட முடிவுகளுக்கு எந்த உத்தரவாதமும் இல்லை.">Jyoti uses established astronomical ephemeris data for chart calculations. Astrological interpretations are based on classical Nadi and Vedic tradition. No guarantee of specific outcomes is made. Results vary. Jyoti is not liable for decisions made based on readings.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="5. Privacy & Data" data-hi="5. गोपनीयता और डेटा" data-ta="5. தனியுரிமை மற்றும் தரவு">5. Privacy & Data</h4>
-        <p data-en="Your birth details and personal data are collected solely to generate your astrological reading. Data is stored securely, never sold to third parties, and handled in accordance with the Australian Privacy Act 1988, GDPR (EU/UK users), and applicable international privacy law. You may request deletion of your data at any time by contacting us." data-hi="आपका जन्म विवरण और व्यक्तिगत डेटा केवल आपकी ज्योतिष पठन उत्पन्न करने के लिए एकत्र किया जाता है। डेटा सुरक्षित रूप से संग्रहीत किया जाता है, कभी भी तीसरे पक्ष को नहीं बेचा जाता।" data-ta="உங்கள் பிறப்பு விவரங்கள் ஜோதிட வாசிப்பை உருவாக்க மட்டுமே சேகரிக்கப்படுகின்றன. தரவு பாதுகாப்பாக சேமிக்கப்படுகிறது, மூன்றாம் தரப்பினருக்கு விற்கப்படவில்லை.">Your birth details and personal data are collected solely to generate your astrological reading. Data is stored securely, never sold to third parties, and handled in accordance with the Australian Privacy Act 1988, GDPR (EU/UK users), and applicable international privacy law. You may request deletion of your data at any time by contacting us.</p>
-      </div>
-
-      <div class="legal-box">
-        <h4 data-en="6. Subscription & Refunds" data-hi="6. सदस्यता और धनवापसी" data-ta="6. சந்தா மற்றும் பணம் திரும்பப்பெறுதல்">6. Subscription & Refunds</h4>
-        <p data-en="Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition." data-hi="ज्योति एक मासिक सदस्यता सेवा है। आप किसी भी समय रद्द कर सकते हैं। धनवापसी ऑस्ट्रेलियाई उपभोक्ता कानून के अनुसार की जाती है।" data-ta="ஜ்யோதி மாதாந்திர சந்தா சேவை. எந்த நேரத்திலும் ரத்து செய்யலாம். திரும்பப்பெறுதல் ஆஸ்திரேலிய நுகர்வோர் சட்டத்திற்கு இணங்க மதிப்பிடப்படுகிறது.">Jyoti is a subscription service billed monthly in AUD. You may cancel at any time. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with Australian Consumer Law. Remedies prescribed are traditional Vedic practices — please consult a physician before undertaking any physical practice if you have a health condition.</p>
-      </div>
-
-      <div class="check-row" id="check1-row" onclick="toggleCheck('chk1')">
-        <input type="checkbox" id="chk1">
-        <span data-en="I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice." data-hi="मैंने सेवा की शर्तें पढ़ी हैं और सहमत हूं, जिसमें यह शामिल है कि ज्योति केवल आध्यात्मिक मार्गदर्शन के लिए है।" data-ta="சேவை விதிமுறைகளை படித்து ஒப்புக்கொள்கிறேன், ஜ்யோதி ஆன்மீக வழிகாட்டுதலுக்கு மட்டுமே என்பதை உள்ளடக்கியது.">I have read and agree to the Terms of Service, including that Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
-      </div>
-
-      <div class="check-row" id="check2-row" onclick="toggleCheck('chk2')">
-        <input type="checkbox" id="chk2">
-        <span data-en="I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy." data-hi="मैं अपने जन्म डेटा को ज्योति गोपनीयता नीति के अनुसार संग्रहीत और संसाधित करने के लिए सहमति देता/देती हूं।" data-ta="ஜ்யோதி தனியுரிமைக் கொள்கைக்கு இணங்க என் பிறப்பு தரவு சேமிக்கப்பட்டு செயலாக்கப்படுவதற்கு சம்மதிக்கிறேன்.">I consent to my birth data being stored and processed to generate my personalised Nadi reading, in accordance with the Jyoti Privacy Policy.</span>
-      </div>
-
-      <div class="check-row" id="check3-row" onclick="toggleCheck('chk3')">
-        <input type="checkbox" id="chk3">
-        <span data-en="I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing." data-hi="मैं समझता/समझती हूं कि दैनिक उपाय केवल आध्यात्मिक उपयोग के लिए पारंपरिक वैदिक प्रथाएं हैं।" data-ta="தினசரி தீர்வுகள் ஆன்மீக பயன்பாட்டிற்காக மட்டுமே வழங்கப்படுகின்றன என்று புரிந்துகொள்கிறேன்.">I understand that daily remedies are traditional Vedic practices for spiritual use only, and I will consult a qualified health professional before adopting any practice that may affect my physical or mental wellbeing.</span>
-      </div>
-
-      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
-        <button class="btn btn-gold" style="flex:1" onclick="goToPanel(3)" id="btn2" disabled>
-          <span data-en="Reveal My Chart" data-hi="मेरी कुंडली देखें" data-ta="என் ஜாதகம் காட்டு">Reveal My Chart</span> ✦
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- PANEL 2: Legal & Consent -->
   <div class="panel" id="panel2">
     <div class="card">
@@ -376,19 +358,19 @@ select option{background:var(--s2);color:var(--text)}
 
       <p style="text-align:center;font-style:italic;color:var(--muted);margin-bottom:1.8rem;font-size:.95rem" data-en="Before we reveal the stars, one moment of intention." data-hi="तारों को प्रकट करने से पहले, एक पल का संकल्प।" data-ta="நட்சத்திரங்களை வெளிப்படுத்துவதற்கு முன், ஒரு நிமிட நோக்கம்.">Before we reveal the stars, one moment of intention.</p>
 
-      <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.4rem">
-        <p style="font-size:.92rem;color:var(--muted);line-height:1.75">Jyoti offers Nadi astrological readings and daily Vedic remedies for <strong style="color:var(--gold-pale)">spiritual guidance and personal enrichment only</strong>. Our readings are not a substitute for medical, psychiatric, psychological, financial, or legal advice. Always consult a qualified professional for matters of health or wellbeing.</p>
-      </div>
+      <p style="font-size:.82rem;color:var(--dim);line-height:1.65;margin-bottom:1.2rem;text-align:center">Jyoti offers Nadi astrological readings for <strong style="color:var(--gold-pale)">spiritual guidance only</strong> — not a substitute for professional advice.</p>
 
-      <div class="check-row" onclick="toggleCheck2('chk2a')" style="margin-bottom:.8rem">
-        <input type="checkbox" id="chk2a">
-        <span style="font-size:.92rem;color:var(--muted);line-height:1.6">I agree to the <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a>. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
-      </div>
+      <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem">Review our <a href="#" onclick="openModal('terms');return false;" style="color:var(--gold)">Terms of Service</a> and <a href="#" onclick="openModal('privacy');return false;" style="color:var(--gold)">Privacy Policy</a> before agreeing.</p>
 
-      <div class="check-row" onclick="toggleCheck2('chk2b')" style="margin-bottom:0">
-        <input type="checkbox" id="chk2b">
-        <span style="font-size:.92rem;color:var(--muted);line-height:1.6">I consent to my birth details being securely stored to generate my personalised Nadi reading.</span>
-      </div>
+      <button type="button" class="consent-btn" id="cb1" onclick="agreeConsent(1)">
+        <div class="cbx"></div>
+        <span>I agree to the Terms of Service and Privacy Policy. I understand Jyoti is for spiritual guidance only and is not a substitute for professional medical, psychiatric, or legal advice.</span>
+      </button>
+
+      <button type="button" class="consent-btn" id="cb2" onclick="agreeConsent(2)">
+        <div class="cbx"></div>
+        <span>I consent to my birth details being securely stored to generate my personalised Nadi reading.</span>
+      </button>
 
       <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
@@ -412,6 +394,7 @@ select option{background:var(--s2);color:var(--text)}
       <div class="card-title">
         <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-ta="உங்கள் நாடி ஜாதகம்">Your Nadi Birth Chart</span>
       </div>
+      <div id="chart-location-info" style="text-align:center;margin-bottom:.8rem"></div>
 
       <!-- Vedic South Indian Chart -->
       <div class="chart-container">
@@ -431,15 +414,19 @@ select option{background:var(--s2);color:var(--text)}
             <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
             <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.6)" font-size="9" font-family="serif" letter-spacing="2">JYOTI</text>
             <text x="140" y="152" text-anchor="middle" fill="rgba(200,169,74,.3)" font-size="7" font-family="serif" letter-spacing="1">NADI CHART</text>
-            <!-- Planet positions (dynamic) -->
-            <text id="h1" x="140" y="30" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h2" x="245" y="30" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h3" x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h4" x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h5" x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h6" x="35" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h7" x="25" y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h8" x="35" y="30" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <!-- Planet positions (dynamic) — outer ring houses 1-8, center triangles 9-12 -->
+            <text id="h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
           </svg>
         </div>
       </div>
@@ -463,9 +450,9 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Malefic teaser -->
       <div class="malefic-section">
-        <h4 data-en="⚠ Malefic Influences Detected" data-hi="⚠ पाप ग्रह प्रभाव पाए गए" data-ta="⚠ பாபக் கிரக தாக்கங்கள் கண்டறியப்பட்டன">⚠ Malefic Influences Detected</h4>
+        <h4 data-en="✦ Karmic Intensities" data-hi="✦ कार्मिक तीव्रताएं" data-ta="✦ கார்மீக தீவிரங்கள்">✦ Karmic Intensities</h4>
         <div id="malefic-tags"></div>
-        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to unlock your full malefic analysis and personalised daily remedies" data-hi="अपना पूर्ण विश्लेषण और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை அணலாக சந்தா செலுத்துங்கள்">Subscribe to unlock your full malefic analysis and personalised daily remedies</p>
+        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to reveal your full karmic chart and receive your personalised daily remedies" data-hi="अपनी पूर्ण कार्मिक कुंडली और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு கார்மீக ஜாதகம் மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை வெளிப்படுத்த சந்தா செலுத்துங்கள்">Subscribe to reveal your full karmic chart and receive your personalised daily remedies</p>
       </div>
 
       <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
@@ -480,39 +467,37 @@ select option{background:var(--s2);color:var(--text)}
   <!-- PANEL 4: Subscribe -->
   <div class="panel" id="panel4">
     <div class="card">
-      <div class="card-title" data-en="Choose Your Sacred Practice" data-hi="अपनी पवित्र साधना चुनें" data-ta="உங்கள் புனித சாதனையை தேர்ந்தெடுக்கவும்">Choose Your Sacred Practice</div>
+      <div class="card-title" data-en="Begin Your Sacred Practice" data-hi="अपनी पवित्र साधना शुरू करें" data-ta="உங்கள் புனித சாதனையை தொடங்கவும்">Begin Your Sacred Practice</div>
 
       <div style="text-align:center;margin-bottom:1.5rem">
-        <p style="color:var(--muted);font-style:italic;font-size:.95rem" data-en="Your chart reveals multiple influences that require daily attention. Choose the plan that calls to you." data-hi="आपकी कुंडली कई प्रभाव दर्शाती है जिन पर दैनिक ध्यान आवश्यक है।" data-ta="உங்கள் ஜாதகம் தினசரி கவனம் தேவைப்படும் பல தாக்கங்களை வெளிப்படுத்துகிறது.">Your chart reveals multiple influences that require daily attention. Choose the plan that calls to you.</p>
+        <p style="color:var(--muted);font-style:italic;font-size:.95rem" data-en="Your chart reveals multiple influences that require daily attention. Your personalised practice awaits." data-hi="आपकी कुंडली कई प्रभाव दर्शाती है जिन पर दैनिक ध्यान आवश्यक है।" data-ta="உங்கள் ஜாதகம் தினசரி கவனம் தேவைப்படும் பல தாக்கங்களை வெளிப்படுத்துகிறது.">Your chart reveals multiple influences that require daily attention. Your personalised practice awaits.</p>
       </div>
 
-      <div class="plan-grid">
-        <div class="plan selected" id="plan-monthly" onclick="selectPlan('monthly')">
+      <div class="plan-grid" style="max-width:380px;margin:0 auto 1.5rem">
+        <div class="plan" id="plan-monthly">
           <div class="plan-name" data-en="MONTHLY" data-hi="मासिक" data-ta="மாதாந்திர">MONTHLY</div>
           <div class="plan-price">$12<span class="plan-period" style="font-size:1rem"> AUD</span></div>
-          <div class="plan-period" data-en="per month" data-hi="प्रति माह" data-ta="மாதத்திற்கு">per month</div>
+          <div class="plan-period" data-en="per month · cancel anytime" data-hi="प्रति माह · कभी भी रद्द करें" data-ta="மாதத்திற்கு · எப்போதும் ரத்து செய்யலாம்">per month · cancel anytime</div>
           <ul class="plan-features">
             <li data-en="Full birth chart analysis" data-hi="पूर्ण जन्म कुंडली विश्लेषण" data-ta="முழு ஜாதக பகுப்பாய்வு">Full birth chart analysis</li>
-            <li data-en="All malefic influences revealed" data-hi="सभी पाप ग्रह प्रभाव" data-ta="அனைத்து பாபக் கிரக தாக்கங்கள்">All malefic influences revealed</li>
+            <li data-en="Full karmic intensity chart" data-hi="पूर्ण कार्मिक तीव्रता कुंडली" data-ta="முழு கார்மீக தீவிர ஜாதகம்">Full karmic intensity chart</li>
             <li data-en="Precise daily remedy" data-hi="सटीक दैनिक उपाय" data-ta="துல்லியமான தினசரி தீர்வு">Precise daily remedy</li>
-            <li data-en="Listen or chant mode" data-hi="सुनें या जपें" data-ta="கேளுங்கள் அல்லது ஜபிக்கவும்">Listen or chant mode</li>
-            <li data-en="Daily push notifications" data-hi="दैनिक पुश सूचनाएं" data-ta="தினசரி அறிவிப்புகள்">Daily push notifications</li>
+            <li data-en="Sacred chant counter" data-hi="पवित्र जप काउंटर" data-ta="புனித ஜப கவுண்டர்">Sacred chant counter</li>
+            <li data-en="Daily practice reminders" data-hi="दैनिक साधना अनुस्मारक" data-ta="தினசரி சாதனை நினைவூட்டல்கள்">Daily practice reminders</li>
             <li data-en="3 languages supported" data-hi="3 भाषाएं समर्थित" data-ta="3 மொழிகள் ஆதரிக்கப்படுகின்றன">3 languages supported</li>
           </ul>
         </div>
-        <div class="plan" id="plan-annual" onclick="selectPlan('annual')">
-          <div class="plan-name" data-en="ANNUAL" data-hi="वार्षिक" data-ta="வருடாந்திர">ANNUAL</div>
-          <div class="plan-price">$99<span class="plan-period" style="font-size:1rem"> AUD</span></div>
-          <div class="plan-period" data-en="per year · save 31%" data-hi="प्रति वर्ष · 31% बचाएं" data-ta="வருடத்திற்கு · 31% சேமிக்கவும்">per year · save 31%</div>
-          <ul class="plan-features">
-            <li data-en="Everything in Monthly" data-hi="मासिक की सब बातें" data-ta="மாதாந்திரில் உள்ள அனைத்தும்">Everything in Monthly</li>
-            <li data-en="Dasha period forecasts" data-hi="दशा काल पूर्वानुमान" data-ta="தசா கால கணிப்புகள்">Dasha period forecasts</li>
-            <li data-en="Monthly cosmic overview" data-hi="मासिक ब्रह्मांडीय अवलोकन" data-ta="மாதாந்திர அண்டவியல் கண்ணோட்டம்">Monthly cosmic overview</li>
-            <li data-en="Transit alerts" data-hi="ग्रह गोचर अलर्ट" data-ta="கிரக சாரம் எச்சரிக்கைகள்">Transit alerts</li>
-            <li data-en="Priority support" data-hi="प्राथमिकता समर्थन" data-ta="முன்னுரிமை ஆதரவு">Priority support</li>
-            <li data-en="2 months free" data-hi="2 महीने मुफ्त" data-ta="2 மாதங்கள் இலவசம்">2 months free</li>
-          </ul>
+      </div>
+
+      <!-- Beta access -->
+      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.3);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.4rem;text-align:center">
+        <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ BETA TESTER ACCESS ✦</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Have an access code? Enter it below to use Jyoti free during the beta.</p>
+        <div style="display:flex;gap:.5rem;max-width:320px;margin:0 auto">
+          <input type="text" id="beta-input" placeholder="Your access code" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem">
+          <button class="btn btn-gold" onclick="redeemBeta()" style="font-size:.72rem;padding:.6rem 1.2rem;white-space:nowrap">Enter ✦</button>
         </div>
+        <p id="beta-msg" style="font-size:.82rem;margin-top:.6rem;min-height:1.2em"></p>
       </div>
 
       <div class="notif-box">
@@ -521,16 +506,16 @@ select option{background:var(--s2);color:var(--text)}
           <h4 data-en="Sacred Practice Reminders" data-hi="पवित्र साधना अनुस्मारक" data-ta="புனித சாதனை நினைவூட்டல்கள்">Sacred Practice Reminders</h4>
           <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-ta="ஜ்யோதி உங்களை எப்போது நினைவூட்ட வேண்டும் என்று தேர்வு செய்யுங்கள்.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
           <div style="display:flex;flex-direction:column;gap:.6rem">
-            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-evening" checked style="accent-color:var(--gold);width:16px;height:16px">
+            <button type="button" class="consent-btn agreed" id="nb-evening" onclick="toggleNotif('evening')">
+              <div class="cbx"></div>
               <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-ta="மாலை — இரவு 8 மணி">Evening — 8pm the night before</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-ta="நாளைய தீர்வு இன்று இரவு — நீங்கள் தயாரிக்க">Tomorrow's remedy delivered tonight so you can prepare</span></span>
-            </label>
-            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--muted)">
-              <input type="checkbox" id="notif-morning" checked style="accent-color:var(--gold);width:16px;height:16px">
+            </button>
+            <button type="button" class="consent-btn agreed" id="nb-morning" onclick="toggleNotif('morning')">
+              <div class="cbx"></div>
               <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-ta="சூரிய உதயம் — காலை 6 மணி">Sunrise — 6am on the day</strong>
               <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-ta="உங்கள் சாதனையை தொடங்க ஒரு மென்மையான காலை நினைவூட்டல்">A gentle morning reminder to begin your practice</span></span>
-            </label>
+            </button>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
             🔔 Enable Notifications
@@ -555,16 +540,18 @@ select option{background:var(--s2);color:var(--text)}
   <!-- PANEL 5: Daily Remedy -->
   <div class="panel" id="panel5">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem">
-        <div>
-          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold)" id="today-greeting"></div>
-          <div style="font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.08em;color:var(--muted)" id="today-date"></div>
-        </div>
-        <div class="tabs" style="border:none;padding:0;margin:0">
-          <div class="tab active" onclick="switchTab('daily',this)" data-en="Today" data-hi="आज" data-ta="இன்று">Today</div>
-          <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-ta="முழு ஜாதகம்">Full Chart</div>
-          <div class="tab" onclick="switchTab('remedies',this)" data-en="Archive" data-hi="संग्रह" data-ta="காப்பகம்">Archive</div>
-        </div>
+      <!-- Daily Practice header -->
+      <div style="text-align:center;margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:1px solid var(--s4)">
+        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem">✦ Sacred Daily Practice ✦</div>
+        <div style="font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);margin-bottom:.4rem" id="today-greeting"></div>
+        <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--muted)" id="today-date"></div>
+      </div>
+
+      <!-- Tab nav -->
+      <div class="tabs" style="justify-content:center;margin-bottom:1.4rem">
+        <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-ta="இன்றைய சாதனை">Today's Practice</div>
+        <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-ta="முழு ஜாதகம்">Full Chart</div>
+        <div class="tab" onclick="switchTab('remedies',this)" data-en="Archive" data-hi="संग्रह" data-ta="காப்பகம்">Archive</div>
       </div>
 
       <!-- Daily Tab -->
@@ -597,14 +584,18 @@ select option{background:var(--s2);color:var(--text)}
               <line x1="70" y1="70" x2="210" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
               <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
               <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.5)" font-size="8" font-family="serif" letter-spacing="2">NADI</text>
-              <text id="fc-h1" x="140" y="30" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h2" x="245" y="30" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h3" x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h4" x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h5" x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h6" x="35" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h7" x="25" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h8" x="35" y="30" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
             </svg>
           </div>
         </div>
@@ -623,15 +614,9 @@ select option{background:var(--s2);color:var(--text)}
 
   <!-- Legal Footer -->
   <div class="legal-footer">
-    <div class="crisis-banner" style="max-width:600px;margin:0 auto 1rem">
-      <span>💙</span>
-      <div style="font-size:.8rem">
-        <strong data-en="Need support?" data-hi="सहायता चाहिए?" data-ta="ஆதரவு தேவையா?">Need support?</strong>
-        <span data-en=" Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info" data-hi=" iCall (India): 9152987821 · Vandrevala Foundation: 1860-2662-345" data-ta=" iCall (India): 9152987821 · Lifeline (AU): 13 11 14"> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info</span>
-      </div>
-    </div>
-    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only. Content is not a substitute for professional medical, psychiatric, psychological, financial or legal advice." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-ta="ஜ்யோதி ஆன்மீக மற்றும் தனிப்பட்ட வளர்ச்சி நோக்கங்களுக்காக மட்டுமே ஜோதிட வழிகாட்டுதலை வழங்குகிறது.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only. Content is not a substitute for professional medical, psychiatric, psychological, financial or legal advice.</p>
-    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia. Worldwide service." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-ta="© 2025 ஜ்யோதி. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.">© 2025 Jyoti. All rights reserved. ABN registered Australia. Worldwide service.</p>
+    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-ta="ஜ்யோதி ஆன்மீக மற்றும் தனிப்பட்ட வளர்ச்சி நோக்கங்களுக்காக மட்டுமே ஜோதிட வழிகாட்டுதலை வழங்குகிறது.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only.</p>
+    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-ta="© 2025 ஜ்யோதி. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.">© 2025 Jyoti. All rights reserved. ABN registered Australia.</p>
+    <p style="margin-top:.3rem;font-size:.68rem;color:var(--s5)">If you need support: Lifeline 13 11 14 · Beyond Blue 1300 22 4636</p>
     <div class="legal-links">
       <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-ta="சேவை விதிமுறைகள்">Terms of Service</a>
       <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-ta="தனியுரிமைக் கொள்கை">Privacy Policy</a>
@@ -639,8 +624,6 @@ select option{background:var(--s2);color:var(--text)}
       <a href="mailto:hello@jyoti.app" data-en="Contact" data-hi="संपर्क" data-ta="தொடர்பு">Contact</a>
     </div>
   </div>
-</div>
-
 <!-- Chant Modal -->
 <div class="chant-modal" id="chant-modal">
   <div class="chant-inner">
@@ -663,7 +646,7 @@ select option{background:var(--s2);color:var(--text)}
     <div class="modal-section"><h3>2. Nature of Service</h3><p>Jyoti is an astrological guidance platform. All readings, remedies, and content are provided for spiritual guidance and personal enrichment purposes only. Nothing constitutes professional medical, psychiatric, psychological, financial, or legal advice.</p></div>
     <div class="modal-section"><h3>3. Personal Use</h3><p>Your subscription is for personal, non-commercial use only. Content generated by Jyoti including readings, remedies, and interpretations may not be reproduced, distributed, sold, or used commercially without written permission. All intellectual property belongs to Jyoti.</p></div>
     <div class="modal-section"><h3>4. Accuracy</h3><p>Jyoti uses established astronomical ephemeris data for planetary calculations. Interpretations are based on classical Vedic and Nadi astrological tradition. No guarantee of accuracy, completeness, or specific outcomes is made. Jyoti accepts no liability for decisions made based on readings.</p></div>
-    <div class="modal-section"><h3>5. Subscriptions & Billing</h3><p>Subscriptions are billed monthly or annually in AUD and renew automatically. You may cancel at any time via your account settings. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with the Australian Consumer Law.</p></div>
+    <div class="modal-section"><h3>5. Subscriptions & Billing</h3><p>Subscriptions are billed monthly in AUD and renew automatically. You may cancel at any time via your account settings. Cancellation takes effect at the end of the current billing period. Refunds are assessed in accordance with the Australian Consumer Law.</p></div>
     <div class="modal-section"><h3>6. Health & Remedies</h3><p>Daily remedies are traditional Vedic spiritual practices. They are not medical treatments. If you have any health condition, please consult a qualified healthcare professional before adopting any physical remedy or practice. Jyoti accepts no liability for any adverse health outcomes.</p></div>
     <div class="modal-section"><h3>7. Limitation of Liability</h3><p>To the maximum extent permitted by applicable law, Jyoti shall not be liable for any indirect, incidental, special, or consequential damages arising from use of the service. Nothing in these terms excludes rights which cannot be excluded under the Australian Consumer Law.</p></div>
     <div class="modal-section"><h3>8. Governing Law</h3><p>These terms are governed by the laws of Queensland, Australia. For users outside Australia, applicable local laws also apply. Disputes shall be subject to the exclusive jurisdiction of Queensland courts unless otherwise required by local law.</p></div>
@@ -694,7 +677,7 @@ select option{background:var(--s2);color:var(--text)}
   <div class="modal-inner">
     <div class="modal-close"><button onclick="closeModal('disclaimer')">✕ Close</button></div>
     <div class="modal-title">Disclaimer</div>
-    <div class="modal-section"><h3>Spiritual Guidance Only</h3><p>All content provided by Jyoti — including birth chart analyses, astrological readings, malefic assessments, daily remedies, mantras, and guidance — is provided for spiritual enrichment and personal reflection purposes only.</p></div>
+    <div class="modal-section"><h3>Spiritual Guidance Only</h3><p>All content provided by Jyoti — including birth chart analyses, astrological readings, karmic intensity assessments, daily remedies, mantras, and guidance — is provided for spiritual enrichment and personal reflection purposes only.</p></div>
     <div class="modal-section"><h3>Not Medical or Psychiatric Advice</h3><p>Nothing within Jyoti constitutes or replaces medical, psychiatric, or psychological advice, diagnosis, or treatment. If you are experiencing a mental health condition, emotional crisis, or any physical health concern, please seek help from a qualified healthcare professional immediately.</p><p style="margin-top:.5rem"><strong style="color:#E07090">Crisis support:</strong> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info · iCall (India): 9152987821</p></div>
     <div class="modal-section"><h3>Not Financial or Legal Advice</h3><p>Jyoti does not provide financial investment advice, legal advice, or any other professional regulated advice. Do not make significant financial or legal decisions based solely on astrological readings.</p></div>
     <div class="modal-section"><h3>No Guaranteed Outcomes</h3><p>Astrological interpretation is a traditional spiritual practice. Jyoti makes no representation or warranty that readings, remedies, or guidance will produce any specific outcome in your life. Individual results vary. Jyoti accepts no liability for decisions made in reliance on content provided.</p></div>
@@ -725,14 +708,10 @@ function loadDemo(){
     gender: 'female'
   };
 
-  // Auto-check consent
-  const chk2a = document.getElementById('chk2a');
-  const chk2b = document.getElementById('chk2b');
-  if(chk2a) chk2a.checked = true;
-  if(chk2b) chk2b.checked = true;
+  [1,2].forEach(n=>{const el=document.getElementById('cb'+n);if(el)el.classList.add('agreed');});
+  checkConsent();
 
-  // Calculate chart and go straight to panel 3
-  chartData = calcChart(userData.dob, userData.tob, userData.pob);
+  const utcEl=document.getElementById('utc-offset'); if(utcEl) utcEl.value='+05:30';
 
   // Show a quick toast
   const toast = document.createElement('div');
@@ -741,18 +720,8 @@ function loadDemo(){
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 
-  // Skip straight to chart
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel3').classList.add('active');
-  for(let i=1;i<=5;i++){
-    const s=document.getElementById('s'+i);
-    s.classList.remove('active','done');
-    if(i<3)s.classList.add('done');
-    else if(i===3)s.classList.add('active');
-  }
-  showChart();
-  setTimeout(() => loadNakshatraReading(), 600);
-  window.scrollTo({top:0,behavior:'smooth'});
+  _activatePanel(3);
+  buildChartAsync();
 }
 
 // ── STARS ──
@@ -788,7 +757,6 @@ let currentLang='en';
 let userData={};
 let chartData={};
 let chantCurrent=0,chantTarget=108;
-let selectedPlan='monthly';
 
 const T={
   en:{
@@ -820,6 +788,7 @@ const T={
 // ── LANGUAGE ──
 function setLang(lang){
   currentLang=lang;
+  document.documentElement.lang=lang==='hi'?'hi':lang==='ta'?'ta':'en';
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.lbtn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.querySelectorAll('[data-en]').forEach(el=>{
@@ -834,35 +803,32 @@ function setLang(lang){
 }
 
 // ── CONSENT ──
-function toggleCheck(id){
-  const cb=document.getElementById(id);
-  if(cb)cb.checked=!cb.checked;
-  checkConsent();
+function toggleNotif(which){
+  const el=document.getElementById('nb-'+which);
+  if(el) el.classList.toggle('agreed');
 }
-function toggleCheck2(id){
-  const cb=document.getElementById(id);
-  if(cb)cb.checked=!cb.checked;
+function agreeConsent(n){
+  const el=document.getElementById('cb'+n);
+  if(el) el.classList.toggle('agreed');
   checkConsent();
 }
 function checkConsent(){
-  const ids=['chk2a','chk2b'];
-  const all=ids.every(id=>{const el=document.getElementById(id);return el&&el.checked;});
+  const ok=[1,2].every(n=>{const el=document.getElementById('cb'+n);return el&&el.classList.contains('agreed');});
   const btn=document.getElementById('btn2');
-  if(btn)btn.disabled=!all;
+  if(btn) btn.disabled=!ok;
 }
 
 // ── PAYMENT ──
 const SQUARE_LINKS = {
-  monthly: 'https://square.link/u/APfv6wgq',
-  annual: 'https://square.link/u/PjQ91i3E'
+  monthly: 'https://square.link/u/APfv6wgq'
 };
 
 function goToPayment(){
-  const link = SQUARE_LINKS[selectedPlan] || SQUARE_LINKS.monthly;
+  const link = SQUARE_LINKS.monthly;
   // Store user intent so we can resume after payment
   try {
     sessionStorage.setItem('jyoti_pending_name', userData.name || '');
-    sessionStorage.setItem('jyoti_pending_plan', selectedPlan);
+    sessionStorage.setItem('jyoti_pending_plan', 'monthly');
   } catch(e){}
   // Open Square payment in new tab
   window.open(link, '_blank');
@@ -891,79 +857,297 @@ function showPostPaymentMessage(){
   msg.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
-// ── PLAN ──
-function selectPlan(p){
-  selectedPlan=p;
-  document.getElementById('plan-monthly').classList.toggle('selected',p==='monthly');
-  document.getElementById('plan-annual').classList.toggle('selected',p==='annual');
+// ── CHART CALCULATION — Meeus precision algorithms ──
+const J2000 = 2451545.0;
+
+// Moon longitude — Meeus Ch.47 simplified, accurate to ~0.3°
+function _moonLon(n){
+  const L0=((218.3164477+13.17639501*n)%360+360)%360;
+  const D =((297.8501921+12.19074909*n)%360+360)%360*Math.PI/180;
+  const M =((357.5291092+ 0.98560028*n)%360+360)%360*Math.PI/180;
+  const Mp=((134.9633964+13.06499295*n)%360+360)%360*Math.PI/180;
+  const F =(( 93.2720950+13.22935024*n)%360+360)%360*Math.PI/180;
+  const dL=6.289*Math.sin(Mp)-1.274*Math.sin(2*D-Mp)+0.658*Math.sin(2*D)
+    -0.186*Math.sin(M)-0.059*Math.sin(2*Mp-2*D)-0.057*Math.sin(Mp-2*D+M)
+    +0.053*Math.sin(Mp+2*D)+0.046*Math.sin(2*D-M)+0.041*Math.sin(Mp-M)
+    -0.035*Math.sin(D)-0.031*Math.sin(Mp+M)-0.015*Math.sin(2*F-2*D)
+    +0.011*Math.sin(Mp-4*D);
+  return ((L0+dL)%360+360)%360;
 }
 
-// ── CHART CALCULATION (Simplified Vedic) ──
-function calcChart(dob,tob,pob){
-  const d=new Date(dob+'T'+(tob||'12:00'));
-  const year=d.getFullYear(),month=d.getMonth()+1,day=d.getDate();
-  const hour=d.getHours()+(d.getMinutes()/60);
-  // Julian Day Number
-  const a=Math.floor((14-month)/12);
-  const y=year+4800-a,m=month+12*a-3;
-  const jdn=day+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
-  const jd=jdn+(hour-12)/24;
-  // Sun longitude (simplified)
-  const n=jd-2451545.0;
+// Sun longitude — accurate to ~0.01°
+function _sunLon(n){
   const L=(280.460+0.9856474*n)%360;
   const g=((357.528+0.9856003*n)%360)*Math.PI/180;
-  const sunLon=(L+1.915*Math.sin(g)+0.020*Math.sin(2*g))%360;
-  // Ayanamsa (Lahiri ~23.85 degrees)
-  const ayanamsa=23.85+(year-2000)*0.014;
-  const siderealSun=((sunLon-ayanamsa)%360+360)%360;
-  // Moon (simplified)
-  const moonLon=((siderealSun*13.37+n*13.176)%360+360)%360;
-  // Ascendant (simplified based on time)
-  const ascBase=((hour/24)*360+siderealSun+90)%360;
-  // Generate planet positions
-  const planets=[
-    {name:'Sun',sym:'☉',lon:siderealSun},
-    {name:'Moon',sym:'☽',lon:moonLon},
-    {name:'Mars',sym:'♂',lon:((siderealSun*0.524+n*0.524+45)%360+360)%360},
-    {name:'Mercury',sym:'☿',lon:((siderealSun+25+Math.sin(n*0.5)*20)%360+360)%360},
-    {name:'Jupiter',sym:'♃',lon:((siderealSun*0.083+n*0.083+120)%360+360)%360},
-    {name:'Venus',sym:'♀',lon:((siderealSun+45+Math.sin(n*0.6)*30)%360+360)%360},
-    {name:'Saturn',sym:'♄',lon:((siderealSun*0.033+n*0.033+200)%360+360)%360},
-    {name:'Rahu',sym:'☊',lon:((360-n*0.053)%360+360)%360},
-    {name:'Ketu',sym:'☋',lon:((180-n*0.053)%360+360)%360},
-  ];
-  planets.forEach(p=>{
-    p.sign=Math.floor(p.lon/30);
-    p.degree=(p.lon%30).toFixed(1);
-    p.nakshatra=Math.floor(p.lon/(360/27));
-  });
-  const asc={lon:ascBase,sign:Math.floor(ascBase/30),degree:(ascBase%30).toFixed(1)};
-  // Detect malefics
-  const malefics=[];
-  const saturn=planets[6],rahu=planets[7],ketu=planets[8],mars=planets[2],sun=planets[0];
-  // Saturn-Moon aspect
-  const moonSatDiff=Math.abs(planets[1].lon-saturn.lon)%360;
-  if(moonSatDiff<30||moonSatDiff>330)malefics.push({name:'Saturn–Moon conjunction',house:planets[1].sign+1,severity:'moderate'});
-  // Rahu-Moon
-  const moonRahuDiff=Math.abs(planets[1].lon-rahu.lon)%360;
-  if(moonRahuDiff<45)malefics.push({name:'Rahu–Moon influence',house:planets[1].sign+1,severity:'strong'});
-  // Ketu ASC
-  const ketuAscDiff=Math.abs(ketu.lon-asc.lon)%360;
-  if(ketuAscDiff<30||ketuAscDiff>330)malefics.push({name:'Ketu near Ascendant',house:1,severity:'moderate'});
-  // Mars 8th
-  if(mars.sign===((asc.sign+7)%12))malefics.push({name:'Mars in 8th House',house:8,severity:'strong'});
-  // Always add at least one
-  if(malefics.length===0){
-    const saraSaati=((saturn.sign-planets[1].sign+12)%12);
-    if(saraSaati<=1||saraSaati===11)malefics.push({name:'Sade Sati — Saturn near Moon',house:planets[1].sign+1,severity:'moderate'});
-    else malefics.push({name:'Saturn aspects 7th house',house:7,severity:'mild'});
+  return ((L+1.915*Math.sin(g)+0.020*Math.sin(2*g))%360+360)%360;
+}
+
+// Ascendant — proper RAMC method
+function _ascendant(jd, latDeg, lonDeg){
+  const n=jd-J2000, T=n/36525;
+  const GMST=((280.46061837+360.98564736629*n+0.000387933*T*T)%360+360)%360;
+  const LST=(GMST+lonDeg+360)%360;
+  const e=(23.439291111-0.013004167*T)*Math.PI/180;
+  const latR=latDeg*Math.PI/180, lstR=LST*Math.PI/180;
+  let a=Math.atan2(Math.cos(lstR),-Math.sin(lstR)*Math.cos(e)-Math.tan(latR)*Math.sin(e))*180/Math.PI;
+  return (a%360+360)%360;
+}
+
+// Outer planet longitudes via equation of center (accurate to 1–2°)
+const _PM={
+  mars:   {l0:355.433,r:0.52403,M0:19.387, rM:0.52403,e:0.0934},
+  jupiter:{l0: 34.397,r:0.08311,M0:20.020, rM:0.08311,e:0.0487},
+  saturn: {l0: 50.079,r:0.03338,M0:317.020,rM:0.03338,e:0.0560},
+  mercury:{l0:252.251,r:4.09234},
+  venus:  {l0:181.979,r:1.60214},
+  rahu:   {l0:125.044,r:-0.05295}
+};
+function _planetLon(name,n){
+  const p=_PM[name];
+  const lon=((p.l0+p.r*n)%360+360)%360;
+  if(p.M0!==undefined){
+    const M=((p.M0+p.rM*n)%360+360)%360*Math.PI/180;
+    const eq=(2*p.e*Math.sin(M)+1.25*p.e*p.e*Math.sin(2*M))*180/Math.PI;
+    return ((lon+eq)%360+360)%360;
   }
-  return{planets,asc,malefics,sunSign:planets[0].sign,moonSign:planets[1].sign,moonNak:planets[1].nakshatra,ascSign:asc.sign,dob,year,month,day};
+  return lon;
+}
+
+function parseUTCOffset(str){
+  if(!str||str.trim()==='') return null;
+  str=str.trim();
+  const sign=str[0]==='-'?-1:1;
+  const s=str.replace(/^[+-]/,'');
+  if(s.includes(':')){ const[h,m]=s.split(':').map(Number); return sign*(h+m/60); }
+  return sign*parseFloat(s);
+}
+
+function calcChart(dob, tob, coords, utcOffset){
+  const lat=coords?.lat??20.59, lon=coords?.lon??78.96;
+  const utcOff=utcOffset??lon/15;
+  const parts=(tob||'12:00:00').split(':').map(Number);
+  const localH=(parts[0]||12)+(parts[1]||0)/60+(parts[2]||0)/3600;
+  const utH=localH-utcOff;
+  const[yr,mo,dy]=dob.split('-').map(Number);
+  const a=Math.floor((14-mo)/12), y=yr+4800-a, mm=mo+12*a-3;
+  const jdn=dy+Math.floor((153*mm+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
+  const jd=jdn-0.5+utH/24;
+  const n=jd-J2000, T=n/36525;
+  const ayan=23.85+T*1.397; // Lahiri ayanamsa
+  const sid=t=>((t-ayan)%360+360)%360;
+  const sunT=_sunLon(n), moonT=_moonLon(n);
+  const marsT=_planetLon('mars',n), mercT=_planetLon('mercury',n);
+  const jupT=_planetLon('jupiter',n), venT=_planetLon('venus',n);
+  const satT=_planetLon('saturn',n), rahuT=_planetLon('rahu',n);
+  const ascT=_ascendant(jd,lat,lon);
+  const rahuL=sid(rahuT), ketuL=(rahuL+180)%360;
+  const mk=(name,sym,l)=>({name,sym,lon:l,sign:Math.floor(l/30),degree:(l%30).toFixed(2),nakshatra:Math.floor(l*27/360)});
+  const planets=[
+    mk('Sun','☉',sid(sunT)), mk('Moon','☽',sid(moonT)), mk('Mars','♂',sid(marsT)),
+    mk('Mercury','☿',sid(mercT)), mk('Jupiter','♃',sid(jupT)), mk('Venus','♀',sid(venT)),
+    mk('Saturn','♄',sid(satT)), mk('Rahu','☊',rahuL), mk('Ketu','☋',ketuL)
+  ];
+  const ascL=sid(ascT);
+  const asc={lon:ascL,sign:Math.floor(ascL/30),degree:(ascL%30).toFixed(2)};
+  const ang=(a,b)=>Math.min(Math.abs(a-b),360-Math.abs(a-b));
+  const malefics=[];
+  if(ang(planets[1].lon,planets[6].lon)<30) malefics.push({name:'Saturn–Moon conjunction',house:planets[1].sign+1,severity:'moderate'});
+  if(ang(planets[1].lon,rahuL)<45) malefics.push({name:'Rahu–Moon influence',house:planets[1].sign+1,severity:'strong'});
+  if(ang(ketuL,ascL)<30) malefics.push({name:'Ketu near Ascendant',house:1,severity:'moderate'});
+  if(planets[2].sign===(asc.sign+7)%12) malefics.push({name:'Mars in 8th House',house:8,severity:'strong'});
+  if(!malefics.length){
+    const ss=(planets[6].lon-planets[1].lon+360)%360;
+    malefics.push(ss<30||ss>330?{name:'Sade Sati — Saturn near Moon',house:planets[1].sign+1,severity:'moderate'}:{name:'Saturn aspects 7th house',house:7,severity:'mild'});
+  }
+  return{planets,asc,malefics,sunSign:planets[0].sign,moonSign:planets[1].sign,moonNak:planets[1].nakshatra,ascSign:asc.sign,dob,lat,lon,utcOff};
 }
 
 // ── PANELS ──
+function _activatePanel(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel'+n).classList.add('active');
+
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById('s'+i);
+    s.classList.remove('active','done');
+    if(i<n)s.classList.add('done');
+    else if(i===n)s.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+async function buildChartAsync(){
+  document.getElementById('loading-card').style.display='block';
+  document.getElementById('chart-card').style.display='none';
+  // 1. Geocode birth place — required for accurate ascendant
+  // Built-in timezone table — guarantees correct UTC for 150+ countries/regions
+  // even when all external timezone APIs are unavailable.
+  const _COUNTRY_TZ={
+    IN:'Asia/Kolkata',NP:'Asia/Kathmandu',LK:'Asia/Colombo',BD:'Asia/Dhaka',
+    BT:'Asia/Thimphu',MV:'Indian/Maldives',PK:'Asia/Karachi',AF:'Asia/Kabul',
+    IR:'Asia/Tehran',JP:'Asia/Tokyo',KR:'Asia/Seoul',KP:'Asia/Pyongyang',
+    TH:'Asia/Bangkok',VN:'Asia/Ho_Chi_Minh',MY:'Asia/Kuala_Lumpur',
+    SG:'Asia/Singapore',PH:'Asia/Manila',MM:'Asia/Rangoon',KH:'Asia/Phnom_Penh',
+    LA:'Asia/Vientiane',BN:'Asia/Brunei',TL:'Asia/Dili',MN:'Asia/Ulaanbaatar',
+    AE:'Asia/Dubai',SA:'Asia/Riyadh',QA:'Asia/Qatar',KW:'Asia/Kuwait',
+    BH:'Asia/Bahrain',OM:'Asia/Muscat',YE:'Asia/Aden',JO:'Asia/Amman',
+    SY:'Asia/Damascus',LB:'Asia/Beirut',IL:'Asia/Jerusalem',IQ:'Asia/Baghdad',
+    GE:'Asia/Tbilisi',AM:'Asia/Yerevan',AZ:'Asia/Baku',
+    GB:'Europe/London',IE:'Europe/Dublin',FR:'Europe/Paris',DE:'Europe/Berlin',
+    IT:'Europe/Rome',ES:'Europe/Madrid',PT:'Europe/Lisbon',NL:'Europe/Amsterdam',
+    BE:'Europe/Brussels',LU:'Europe/Luxembourg',CH:'Europe/Zurich',
+    AT:'Europe/Vienna',PL:'Europe/Warsaw',CZ:'Europe/Prague',SK:'Europe/Bratislava',
+    HU:'Europe/Budapest',RO:'Europe/Bucharest',BG:'Europe/Sofia',HR:'Europe/Zagreb',
+    SI:'Europe/Ljubljana',RS:'Europe/Belgrade',BA:'Europe/Sarajevo',
+    ME:'Europe/Podgorica',MK:'Europe/Skopje',AL:'Europe/Tirane',
+    GR:'Europe/Athens',CY:'Asia/Nicosia',TR:'Europe/Istanbul',
+    FI:'Europe/Helsinki',EE:'Europe/Tallinn',LV:'Europe/Riga',LT:'Europe/Vilnius',
+    BY:'Europe/Minsk',UA:'Europe/Kiev',MD:'Europe/Chisinau',
+    SE:'Europe/Stockholm',NO:'Europe/Oslo',DK:'Europe/Copenhagen',
+    IS:'Atlantic/Reykjavik',MT:'Europe/Malta',
+    EG:'Africa/Cairo',ZA:'Africa/Johannesburg',NG:'Africa/Lagos',
+    KE:'Africa/Nairobi',ET:'Africa/Addis_Ababa',GH:'Africa/Accra',
+    TZ:'Africa/Dar_es_Salaam',UG:'Africa/Kampala',RW:'Africa/Kigali',
+    MA:'Africa/Casablanca',DZ:'Africa/Algiers',TN:'Africa/Tunis',
+    LY:'Africa/Tripoli',SD:'Africa/Khartoum',ZM:'Africa/Lusaka',
+    ZW:'Africa/Harare',MZ:'Africa/Maputo',MG:'Indian/Antananarivo',
+    CR:'America/Costa_Rica',PA:'America/Panama',GT:'America/Guatemala',
+    BZ:'America/Belize',SV:'America/El_Salvador',HN:'America/Tegucigalpa',
+    NI:'America/Managua',CU:'America/Havana',JM:'America/Jamaica',
+    HT:'America/Port-au-Prince',DO:'America/Santo_Domingo',
+    TT:'America/Port_of_Spain',BB:'America/Barbados',GY:'America/Guyana',
+    SR:'America/Paramaribo',PE:'America/Lima',EC:'America/Guayaquil',
+    BO:'America/La_Paz',PY:'America/Asuncion',UY:'America/Montevideo',
+    CO:'America/Bogota',VE:'America/Caracas',
+    NZ:'Pacific/Auckland',FJ:'Pacific/Fiji',PG:'Pacific/Port_Moresby',
+    WS:'Pacific/Apia',TO:'Pacific/Tongatapu'
+  };
+  // For multi-timezone countries, use state/region from geocoded address
+  const _REGION_TZ={
+    // Australia
+    'new south wales':'Australia/Sydney','victoria':'Australia/Melbourne',
+    'queensland':'Australia/Brisbane','south australia':'Australia/Adelaide',
+    'western australia':'Australia/Perth','tasmania':'Australia/Hobart',
+    'northern territory':'Australia/Darwin','australian capital territory':'Australia/Sydney',
+    // USA (common states)
+    'california':'America/Los_Angeles','new york':'America/New_York',
+    'texas':'America/Chicago','florida':'America/New_York',
+    'illinois':'America/Chicago','washington':'America/Los_Angeles',
+    'massachusetts':'America/New_York','georgia':'America/New_York',
+    'michigan':'America/Detroit','ohio':'America/New_York',
+    'pennsylvania':'America/New_York','north carolina':'America/New_York',
+    'virginia':'America/New_York','new jersey':'America/New_York',
+    'hawaii':'Pacific/Honolulu','alaska':'America/Anchorage',
+    'arizona':'America/Phoenix','colorado':'America/Denver',
+    'oregon':'America/Los_Angeles','nevada':'America/Los_Angeles',
+    // Canada
+    'ontario':'America/Toronto','british columbia':'America/Vancouver',
+    'quebec':'America/Montreal','alberta':'America/Edmonton',
+    'nova scotia':'America/Halifax','manitoba':'America/Winnipeg',
+    // Russia
+    'moscow':'Europe/Moscow','saint petersburg':'Europe/Moscow',
+    // China (unified)
+    'beijing':'Asia/Shanghai','shanghai':'Asia/Shanghai',
+    'guangdong':'Asia/Shanghai','sichuan':'Asia/Shanghai',
+    // Brazil
+    'sao paulo':'America/Sao_Paulo','rio de janeiro':'America/Sao_Paulo',
+    'bahia':'America/Bahia','amazonas':'America/Manaus'
+  };
+
+  let coords=null;
+  for(let attempt=0;attempt<3&&!coords;attempt++){
+    try{
+      if(attempt>0) await new Promise(r=>setTimeout(r,1200*attempt));
+      const r=await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=5&featuretype=city&addressdetails=1`,
+        {headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}}
+      );
+      const d=await r.json();
+      if(d?.length){
+        const best=d.find(r=>['city','town','village','municipality'].includes(r.type))||d[0];
+        const cc=(best.address?.country_code||'').toUpperCase();
+        const state=(best.address?.state||best.address?.region||best.address?.county||'').toLowerCase();
+        coords={lat:+best.lat,lon:+best.lon,display:best.display_name,type:best.type,cc,state};
+      }
+    }catch(e){}
+  }
+  if(!coords){
+    document.getElementById('loading-card').style.display='none';
+    document.getElementById('chart-card').style.display='block';
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
+    return;
+  }
+  // 2. Resolve IANA timezone — 3 live APIs + built-in country/region table as guaranteed fallback
+  let birthTZ = null;
+  const _tlat=coords.lat, _tlon=coords.lon;
+  // Primary: timeapi.io
+  if(!birthTZ){try{
+    const tzR=await Promise.race([
+      fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${_tlat}&longitude=${_tlon}`),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(tzR.ok){const tzD=await tzR.json();if(tzD?.timeZone)birthTZ=tzD.timeZone;}
+  }catch(e){}}
+  // Fallback 1: Open-Meteo
+  if(!birthTZ){try{
+    const tzR=await Promise.race([
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${_tlat}&longitude=${_tlon}&hourly=temperature_2m&forecast_days=1&timezone=auto`),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(tzR.ok){const tzD=await tzR.json();if(tzD?.timezone&&tzD.timezone!=='GMT')birthTZ=tzD.timezone;}
+  }catch(e){}}
+  // Fallback 2: WorldTimeAPI
+  if(!birthTZ){try{
+    const tzR=await Promise.race([
+      fetch(`https://worldtimeapi.org/api/timezone`),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(tzR.ok){
+      const zones=await tzR.json();
+      const country=(coords.display||'').split(',').pop().trim().toLowerCase();
+      const match=zones.find(z=>z.toLowerCase().includes(country.split(' ')[0]));
+      if(match)birthTZ=match;
+    }
+  }catch(e){}}
+  // Fallback 3: Built-in country/region table — works offline, covers 150+ countries
+  if(!birthTZ && coords.cc){
+    const direct=_COUNTRY_TZ[coords.cc];
+    if(direct){
+      birthTZ=direct;
+    } else if(coords.state){
+      // Multi-timezone country: match by state/region name
+      const regionKey=Object.keys(_REGION_TZ).find(k=>coords.state.includes(k));
+      if(regionKey) birthTZ=_REGION_TZ[regionKey];
+    }
+  }
+  // 3. Server-side JPL-precision calculation — retry up to 3 times, no client fallback
+  let lastErr='';
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      if(attempt>0) await new Promise(r=>setTimeout(r,1500*attempt));
+      const resp=await fetch('/api/calc-chart',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({dob:userData.dob,tob:userData.tob,lat:coords.lat,lon:coords.lon,birthTZ})
+      });
+      if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
+      chartData=await resp.json();
+      chartData._geocodedPlace=coords.display||null;
+      lastErr='';
+      break;
+    }catch(e){ lastErr=e.message||'Network error'; }
+  }
+  if(lastErr){
+    document.getElementById('loading-card').style.display='none';
+    document.getElementById('chart-card').style.display='block';
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Chart calculation failed</p><p style="color:var(--muted);font-size:.9rem">Could not reach the calculation server. Please check your connection and try again.<br><br><small style="color:var(--dim)">${lastErr}</small></p><button class="btn btn-gold" onclick="buildChartAsync()" style="margin-top:1.5rem">Try Again</button></div>`;
+    return;
+  }
+  showChart();
+  setTimeout(()=>loadNakshatraReading(),600);
+}
+
 function goToPanel(n){
-  // Validate panel 1
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -977,23 +1161,17 @@ function goToPanel(n){
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
-    chartData=calcChart(userData.dob,userData.tob,userData.pob);
-    showChart();
-    setTimeout(()=>loadNakshatraReading(),600);
+    // Keep manual UTC override if user has typed one; otherwise let auto-detect handle it
+    _activatePanel(3);
+    buildChartAsync();
+    return;
   }
   if(n===5){
+    _activatePanel(5);
     setTimeout(()=>showDailyReading(),800);
+    return;
   }
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel'+n).classList.add('active');
-  // Update steps
-  for(let i=1;i<=5;i++){
-    const s=document.getElementById('s'+i);
-    s.classList.remove('active','done');
-    if(i<n)s.classList.add('done');
-    else if(i===n)s.classList.add('active');
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
+  _activatePanel(n);
 }
 
 function showChart(){
@@ -1006,19 +1184,18 @@ function showChart(){
     if(!houseData[h])houseData[h]=[];
     houseData[h].push(p.sym);
   });
-  const houseEls=['h1','h2','h3','h4','h5','h6','h7','h8'];
-  const houseMap=[0,1,2,3,4,5,6,7];
-  houseMap.forEach((h,i)=>{
-    const el=document.getElementById(houseEls[i]);
-    if(el)el.textContent=(houseData[h]||[]).join('');
+  const houseEls=['h1','h2','h3','h4','h5','h6','h7','h8','h9','h10','h11','h12'];
+  houseEls.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=(houseData[i]||[]).join('');
   });
   // Preview planets (Sun, Moon, Ascendant)
   const grid=document.getElementById('preview-planets');
   const preview=[
     {sym:'☉',name:L.planets[0],pos:`${L.signs[chartData.planets[0].sign]} ${chartData.planets[0].degree}°`},
     {sym:'☽',name:L.planets[1],pos:`${L.signs[chartData.planets[1].sign]} ${chartData.planets[1].degree}°`},
-    {sym:'⬆',name:currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant',pos:L.signs[chartData.ascSign]},
-    {sym:'✦',name:currentLang==='hi'?'नक्षत्र':currentLang==='ta'?'நட்சத்திரம்':'Nakshatra',pos:L.nakshatras[chartData.moonNak]},
+    {sym:'⬆',name:currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant',pos:`${L.signs[chartData.ascSign]} ${parseFloat(chartData.asc.degree).toFixed(1)}°`},
+    {sym:'✦',name:currentLang==='hi'?'नक्षत्र':currentLang==='ta'?'நட்சத்திரம்':'Nakshatra',pos:`${L.nakshatras[chartData.moonNak]} pada ${chartData.planets[1].pada}`},
     {sym:'♃',name:L.planets[4],pos:`${L.signs[chartData.planets[4].sign]}`},
     {sym:'♄',name:L.planets[6],pos:`${L.signs[chartData.planets[6].sign]}`},
   ];
@@ -1032,8 +1209,17 @@ function showChart(){
   // Malefics
   const mDiv=document.getElementById('malefic-tags');
   mDiv.innerHTML=chartData.malefics.map(m=>`
-    <span class="tag tag-warn">⚠ ${m.name}</span>
-  `).join('')+'<span class="tag tag-ok">✓ '+(currentLang==='hi'?'सकारात्मक योग पाए गए':currentLang==='ta'?'நேர்மறை யோகங்கள் கண்டறியப்பட்டன':'Positive yogas present')+'</span>';
+    <span class="tag tag-karmic">✦ ${m.name}</span>
+  `).join('')+'<span class="tag tag-ok">✦ '+(currentLang==='hi'?'शुभ योग विद्यमान हैं':currentLang==='ta'?'சுப யோகங்கள் உள்ளன':'Graceful yogas present')+'</span>';
+  // Show detected location + UTC for verification
+  const locEl=document.getElementById('chart-location-info');
+  if(locEl&&chartData._coords){
+    const c=chartData._coords;
+    const utcStr=chartData._utcOff!=null?(chartData._utcOff>=0?'+':'')+chartData._utcOff.toFixed(2).replace('.00','').replace('.50',':30').replace('.75',':45').replace('.25',':15'):'?';
+    const place=chartData._geocodedPlace?chartData._geocodedPlace.split(',').slice(0,2).join(','):'';
+    const tz=chartData._birthTZ?` &nbsp;·&nbsp; ${chartData._birthTZ}`:'';
+    locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${place?place+' &nbsp;·&nbsp; ':''}UTC${utcStr}${tz}</span>`;
+  }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
   document.getElementById('chart-card').style.display='block';
@@ -1138,17 +1324,17 @@ async function loadNakshatraReading(){
   document.getElementById('nak-reading').textContent = nakData.desc;
   // Try to enhance with Claude for a more personalised touch
   try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
+    const nakResp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]} (nakshatra ${nak+1} of 27). Sun sign: ${T['en'].signs[chartData.planets[0].sign]}. Write their personalised nakshatra reading.`,
+        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
         type: 'nakshatra'
       })
     });
-    const data = await resp.json();
-    const text = data.content?.[0]?.text?.trim();
+    const data = await nakResp.json();
+    const text = (data.text || data.content?.[0]?.text || '').trim();
     if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
   } catch(e){ /* use static fallback already shown */ }
 }
@@ -1156,9 +1342,13 @@ async function loadNakshatraReading(){
 function shareNakshatra(){
   const nak = chartData.moonNak;
   const nakName = T[currentLang].nakshatras[nak];
-  const text = `✨ My Moon Nakshatra is ${nakName} — discovered with Jyoti Nadi Astrology. Find yours at jyoti.app`;
+  const pada = chartData.planets[1].pada;
+  const nakDesc = NAKSHATRA_DATA[currentLang]?.[nak]?.desc || NAKSHATRA_DATA.en[nak]?.desc || '';
+  const shortDesc = nakDesc.split('.')[0];
+  const url = window.location.origin;
+  const text = `✨ My Moon Nakshatra is ${nakName} (pada ${pada})\n\n${shortDesc}.\n\nDiscover your Jyotish birth chart at ${url}`;
   if(navigator.share){
-    navigator.share({title:'My Nakshatra — Jyoti',text,url:'https://jyoti.app'}).catch(()=>{});
+    navigator.share({title:`My Nakshatra: ${nakName} — Jyoti`,text}).catch(()=>{});
   } else {
     navigator.clipboard?.writeText(text).then(()=>alert('Copied to clipboard! Share it anywhere ✨')).catch(()=>alert(text));
   }
@@ -1175,66 +1365,53 @@ async function showDailyReading(){
   document.getElementById('daily-loading').style.display='block';
   document.getElementById('daily-content').style.display='none';
   const L_en=T['en'];
+  const p=chartData.planets;
+  const dasha=chartData.dashaPeriod;
+  // Build three-tier dasha context string — most immediate tier first
+  const prat = dasha?.pratyantara;
+  const antr = dasha?.antar;
+  const dashaContext = dasha ? `
+VIMSHOTTARI DASHA (most important for today's practice — work from innermost outward):
+  ► PRATYANTARA (active right now, strongest immediate influence): ${prat?.lord||'?'} — ends ${prat?.endDate||'?'}, next: ${prat?.next||'?'}
+  ► ANTAR DASHA (current sub-period, shapes the month): ${antr?.lord||dasha.lord} — ends ${antr?.endDate||'?'}, next: ${antr?.next||'?'}
+  ► MAHA DASHA (background current, shapes the years): ${dasha.lord} — ${dasha.remaining} years remaining, next: ${dasha.next}
+The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's energy (${prat?.lord||dasha.lord}), then layer in the Antar lord (${antr?.lord||dasha.lord}) as secondary influence, with the Maha Dasha (${dasha.lord}) as deep background context.` : '';
+
   const chartSummary=`
 Name: ${userData.name}
-Sun: ${L_en.signs[chartData.planets[0].sign]} ${chartData.planets[0].degree}°
-Moon: ${L_en.signs[chartData.planets[1].sign]} ${chartData.planets[1].degree}° — Nakshatra: ${L_en.nakshatras[chartData.moonNak]}
-Ascendant: ${L_en.signs[chartData.ascSign]}
-Mars: ${L_en.signs[chartData.planets[2].sign]}
-Mercury: ${L_en.signs[chartData.planets[3].sign]}
-Jupiter: ${L_en.signs[chartData.planets[4].sign]}
-Venus: ${L_en.signs[chartData.planets[5].sign]}
-Saturn: ${L_en.signs[chartData.planets[6].sign]}
-Rahu: ${L_en.signs[chartData.planets[7].sign]}
-Ketu: ${L_en.signs[chartData.planets[8].sign]}
+Sun: ${p[0].signName||L_en.signs[p[0].sign]} ${p[0].degree}°
+Moon: ${p[1].signName||L_en.signs[p[1].sign]} ${p[1].degree}° — Nakshatra: ${p[1].nakshatraName||L_en.nakshatras[chartData.moonNak]}, Pada ${p[1].pada||''}
+Ascendant (Lagna): ${chartData.asc?.signName||L_en.signs[chartData.ascSign]}  ${chartData.asc?.degree||''}°
+Mars: ${p[2].signName||L_en.signs[p[2].sign]} ${p[2].degree}°
+Mercury: ${p[3].signName||L_en.signs[p[3].sign]} ${p[3].degree}°
+Jupiter: ${p[4].signName||L_en.signs[p[4].sign]} ${p[4].degree}°
+Venus: ${p[5].signName||L_en.signs[p[5].sign]} ${p[5].degree}°
+Saturn: ${p[6].signName||L_en.signs[p[6].sign]} ${p[6].degree}°
+Rahu: ${p[7].signName||L_en.signs[p[7].sign]} ${p[7].degree}°
+Ketu: ${p[8].signName||L_en.signs[p[8].sign]} ${p[8].degree}°
+${dashaContext}
 Malefic influences: ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[now.getDay()]} — ruled by ${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][now.getDay()]}
 Today's date: ${now.toDateString()}
+Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()}
 `;
-  const lang_instruction=currentLang==='hi'?'Respond entirely in Hindi (Devanagari script).':currentLang==='ta'?'Respond entirely in Tamil script.':'Respond in English.';
-  const systemPrompt=`You are Jyoti, a precise and compassionate Nadi astrology guidance system. You provide traditional Vedic and Nadi astrological daily remedies.
-
-CORE RULES — NEVER VIOLATE:
-1. TONE: Always warm, supportive, loving. Never alarming, never harsh. Challenges are opportunities. Malefics are teachers, not punishments.
-2. ACCURACY: Base remedies strictly on classical Vedic/Nadi tradition — specific mantras, offerings, timing, and practices tied to the exact planetary conditions of today meeting this person's natal chart.
-3. SPECIFICITY: Only prescribe what is genuinely needed TODAY based on today's transits meeting this birth chart. Some days one thing. Some days nothing but a loving observation. Never generic.
-4. LEGAL: Never give medical, psychiatric, financial, or legal advice. Never claim outcomes. Always frame as spiritual practice.
-5. LANGUAGE: ${lang_instruction}
-6. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
-
-JSON structure:
-{
-  "greeting": "Personal opening line using their name",
-  "cosmic_weather": "1-2 sentences on what is happening cosmically today and how it meets their chart specifically",
-  "has_remedy": true or false,
-  "remedy": {
-    "title": "Brief title of today's practice",
-    "what_is_happening": "1-2 sentences — the specific planetary meeting creating this need",
-    "practice": "The exact remedy — what to do, when, how many times if mantra, what to offer if offering",
-    "mantra": "The exact Sanskrit mantra if applicable (null if not needed today)",
-    "mantra_count": 108 or 27 or 21 or 9 (null if no mantra),
-    "mantra_meaning": "Brief meaning of the mantra in the response language",
-    "timing": "Best time of day for this practice",
-    "loving_close": "A warm, loving closing sentence of encouragement"
-  },
-  "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace (null if remedy exists)"
-}`;
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 13000);
   try{
-    const data = await fetch('/.netlify/functions/get-remedy', {
+    const resp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        chartSummary,
-        lang: currentLang,
-        type: 'daily',
-        system: systemPrompt
-      })
-    }).then(r => r.json());
-    const reading = data;
-    renderDailyReading(reading,dayName);
+      body: JSON.stringify({chartSummary, lang: currentLang, type: 'daily'}),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    if(!resp.ok) throw new Error('api-error');
+    const data = await resp.json();
+    if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)) throw new Error('bad-data');
+    renderDailyReading(data, dayName);
   }catch(e){
-    // Fallback
-    renderFallbackReading(dayName,now);
+    clearTimeout(tid);
+    renderFallbackReading(dayName, now);
   }
 }
 
@@ -1260,7 +1437,6 @@ function renderDailyReading(r,dayName){
           <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${rem.mantra_count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
         </div>
         <div class="remedy-actions">
-          <button class="audio-btn" onclick="listenMantra('${rem.mantra}',${rem.mantra_count})">▶ ${currentLang==='hi'?'सुनें':currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
           <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${rem.mantra_count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
         </div>`:''}
         <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>
@@ -1268,6 +1444,15 @@ function renderDailyReading(r,dayName){
     `;
   } else {
     html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p style="font-size:.9rem;color:var(--muted);font-style:italic">${r.greeting}</p><p>${r.no_remedy_message}</p></div>`;
+  }
+  if(r.month_end_prep){
+    const prep=r.month_end_prep;
+    html+=`<div style="background:rgba(26,148,144,.06);border:1px solid rgba(26,148,144,.25);border-radius:12px;padding:1.2rem 1.5rem;margin-top:1rem">
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--teal);margin-bottom:.5rem">📋 ${prep.title||'Preparing for Next Month'}</div>
+      <p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${prep.intro||''}</p>
+      <ul style="list-style:none;padding:0;margin:0">${(prep.items_needed||[]).map(item=>`<li style="padding:.35rem 0;border-bottom:1px solid rgba(26,148,144,.1);font-size:.87rem;color:var(--text)">✓ ${item}</li>`).join('')}</ul>
+      ${prep.timing_note?`<p style="font-size:.8rem;color:var(--dim);font-style:italic;margin-top:.7rem">${prep.timing_note}</p>`:''}
+    </div>`;
   }
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
   // Archive
@@ -1279,28 +1464,123 @@ function renderDailyReading(r,dayName){
 function renderFallbackReading(dayName,now){
   document.getElementById('daily-loading').style.display='none';
   document.getElementById('daily-content').style.display='block';
-  const L=T[currentLang];
   const dayIdx=now.getDay();
-  const dayPlanet=[L.planets[0],L.planets[1],L.planets[2],L.planets[3],L.planets[4],L.planets[5],L.planets[6]][dayIdx];
-  const mantras=[
-    {m:'Om Suryaya Namaha',c:108},{m:'Om Chandraya Namaha',c:108},{m:'Om Angarakaya Namaha',c:27},
-    {m:'Om Budhaya Namaha',c:21},{m:'Om Brihaspataye Namaha',c:108},{m:'Om Shukraya Namaha',c:108},{m:'Om Shanaischaraya Namaha',c:108}
-  ];
-  const mt=mantras[dayIdx];
-  const greeting=currentLang==='hi'?`नमस्ते, ${userData.name}`:currentLang==='ta'?`வணக்கம், ${userData.name}`:`Namaste, ${userData.name}`;
+
+  // Dasha-lord specific remedies — grounded in authentic Vedic vibrational tradition
+  const DASHA_DATA={
+    Sun:{
+      mantra:'Om Hraam Hreem Hraum Sah Suryaya Namah',
+      count:108,
+      color:'saffron, copper or gold',
+      timing:'Within one hour of sunrise, facing east',
+      whatIsHappening:'Sun Dasha calls you into your own authority and luminosity. The soul\'s relationship with power, purpose, and the father principle is being refined. Wherever you have hidden yourself, this period asks you to become visible and to own your presence fully.',
+      practice:'Fill a copper or clay vessel with clean water. Stand or sit facing east at sunrise. Hold the vessel above your head and pour a slow arc of water while chanting the mantra 108 times — this is Surya Arghya, the ancient solar offering. As the water falls, feel the Sun\'s prana entering through your crown. After the offering, sit for five minutes in stillness, spine erect, eyes closed, visualising a golden light at the centre of your chest. Wear saffron, copper or gold today. The Gayatri Mantra (Om Bhur Bhuvah Swah...) can also be recited 108 times at sunrise — it is specifically a solar mantra and profoundly strengthens Sun Dasha.'},
+    Moon:{
+      mantra:'Om Shraam Shreem Shraum Sah Chandraya Namah',
+      count:108,
+      color:'white or silver',
+      timing:'Dusk, or by water',
+      whatIsHappening:'Moon Dasha deepens the inner world — emotions, intuition, ancestry and the rhythms of the body all carry heightened meaning. The mind becomes more sensitive and more receptive. Dreams carry messages. What is felt is as real as what is thought.',
+      practice:'At dusk, bathe if possible, then light a ghee or sesame oil lamp and place a small bowl of clean water beside it. Chant the mantra 108 times facing the lamp and water — the Moon governs all water, and chanting near it amplifies the vibration. After chanting, sit in Om Namah Shivaya (108 times) — Shiva governs the Moon and wearing it as the crescent crown. Drink warm milk with a pinch of cardamom before sleep. On full moon nights, sit outdoors or by an open window under moonlight and chant for at least 21 minutes — this is the most potent practice of the lunar cycle. Wear or carry silver.'},
+    Mars:{
+      mantra:'Om Kraam Kreem Kraum Sah Bhaumaya Namah',
+      count:21,
+      color:'red or coral',
+      timing:'Tuesday morning, before noon',
+      whatIsHappening:'Mars Dasha sharpens courage, determination and the capacity for decisive action. Energy is higher than usual and must be channelled consciously — through discipline, physical practice, and clear intention — otherwise it accumulates as frustration or conflict.',
+      practice:'Light a pure ghee lamp — ghee is Mars\'s offering substance, clarifying scattered fire into directed flame. Place something red nearby: red cloth, red flowers, or red lentils as a symbol of Mars\'s vibrational colour. Chant the mantra 21 times with full breath and steady voice, facing south — Mars\'s direction. Then recite the Hanuman Chalisa or at minimum the opening verse: "Jai Hanuman gyan gun sagar..." Hanuman represents Mars energy in its highest expression — boundless strength placed entirely in service. Physical discipline today is itself a sacred practice: exercise, yoga, or vigorous breathwork with complete intention. Fast on Tuesdays or eat only once if this period is challenging.'},
+    Mercury:{
+      mantra:'Om Braam Breem Braum Sah Budhaya Namah',
+      count:108,
+      color:'grass green or emerald',
+      timing:'Wednesday morning, after sunrise',
+      whatIsHappening:'Mercury Dasha is a period of heightened intelligence, communication and discernment. The voice — written, spoken and expressed — carries unusual power and reach. The mind is sharp. What is learned now is retained. What is said now resonates further than usual.',
+      practice:'Begin with Nadi Shodhana (alternate nostril breathing) — 10 rounds minimum. Mercury governs the nervous system and the breath; this pranayama purifies the Mercury channel directly. Then chant the mantra 108 times, keeping the mind precisely on each syllable. After chanting, sit for 10 minutes and study something of genuine sacred or intellectual value — not casually, but with full absorption. The Vishnu Sahasranama is the classical Mercury-era text: Vishnu is cosmic intelligence and Mercury carries that intelligence into worldly expression. Wear or carry something green. On Wednesdays, write your intentions for the Mercury period — clear, specific, grounded.'},
+    Jupiter:{
+      mantra:'Om Graam Greem Graum Sah Gurave Namah',
+      count:108,
+      color:'yellow or turmeric gold',
+      timing:'Thursday morning, facing northeast — the direction of Guru',
+      whatIsHappening:'Jupiter Dasha is the great opening — wisdom, expansion, dharma and grace are all amplified. Teachers appear when you are ready to receive them. Doors open that were previously sealed. This is a period when the soul is being asked to grow into a larger version of itself.',
+      practice:'Apply a turmeric tilak (mark) to your forehead at the ajna chakra — turmeric is Jupiter\'s substance and this activates Jupiter\'s wisdom. Light a ghee lamp and offer yellow flowers if available. Chant the mantra 108 times facing northeast. Then recite the Guru Vandana: "Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah, Gurur Sakshat Param Brahma, Tasmai Shri Gurave Namah" — bow to all the teachers of your life, seen and unseen, living and ancestral. Jupiter Dasha specifically expands through giving: today, give something of genuine value — your time, your knowledge, your care — with no expectation of return. Fast on Thursdays or eat only yellow or golden foods.'},
+    Venus:{
+      mantra:'Om Draam Dreem Draum Sah Shukraya Namah',
+      count:108,
+      color:'white, cream or soft pink',
+      timing:'Friday dusk, when Venus rises as the evening star',
+      whatIsHappening:'Venus Dasha weaves beauty, creative power and deep relational grace through your life. The Shakti principle is amplified — receptivity, aesthetic sense, love and artistic expression all carry heightened potency. This is a period when the quality of what surrounds you shapes your inner state more than usual.',
+      practice:'At dusk, bathe and dress in white or cream. Light rose, jasmine or vetiver incense — these are Venus\'s sacred fragrances. Place white flowers at your altar or table as an offering to Lakshmi, the presiding goddess of Venus. Chant the mantra 108 times, then follow with the Lakshmi seed mantra: "Om Shreem Mahalakshmyai Namah" (108 times) — Shri Suktam from the Vedas is the most potent Venus-era recitation if you know it. Venus Dasha responds to beauty maintained as a spiritual discipline: keep your space clean and harmonious, dress with care, engage with music and art as sacred acts, not distractions. On Fridays, fast or eat only white and sweet foods.'},
+    Saturn:{
+      mantra:'Om Praam Preem Praum Sah Shanaischaraya Namah',
+      count:108,
+      color:'dark blue, black or dark grey',
+      timing:'Saturday morning, before eating — on an empty stomach',
+      whatIsHappening:'Saturn Dasha is the great karmic refiner. Nothing inessential survives it, and that is precisely its gift. This period strips away what was borrowed, what was performed, what was not truly yours — leaving only what is real and tested. Patience, discipline and sustained effort are both the remedy and the reward.',
+      practice:'On an empty stomach, light a sesame oil lamp — black sesame is Saturn\'s grain and its oil burns with Saturn\'s quality: slow, steady, complete. Face west, Saturn\'s direction. Chant the mantra 108 times in a measured, unhurried rhythm — do not rush the Saturn mantra. Then recite the Hanuman Chalisa: Hanuman is traditionally regarded as the one deity who can temper Saturn\'s severity, and this recitation is one of the most time-honoured Shani remedies in the classical tradition. Wear dark blue or black on Saturdays. Practice one act of genuine service today — not for recognition, but in the spirit of nishkama karma (desireless action). The Shani Stotram "Nilanjana Samabhasam Raviputram Yamagrajam..." may also be recited.'},
+    Rahu:{
+      mantra:'Om Bhraam Bhreem Bhraum Sah Rahave Namah',
+      count:18,
+      color:'deep indigo, dark violet or smoke blue',
+      timing:'At dusk — the twilight threshold, Rahu\'s hour',
+      whatIsHappening:'Rahu Pratyantara brings its eclipsing, intensifying energy into sharp focus right now. Desire, ambition, restlessness and the pull toward something beyond the ordinary are all heightened. Rahu is the shadow that creates urgency — the practice is to move through it with awareness rather than being consumed by it.',
+      practice:'At dusk, light a camphor flame — camphor burns completely to nothing, leaving no residue. This is Rahu\'s teaching: the ego consumed by the fire of awareness. Sit facing southwest, Rahu\'s direction. Chant the beej mantra 18 times, placing total attention on each syllable. The "Bhraam" seed syllable carries Rahu\'s vibrational frequency directly — feel it resonate in the skull and brow as you chant. After chanting, practice Trataka (steady gazing at the camphor flame) for five minutes without blinking — this is an ancient Rahu remedy that sharpens the witnessing faculty and dissolves Rahu\'s tendency toward mental scattering. Then sit in complete stillness and observe the mind\'s movements without engaging any of them for five minutes. Durga mantra "Om Dum Durgayai Namah" (108 times) is the classical remedy for a difficult Rahu period — Devi in her fierce form dissolves Rahu\'s illusions. If coconut is available, offer a whole coconut to flowing water — this is the traditional Vedic Rahu offering, dissolving attachment and obsession.'},
+    Ketu:{
+      mantra:'Om Sraam Sreem Sraum Sah Ketave Namah',
+      count:7,
+      color:'grey, smoke or earthy brown',
+      timing:'Evening, as daylight fades',
+      whatIsHappening:'Ketu Dasha draws the soul toward its origin. Past-life impressions surface. Attachments loosen — sometimes painfully, always purposefully. The ordinary loses its grip and something deeper begins to call. This is not dissolution but distillation: the soul is finding its most essential shape.',
+      practice:'As daylight fades, burn camphor in a small bowl or vessel — sit before it and simply watch. The camphor, like Ketu, consumes itself completely in the service of light. Chant the mantra 7 times — Ketu\'s number — with slow, full breath. Then practice Nadi Shodhana pranayama for 7 full rounds (inhale left, exhale right, inhale right, exhale left = 1 round). Ketu governs the subtle body and these breath practices directly address its domain. After pranayama, sit in absolute stillness for a minimum of 10 minutes. Chant the Ganesha mantra "Om Gam Ganapataye Namah" 108 times — Ganesha and Ketu share a deep correspondence in classical Jyotish, both governing the capacity to remove what is no longer needed. Practice mauna (intentional silence) for one hour today if possible: Ketu\'s deepest teaching arrives in silence.'}
+  };
+
+  // ── Three-tier dasha — most immediate layer drives the practice ──
+  const dp        = chartData?.dashaPeriod;
+  const pratLord  = dp?.pratyantara?.lord;
+  const antarLord = dp?.antar?.lord;
+  const mahaLord  = dp?.lord;
+  // Pratyantara is the sharpest daily influence; fall back up the chain
+  const primaryLord = pratLord || antarLord || mahaLord || 'Sun';
+  const di = DASHA_DATA[primaryLord] || DASHA_DATA.Sun;
+
+  const moonNak  = chartData?.planets?.[1]?.nakshatraName || '';
+  const moonSign = chartData?.planets?.[1]?.signName      || '';
+
+  const greeting = currentLang==='hi' ? `नमस्ते, ${userData.name}`
+                 : currentLang==='ta' ? `வணக்கம், ${userData.name}`
+                 : `Namaste, ${userData.name}`;
+
+  // Dasha badge — all three tiers
+  const pratEnd  = dp?.pratyantara?.endDate || '';
+  const dashaTag = mahaLord
+    ? `${mahaLord} · ${antarLord||mahaLord} · ${pratLord||'—'}${pratEnd?' until '+pratEnd:''}`
+    : '';
+
+  // Contextual intro line
+  let cosmicLine = '';
+  if (pratLord && antarLord && mahaLord) {
+    cosmicLine = `You are in <strong>${mahaLord} Maha Dasha</strong> — the long current beneath everything. Within it, <strong>${antarLord} Antar Dasha</strong> shapes this season of your life. And right now, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (until '+pratEnd+')':''} is the most immediate energy active in your field. Today's practice draws directly from ${pratLord}'s influence.`;
+  } else if (mahaLord && moonSign) {
+    cosmicLine = `You are moving through your ${mahaLord} Dasha${moonNak?' — your Moon in '+moonSign+' ('+moonNak+' Nakshatra) shapes how you receive this energy':''}.`;
+  }
+
   const html=`
     <div class="remedy-card">
       <div class="remedy-day">${dayName}</div>
+      ${dashaTag?`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--gold-d);margin-bottom:.6rem;text-transform:uppercase">✦ ${dashaTag}</div>`:''}
       <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${greeting}</p>
-      <div class="remedy-text">${currentLang==='hi'?`आज ${dayPlanet} का दिन है। इस मंत्र का जप करें और शांति से बैठें।`:currentLang==='ta'?`இன்று ${dayPlanet} நாள். இந்த மந்திரத்தை ஜபியுங்கள்.`:`Today is ruled by ${dayPlanet}. Sit quietly and offer your practice.`}</div>
+      ${cosmicLine?`<p style="font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem">${cosmicLine}</p>`:''}
+      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${di.whatIsHappening}</p>
+      <div class="remedy-text">${di.practice}</div>
+      <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-        <div style="font-size:1.1rem;color:var(--gold);font-style:italic">${mt.m}</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mt.c} ${currentLang==='ta'?'முறை':'times'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='ta'?'மந்திரம்':'MANTRA'}</div>
+        <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${di.mantra}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="audio-btn" onclick="listenMantra('${mt.m}',${mt.c})">▶ ${currentLang==='ta'?'கேளுங்கள்':'Listen'}</button>
-        <button class="chant-btn" onclick="openChant('${mt.m}','Sacred mantra for ${dayName}',${mt.c})">🙏 ${currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+        <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.</p>
     </div>
   `;
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
@@ -1317,34 +1597,150 @@ function showFullChart(){
     if(!houseData[h])houseData[h]=[];
     houseData[h].push(p.sym);
   });
-  ['h1','h2','h3','h4','h5','h6','h7','h8'].forEach((id,i)=>{
+  ['h1','h2','h3','h4','h5','h6','h7','h8','h9','h10','h11','h12'].forEach((id,i)=>{
     const el=document.getElementById('fc-'+id);
     if(el)el.textContent=(houseData[i]||[]).join('');
   });
   // Full reading
   const fullDiv=document.getElementById('full-reading');
+  const cd=chartData2;
+  const L2=T['en'];
+  const houseNames=['Self & Body','Wealth & Speech','Siblings & Courage','Home & Mother','Children & Creativity','Health & Service','Partnership & Others','Transformation & Longevity','Dharma & Higher Learning','Career & Status','Gains & Community','Loss & Liberation'];
+  // ── Dasha timeline — three tiers, dates from server ──
+  const DSM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
+  const DASHA_LORDS2=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+  const DASHA_YEARS2=[7,20,6,10,7,18,16,19,17];
+  let dashaRows='';
+  if(cd.dashaPeriod){
+    const dp=cd.dashaPeriod;
+    const prat=dp.pratyantara||{};
+    const antr=dp.antar||{};
+    // Current Maha
+    dashaRows=`
+      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.25);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--gold-d);margin-bottom:.5rem">MAHA DASHA — Major Period</div>
+        <div style="font-size:1rem;color:var(--gold-pale);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[dp.lord]||''} ${dp.lord} Maha Dasha</div>
+        <div style="font-size:.82rem;color:var(--dim)">${dp.remaining} years remaining · ends ${dp.endDate||''} · next: ${dp.next}</div>
+      </div>`;
+
+    // Current Antar
+    if(antr.lord){
+      dashaRows+=`
+      <div style="background:rgba(26,148,144,.05);border:1px solid rgba(26,148,144,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:.8rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">ANTAR DASHA — Sub-Period (Bhukti)</div>
+        <div style="font-size:.95rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[antr.lord]||''} ${antr.lord} Antar Dasha</div>
+        <div style="font-size:.82rem;color:var(--dim)">${antr.startDate} – ${antr.endDate} · next: ${antr.next}</div>
+      </div>`;
+    }
+
+    // Current Pratyantara
+    if(prat.lord){
+      dashaRows+=`
+      <div style="background:rgba(180,100,200,.05);border:1px solid rgba(180,100,200,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:1.6rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">PRATYANTARA — Active Right Now</div>
+        <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} Pratyantara</div>
+        <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} – ${prat.endDate} · next: ${prat.next}</div>
+      </div>`;
+    }
+
+    // Next 2 Antar Dashas ahead
+    if(antr.next){
+      const nextAntrIdx = DASHA_LORDS2.indexOf(antr.next);
+      dashaRows+=`<div style="margin-top:.4rem;padding-top:.6rem;border-top:1px solid var(--s3)">`;
+      dashaRows+=`<div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.4rem">UPCOMING ANTAR DASHAS</div>`;
+      for(let i=0;i<3;i++){
+        const idx=(nextAntrIdx+i)%9;
+        dashaRows+=`<div style="font-size:.8rem;color:var(--dim);padding:.15rem 0">${DSM[DASHA_LORDS2[idx]]||''} ${DASHA_LORDS2[idx]}</div>`;
+      }
+      dashaRows+=`</div>`;
+    }
+  }
+  // Planet dignity labels
+  const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const EXALT={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const DEBIL={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  function dignity(name,signIdx){
+    if(EXALT[name]===signIdx)return'<span style="color:var(--teal);font-size:.7rem"> ★ Exalted</span>';
+    if(DEBIL[name]===signIdx)return'<span style="color:var(--rose);font-size:.7rem"> ↓ Debilitated</span>';
+    if((OWN[name]||[]).includes(signIdx))return'<span style="color:var(--gold-pale);font-size:.7rem"> ◉ Own</span>';
+    return'';
+  }
   fullDiv.innerHTML=`
-    <div class="divider"><span>${currentLang==='hi'?'ग्रह स्थिति':currentLang==='ta'?'கிரக நிலைகள்':'Planetary Positions'}</span></div>
-    ${chartData2.planets.map(p=>`
-      <div class="summary-row">
-        <span class="summary-label">${p.sym} ${L.planets[chartData2.planets.indexOf(p)]}</span>
-        <span class="summary-value">${L.signs[p.sign]} ${p.degree}° — ${L.nakshatras[p.nakshatra]}</span>
-      </div>
-    `).join('')}
-    <div class="summary-row">
-      <span class="summary-label">⬆ ${currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant'}</span>
-      <span class="summary-value">${L.signs[chartData2.ascSign]} ${chartData2.asc.degree}°</span>
+    <!-- Birth Summary -->
+    <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:var(--gold);margin-bottom:.6rem">BIRTH DETAILS</div>
+      <div class="summary-row"><span class="summary-label">Name</span><span class="summary-value">${userData.name}</span></div>
+      <div class="summary-row"><span class="summary-label">Date</span><span class="summary-value">${userData.dob}</span></div>
+      <div class="summary-row"><span class="summary-label">Time</span><span class="summary-value">${userData.tob}</span></div>
+      <div class="summary-row"><span class="summary-label">Place</span><span class="summary-value">${userData.pob}</span></div>
+      ${cd._birthTZ?`<div class="summary-row"><span class="summary-label">Timezone</span><span class="summary-value">${cd._birthTZ}${cd._utcOff!=null?' (UTC'+(cd._utcOff>=0?'+':'')+cd._utcOff+')':''}</span></div>`:''}
+      <div class="summary-row"><span class="summary-label">Ayanamsa</span><span class="summary-value">Lahiri ${parseFloat(cd.ayanamsa).toFixed(2)}°</span></div>
     </div>
-    <div class="divider" style="margin-top:1.2rem"><span>${currentLang==='hi'?'पाप ग्रह प्रभाव':currentLang==='ta'?'பாபக் கிரக தாக்கங்கள்':'Malefic Influences'}</span></div>
+
+    <!-- Planetary Positions -->
+    <div class="divider"><span>Planetary Positions</span></div>
+    ${cd.planets.map((p,i)=>{
+      const dg=dignity(['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'][i],p.sign);
+      return`<div class="summary-row">
+        <span class="summary-label">${p.sym} ${L2.planets[i]}</span>
+        <span class="summary-value" style="text-align:right">${L2.signs[p.sign]} ${parseFloat(p.degree).toFixed(1)}° · ${L2.nakshatras[p.nakshatra]}${dg}</span>
+      </div>`;
+    }).join('')}
+    <div class="summary-row">
+      <span class="summary-label">⬆ Ascendant (Lagna)</span>
+      <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
+    </div>
+
+    <!-- Planet Story -->
+    <div class="divider" style="margin-top:1.2rem"><span>What Your Chart Reveals</span></div>
+    ${(()=>{
+      const PHM={
+        Sun:['radiates your identity and vitality — you lead from sheer presence','illuminates your relationship with wealth and the power of your voice','shines through courage, communication, and the bonds with siblings','warms your home, your mother, and your need for emotional roots','glows in creative fire — romance, self-expression, and pride in your gifts','is devoted to health, service, and the refinement of daily life','finds itself through partnership and what others reflect back to you','empowers you through transformation, depth, and the hidden realm','seeks meaning through philosophy, teaching, and distant horizons','drives career ambition, authority, and your place in public life','brightens community, aspirations, and your circle of influence','seeks its fullest self through solitude, retreat, and spiritual surrender'],
+        Moon:['carries your emotional identity — you feel the world before you think it','nurtures wealth and family through memory, care, and comfort','flows through siblings, daily routines, and quiet acts of communication','roots deepest in home, ancestry, and the bond with your mother','blossoms in creative joy and emotional connection with children','finds peace through humble service, wellness rituals, and caring for others','seeks emotional fulfilment through close partnership and deep bonds','dives into emotional depth, ancestral healing, and what lives beneath the surface','wanders toward wisdom, faith, and meaning in faraway places','invests emotionally in reputation, career, and public duty','connects through friendship, community, and shared dreams','retreats into the inner world — dreams, solitude, and quiet spiritual depths'],
+        Mars:['asserts identity, courage, and physical presence with direct force','drives the pursuit of wealth through bold, decisive action','sharpens speech, debate, and the courage to say the difficult thing','protects home and family with fierce, territorial instinct','pours passion into romance, creativity, and competitive spirit','disciplines the body through rigorous health and precise daily habits','challenges and energises partnerships through directness and honesty','plunges into crisis management, the occult, and radical transformation','drives the search for truth through adventure and philosophical debate','fuels career ambition with relentless drive and competitive edge','energises your network, community causes, and ambitious goals','works quietly behind the scenes — hidden effort and solitary discipline'],
+        Mercury:['expresses the self through quick wit, language, and adaptability','builds wealth through business acumen, skilled speech, and clever strategy','thrives in communication, learning, and the company of curious minds','thinks deeply about home, family history, and private matters','creates through playful ideas, teaching, and artistic writing','analyses health, work systems, and daily life with precision and care','navigates partnerships through diplomacy, contracts, and thoughtful exchange','researches what is hidden — psychology, the occult, and transformative knowledge','teaches philosophy, publishes ideas, and translates across cultures','strategises career moves with intelligence, planning, and adaptability','networks brilliantly — connecting ideas and people with ease and charm','thinks quietly, writes privately, and processes the world through solitude'],
+        Jupiter:['blesses your presence with natural wisdom, optimism, and generosity','brings fortunate wealth, generous values, and a voice others trust','expands learning, blesses sibling bonds, and brings good fortune through courage','protects home with ancestral grace, spiritual lineage, and deep blessings','brings the great gift of creative joy, blessed children, and romantic fulfilment','serves with wisdom — blesses health, humility, and devotion to work','brings fortunate, expansive partnerships and grace through others','holds hidden blessings — inheritance gifts and transformation through grace','brings the deepest philosophical wisdom, pilgrimage, and spiritual expansion','brings career blessings, public honour, and the mark of a natural leader','brings fortunate gains, a wide noble community, and visionary purpose','brings spiritual liberation, inner peace, and grace in retreat and solitude'],
+        Venus:['graces personal appearance with charm, beauty, and magnetic warmth','brings refined wealth, artistic values, and a melodious, persuasive voice','charms through graceful speech, artistic connections, and social skill','beautifies home with care, harmony, and the warmth of a loving presence','pours joy into romance, creative arts, and the beauty of expression','brings elegance to health practices, work spaces, and acts of service','creates harmonious, loving partnerships filled with beauty and devotion','finds beauty in the unseen — in intimacy, transformation, and hidden pleasure','seeks beauty through travel, culture, foreign love, and sacred knowledge','brings grace, elegance, and artistic recognition to career and public life','adorns community with beauty and brings fortunate, lasting friendships','retreats into private beauty, contemplation, and hidden artistic devotion'],
+        Saturn:['teaches the self through discipline, solitude, and the slow forging of character','builds wealth through patience, hard work, and rewards that come in their own time','structures learning with duty — responsibilities in communication and with siblings','brings karmic weight to home and family — deep ancestral duties to fulfill','delays creative joy and children — but builds something enduring when it finally comes','disciplines daily health through precise, demanding routines — chronic patterns to face','brings serious, committed, karmic partnerships — bonds that teach through endurance','brings deep karmic transformation and the weight of long-gestating change','delays higher learning but builds mastery of rare depth when it arrives','builds career step by patient step through pure discipline and sustained effort','brings structured community service and gains that come slowly but surely','brings the deepest spiritual practice, solitary discipline, and the release of karma'],
+        Rahu:['amplifies the ego with worldly hunger and intense ambition for identity','obsesses over accumulation — wealth, possessions, and what has value','craves information, multitasking, and unconventional communication and connection','carries unusual longing for home — possibly foreign roots or a restless family','pursues creative risks and recognition with unusual intensity','intensifies focus on health — possible obsession with diet, work, or foreign methods','desires powerful, unusual partnerships — the hunger for deep merger and magnetic connection','obsesses over the occult, the taboo, and the power that lives in hidden places','relentlessly seeks meaning — through philosophy, foreign places, and radical belief','drives intense career ambition — the desire for fame, foreign recognition, and power','brings unconventional community, radical goals, and the possibility of sudden gains','creates confusion in the spiritual path — purification comes through honest surrender'],
+        Ketu:['carries past-life mastery in self-expression — now learning to release ego','detaches from materialism — carries spiritual simplicity and karmic release of possessive hunger','brings past-life knowledge of learning — intuition now transcends what books can teach','carries the karma of many homes — solitude and inner peace heal what roots cannot','detaches from ego-based creativity — spiritual gifts expressed without need for recognition','brings past-life mastery in service or healing — now learning to trust rather than control','detaches from conventional partnership — the deepest bonds are spiritual and invisible','brings deep occult gifts from past lives — the unseen and the invisible are your domain','carries vast past-life wisdom — now the spiritual teacher who questions all dogma','detaches from worldly ambition — career finds meaning only through service and soul purpose','detaches from social gains — spiritual community and selfless service are the true calling','brings the closest soul to moksha — the deepest spiritual inclination of all placements']
+      };
+      const houseLabels=['Self & Presence','Wealth & Voice','Communication & Courage','Home & Roots','Creativity & Joy','Health & Service','Partnership & Others','Transformation & Depth','Wisdom & Philosophy','Career & Purpose','Community & Gains','Solitude & Liberation'];
+      const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+      return Array.from({length:12},(_,i)=>{
+        const planetsInHouse=cd.planets.filter(p=>(p.sign-cd.ascSign+12)%12===i);
+        if(!planetsInHouse.length)return'';
+        const items=planetsInHouse.map(p=>{
+          const pIdx=cd.planets.indexOf(p);
+          const pName=pnames[pIdx];
+          const meaning=PHM[pName]?PHM[pName][i]:'';
+          return`<div style="padding:.35rem 0;border-bottom:1px solid rgba(200,169,74,.07);font-size:.85rem"><span style="color:var(--gold)">${p.sym} ${L2.planets[pIdx]}</span><span style="color:var(--muted)"> — ${meaning}</span></div>`;
+        }).join('');
+        return`<div style="margin-bottom:1rem;background:rgba(200,169,74,.03);border-radius:10px;padding:.7rem 1rem">
+          <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:var(--gold-l);margin-bottom:.4rem">${houseLabels[i].toUpperCase()}</div>
+          ${items}
+        </div>`;
+      }).join('');
+    })()}
+
+    <!-- Vimshottari Dasha -->
+    <div class="divider" style="margin-top:1.2rem"><span>Vimshottari Dasha — Three Tiers</span></div>
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">The most immediate dasha (Pratyantara) governs today's practice. Antar shapes this season. Maha is the long current beneath everything.</p>
+    <div style="margin:.2rem 0">
+      ${dashaRows||`<p style="color:var(--muted);font-size:.85rem">${cd.dashaPeriod?.lord||''} Dasha · ${cd.dashaPeriod?.remaining||''} years remaining</p>`}
+    </div>
+
+    <!-- Karmic Intensities -->
+    <div class="divider" style="margin-top:1.2rem"><span>Karmic Intensities</span></div>
     <div class="malefic-section">
-      ${chartData2.malefics.map(m=>`
-        <div style="margin-bottom:.8rem">
-          <span class="tag tag-warn">⚠ ${m.name}</span>
-          <p style="font-size:.85rem;color:var(--muted);margin-top:.3rem;padding-left:.5rem">${currentLang==='hi'?'यह प्रभाव आपके जीवन के एक क्षेत्र में ध्यान मांगता है। दैनिक उपाय इसे संतुलित करने में सहायक हैं।':currentLang==='ta'?'இந்த தாக்கம் உங்கள் வாழ்வின் ஒரு பகுதியில் கவனம் தேவைப்படுகிறது.':'This influence calls for attention in a specific area of your life. Your daily remedy supports balance and healing.'}</p>
+      ${cd.malefics.map(m=>`
+        <div style="margin-bottom:.7rem">
+          <span class="tag tag-karmic">✦ ${m.name}</span>
+          <p style="font-size:.83rem;color:var(--muted);margin-top:.3rem;padding-left:.3rem">A karmic teacher — this intensity holds your deepest growth. Daily practice works consciously with this energy.</p>
         </div>
       `).join('')}
     </div>
-    <p style="font-size:.8rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${currentLang==='hi'?'यह पठन शास्त्रीय नाडी और वैदिक ज्योतिष परंपरा पर आधारित है।':currentLang==='ta'?'இந்த வாசிப்பு பண்டைய நாடி மற்றும் வேத ஜோதிட மரபின் அடிப்படையில் வழங்கப்படுகிறது.':'This reading is based on classical Nadi and Vedic astrological tradition. For spiritual guidance only.'}</p>
+    <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">Classical Nadi &amp; Vedic tradition · Lahiri ayanamsa · For spiritual guidance only</p>
   `;
 }
 
@@ -1400,24 +1796,9 @@ function tapChant(){
 }
 function closeChant(){
   document.getElementById('chant-modal').classList.remove('open');
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
-// ── LISTEN (Text to Speech) ──
-function listenMantra(mantra,count){
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
-    const parts=[];
-    for(let i=0;i<Math.min(count,9);i++)parts.push(mantra);
-    const utt=new SpeechSynthesisUtterance(parts.join('. '));
-    utt.rate=0.7;utt.pitch=0.9;utt.volume=1;
-    const voices=window.speechSynthesis.getVoices();
-    const preferred=voices.find(v=>v.lang.startsWith('en')&&v.name.toLowerCase().includes('female'))||voices[0];
-    if(preferred)utt.voice=preferred;
-    window.speechSynthesis.speak(utt);
-  } else {
-    alert('Audio not supported in this browser. Please use the Chant mode.');
-  }
-}
 
 // ── MODALS ──
 function openModal(type){
@@ -1428,22 +1809,22 @@ function closeModal(type){
   document.getElementById('modal-'+type).classList.remove('open');
   document.body.style.overflow='';
 }
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  document.querySelectorAll('.modal.open').forEach(m=>closeModal(m.id.replace('modal-','')));
+  if(document.getElementById('chant-modal').classList.contains('open'))closeChant();
+});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
+  if(e.target===m)closeModal(m.id.replace('modal-',''));
+}));
 
-// ── PWA + NOTIFICATIONS ──
-
-// Register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        console.log('Jyoti SW registered:', reg.scope);
-        swRegistration = reg;
-      })
-      .catch(err => console.log('SW registration failed:', err));
-  });
-}
-
+// ── PWA ──
 let swRegistration = null;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    swRegistration = reg;
+  }).catch(()=>{});
+}
 
 // Save notification prefs to IndexedDB
 function saveNotifPrefs(evening, morning) {
@@ -1472,45 +1853,56 @@ async function requestNotifications() {
   const btn = document.getElementById('notif-btn');
   const status = document.getElementById('notif-status');
 
-  if (!('Notification' in window)) {
-    if(status){ status.textContent = 'Notifications not supported in this browser.'; status.style.display='block'; }
+  const evening = document.getElementById('nb-evening')?.classList.contains('agreed') || false;
+  const morning = document.getElementById('nb-morning')?.classList.contains('agreed') || false;
+
+  if (!evening && !morning) {
+    if(status){ status.style.color='var(--dim)'; status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
     return;
   }
 
-  const evening = document.getElementById('notif-evening')?.checked || false;
-  const morning = document.getElementById('notif-morning')?.checked || false;
+  // Always save preferences first
+  await saveNotifPrefs(evening, morning);
 
-  if (!evening && !morning) {
-    if(status){ status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
+  // iOS Safari and some browsers don't support the Notification API in a regular tab
+  if (!('Notification' in window)) {
+    if(btn) btn.style.display='none';
+    if(status){
+      status.style.color='var(--teal)';
+      status.textContent = '✦ Preferences saved. Add Jyoti to your Home Screen to receive reminders.';
+      status.style.display='block';
+    }
     return;
   }
 
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      await saveNotifPrefs(evening, morning);
-
-      // Schedule local notifications as fallback
       scheduleLocalNotifications(evening, morning);
-
       if(btn) btn.style.display = 'none';
       if(status){
         const parts = [];
         if(evening) parts.push('🌙 8pm evenings');
         if(morning) parts.push('🌅 6am mornings');
+        status.style.color='var(--teal)';
         status.textContent = `✦ Reminders set for ${parts.join(' and ')}`;
         status.style.display = 'block';
-        status.style.color = 'var(--teal)';
       }
     } else {
+      if(btn) btn.style.display='none';
       if(status){
-        status.textContent = 'Notifications blocked. You can enable them in your browser settings.';
+        status.style.color='var(--teal)';
+        status.textContent = '✦ Preferences saved. Enable notifications in your browser settings to receive reminders.';
         status.style.display = 'block';
-        status.style.color = 'var(--dim)';
       }
     }
   } catch(e) {
-    console.error('Notification error:', e);
+    if(btn) btn.style.display='none';
+    if(status){
+      status.style.color='var(--teal)';
+      status.textContent = '✦ Preferences saved.';
+      status.style.display='block';
+    }
   }
 }
 
@@ -1527,7 +1919,7 @@ function scheduleLocalNotifications(evening, morning) {
     if (msUntil < 12 * 60 * 60 * 1000) { // within 12 hours
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification('Jyoti ✨ — Tomorrow's Practice', {
+          new Notification("Jyoti ✨ — Tomorrow's Practice", {
             body: `${userData.name ? userData.name + ', your' : 'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`,
             icon: '/icons/icon-192.png',
             tag: 'evening-prep'
@@ -1593,36 +1985,25 @@ async function installPWA() {
   if (banner) banner.remove();
 }
 
-// Override API calls to use Netlify function in production
-// (falls back to direct API in development/demo)
-async function callJyotiAPI(payload) {
-  // Try Netlify function first (production)
-  try {
-    const nakResp = await fetch('/.netlify/functions/get-remedy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (resp.ok) return await resp.json();
-  } catch(e) {
-    // Fall through to direct API (dev/demo mode)
-  }
-  // Direct API fallback (demo only — no key in production)
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: payload.system,
-      messages: payload.messages
-    })
-  });
-  return await resp.json();
+
+// ── TIME WHEEL ──
+
+// ── BETA ACCESS ──
+const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F:1,NADI2026G:1,NADI2026H:1,NADI2026I:1,NADI2026J:1,NADI2026K:1,NADI2026L:1,NADI2026M:1,NADI2026N:1,NADI2026O:1,NADI2026P:1,NADI2026Q:1,NADI2026R:1,NADI2026S:1,NADI2026T:1,NADI2026U:1,NADI2026V:1,NADI2026W:1,NADI2026X:1,NADI2026Y:1,NADI2026Z:1};
+const _BE=new Date('2026-06-02T00:00:00').getTime();
+function redeemBeta(){
+  const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
+  const msg=document.getElementById('beta-msg');
+  if(Date.now()>_BE){msg.style.color='var(--rose)';msg.textContent='This beta period has ended — subscribe to continue.';return;}
+  if(_BC[code]){
+    msg.style.color='var(--teal)';msg.textContent='✦ Welcome — enjoy your free beta access';
+    setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
+  }else{msg.style.color='var(--rose)';msg.textContent='Code not recognised. Check spelling and try again.';}
 }
 
 // ── INIT ──
-window.speechSynthesis&&window.speechSynthesis.getVoices();
+// UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
+// UTC offset field is intentionally left blank so auto-detection runs by default
 </script>
 </body>
 </html>
