@@ -764,9 +764,30 @@ let currentLang='en';
 let userData={};
 let chartData={};
 let chantCurrent=0,chantTarget=108;
-// Soul reading — restored from localStorage so it survives page reloads
-// Key includes birth details so different charts get different readings
-let soulReadingCache=(()=>{try{const k='jyoti_soul_'+btoa(localStorage.getItem('jyoti_user')||'').slice(0,12);return localStorage.getItem(k)||null;}catch(e){return null;}})();
+
+// ── SOUL ORACLE ARCHIVE ──
+// Readings stored as [{date:'YYYY-MM-DD', text:'...'}], newest first, max 30
+function soulArchiveKey(){
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_soul_arc_default';}
+}
+function getSoulArchive(){
+  try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
+}
+function saveSoulReading(text){
+  try{
+    const key=soulArchiveKey();
+    const arc=getSoulArchive().filter(r=>r.date!==todayStr());
+    arc.unshift({date:todayStr(),text});
+    if(arc.length>30)arc.pop();
+    localStorage.setItem(key,JSON.stringify(arc));
+  }catch(e){}
+}
+function clearSoulArchive(){
+  try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+// Today's reading from archive (null if none yet today)
+let soulReadingCache=(()=>{const arc=getSoulArchive();return arc.length&&arc[0].date===todayStr()?arc[0].text:null;})();
 
 const T={
   en:{
@@ -1171,7 +1192,7 @@ async function buildChartAsync(){
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
-      try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+      clearSoulArchive();
       lastErr='';
       break;
     }catch(e){ lastErr=e.message||'Network error'; }
@@ -1936,8 +1957,7 @@ Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
     const text=data.text||'';
     if(text){
       soulReadingCache=text;
-      // Persist to localStorage so it survives page reloads
-      try{const k='jyoti_soul_'+btoa(localStorage.getItem('jyoti_user')||'').slice(0,12);localStorage.setItem(k,text);}catch(e){}
+      saveSoulReading(text);
       renderSoulReading(text);
     } else {
       console.error('Soul API returned empty text',data);
@@ -1954,7 +1974,28 @@ function renderSoulReading(text){
   if(!loadEl||!contentEl)return;
   loadEl.style.display='none';
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
-  contentEl.innerHTML=paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('');
+  const todayLabel=currentLang==='hi'?'आज का पठन':currentLang==='ta'?'இன்றைய வாசிப்பு':'Today\'s Reading';
+  const archiveLabel=currentLang==='hi'?'पिछले पठन':currentLang==='ta'?'கடந்த வாசிப்புகள்':'Past Readings';
+  // Build archive HTML (all entries except today)
+  const arc=getSoulArchive().filter(r=>r.date!==todayStr());
+  const arcHTML=arc.length?`
+    <div style="margin-top:1.5rem;border-top:1px solid var(--s4);padding-top:1rem">
+      <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--dim);margin-bottom:.8rem">${archiveLabel.toUpperCase()}</div>
+      ${arc.map((r,i)=>`
+        <div style="margin-bottom:.5rem">
+          <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'"
+            style="background:none;border:none;color:var(--gold-d);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;cursor:pointer;padding:.2rem 0;text-align:left">
+            ✦ ${r.date}
+          </button>
+          <div style="display:none;padding:.8rem 0;border-bottom:1px solid var(--s3)">
+            ${r.text.split(/\n\n+/).filter(p=>p.trim()).map(p=>`<p style="font-size:.85rem;color:var(--muted);line-height:1.85;margin-bottom:.9rem">${p.trim()}</p>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`:'';
+  contentEl.innerHTML=`
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--gold-d);margin-bottom:.8rem">${todayLabel.toUpperCase()} — ${todayStr()}</div>
+    ${paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('')}
+    ${arcHTML}`;
   contentEl.style.display='';
 }
 function hideSoulLoading(){
