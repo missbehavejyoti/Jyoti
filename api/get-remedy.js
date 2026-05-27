@@ -70,6 +70,7 @@ JSON structure:
     "what_is_happening": "1-2 sentences — the specific planetary meeting creating this need today",
     "practice": "The exact remedy — what to do, when, how many times if mantra, what to offer if offering. Specific and actionable.",
     "mantra": "The exact Sanskrit mantra if applicable, or null if not needed today",
+    "mantra_phonetic": "Syllable-by-syllable pronunciation guide in Roman script, e.g. 'Om (ohm) · Na·ma·shi·va·ya (nah·mah·shih·vah·yah)'. Use · between syllables within a word, spaces between words. Always provide when mantra exists, null otherwise.",
     "mantra_count": 108 or 27 or 21 or 9 or null,
     "mantra_meaning": "Brief meaning in the response language, or null",
     "timing": "Best time of day for this practice",
