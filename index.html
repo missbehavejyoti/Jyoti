@@ -764,7 +764,9 @@ let currentLang='en';
 let userData={};
 let chartData={};
 let chantCurrent=0,chantTarget=108;
-let soulReadingCache=null; // cached per session so we don't re-fetch on every tab switch
+// Soul reading — restored from localStorage so it survives page reloads
+// Key includes birth details so different charts get different readings
+let soulReadingCache=(()=>{try{const k='jyoti_soul_'+btoa(localStorage.getItem('jyoti_user')||'').slice(0,12);return localStorage.getItem(k)||null;}catch(e){return null;}})();
 
 const T={
   en:{
@@ -1169,6 +1171,7 @@ async function buildChartAsync(){
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
+      try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
       lastErr='';
       break;
     }catch(e){ lastErr=e.message||'Network error'; }
@@ -1933,6 +1936,8 @@ Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
     const text=data.text||'';
     if(text){
       soulReadingCache=text;
+      // Persist to localStorage so it survives page reloads
+      try{const k='jyoti_soul_'+btoa(localStorage.getItem('jyoti_user')||'').slice(0,12);localStorage.setItem(k,text);}catch(e){}
       renderSoulReading(text);
     } else {
       console.error('Soul API returned empty text',data);
