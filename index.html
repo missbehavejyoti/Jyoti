@@ -1067,23 +1067,42 @@ async function buildChartAsync(){
   for(let attempt=0;attempt<3&&!coords;attempt++){
     try{
       if(attempt>0) await new Promise(r=>setTimeout(r,1200*attempt));
+      // Remove featuretype=city — too restrictive, rejects towns/villages/suburbs
       const r=await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=5&featuretype=city&addressdetails=1`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userData.pob)}&format=json&limit=5&addressdetails=1`,
         {headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}}
       );
       const d=await r.json();
       if(d?.length){
-        const best=d.find(r=>['city','town','village','municipality'].includes(r.type))||d[0];
+        const best=d.find(r=>['city','town','village','municipality','suburb','hamlet','locality'].includes(r.type))||d[0];
         const cc=(best.address?.country_code||'').toUpperCase();
         const state=(best.address?.state||best.address?.region||best.address?.county||'').toLowerCase();
         coords={lat:+best.lat,lon:+best.lon,display:best.display_name,type:best.type,cc,state};
       }
     }catch(e){}
   }
+  // Fallback geocoder: Photon (OpenStreetMap data, no rate limit, no key)
+  if(!coords){
+    try{
+      const r=await fetch(
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(userData.pob)}&limit=3`,
+        {headers:{'Accept-Language':'en'}}
+      );
+      const d=await r.json();
+      const feat=d?.features?.[0];
+      if(feat){
+        const [lon,lat]=feat.geometry.coordinates;
+        const p=feat.properties||{};
+        const cc=(p.country_code||'').toUpperCase();
+        const state=(p.state||p.county||'').toLowerCase();
+        coords={lat,lon,display:[p.name,p.city||p.town,p.country].filter(Boolean).join(', '),type:p.type||'place',cc,state};
+      }
+    }catch(e){}
+  }
   if(!coords){
     document.getElementById('loading-card').style.display='none';
     document.getElementById('chart-card').style.display='block';
-    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth city</p><p style="color:var(--muted);font-size:.9rem">Please check the spelling — try "New Plymouth, New Zealand" or "Mumbai, India" — then tap Reveal My Chart again.</p></div>`;
+    document.getElementById('chart-card').innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--gold);margin-bottom:1rem">⚠ Could not locate your birth place</p><p style="color:var(--muted);font-size:.9rem">Try adding the country — e.g. <em>"Auckland, New Zealand"</em> or <em>"Mumbai, India"</em> or <em>"Leeds, UK"</em> — then tap Reveal My Chart again.</p></div>`;
     return;
   }
   // 2. Resolve IANA timezone — 3 live APIs + built-in country/region table as guaranteed fallback
