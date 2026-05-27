@@ -1551,16 +1551,29 @@ function renderFallbackReading(dayName,now){
 
   // Dasha badge — all three tiers
   const pratEnd  = dp?.pratyantara?.endDate || '';
+  const _until   = currentLang==='hi'?'तक':currentLang==='ta'?'வரை':'until';
   const dashaTag = mahaLord
-    ? `${mahaLord} · ${antarLord||mahaLord} · ${pratLord||'—'}${pratEnd?' until '+pratEnd:''}`
+    ? `${mahaLord} · ${antarLord||mahaLord} · ${pratLord||'—'}${pratEnd?' '+_until+' '+pratEnd:''}`
     : '';
 
-  // Contextual intro line
+  // Contextual intro line — fully multilingual
   let cosmicLine = '';
   if (pratLord && antarLord && mahaLord) {
-    cosmicLine = `You are in <strong>${mahaLord} Maha Dasha</strong> — the long current beneath everything. Within it, <strong>${antarLord} Antar Dasha</strong> shapes this season of your life. And right now, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (until '+pratEnd+')':''} is the most immediate energy active in your field. Today's practice draws directly from ${pratLord}'s influence.`;
+    if (currentLang === 'hi') {
+      cosmicLine = `आप <strong>${mahaLord} महा दशा</strong> में हैं — हर चीज़ के नीचे बहने वाली गहरी धारा। इसके भीतर, <strong>${antarLord} अंतर दशा</strong> आपके जीवन के इस मौसम को आकार देती है। और अभी, <strong>${pratLord} प्रत्यंतर</strong>${pratEnd?' ('+pratEnd+' तक)':''} आपके क्षेत्र में सबसे तत्काल सक्रिय ऊर्जा है। आज का अभ्यास ${pratLord} के प्रभाव से सीधे आता है।`;
+    } else if (currentLang === 'ta') {
+      cosmicLine = `நீங்கள் <strong>${mahaLord} மஹா தசை</strong>யில் இருக்கிறீர்கள் — எல்லாவற்றிற்கும் கீழே ஓடும் ஆழமான நீரோட்டம். அதற்குள், <strong>${antarLord} அந்தர தசை</strong> உங்கள் வாழ்க்கையின் இந்த காலகட்டத்தை வடிவமைக்கிறது. இப்போது, <strong>${pratLord} பிரத்யந்தர</strong>${pratEnd?' ('+pratEnd+' வரை)':''} உங்கள் துறையில் மிகவும் உடனடியான ஆற்றல். இன்றைய பயிற்சி ${pratLord}ன் தாக்கத்திலிருந்து நேரடியாக வருகிறது.`;
+    } else {
+      cosmicLine = `You are in <strong>${mahaLord} Maha Dasha</strong> — the long current beneath everything. Within it, <strong>${antarLord} Antar Dasha</strong> shapes this season of your life. And right now, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (until '+pratEnd+')':''} is the most immediate energy active in your field. Today's practice draws directly from ${pratLord}'s influence.`;
+    }
   } else if (mahaLord && moonSign) {
-    cosmicLine = `You are moving through your ${mahaLord} Dasha${moonNak?' — your Moon in '+moonSign+' ('+moonNak+' Nakshatra) shapes how you receive this energy':''}.`;
+    if (currentLang === 'hi') {
+      cosmicLine = `आप अपनी ${mahaLord} दशा से गुजर रहे हैं${moonNak?' — '+moonSign+' में आपका चंद्रमा ('+moonNak+' नक्षत्र) यह बताता है कि आप इस ऊर्जा को कैसे ग्रहण करते हैं':''}.`;
+    } else if (currentLang === 'ta') {
+      cosmicLine = `நீங்கள் உங்கள் ${mahaLord} தசையில் செல்கிறீர்கள்${moonNak?' — '+moonSign+'ல் உங்கள் சந்திரன் ('+moonNak+' நட்சத்திரம்) இந்த ஆற்றலை நீங்கள் எவ்வாறு பெறுகிறீர்கள் என்பதை வடிவமைக்கிறது':''}.`;
+    } else {
+      cosmicLine = `You are moving through your ${mahaLord} Dasha${moonNak?' — your Moon in '+moonSign+' ('+moonNak+' Nakshatra) shapes how you receive this energy':''}.`;
+    }
   }
 
   const html=`
@@ -1580,7 +1593,7 @@ function renderFallbackReading(dayName,now){
       <div class="remedy-actions">
         <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
-      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.</p>
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${currentLang==='hi'?`आज का अभ्यास आपकी आत्मा और ब्रह्मांड के बीच एक संवाद है। अपनी यात्रा के समय पर विश्वास रखें, ${userData.name}।`:currentLang==='ta'?`இன்றைய பயிற்சி உங்கள் ஆன்மாவுக்கும் பிரபஞ்சத்துக்கும் இடையிலான உரையாடல். உங்கள் பயணத்தின் நேரத்தை நம்புங்கள், ${userData.name}.`:`Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.`}</p>
     </div>
   `;
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
@@ -1610,6 +1623,20 @@ function showFullChart(){
   const DSM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
   const DASHA_LORDS2=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
   const DASHA_YEARS2=[7,20,6,10,7,18,16,19,17];
+  // Dasha section localisation
+  const DL = currentLang==='hi' ? {
+    maha:'महा दशा — मुख्य काल', mahaName:'महा दशा', antar:'अंतर दशा — उप-काल (भुक्ति)', antarName:'अंतर दशा',
+    prat:'प्रत्यंतर — अभी सक्रिय', pratName:'प्रत्यंतर', upcoming:'आगामी अंतर दशाएं',
+    yearsRemaining:'वर्ष शेष', ends:'समाप्त', next:'अगला'
+  } : currentLang==='ta' ? {
+    maha:'மஹா தசை — முக்கிய காலம்', mahaName:'மஹா தசை', antar:'அந்தர தசை — உப காலம் (புக்தி)', antarName:'அந்தர தசை',
+    prat:'பிரத்யந்தர — இப்போது செயலில்', pratName:'பிரத்யந்தர', upcoming:'வரவிருக்கும் அந்தர தசைகள்',
+    yearsRemaining:'ஆண்டுகள் மீதம்', ends:'முடிவு', next:'அடுத்தது'
+  } : {
+    maha:'MAHA DASHA — Major Period', mahaName:'Maha Dasha', antar:'ANTAR DASHA — Sub-Period (Bhukti)', antarName:'Antar Dasha',
+    prat:'PRATYANTARA — Active Right Now', pratName:'Pratyantara', upcoming:'UPCOMING ANTAR DASHAS',
+    yearsRemaining:'years remaining', ends:'ends', next:'next'
+  };
   let dashaRows='';
   if(cd.dashaPeriod){
     const dp=cd.dashaPeriod;
@@ -1618,18 +1645,18 @@ function showFullChart(){
     // Current Maha
     dashaRows=`
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.25);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem">
-        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--gold-d);margin-bottom:.5rem">MAHA DASHA — Major Period</div>
-        <div style="font-size:1rem;color:var(--gold-pale);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[dp.lord]||''} ${dp.lord} Maha Dasha</div>
-        <div style="font-size:.82rem;color:var(--dim)">${dp.remaining} years remaining · ends ${dp.endDate||''} · next: ${dp.next}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--gold-d);margin-bottom:.5rem">${DL.maha}</div>
+        <div style="font-size:1rem;color:var(--gold-pale);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[dp.lord]||''} ${dp.lord} ${DL.mahaName}</div>
+        <div style="font-size:.82rem;color:var(--dim)">${dp.remaining} ${DL.yearsRemaining} · ${DL.ends} ${dp.endDate||''} · ${DL.next}: ${dp.next}</div>
       </div>`;
 
     // Current Antar
     if(antr.lord){
       dashaRows+=`
       <div style="background:rgba(26,148,144,.05);border:1px solid rgba(26,148,144,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:.8rem">
-        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">ANTAR DASHA — Sub-Period (Bhukti)</div>
-        <div style="font-size:.95rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[antr.lord]||''} ${antr.lord} Antar Dasha</div>
-        <div style="font-size:.82rem;color:var(--dim)">${antr.startDate} – ${antr.endDate} · next: ${antr.next}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">${DL.antar}</div>
+        <div style="font-size:.95rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[antr.lord]||''} ${antr.lord} ${DL.antarName}</div>
+        <div style="font-size:.82rem;color:var(--dim)">${antr.startDate} – ${antr.endDate} · ${DL.next}: ${antr.next}</div>
       </div>`;
     }
 
@@ -1637,9 +1664,9 @@ function showFullChart(){
     if(prat.lord){
       dashaRows+=`
       <div style="background:rgba(180,100,200,.05);border:1px solid rgba(180,100,200,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:1.6rem">
-        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">PRATYANTARA — Active Right Now</div>
-        <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} Pratyantara</div>
-        <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} – ${prat.endDate} · next: ${prat.next}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">${DL.prat}</div>
+        <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} ${DL.pratName}</div>
+        <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} – ${prat.endDate} · ${DL.next}: ${prat.next}</div>
       </div>`;
     }
 
@@ -1647,7 +1674,7 @@ function showFullChart(){
     if(antr.next){
       const nextAntrIdx = DASHA_LORDS2.indexOf(antr.next);
       dashaRows+=`<div style="margin-top:.4rem;padding-top:.6rem;border-top:1px solid var(--s3)">`;
-      dashaRows+=`<div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.4rem">UPCOMING ANTAR DASHAS</div>`;
+      dashaRows+=`<div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.4rem">${DL.upcoming}</div>`;
       for(let i=0;i<3;i++){
         const idx=(nextAntrIdx+i)%9;
         dashaRows+=`<div style="font-size:.8rem;color:var(--dim);padding:.15rem 0">${DSM[DASHA_LORDS2[idx]]||''} ${DASHA_LORDS2[idx]}</div>`;
