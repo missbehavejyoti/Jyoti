@@ -103,6 +103,8 @@ JSON structure:
 
   const userMessage = isNakshatra
     ? chartSummary
+    : isSoul
+    ? `Here is the birth chart:\n${chartSummary}\n\nWrite the Soul Map & Karmic Blueprint.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
   try {
