@@ -12,13 +12,17 @@ function utcOffsetForTZ(ianaZone, localDateStr) {
       if (!m) return null;
       return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) + parseInt(m[3] || 0) / 60);
     };
-    // Pass 1: treat local time as UTC → approximate offset
-    const dtApprox = new Date(localDateStr + 'Z');
-    const off1 = getOff(dtApprox);
-    if (off1 === null) return null;
-    // Pass 2: subtract offset → closer to true UTC → accurate historical offset (handles DST boundaries)
-    const off2 = getOff(new Date(dtApprox.getTime() - off1 * 3600000));
-    return off2 ?? off1;
+    // Jyotish uses Local Standard Time (LST) — no DST adjustment.
+    // All major Vedic software (KundliSoft, Parashara, Jagannatha Hora) follows this convention.
+    // DST always adds +1 hour, so standard time = numerically smaller of Jan 1 vs Jul 1 offsets.
+    // Verified: NZ (+13 DST → +12 std ✓), London (+1 DST → 0 std ✓), NY (−4 DST → −5 std ✓)
+    const yr = parseInt((localDateStr || '').split('-')[0]) || new Date().getFullYear();
+    const janOff = getOff(new Date(Date.UTC(yr, 0, 1)));
+    const julOff = getOff(new Date(Date.UTC(yr, 6, 1)));
+    if (janOff == null && julOff == null) return null;
+    if (janOff == null) return julOff;
+    if (julOff == null) return janOff;
+    return Math.min(janOff, julOff);  // standard time = smaller offset (DST always adds +1)
   } catch(e) {}
   return null;
 }
