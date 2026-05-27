@@ -766,18 +766,26 @@ let chartData={};
 let chantCurrent=0,chantTarget=108;
 
 // ── SOUL ORACLE ARCHIVE ──
-// Readings stored as [{date:'YYYY-MM-DD', text:'...'}], newest first, max 30
+// Readings stored as [{pratLord, pratEnd, text}], newest first, max 30
+// Refreshes only when the Pratyantara Dasha lord changes — ~3-6 months
 function soulArchiveKey(){
   try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_soul_arc_default';}
 }
 function getSoulArchive(){
   try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
 }
+function currentPratKey(){
+  // Returns a string identifying the current Pratyantara period
+  const p=chartData?.dashaPeriod?.pratyantara;
+  return p?`${p.lord}|${p.endDate}`:'';
+}
 function saveSoulReading(text){
   try{
     const key=soulArchiveKey();
-    const arc=getSoulArchive().filter(r=>r.date!==todayStr());
-    arc.unshift({date:todayStr(),text});
+    const pratKey=currentPratKey();
+    const arc=getSoulArchive().filter(r=>r.pratKey!==pratKey);
+    const p=chartData?.dashaPeriod?.pratyantara;
+    arc.unshift({pratKey, pratLord:p?.lord||'', pratEnd:p?.endDate||'', text});
     if(arc.length>30)arc.pop();
     localStorage.setItem(key,JSON.stringify(arc));
   }catch(e){}
@@ -786,8 +794,12 @@ function clearSoulArchive(){
   try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
 }
 function todayStr(){return new Date().toISOString().slice(0,10);}
-// Today's reading from archive (null if none yet today)
-let soulReadingCache=(()=>{const arc=getSoulArchive();return arc.length&&arc[0].date===todayStr()?arc[0].text:null;})();
+// Load cached reading for the current Pratyantara — null if this period has no reading yet
+let soulReadingCache=(()=>{
+  const arc=getSoulArchive();
+  // Will be matched against currentPratKey() after chartData loads — checked in loadSoulReading()
+  return null;
+})();
 
 const T={
   en:{
@@ -1926,7 +1938,14 @@ function showFullChart(){
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
 async function loadSoulReading(){
-  // Render cached result if available
+  // Check archive for a reading matching the current Pratyantara period
+  if(!soulReadingCache){
+    const pratKey=currentPratKey();
+    if(pratKey){
+      const match=getSoulArchive().find(r=>r.pratKey===pratKey);
+      if(match){soulReadingCache=match.text;}
+    }
+  }
   if(soulReadingCache){
     renderSoulReading(soulReadingCache);
     return;
@@ -1977,15 +1996,18 @@ function renderSoulReading(text){
   const todayLabel=currentLang==='hi'?'आज का पठन':currentLang==='ta'?'இன்றைய வாசிப்பு':'Today\'s Reading';
   const archiveLabel=currentLang==='hi'?'पिछले पठन':currentLang==='ta'?'கடந்த வாசிப்புகள்':'Past Readings';
   // Build archive HTML (all entries except today)
-  const arc=getSoulArchive().filter(r=>r.date!==todayStr());
+  const pratKey=currentPratKey();
+  const arc=getSoulArchive().filter(r=>r.pratKey!==pratKey);
+  const p=chartData?.dashaPeriod?.pratyantara;
+  const currentLabel=`${p?.lord||''} Pratyantara${p?.endDate?' — ends '+p.endDate:''}`;
   const arcHTML=arc.length?`
     <div style="margin-top:1.5rem;border-top:1px solid var(--s4);padding-top:1rem">
       <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--dim);margin-bottom:.8rem">${archiveLabel.toUpperCase()}</div>
-      ${arc.map((r,i)=>`
+      ${arc.map(r=>`
         <div style="margin-bottom:.5rem">
           <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'"
-            style="background:none;border:none;color:var(--gold-d);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;cursor:pointer;padding:.2rem 0;text-align:left">
-            ✦ ${r.date}
+            style="background:none;border:none;color:var(--gold-d);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;cursor:pointer;padding:.25rem 0;text-align:left;width:100%">
+            ✦ ${r.pratLord} Pratyantara${r.pratEnd?' — ended '+r.pratEnd:''}
           </button>
           <div style="display:none;padding:.8rem 0;border-bottom:1px solid var(--s3)">
             ${r.text.split(/\n\n+/).filter(p=>p.trim()).map(p=>`<p style="font-size:.85rem;color:var(--muted);line-height:1.85;margin-bottom:.9rem">${p.trim()}</p>`).join('')}
@@ -1993,7 +2015,7 @@ function renderSoulReading(text){
         </div>`).join('')}
     </div>`:'';
   contentEl.innerHTML=`
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--gold-d);margin-bottom:.8rem">${todayLabel.toUpperCase()} — ${todayStr()}</div>
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--gold-d);margin-bottom:.8rem">${todayLabel.toUpperCase()} · ${currentLabel}</div>
     ${paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('')}
     ${arcHTML}`;
   contentEl.style.display='';
