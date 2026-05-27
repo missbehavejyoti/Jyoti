@@ -1923,17 +1923,24 @@ Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:soulSummary, lang:currentLang, type:'soul'})
     });
-    if(!resp.ok)throw new Error('api');
+    if(!resp.ok){
+      const errDetail=await resp.text().catch(()=>resp.status);
+      console.error('Soul API error',resp.status,errDetail);
+      showSoulError(`API error ${resp.status}`);
+      return;
+    }
     const data=await resp.json();
     const text=data.text||'';
     if(text){
       soulReadingCache=text;
       renderSoulReading(text);
     } else {
-      hideSoulLoading();
+      console.error('Soul API returned empty text',data);
+      showSoulError('Empty response');
     }
   }catch(e){
-    hideSoulLoading();
+    console.error('Soul fetch error',e);
+    showSoulError(e.message);
   }
 }
 function renderSoulReading(text){
@@ -1941,7 +1948,6 @@ function renderSoulReading(text){
   const contentEl=document.getElementById('soul-content');
   if(!loadEl||!contentEl)return;
   loadEl.style.display='none';
-  // Split into paragraphs and wrap each
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
   contentEl.innerHTML=paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('');
   contentEl.style.display='';
@@ -1949,6 +1955,10 @@ function renderSoulReading(text){
 function hideSoulLoading(){
   const loadEl=document.getElementById('soul-loading');
   if(loadEl)loadEl.style.display='none';
+}
+function showSoulError(detail){
+  const loadEl=document.getElementById('soul-loading');
+  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'पुनः प्रयास करें':currentLang==='ta'?'மீண்டும் முயற்சிக்கவும்':'Could not load — tap to retry'}</p><p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail||''}</p><button onclick="soulReadingCache=null;loadSoulReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='ta'?'மீண்டும்':'Retry'}</button>`;
 }
 
 // ── ARCHIVE ──
