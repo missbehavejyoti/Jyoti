@@ -1769,17 +1769,7 @@ function showFullChart(){
       </div>`;
     }
 
-    // Next 2 Antar Dashas ahead
-    if(antr.next){
-      const nextAntrIdx = DASHA_LORDS2.indexOf(antr.next);
-      dashaRows+=`<div style="margin-top:.4rem;padding-top:.6rem;border-top:1px solid var(--s3)">`;
-      dashaRows+=`<div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.4rem">${DL.upcoming}</div>`;
-      for(let i=0;i<3;i++){
-        const idx=(nextAntrIdx+i)%9;
-        dashaRows+=`<div style="font-size:.8rem;color:var(--dim);padding:.15rem 0">${DSM[DASHA_LORDS2[idx]]||''} ${DASHA_LORDS2[idx]}</div>`;
-      }
-      dashaRows+=`</div>`;
-    }
+    // Upcoming Antar Dashas removed — not needed
   }
   // Planet dignity labels
   const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
@@ -1953,7 +1943,7 @@ function renderSoulReading(text){
   loadEl.style.display='none';
   // Split into paragraphs and wrap each
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
-  contentEl.innerHTML=paras.map(p=>`<p style="font-size:.88rem;color:var(--muted);line-height:1.85;margin-bottom:1rem">${p.trim()}</p>`).join('');
+  contentEl.innerHTML=paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('');
   contentEl.style.display='';
 }
 function hideSoulLoading(){

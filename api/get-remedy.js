@@ -1,41 +1,24 @@
-// Netlify Serverless Function — Jyoti Daily Remedy
+// Vercel Serverless Function — Jyoti Daily Remedy / Nakshatra / Soul Map
 // Keeps API key secure server-side, never exposed to browser
 
-exports.handler = async (event, context) => {
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
-  // Handle preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
-  }
-
-  let body;
-  try {
-    body = JSON.parse(event.body);
-  } catch(e) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
-  }
-
-  const { chartSummary, lang, type } = body;
+  const { chartSummary, lang, type } = req.body || {};
 
   if (!chartSummary) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing chart data' }) };
+    return res.status(400).json({ error: 'Missing chart data' });
   }
 
-  // API key from Netlify environment variable (never in code)
+  // API key from Vercel environment variable (never in code)
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'API not configured' }) };
+    return res.status(500).json({ error: 'API not configured' });
   }
 
   const langInstruction = lang === 'hi'
@@ -44,32 +27,33 @@ exports.handler = async (event, context) => {
     ? 'Respond entirely in Tamil script.'
     : 'Respond in English.';
 
-  // Different system prompts for daily remedy vs nakshatra reading vs soul map
   const isNakshatra = type === 'nakshatra';
-  const isSoul = type === 'soul';
+  const isSoul      = type === 'soul';
 
   const systemPrompt = isNakshatra
     ? `You are Jyoti, a compassionate Nadi astrology guide. Write one beautiful, specific paragraph (3-4 sentences) about this person's Moon nakshatra. Warm, poetic, deeply accurate to classical Vedic tradition. Never alarming. Always uplifting and truthful. ${langInstruction} Return plain text only, no formatting, no preamble.`
+
     : isSoul
     ? `You are Jyoti, a master of Vedic Jyotish drawing from the great classical texts: Brihat Parashara Hora Shastra (BPHS), Phaladeepika, Saravali, Brihat Jataka, Jataka Parijata, and the Nadi tradition.
 
 Write a "Soul Map & Karmic Blueprint" — four paragraphs of genuine depth and classical precision. Every sentence must be specific to THIS chart. No generic statements. No repetition between paragraphs.
 
 PARAGRAPH 1 — SOUL MISSION (Lagna & Lagna lord placement):
-The Ascendant and the house and sign placement of its ruling planet describe the fundamental quality of consciousness this soul incarnated to develop. What is the specific dharmic mission encoded in this Lagna? What capacity must this person embody and offer to the world? Draw from BPHS chapters on Lagna lords and their house placements.
+The Ascendant and its ruling planet's sign and house placement describe the fundamental quality of consciousness this soul incarnated to develop. What is the specific dharmic mission encoded in this Lagna? What capacity must this person embody and offer to the world? Draw from BPHS chapters on Lagna lords and their house placements.
 
 PARAGRAPH 2 — EMOTIONAL KARMA (Moon: sign, nakshatra, house):
-The Moon carries the jīva — the soul-essence and its entire emotional inheritance across lifetimes. The nakshatra is the soul's most primal instinctive fingerprint. What karmic emotional pattern has this soul carried forward? How does it transform through this lifetime? Reference the classical nakshatra significations (Rohini's longing, Ardra's storm, Pushya's nourishment, etc.) with precision.
+The Moon carries the jīva — the soul-essence and its entire emotional inheritance across lifetimes. The nakshatra is the soul's most primal instinctive fingerprint. What karmic emotional pattern has this soul carried forward? How does it transform through this lifetime? Reference the classical nakshatra significations with precision.
 
 PARAGRAPH 3 — DHARMIC GIFTS & KARMIC KNOTS:
-Name the 2-3 most significant planetary placements for this soul's evolution. For each: what specific dharmic gift or yogic strength does it bestow, and what karmic knot — through debilitation, difficult house, or planetary war — does it invite the soul to untangle? Draw from classical yoga descriptions and house lordship.
+Name the 2-3 most significant planetary placements for this soul's evolution. For each: what specific dharmic gift or yogic strength does it bestow, and what karmic knot — through debilitation, difficult house, or planetary war — does it invite the soul to untangle? Draw from classical yoga descriptions.
 
 PARAGRAPH 4 — SOUL DIRECTION: THE RAHU-KETU AXIS:
-Rahu marks the direction of soul growth — the unfamiliar territory the soul must bravely claim in this lifetime. Ketu marks the mastery carried from past lives — the gifts and compulsions the soul must both honour and release. Together they are the soul's evolutionary arrow. Be precise about the signs and houses of this specific axis.
+Rahu marks the direction of soul growth — the unfamiliar territory the soul must bravely claim. Ketu marks the mastery carried from past lives — the gifts and compulsions it must honour and release. Be precise about the signs and houses of this specific axis.
 
 Tone: spiritually precise, compassionate, deeply informed by classical tradition. Soul-affirming. Poetic where the tradition is poetic. Never alarming. Never generic.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings, no bullets, no numbering.`
+
     : `You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
 
 CORE RULES — NEVER VIOLATE:
@@ -133,23 +117,23 @@ JSON structure:
     if (!response.ok) {
       const err = await response.text();
       console.error('Anthropic API error:', err);
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'API error', detail: err }) };
+      return res.status(502).json({ error: 'API error', detail: err });
     }
 
     const data = await response.json();
     const text = data.content?.[0]?.text || '';
 
     if (isNakshatra || isSoul) {
-      return { statusCode: 200, headers, body: JSON.stringify({ text: text.trim() }) };
+      return res.status(200).json({ text: text.trim() });
     }
 
     // Parse JSON response for remedy
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-    return { statusCode: 200, headers, body: JSON.stringify(parsed) };
+    return res.status(200).json(parsed);
 
   } catch(e) {
     console.error('Function error:', e);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal error', detail: e.message }) };
+    return res.status(500).json({ error: 'Internal error', detail: e.message });
   }
 };
