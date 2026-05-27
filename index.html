@@ -311,8 +311,14 @@ select option{background:var(--s2);color:var(--text)}
         <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
         <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
       </div>
-      <!-- UTC offset hidden — always auto-detected server-side from birth place + historical DST -->
-      <input type="hidden" id="utc-offset">
+      <!-- UTC offset — auto-detected from birth place, but can be overridden -->
+      <div class="field" style="margin-bottom:.8rem">
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          <span data-en="UTC Offset (optional override)" data-hi="UTC ऑफसेट" data-ta="UTC ஆஃப்செட்">UTC Offset <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim)">(leave blank for auto-detect)</span></span>
+        </label>
+        <input type="text" id="utc-offset" placeholder="e.g. +12 or +13 — auto-detected if blank" style="font-size:.9rem" data-phi="+12 या +13 — रिक्त छोड़ें" data-pta="+12 அல்லது +13 — காலியாக விடவும்">
+        <p class="hint">✦ Vedic astrology traditionally uses Local Standard Time (no DST). For NZ: use +12 (standard time year-round, as used by KundliSoft and most Jyotish software) rather than +13 (NZ summer clock time).</p>
+      </div>
       <div class="g2">
         <div class="field">
           <label data-en="Email Address" data-hi="ईमेल पता" data-ta="மின்னஞ்சல் முகவரி">Email Address</label>
@@ -1155,9 +1161,7 @@ function goToPanel(n){
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
-    // Always clear UTC field so birth place auto-detection runs fresh
-    const utcEl=document.getElementById('utc-offset');
-    if(utcEl) utcEl.value='';
+    // Keep manual UTC override if user has typed one; otherwise let auto-detect handle it
     _activatePanel(3);
     buildChartAsync();
     return;
@@ -1363,6 +1367,16 @@ async function showDailyReading(){
   const L_en=T['en'];
   const p=chartData.planets;
   const dasha=chartData.dashaPeriod;
+  // Build three-tier dasha context string — most immediate tier first
+  const prat = dasha?.pratyantara;
+  const antr = dasha?.antar;
+  const dashaContext = dasha ? `
+VIMSHOTTARI DASHA (most important for today's practice — work from innermost outward):
+  ► PRATYANTARA (active right now, strongest immediate influence): ${prat?.lord||'?'} — ends ${prat?.endDate||'?'}, next: ${prat?.next||'?'}
+  ► ANTAR DASHA (current sub-period, shapes the month): ${antr?.lord||dasha.lord} — ends ${antr?.endDate||'?'}, next: ${antr?.next||'?'}
+  ► MAHA DASHA (background current, shapes the years): ${dasha.lord} — ${dasha.remaining} years remaining, next: ${dasha.next}
+The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's energy (${prat?.lord||dasha.lord}), then layer in the Antar lord (${antr?.lord||dasha.lord}) as secondary influence, with the Maha Dasha (${dasha.lord}) as deep background context.` : '';
+
   const chartSummary=`
 Name: ${userData.name}
 Sun: ${p[0].signName||L_en.signs[p[0].sign]} ${p[0].degree}°
@@ -1375,7 +1389,7 @@ Venus: ${p[5].signName||L_en.signs[p[5].sign]} ${p[5].degree}°
 Saturn: ${p[6].signName||L_en.signs[p[6].sign]} ${p[6].degree}°
 Rahu: ${p[7].signName||L_en.signs[p[7].sign]} ${p[7].degree}°
 Ketu: ${p[8].signName||L_en.signs[p[8].sign]} ${p[8].degree}°
-${dasha?`Vimshottari Dasha: ${dasha.lord} Dasha (${dasha.remaining} years remaining, next: ${dasha.next})`:''}
+${dashaContext}
 Malefic influences: ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[now.getDay()]} — ruled by ${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][now.getDay()]}
 Today's date: ${now.toDateString()}
@@ -1483,25 +1497,43 @@ function renderFallbackReading(dayName,now){
       whatIsHappening:'Your Ketu Dasha is dissolving what is no longer truly you. This can feel like loss, but it is refinement — the soul is finding its original shape.'}
   };
 
-  const dasha=chartData?.dashaPeriod?.lord;
-  const di=DASHA_DATA[dasha]||DASHA_DATA.Sun;
-  const moonNak=chartData?.planets?.[1]?.nakshatraName||'';
-  const moonSign=chartData?.planets?.[1]?.signName||'';
-  const ascSign=chartData?.asc?.signName||'';
+  // ── Three-tier dasha — most immediate layer drives the practice ──
+  const dp        = chartData?.dashaPeriod;
+  const pratLord  = dp?.pratyantara?.lord;
+  const antarLord = dp?.antar?.lord;
+  const mahaLord  = dp?.lord;
+  // Pratyantara is the sharpest daily influence; fall back up the chain
+  const primaryLord = pratLord || antarLord || mahaLord || 'Sun';
+  const di = DASHA_DATA[primaryLord] || DASHA_DATA.Sun;
 
-  const greeting=currentLang==='hi'?`नमस्ते, ${userData.name}`:currentLang==='ta'?`வணக்கம், ${userData.name}`:`Namaste, ${userData.name}`;
+  const moonNak  = chartData?.planets?.[1]?.nakshatraName || '';
+  const moonSign = chartData?.planets?.[1]?.signName      || '';
 
-  let cosmicLine='';
-  if(dasha&&moonSign){
-    cosmicLine=`You are moving through your ${dasha} Dasha${moonNak?` — your Moon in ${moonSign} (${moonNak} Nakshatra) shapes how you receive this energy`:''}.`;
+  const greeting = currentLang==='hi' ? `नमस्ते, ${userData.name}`
+                 : currentLang==='ta' ? `வணக்கம், ${userData.name}`
+                 : `Namaste, ${userData.name}`;
+
+  // Dasha badge — all three tiers
+  const pratEnd  = dp?.pratyantara?.endDate || '';
+  const dashaTag = mahaLord
+    ? `${mahaLord} · ${antarLord||mahaLord} · ${pratLord||'—'}${pratEnd?' until '+pratEnd:''}`
+    : '';
+
+  // Contextual intro line
+  let cosmicLine = '';
+  if (pratLord && antarLord && mahaLord) {
+    cosmicLine = `You are in <strong>${mahaLord} Maha Dasha</strong> — the long current beneath everything. Within it, <strong>${antarLord} Antar Dasha</strong> shapes this season of your life. And right now, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (until '+pratEnd+')':''} is the most immediate energy active in your field. Today's practice draws directly from ${pratLord}'s influence.`;
+  } else if (mahaLord && moonSign) {
+    cosmicLine = `You are moving through your ${mahaLord} Dasha${moonNak?' — your Moon in '+moonSign+' ('+moonNak+' Nakshatra) shapes how you receive this energy':''}.`;
   }
 
   const html=`
     <div class="remedy-card">
       <div class="remedy-day">${dayName}</div>
+      ${dashaTag?`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--gold-d);margin-bottom:.6rem;text-transform:uppercase">✦ ${dashaTag}</div>`:''}
       <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${greeting}</p>
-      ${cosmicLine?`<p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${cosmicLine}</p>`:''}
-      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${di.whatIsHappening}</p>
+      ${cosmicLine?`<p style="font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem">${cosmicLine}</p>`:''}
+      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${di.whatIsHappening}</p>
       <div class="remedy-text">${di.practice}</div>
       <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
@@ -1510,7 +1542,7 @@ function renderFallbackReading(dayName,now){
         <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="chant-btn" onclick="openChant('${di.mantra}','${dasha||''} Dasha mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+        <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
       </div>
       <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.</p>
     </div>
@@ -1538,24 +1570,53 @@ function showFullChart(){
   const cd=chartData2;
   const L2=T['en'];
   const houseNames=['Self & Body','Wealth & Speech','Siblings & Courage','Home & Mother','Children & Creativity','Health & Service','Partnership & Others','Transformation & Longevity','Dharma & Higher Learning','Career & Status','Gains & Community','Loss & Liberation'];
-  // Dasha timeline
-  const DASHA_LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
-  const DASHA_YEARS=[7,20,6,10,7,18,16,19,17];
-  const DASHA_SYM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
-  const birthDateObj=cd.birthUT?new Date(cd.birthUT):null;
+  // ── Dasha timeline — three tiers, dates from server ──
+  const DSM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
+  const DASHA_LORDS2=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+  const DASHA_YEARS2=[7,20,6,10,7,18,16,19,17];
   let dashaRows='';
-  if(cd.dashaPeriod&&birthDateObj){
-    const currentLordIdx=DASHA_LORDS.indexOf(cd.dashaPeriod.lord);
-    const remaining=parseFloat(cd.dashaPeriod.remaining);
-    const endCurrent=new Date(Date.now()+remaining*365.25*24*3600*1000);
-    dashaRows=`<div style="margin-bottom:.4rem"><span class="tag tag-karmic" style="margin:0">▶ ${cd.dashaPeriod.lord} Dasha</span> <span style="color:var(--muted);font-size:.82rem">ends ${endCurrent.toLocaleDateString('en',{month:'short',year:'numeric'})}</span></div>`;
-    let cursor=endCurrent;
-    for(let i=1;i<=3;i++){
-      const idx=(currentLordIdx+i)%9;
-      const yrs=DASHA_YEARS[idx];
-      const end2=new Date(cursor.getTime()+yrs*365.25*24*3600*1000);
-      dashaRows+=`<div style="color:var(--dim);font-size:.82rem;padding:.2rem 0">${DASHA_SYM[DASHA_LORDS[idx]]||''} ${DASHA_LORDS[idx]} · ${yrs} yrs · ${cursor.toLocaleDateString('en',{month:'short',year:'numeric'})} – ${end2.toLocaleDateString('en',{month:'short',year:'numeric'})}</div>`;
-      cursor=end2;
+  if(cd.dashaPeriod){
+    const dp=cd.dashaPeriod;
+    const prat=dp.pratyantara||{};
+    const antr=dp.antar||{};
+    // Current Maha
+    dashaRows=`
+      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.25);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--gold-d);margin-bottom:.5rem">MAHA DASHA — Major Period</div>
+        <div style="font-size:1rem;color:var(--gold-pale);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[dp.lord]||''} ${dp.lord} Maha Dasha</div>
+        <div style="font-size:.82rem;color:var(--dim)">${dp.remaining} years remaining · ends ${dp.endDate||''} · next: ${dp.next}</div>
+      </div>`;
+
+    // Current Antar
+    if(antr.lord){
+      dashaRows+=`
+      <div style="background:rgba(26,148,144,.05);border:1px solid rgba(26,148,144,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:.8rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">ANTAR DASHA — Sub-Period (Bhukti)</div>
+        <div style="font-size:.95rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[antr.lord]||''} ${antr.lord} Antar Dasha</div>
+        <div style="font-size:.82rem;color:var(--dim)">${antr.startDate} – ${antr.endDate} · next: ${antr.next}</div>
+      </div>`;
+    }
+
+    // Current Pratyantara
+    if(prat.lord){
+      dashaRows+=`
+      <div style="background:rgba(180,100,200,.05);border:1px solid rgba(180,100,200,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:1.6rem">
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">PRATYANTARA — Active Right Now</div>
+        <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} Pratyantara</div>
+        <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} – ${prat.endDate} · next: ${prat.next}</div>
+      </div>`;
+    }
+
+    // Next 2 Antar Dashas ahead
+    if(antr.next){
+      const nextAntrIdx = DASHA_LORDS2.indexOf(antr.next);
+      dashaRows+=`<div style="margin-top:.4rem;padding-top:.6rem;border-top:1px solid var(--s3)">`;
+      dashaRows+=`<div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.4rem">UPCOMING ANTAR DASHAS</div>`;
+      for(let i=0;i<3;i++){
+        const idx=(nextAntrIdx+i)%9;
+        dashaRows+=`<div style="font-size:.8rem;color:var(--dim);padding:.15rem 0">${DSM[DASHA_LORDS2[idx]]||''} ${DASHA_LORDS2[idx]}</div>`;
+      }
+      dashaRows+=`</div>`;
     }
   }
   // Planet dignity labels
@@ -1627,9 +1688,9 @@ function showFullChart(){
     })()}
 
     <!-- Vimshottari Dasha -->
-    <div class="divider" style="margin-top:1.2rem"><span>Vimshottari Dasha</span></div>
-    <div style="background:rgba(26,148,144,.06);border:1px solid rgba(26,148,144,.2);border-radius:12px;padding:1rem 1.2rem;margin:.6rem 0">
-      <p style="font-size:.8rem;color:var(--dim);margin-bottom:.6rem">Your soul's current chapter and what lies ahead:</p>
+    <div class="divider" style="margin-top:1.2rem"><span>Vimshottari Dasha — Three Tiers</span></div>
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">The most immediate dasha (Pratyantara) governs today's practice. Antar shapes this season. Maha is the long current beneath everything.</p>
+    <div style="margin:.2rem 0">
       ${dashaRows||`<p style="color:var(--muted);font-size:.85rem">${cd.dashaPeriod?.lord||''} Dasha · ${cd.dashaPeriod?.remaining||''} years remaining</p>`}
     </div>
 
@@ -1906,7 +1967,7 @@ function redeemBeta(){
 
 // ── INIT ──
 // UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
-(function(){ const el=document.getElementById('utc-offset'); if(el) el.value=''; })();
+// UTC offset field is intentionally left blank so auto-detection runs by default
 </script>
 </body>
 </html>

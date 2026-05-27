@@ -162,41 +162,104 @@ module.exports = async (req, res) => {
         : { name: 'Saturn aspects 7th house',      house: 7, severity: 'mild' });
     }
 
-    // ── Vimshottari Dasha ──
-    // Step 1: Find the dasha lord active at birth from Moon nakshatra
-    const moonNakIdx     = planets[1].nakshatra;
-    const progressInNak  = (planets[1].lon * 27 / 360) % 1;   // fraction through the nakshatra
-    const birthLordIdx   = moonNakIdx % 9;
-    const elapsedAtBirth = progressInNak * DASHA_YEARS[birthLordIdx]; // years of birth dasha already consumed
-    const remainingAtBirth = DASHA_YEARS[birthLordIdx] - elapsedAtBirth;
+    // ── Vimshottari Dasha — three tiers (Maha / Antar / Pratyantara) ──
+    //
+    // Algorithm:
+    //   1. The Moon's nakshatra (and its fractional progress) tells us which
+    //      Maha Dasha was active at birth and how much had already elapsed.
+    //   2. From the exact Maha-start date we walk forward through complete
+    //      Maha periods until we arrive at today's Maha Dasha and its
+    //      calendar start date.
+    //   3. Within that Maha Dasha the Antar (sub-period) sequence begins with
+    //      the same lord, each Antar duration = (mahaYrs × antarYrs) / 120.
+    //      We walk forward until today's Antar and its calendar start.
+    //   4. Same logic one level deeper for Pratyantara (sub-sub-period):
+    //      each duration = (antarDuration × pratYrs) / 120.
+    //
+    const MS_PER_YEAR = 365.25 * 24 * 3600 * 1000;
 
-    // Step 2: Advance from birth date to today to find the CURRENT dasha
-    const yearsFromBirth = (Date.now() - birthDate.getTime()) / (365.25 * 24 * 3600 * 1000);
+    const moonNakIdx   = planets[1].nakshatra;
+    const moonNakFrac  = (planets[1].lon * 27 / 360) % 1;  // [0,1) progress through nakshatra
+    const birthLordIdx = moonNakIdx % 9;
 
-    let dashaPeriod;
-    if (yearsFromBirth <= remainingAtBirth) {
-      // Still in the birth dasha
-      dashaPeriod = {
-        lord:      DASHA_LORDS[birthLordIdx],
-        years:     DASHA_YEARS[birthLordIdx],
-        remaining: (remainingAtBirth - yearsFromBirth).toFixed(2),
-        next:      DASHA_LORDS[(birthLordIdx + 1) % 9]
-      };
-    } else {
-      // Advance through subsequent dashas until we land on the current one
-      let yrsLeft = yearsFromBirth - remainingAtBirth;
-      let curIdx  = (birthLordIdx + 1) % 9;
-      while (yrsLeft >= DASHA_YEARS[curIdx]) {
-        yrsLeft -= DASHA_YEARS[curIdx];
-        curIdx   = (curIdx + 1) % 9;
-      }
-      dashaPeriod = {
-        lord:      DASHA_LORDS[curIdx],
-        years:     DASHA_YEARS[curIdx],
-        remaining: (DASHA_YEARS[curIdx] - yrsLeft).toFixed(2),
-        next:      DASHA_LORDS[(curIdx + 1) % 9]
-      };
+    // How many years of the birth Maha Dasha had already elapsed before birth
+    const elapsedAtBirth  = moonNakFrac * DASHA_YEARS[birthLordIdx];
+    // The birth Maha Dasha started this many years before birth
+    const birthMahaStart  = new Date(birthDate.getTime() - elapsedAtBirth * MS_PER_YEAR);
+
+    // ── Tier 1: current Maha Dasha ──
+    const nowMs   = Date.now();
+    let mahaIdx   = birthLordIdx;
+    let mahaStart = birthMahaStart;
+
+    while (mahaStart.getTime() + DASHA_YEARS[mahaIdx] * MS_PER_YEAR <= nowMs) {
+      mahaStart = new Date(mahaStart.getTime() + DASHA_YEARS[mahaIdx] * MS_PER_YEAR);
+      mahaIdx   = (mahaIdx + 1) % 9;
     }
+    const mahaEnd       = new Date(mahaStart.getTime() + DASHA_YEARS[mahaIdx] * MS_PER_YEAR);
+    const mahaRemaining = (mahaEnd.getTime() - nowMs) / MS_PER_YEAR;
+
+    // ── Tier 2: current Antar Dasha (Bhukti) ──
+    // Sequence starts with the same lord as the Maha Dasha
+    let antarIdx   = mahaIdx;
+    let antarStart = mahaStart;
+
+    while (true) {
+      const dur = (DASHA_YEARS[mahaIdx] * DASHA_YEARS[antarIdx]) / 120;
+      const end = antarStart.getTime() + dur * MS_PER_YEAR;
+      if (end > nowMs) break;
+      antarStart = new Date(end);
+      antarIdx   = (antarIdx + 1) % 9;
+    }
+    const antarDuration  = (DASHA_YEARS[mahaIdx] * DASHA_YEARS[antarIdx]) / 120;
+    const antarEnd       = new Date(antarStart.getTime() + antarDuration * MS_PER_YEAR);
+    const antarRemaining = (antarEnd.getTime() - nowMs) / MS_PER_YEAR;
+
+    // ── Tier 3: current Pratyantara Dasha (Sookshma) ──
+    // Sequence starts with the same lord as the Antar Dasha
+    let pratIdx   = antarIdx;
+    let pratStart = antarStart;
+
+    while (true) {
+      const dur = (antarDuration * DASHA_YEARS[pratIdx]) / 120;
+      const end = pratStart.getTime() + dur * MS_PER_YEAR;
+      if (end > nowMs) break;
+      pratStart = new Date(end);
+      pratIdx   = (pratIdx + 1) % 9;
+    }
+    const pratDuration  = (antarDuration * DASHA_YEARS[pratIdx]) / 120;
+    const pratEnd       = new Date(pratStart.getTime() + pratDuration * MS_PER_YEAR);
+    const pratRemaining = (pratEnd.getTime() - nowMs) / MS_PER_YEAR;
+
+    // Format helper — short date string e.g. "21 Jul 2025"
+    const fmtDate = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    const dashaPeriod = {
+      // Maha Dasha — kept at top level for backward compat
+      lord:      DASHA_LORDS[mahaIdx],
+      years:     DASHA_YEARS[mahaIdx],
+      remaining: mahaRemaining.toFixed(2),
+      next:      DASHA_LORDS[(mahaIdx + 1) % 9],
+      endDate:   fmtDate(mahaEnd),
+      // Antar Dasha (Bhukti / sub-period)
+      antar: {
+        lord:      DASHA_LORDS[antarIdx],
+        duration:  antarDuration.toFixed(3),
+        remaining: antarRemaining.toFixed(2),
+        next:      DASHA_LORDS[(antarIdx + 1) % 9],
+        startDate: fmtDate(antarStart),
+        endDate:   fmtDate(antarEnd)
+      },
+      // Pratyantara Dasha (sub-sub-period)
+      pratyantara: {
+        lord:      DASHA_LORDS[pratIdx],
+        duration:  pratDuration.toFixed(3),
+        remaining: pratRemaining.toFixed(2),
+        next:      DASHA_LORDS[(pratIdx + 1) % 9],
+        startDate: fmtDate(pratStart),
+        endDate:   fmtDate(pratEnd)
+      }
+    };
 
     return res.status(200).json({
       planets, asc, malefics, dashaPeriod,
