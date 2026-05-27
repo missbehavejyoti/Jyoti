@@ -1,0 +1,9 @@
+{
+  "name": "jyoti-nadi-astrology",
+  "version": "1.0.0",
+  "description": "Jyoti — Vedic Nadi Astrology PWA",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "astronomy-engine": "^2.1.19"
+  }
+}

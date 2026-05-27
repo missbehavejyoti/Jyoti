@@ -311,14 +311,8 @@ select option{background:var(--s2);color:var(--text)}
         <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
         <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
       </div>
-      <!-- UTC offset — auto-detected from birth place, but can be overridden -->
-      <div class="field" style="margin-bottom:.8rem">
-        <label style="display:flex;align-items:center;justify-content:space-between">
-          <span data-en="UTC Offset (optional override)" data-hi="UTC ऑफसेट" data-ta="UTC ஆஃப்செட்">UTC Offset <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--dim)">(leave blank for auto-detect)</span></span>
-        </label>
-        <input type="text" id="utc-offset" placeholder="e.g. +12 or +13 — auto-detected if blank" style="font-size:.9rem" data-phi="+12 या +13 — रिक्त छोड़ें" data-pta="+12 அல்லது +13 — காலியாக விடவும்">
-        <p class="hint">✦ Vedic astrology traditionally uses Local Standard Time (no DST). For NZ: use +12 (standard time year-round, as used by KundliSoft and most Jyotish software) rather than +13 (NZ summer clock time).</p>
-      </div>
+      <!-- UTC hidden — fully auto-detected from birth location, DST-aware -->
+      <input type="hidden" id="utc-offset">
       <div class="g2">
         <div class="field">
           <label data-en="Email Address" data-hi="ईमेल पता" data-ta="மின்னஞ்சல் முகவரி">Email Address</label>
@@ -455,6 +449,9 @@ select option{background:var(--s2);color:var(--text)}
         <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to reveal your full karmic chart and receive your personalised daily remedies" data-hi="अपनी पूर्ण कार्मिक कुंडली और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு கார்மீக ஜாதகம் மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை வெளிப்படுத்த சந்தா செலுத்துங்கள்">Subscribe to reveal your full karmic chart and receive your personalised daily remedies</p>
       </div>
 
+      <!-- Chart fingerprint — populated by showChart() -->
+      <div id="chart-fingerprint"></div>
+
       <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Edit Details" data-hi="विवरण संपादित करें" data-ta="விவரங்களை திருத்தவும்">Edit Details</span></button>
         <button class="btn btn-gold" style="flex:1" onclick="goToPanel(4)">
@@ -470,7 +467,10 @@ select option{background:var(--s2);color:var(--text)}
       <div class="card-title" data-en="Begin Your Sacred Practice" data-hi="अपनी पवित्र साधना शुरू करें" data-ta="உங்கள் புனித சாதனையை தொடங்கவும்">Begin Your Sacred Practice</div>
 
       <div style="text-align:center;margin-bottom:1.5rem">
-        <p style="color:var(--muted);font-style:italic;font-size:.95rem" data-en="Your chart reveals multiple influences that require daily attention. Your personalised practice awaits." data-hi="आपकी कुंडली कई प्रभाव दर्शाती है जिन पर दैनिक ध्यान आवश्यक है।" data-ta="உங்கள் ஜாதகம் தினசரி கவனம் தேவைப்படும் பல தாக்கங்களை வெளிப்படுத்துகிறது.">Your chart reveals multiple influences that require daily attention. Your personalised practice awaits.</p>
+        <p style="color:var(--gold-pale);font-style:italic;font-size:1rem;font-family:'EB Garamond',serif;line-height:1.8;margin-bottom:.9rem" data-en="What Jyoti generates for you has never been generated before — and never will be again." data-hi="जो ज्योति आपके लिए उत्पन्न करती है वह पहले कभी नहीं बना और न ही दोबारा बनेगा।" data-ta="ஜ்யோதி உங்களுக்காக உருவாக்குவது இதுவரை உருவாக்கப்பட்டதில்லை — இனிமேலும் உருவாக்கப்படாது.">What Jyoti generates for you has never been generated before — and never will be again.</p>
+        <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.9rem;text-align:left">
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.8;margin:0" data-en="Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed 800 million unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition." data-hi="नौ ग्रह। सत्ताईस नक्षत्र। आपके जन्म के सेकंड तक गणना की गई लग्न। तीन एक साथ चलने वाली दशा चक्र — महा, अंतर और प्रत्यंतर। आज के ग्रह गोचर के साथ मिलाकर, संभावित संयोजन 80 करोड़ से अधिक हैं। यह राशिफल नहीं है। यह आपकी कुंडली है, नाडी परंपरा की जीवित बुद्धि के माध्यम से।" data-ta="ஒன்பது கிரகங்கள். இருபத்தேழு நட்சத்திரங்கள். உங்கள் பிறந்த நொடி வரை கணக்கிடப்பட்ட லக்னம். மூன்று ஒரே நேரத்தில் இயங்கும் தசை சுழற்சிகள். இன்றைய கிரக சாரங்களுடன் சேர்த்தால், 80 கோடிக்கும் அதிகமான தனித்துவமான வடிவமைப்புகள் சாத்தியம். இது ராசி பலன் அல்ல. இது நாடி மரபின் ஜீவமான அறிவின் மூலம் இன்று சந்திக்கும் உங்கள் ஜாதகம்.">Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed <strong style="color:var(--gold)">800 million</strong> unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition.</p>
+        </div>
       </div>
 
       <div class="plan-grid" style="max-width:380px;margin:0 auto 1.5rem">
@@ -711,7 +711,7 @@ function loadDemo(){
   [1,2].forEach(n=>{const el=document.getElementById('cb'+n);if(el)el.classList.add('agreed');});
   checkConsent();
 
-  const utcEl=document.getElementById('utc-offset'); if(utcEl) utcEl.value='+05:30';
+  // UTC offset is fully auto-detected from birth location — no pre-fill needed
 
   // Show a quick toast
   const toast = document.createElement('div');
@@ -1097,7 +1097,15 @@ async function buildChartAsync(){
     ]);
     if(tzR.ok){const tzD=await tzR.json();if(tzD?.timezone&&tzD.timezone!=='GMT')birthTZ=tzD.timezone;}
   }catch(e){}}
-  // Fallback 2: WorldTimeAPI
+  // Fallback 2: BigDataCloud — free, no key, returns IANA id directly from lat/lon
+  if(!birthTZ){try{
+    const tzR=await Promise.race([
+      fetch(`https://api.bigdatacloud.net/data/timezone-by-location?latitude=${_tlat}&longitude=${_tlon}`),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(tzR.ok){const tzD=await tzR.json();if(tzD?.ianaTimeId&&tzD.ianaTimeId!=='Etc/UTC')birthTZ=tzD.ianaTimeId;}
+  }catch(e){}}
+  // Fallback 3: WorldTimeAPI
   if(!birthTZ){try{
     const tzR=await Promise.race([
       fetch(`https://worldtimeapi.org/api/timezone`),
@@ -1110,7 +1118,7 @@ async function buildChartAsync(){
       if(match)birthTZ=match;
     }
   }catch(e){}}
-  // Fallback 3: Built-in country/region table — works offline, covers 150+ countries
+  // Fallback 4: Built-in country/region table — works offline, covers 150+ countries
   if(!birthTZ && coords.cc){
     const direct=_COUNTRY_TZ[coords.cc];
     if(direct){
@@ -1219,6 +1227,37 @@ function showChart(){
     const place=chartData._geocodedPlace?chartData._geocodedPlace.split(',').slice(0,2).join(','):'';
     const tz=chartData._birthTZ?` &nbsp;·&nbsp; ${chartData._birthTZ}`:'';
     locEl.innerHTML=`<span style="color:var(--dim);font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.05em">📍 ${place?place+' &nbsp;·&nbsp; ':''}UTC${utcStr}${tz}</span>`;
+  }
+  // Chart fingerprint — unique combination teaser above Unlock button
+  const fpEl = document.getElementById('chart-fingerprint');
+  if (fpEl && chartData.dashaPeriod) {
+    const dp = chartData.dashaPeriod;
+    const nakName = L.nakshatras[chartData.moonNak] || '';
+    const ascName = L.signs[chartData.ascSign] || '';
+    const maha = dp.lord || '';
+    const antar = dp.antar?.lord || '';
+    const prat = dp.pratyantara?.lord || '';
+    const dashaStr = prat ? `${maha} / ${antar} / ${prat}` : maha;
+    const labelNak  = currentLang==='hi'?'चंद्र नक्षत्र':currentLang==='ta'?'சந்திர நட்சத்திரம்':'Moon Nakshatra';
+    const labelAsc  = currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Lagna';
+    const labelDash = currentLang==='hi'?'सक्रिय दशा':currentLang==='ta'?'செயலில் தசை':'Active Dasha';
+    const labelUniq = currentLang==='hi'
+      ? '80 करोड़ से अधिक संभावित संयोजनों में से एक — केवल आपका।'
+      : currentLang==='ta'
+      ? '80 கோடிக்கும் அதிகமான சாத்தியமான வடிவமைப்புகளில் ஒன்று — உங்களுக்கு மட்டுமே.'
+      : 'One of over 800 million possible configurations — uniquely yours.';
+    fpEl.innerHTML = `
+      <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:12px;padding:.9rem 1.1rem;margin:.8rem 0">
+        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.7rem;text-transform:uppercase">✦ ${currentLang==='hi'?'आपकी कुंडली का विशेष संयोजन':currentLang==='ta'?'உங்கள் ஜாதக தனித்துவம்':'Your Chart Fingerprint'}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem .8rem;margin-bottom:.7rem">
+          <span style="font-size:.82rem;color:var(--text)"><span style="color:var(--gold-d);font-size:.7rem">${labelNak}</span><br><strong>${nakName}</strong></span>
+          <span style="color:var(--s4);align-self:center">·</span>
+          <span style="font-size:.82rem;color:var(--text)"><span style="color:var(--gold-d);font-size:.7rem">${labelAsc}</span><br><strong>${ascName}</strong></span>
+          <span style="color:var(--s4);align-self:center">·</span>
+          <span style="font-size:.82rem;color:var(--text)"><span style="color:var(--gold-d);font-size:.7rem">${labelDash}</span><br><strong>${dashaStr}</strong></span>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);font-style:italic;margin:0">${labelUniq}</p>
+      </div>`;
   }
   // Hide loading, show chart
   document.getElementById('loading-card').style.display='none';
