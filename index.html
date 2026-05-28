@@ -2427,7 +2427,7 @@ function resetChart(){
   window.location.reload();
 }
 
-// Auto-restore saved chart — returning users land on daily reading instantly
+// Auto-restore saved chart — preload data but stay on homepage so new users/testers see sign-up
 (function initAutoRestore(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
@@ -2435,12 +2435,20 @@ function resetChart(){
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
-    showChart();
-    _activatePanel(5);
-    // Pre-render full chart and start soul map fetch in background immediately
-    setTimeout(()=>showFullChart(),100);
-    setTimeout(()=>loadNakshatraReading(),200);
-    setTimeout(()=>showDailyReading(),200);
+    // Show returning-user banner on panel 1 instead of jumping to panel 5
+    const btn=document.createElement('button');
+    btn.className='btn btn-gold btn-full';
+    btn.style.cssText='margin-top:.8rem;font-size:.85rem';
+    btn.innerHTML=`✦ Continue ${userData.name ? userData.name.split(' ')[0]+"'s" : 'my'} practice`;
+    btn.onclick=function(){
+      showChart();
+      _activatePanel(5);
+      setTimeout(()=>showFullChart(),100);
+      setTimeout(()=>loadNakshatraReading(),200);
+      setTimeout(()=>showDailyReading(),200);
+    };
+    const card=document.querySelector('#panel1 .card');
+    if(card)card.appendChild(btn);
   }catch(e){}
 })();
 </script>
