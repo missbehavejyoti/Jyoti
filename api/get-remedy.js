@@ -146,32 +146,36 @@ JSON structure:
       return res.status(200).json({ text: text.trim() });
     }
 
-    // Parse JSON response for remedy/planets — robust extraction handles preamble/truncation
+    // Parse JSON response for remedy/planets — handles truncation (no closing }) and literal newlines
     let parsed;
-    try {
-      const clean = text.replace(/```json|```/g, '').trim();
-      parsed = JSON.parse(clean);
-    } catch(_) {
-      // Try to find a complete {...} block first
-      const m = text.match(/\{[\s\S]*\}/);
-      if (m) {
-        try { parsed = JSON.parse(m[0]); }
-        catch(_2) {
-          // Truncated JSON — extract completed "Key":"Value" pairs individually
-          const pairs = {};
-          const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\})/g;
-          let hit;
-          while ((hit = re.exec(text)) !== null) { try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_3) {} }
-          if (Object.keys(pairs).length > 0) { parsed = pairs; }
-          else {
-            console.error('JSON parse failed, no pairs found:', text.slice(0, 500));
-            return res.status(502).json({ error: 'JSON parse error', detail: text.slice(0, 500) });
-          }
+    const clean = text.replace(/```json|```/g, '').trim();
+    // Attempt 1: direct parse
+    try { parsed = JSON.parse(clean); } catch(_) {}
+    // Attempt 2: collapse literal newlines (model sometimes embeds bare newlines in string values)
+    if (!parsed) {
+      try { parsed = JSON.parse(clean.replace(/\n/g, ' ').replace(/\r/g, '')); } catch(_) {}
+    }
+    // Attempt 3: find outermost {...} block and parse it
+    if (!parsed) {
+      const m = clean.match(/\{[\s\S]*\}/);
+      if (m) { try { parsed = JSON.parse(m[0]); } catch(_) {} }
+    }
+    // Attempt 4: key-by-key extraction — works even when JSON is truncated with no closing }
+    if (!parsed) {
+      const pairs = {};
+      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\})/g;
+      let hit;
+      while ((hit = re.exec(text)) !== null) {
+        try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_) {
+          // Try collapsing newlines inside the value
+          try { pairs[hit[1]] = JSON.parse(hit[2].replace(/\n/g, ' ').replace(/\r/g, '')); } catch(_2) {}
         }
-      } else {
-        console.error('No JSON object in response:', text.slice(0, 500));
-        return res.status(502).json({ error: 'No JSON in response', detail: text ? text.slice(0, 500) : '(empty response)' });
       }
+      if (Object.keys(pairs).length > 0) parsed = pairs;
+    }
+    if (!parsed) {
+      console.error('All JSON parse attempts failed. text[:500]:', text.slice(0, 500));
+      return res.status(502).json({ error: 'JSON parse error', detail: text ? text.slice(0, 400) : '(empty)' });
     }
     return res.status(200).json(parsed);
 
