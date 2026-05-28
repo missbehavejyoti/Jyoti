@@ -1928,11 +1928,8 @@ function showFullChart(){
     </div>
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
-  // Trigger soul first, then planets with 3s cooldown to let Anthropic rate-limiter recover
-  setTimeout(async ()=>{
-    await loadSoulReading().catch(()=>{});
-    setTimeout(()=>loadPlanetReadings(), 3000);
-  },50);
+  // Load soul only — planets load lazily when user opens Full Chart tab
+  setTimeout(()=>loadSoulReading().catch(()=>{}), 50);
 }
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
@@ -2180,11 +2177,12 @@ function switchTab(tab,el){
   if(tab==='remedies')renderArchive();
   if(tab==='chart'){
     if(!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
-    else{
-      // Wait for any in-progress soul fetch before loading planets
-      const wait=soulLoadingPromise?soulLoadingPromise.then(()=>new Promise(r=>setTimeout(r,3000))):Promise.resolve();
-      wait.then(()=>loadPlanetReadings());
-    }
+    // Load planets every time chart tab is opened (guard inside prevents duplicate calls)
+    // Short delay lets any concurrent daily-reading call settle first
+    const wait=soulLoadingPromise
+      ?soulLoadingPromise.then(()=>new Promise(r=>setTimeout(r,2000)))
+      :new Promise(r=>setTimeout(r,1000));
+    wait.then(()=>loadPlanetReadings());
   }
 }
 
