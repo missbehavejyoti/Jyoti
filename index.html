@@ -1947,9 +1947,13 @@ async function loadSoulReading(){
   if(!cd||!cd.planets||!cd.asc)return;
   const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
   const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
+  const L_en=T['en'];
+  const sn=i=>cd.planets[i].signName||L_en.signs[cd.planets[i].sign]||'';
+  const nn=i=>cd.planets[i].nakshatraName||L_en.nakshatras[cd.planets[i].nakshatra]||'';
+  const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const soulSummary=`Name: ${userData.name||'the seeker'}
-Ascendant (Lagna): ${cd.asc.signName} ${cd.asc.degree}° — House 1
-${pnames.map((n,i)=>`${n}: ${cd.planets[i].signName} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${cd.planets[i].nakshatraName} Pada ${cd.planets[i].pada}`).join('\n')}
+Ascendant (Lagna): ${ascSn} ${cd.asc.degree}° — House 1
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}
 Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
 Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
   try{
@@ -1959,9 +1963,10 @@ Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
       body:JSON.stringify({chartSummary:soulSummary, lang:currentLang, type:'soul'})
     });
     if(!resp.ok){
-      const errDetail=await resp.text().catch(()=>resp.status);
-      console.error('Soul API error',resp.status,errDetail);
-      showSoulError(`API error ${resp.status}`);
+      const errBody=await resp.json().catch(()=>({}));
+      const detail=errBody.detail||errBody.error||resp.status;
+      console.error('Soul API error',resp.status,errBody);
+      showSoulError(`${resp.status}: ${String(detail).slice(0,150)}`);
       return;
     }
     const data=await resp.json();
