@@ -805,6 +805,7 @@ let soulReadingCache=(()=>{
   // Will be matched against currentPratKey() after chartData loads — checked in loadSoulReading()
   return null;
 })();
+let soulLoadingPromise=null; // tracks in-progress soul API call so planets can wait
 
 const T={
   en:{
@@ -1927,10 +1928,10 @@ function showFullChart(){
     </div>
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
-  // Trigger soul first, then planets — serialised to avoid concurrent Anthropic API calls
+  // Trigger soul first, then planets with 3s cooldown to let Anthropic rate-limiter recover
   setTimeout(async ()=>{
     await loadSoulReading().catch(()=>{});
-    loadPlanetReadings();
+    setTimeout(()=>loadPlanetReadings(), 3000);
   },50);
 }
 
@@ -1959,6 +1960,9 @@ async function loadSoulReading(){
   // Build comprehensive chart summary including house positions
   const cd=chartData;
   if(!cd||!cd.planets||!cd.asc||!cd.dashaPeriod)return;
+  // Track this fetch so planets can wait for it to finish
+  let resolvePromise;
+  soulLoadingPromise=new Promise(r=>{resolvePromise=r;});
   try{
   const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
   const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
@@ -1997,6 +2001,9 @@ Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
   }catch(e){
     console.error('Soul fetch error',e);
     showSoulError(e.message);
+  }finally{
+    soulLoadingPromise=null;
+    resolvePromise();
   }
 }
 function renderSoulReading(text){
@@ -2158,7 +2165,11 @@ function switchTab(tab,el){
   if(tab==='remedies')renderArchive();
   if(tab==='chart'){
     if(!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
-    else setTimeout(()=>loadPlanetReadings(),50);
+    else{
+      // Wait for any in-progress soul fetch before loading planets
+      const wait=soulLoadingPromise?soulLoadingPromise.then(()=>new Promise(r=>setTimeout(r,3000))):Promise.resolve();
+      wait.then(()=>loadPlanetReadings());
+    }
   }
 }
 
