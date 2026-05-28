@@ -2053,8 +2053,10 @@ function planetReadingsKey(){
   try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets2_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_planets2_default';}
 }
 let planetReadingsCache=null;
+let planetLoadingInProgress=false;
 
 async function loadPlanetReadings(){
+  if(planetLoadingInProgress)return;
   // Try localStorage first (permanent cache — positions don't change)
   if(!planetReadingsCache){
     try{const s=localStorage.getItem(planetReadingsKey());if(s)planetReadingsCache=JSON.parse(s);}catch(e){}
@@ -2063,6 +2065,13 @@ async function loadPlanetReadings(){
     renderPlanetReadings(planetReadingsCache);
     return;
   }
+  // Reset loading spinner (covers retry clicks and repeated calls)
+  const spinnerEl=document.getElementById('planet-readings-loading');
+  if(spinnerEl){
+    spinnerEl.style.display='';
+    spinnerEl.innerHTML=`${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}<div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;
+  }
+  planetLoadingInProgress=true;
   const cd=chartData;
   if(!cd||!cd.planets||!cd.asc)return;
   const L_en=T['en'];
@@ -2083,22 +2092,26 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
     if(!resp.ok){
       const errText=await resp.text().catch(()=>'');
       console.error('Planet API error',resp.status,errText);
-      showPlanetError(`${resp.status}: ${errText.slice(0,120)}`);
+      planetLoadingInProgress=false;
+      showPlanetError(`${resp.status}: ${errText.slice(0,200)}`);
       return;
     }
     const data=await resp.json();
     if(data&&data.Sun){
       planetReadingsCache=data;
       try{localStorage.setItem(planetReadingsKey(),JSON.stringify(data));}catch(e){}
+      planetLoadingInProgress=false;
       renderPlanetReadings(data);
     } else {
       console.error('Planet readings: unexpected response',data);
       const errMsg=data?.error||'Unexpected response format';
       const errDetail=data?.detail?` — ${String(data.detail).slice(0,200)}`:'';
+      planetLoadingInProgress=false;
       showPlanetError(errMsg+errDetail);
     }
   }catch(e){
     console.error('Planet readings error',e);
+    planetLoadingInProgress=false;
     showPlanetError(e.message);
   }
 }

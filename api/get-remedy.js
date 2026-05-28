@@ -104,8 +104,8 @@ JSON structure:
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
   try {
-    // Retry up to 3 times on transient overload (529) or server errors (503/502)
-    let response;
+    // Retry up to 3 times on HTTP errors OR empty text responses
+    let response, data, text = '';
     for (let attempt = 0; attempt < 3; attempt++) {
       response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -116,24 +116,31 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : isPlanet ? 1800 : 1000,
+          max_tokens: isSoul ? 2000 : isPlanet ? 2000 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })
       });
-      if (response.ok) break;
-      if (![429, 502, 503, 529].includes(response.status)) break;
-      if (attempt < 2) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      if (!response.ok) {
+        if (![429, 502, 503, 529].includes(response.status)) break;
+        if (attempt < 2) await new Promise(r => setTimeout(r, 1500 * Math.pow(2, attempt)));
+        continue;
+      }
+      data = await response.json();
+      text = data.content?.[0]?.text || '';
+      if (text) break; // got content — done
+      console.warn(`Attempt ${attempt+1}: empty text from Anthropic, retrying…`);
+      if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
     }
 
     if (!response.ok) {
-      const err = await response.text();
+      const err = await response.text().catch(() => '(unreadable)');
       console.error('Anthropic API error:', err);
       return res.status(502).json({ error: 'API error', detail: err });
     }
 
-    const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    if (!data) data = await response.json().catch(() => ({}));
+    if (!text) text = data.content?.[0]?.text || '';
 
     if (isNakshatra || isSoul) {
       return res.status(200).json({ text: text.trim() });
