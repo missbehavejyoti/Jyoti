@@ -1944,7 +1944,8 @@ async function loadSoulReading(){
   }
   // Build comprehensive chart summary including house positions
   const cd=chartData;
-  if(!cd||!cd.planets||!cd.asc)return;
+  if(!cd||!cd.planets||!cd.asc||!cd.dashaPeriod)return;
+  try{
   const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
   const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
   const L_en=T['en'];
@@ -1955,18 +1956,18 @@ async function loadSoulReading(){
 Ascendant (Lagna): ${ascSn} ${cd.asc.degree}° — House 1
 ${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}
 Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
-Karmic intensities: ${cd.malefics.map(m=>m.name).join(', ')}`;
-  try{
+Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const resp=await fetch('/api/get-remedy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:soulSummary, lang:currentLang, type:'soul'})
     });
     if(!resp.ok){
-      const errBody=await resp.json().catch(()=>({}));
-      const detail=errBody.detail||errBody.error||resp.status;
-      console.error('Soul API error',resp.status,errBody);
-      showSoulError(`${resp.status}: ${String(detail).slice(0,150)}`);
+      const errText=await resp.text().catch(()=>'');
+      let detail=errText;
+      try{const j=JSON.parse(errText);detail=j.detail||j.error||errText;}catch(_){}
+      console.error('Soul API error',resp.status,errText);
+      showSoulError(`${resp.status}: ${String(detail).slice(0,200)}`);
       return;
     }
     const data=await resp.json();

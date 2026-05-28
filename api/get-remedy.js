@@ -116,7 +116,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2500 : isPlanet ? 2800 : 1000,
+          max_tokens: isSoul ? 1200 : isPlanet ? 2800 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })
