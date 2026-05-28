@@ -1563,7 +1563,6 @@ function renderDailyReading(r,dayName){
     html=`
       <div class="remedy-card">
         <div class="remedy-day">${rem.title||dayName}</div>
-        <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${r.greeting}</p>
         <p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${r.cosmic_weather}</p>
         <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${rem.what_is_happening}</p>
         <div class="remedy-text">${rem.practice}</div>
@@ -1582,7 +1581,7 @@ function renderDailyReading(r,dayName){
       </div>
     `;
   } else {
-    html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p style="font-size:.9rem;color:var(--muted);font-style:italic">${r.greeting}</p><p>${r.no_remedy_message}</p></div>`;
+    html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p>${r.no_remedy_message}</p></div>`;
   }
   if(r.month_end_prep){
     const prep=r.month_end_prep;
@@ -1719,7 +1718,6 @@ function renderFallbackReading(dayName,now){
     <div class="remedy-card">
       <div class="remedy-day">${dayName}</div>
       ${dashaTag?`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--gold-d);margin-bottom:.6rem;text-transform:uppercase">✦ ${dashaTag}</div>`:''}
-      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${greeting}</p>
       ${cosmicLine?`<p style="font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem">${cosmicLine}</p>`:''}
       <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${di.whatIsHappening}</p>
       <div class="remedy-text">${di.practice}</div>
