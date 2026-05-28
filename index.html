@@ -1926,13 +1926,17 @@ function showFullChart(){
         const meaning=PHM[pName]?PHM[pName][houseIdx]:'';
         allEntries.push({sym:p.sym,planetName:L2.planets[pIdx],houseNum:houseIdx+1,houseLabel:houseLabels[houseIdx],meaning});
       });
-      return`<div style="margin-top:.8rem">${allEntries.map(e=>`
-        <div style="padding:.6rem 0;border-bottom:1px solid rgba(200,169,74,.08)">
-          <div style="display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.2rem">
-            <span style="color:var(--gold);font-size:.9rem">${e.sym} ${e.planetName}</span>
-            <span style="color:var(--gold-d);font-size:.72rem;font-family:'Cinzel',serif;letter-spacing:.05em;opacity:.8">${houseWord} ${e.houseNum} · ${e.houseLabel}</span>
+      const sectionTitle=currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint';
+      const sectionSub=currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது':'How each planet specifically operates in your life';
+      return`<div class="divider" style="margin-top:1.4rem"><span>${sectionTitle}</span></div>
+      <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${sectionSub}</p>
+      <div>${allEntries.map(e=>`
+        <div style="padding:.75rem 0;border-bottom:1px solid rgba(200,169,74,.1)">
+          <div style="display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem">
+            <span style="color:var(--gold);font-size:1rem;font-weight:500">${e.sym} ${e.planetName}</span>
+            <span style="color:var(--gold-d);font-size:.78rem;font-family:'Cinzel',serif;letter-spacing:.06em">${houseWord} ${e.houseNum} · ${e.houseLabel}</span>
           </div>
-          <div style="color:var(--muted);font-size:.84rem;line-height:1.5">${e.meaning}</div>
+          <div style="color:var(--muted);font-size:.92rem;line-height:1.6">${e.meaning}</div>
         </div>`).join('')}
       </div>`;
     })()}
