@@ -784,6 +784,10 @@ function saveSoulReading(text){
   try{
     const key=soulArchiveKey();
     const pratKey=currentPratKey();
+    if(!pratKey)return;
+    // Direct cache — fast path used on next load
+    localStorage.setItem(key+'_curr',JSON.stringify({pratKey,text}));
+    // Full archive — used for history display (up to 30 entries)
     const arc=getSoulArchive().filter(r=>r.pratKey!==pratKey);
     const p=chartData?.dashaPeriod?.pratyantara;
     arc.unshift({pratKey, pratLord:p?.lord||'', pratEnd:p?.endDate||'', text});
@@ -1934,8 +1938,16 @@ async function loadSoulReading(){
   if(!soulReadingCache){
     const pratKey=currentPratKey();
     if(pratKey){
-      const match=getSoulArchive().find(r=>r.pratKey===pratKey);
-      if(match){soulReadingCache=match.text;}
+      // Fast path: direct cache keyed by current Pratyantara period
+      try{
+        const curr=JSON.parse(localStorage.getItem(soulArchiveKey()+'_curr')||'null');
+        if(curr?.pratKey===pratKey)soulReadingCache=curr.text;
+      }catch(_){}
+      // Fallback: search full archive
+      if(!soulReadingCache){
+        const match=getSoulArchive().find(r=>r.pratKey===pratKey);
+        if(match)soulReadingCache=match.text;
+      }
     }
   }
   if(soulReadingCache){
