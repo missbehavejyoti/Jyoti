@@ -769,7 +769,7 @@ let chantCurrent=0,chantTarget=108;
 // Readings stored as [{pratLord, pratEnd, text}], newest first, max 30
 // Refreshes only when the Pratyantara Dasha lord changes — ~3-6 months
 function soulArchiveKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_soul_arc_default';}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc2_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_soul_arc2_default';}
 }
 function getSoulArchive(){
   try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
@@ -791,7 +791,7 @@ function saveSoulReading(text){
   }catch(e){}
 }
 function clearSoulArchive(){
-  try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+  try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_arc')).forEach(k=>localStorage.removeItem(k));}catch(e){}
 }
 function todayStr(){return new Date().toISOString().slice(0,10);}
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
@@ -1468,6 +1468,16 @@ async function showDailyReading(){
   const dateStr=now.toLocaleDateString(currentLang==='hi'?'hi-IN':currentLang==='ta'?'ta-IN':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
+
+  // Serve cached reading for today if same language — avoids redundant API calls
+  try{
+    const cached=JSON.parse(localStorage.getItem('jyoti_daily_'+todayStr())||'null');
+    if(cached && cached.lang===currentLang && cached.reading){
+      renderDailyReading(cached.reading, dayName);
+      return;
+    }
+  }catch(e){}
+
   document.getElementById('daily-loading').style.display='block';
   document.getElementById('daily-content').style.display='none';
   const L_en=T['en'];
@@ -1483,8 +1493,27 @@ VIMSHOTTARI DASHA (most important for today's practice — work from innermost o
   ► MAHA DASHA (background current, shapes the years): ${dasha.lord} — ${dasha.remaining} years remaining, next: ${dasha.next}
 The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's energy (${prat?.lord||dasha.lord}), then layer in the Antar lord (${antr?.lord||dasha.lord}) as secondary influence, with the Maha Dasha (${dasha.lord}) as deep background context.` : '';
 
+  // Compute current planetary transits using local ephemeris
+  const _tUTCH=now.getUTCHours(), _tUTCM=now.getUTCMinutes();
+  const _tTOB=`${String(_tUTCH).padStart(2,'0')}:${String(_tUTCM).padStart(2,'0')}:00`;
+  const _tr=calcChart(todayStr(),_tTOB,{lat:0,lon:0},0);
+  const tr=_tr.planets;
+  const S=L_en.signs;
+  const transitBlock=`
+CURRENT PLANETARY TRANSITS — exact positions right now (${now.toUTCString()}):
+  Transit Sun: ${S[tr[0].sign]} ${tr[0].degree}°
+  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°
+  Transit Mars: ${S[tr[2].sign]} ${tr[2].degree}°
+  Transit Mercury: ${S[tr[3].sign]} ${tr[3].degree}°
+  Transit Jupiter: ${S[tr[4].sign]} ${tr[4].degree}°
+  Transit Venus: ${S[tr[5].sign]} ${tr[5].degree}°
+  Transit Saturn: ${S[tr[6].sign]} ${tr[6].degree}°
+  Transit Rahu: ${S[tr[7].sign]} ${tr[7].degree}°
+  Transit Ketu: ${S[tr[8].sign]} ${tr[8].degree}°`;
+
   const chartSummary=`
 Name: ${userData.name}
+NATAL CHART (birth positions):
 Sun: ${p[0].signName||L_en.signs[p[0].sign]} ${p[0].degree}°
 Moon: ${p[1].signName||L_en.signs[p[1].sign]} ${p[1].degree}° — Nakshatra: ${p[1].nakshatraName||L_en.nakshatras[chartData.moonNak]}, Pada ${p[1].pada||''}
 Ascendant (Lagna): ${chartData.asc?.signName||L_en.signs[chartData.ascSign]}  ${chartData.asc?.degree||''}°
@@ -1496,7 +1525,8 @@ Saturn: ${p[6].signName||L_en.signs[p[6].sign]} ${p[6].degree}°
 Rahu: ${p[7].signName||L_en.signs[p[7].sign]} ${p[7].degree}°
 Ketu: ${p[8].signName||L_en.signs[p[8].sign]} ${p[8].degree}°
 ${dashaContext}
-Malefic influences: ${chartData.malefics.map(m=>m.name).join(', ')}
+${transitBlock}
+Malefic influences (natal): ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[now.getDay()]} — ruled by ${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][now.getDay()]}
 Today's date: ${now.toDateString()}
 Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()}
