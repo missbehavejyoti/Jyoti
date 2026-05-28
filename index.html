@@ -548,6 +548,7 @@ select option{background:var(--s2);color:var(--text)}
         <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem">✦ Sacred Daily Practice ✦</div>
         <div style="font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);margin-bottom:.4rem" id="today-greeting"></div>
         <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--muted)" id="today-date"></div>
+        <div style="margin-top:.6rem"><span onclick="resetChart()" style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);cursor:pointer;opacity:.6;text-decoration:none;padding:.2rem .5rem" title="Enter new birth details">✦ New chart</span></div>
       </div>
 
       <!-- Tab nav -->
@@ -1204,6 +1205,7 @@ async function buildChartAsync(){
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
       try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr()}));}catch(e){}
+      try{localStorage.setItem('jyoti_user',JSON.stringify(userData));}catch(e){}
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
       planetReadingsCache=null;
       try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_planets_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
@@ -2430,8 +2432,25 @@ function redeemBeta(){
 }
 
 // ── INIT ──
-// UTC offset is auto-detected server-side from birth place — clear any browser-autofilled value
-// UTC offset field is intentionally left blank so auto-detection runs by default
+function resetChart(){
+  try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+  window.location.reload();
+}
+
+// Auto-restore saved chart — returning users land on daily reading instantly
+(function initAutoRestore(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
+    if(!saved?.chartData?.planets||!saved?.userData?.name)return;
+    userData=saved.userData;
+    chartData=saved.chartData;
+    if(userData.lang)setLang(userData.lang);
+    showChart();
+    setTimeout(()=>loadNakshatraReading(),200);
+    _activatePanel(5);
+    setTimeout(()=>showDailyReading(),200);
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
