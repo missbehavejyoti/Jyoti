@@ -157,13 +157,13 @@ JSON structure:
           while ((hit = re.exec(text)) !== null) { try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_3) {} }
           if (Object.keys(pairs).length > 0) { parsed = pairs; }
           else {
-            console.error('JSON parse failed, no pairs found:', text.slice(0, 300));
-            return res.status(502).json({ error: 'JSON parse error' });
+            console.error('JSON parse failed, no pairs found:', text.slice(0, 500));
+            return res.status(502).json({ error: 'JSON parse error', detail: text.slice(0, 500) });
           }
         }
       } else {
-        console.error('No JSON object in response:', text.slice(0, 300));
-        return res.status(502).json({ error: 'No JSON in response' });
+        console.error('No JSON object in response:', text.slice(0, 500));
+        return res.status(502).json({ error: 'No JSON in response', detail: text ? text.slice(0, 500) : '(empty response)' });
       }
     }
     return res.status(200).json(parsed);

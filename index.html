@@ -2093,7 +2093,9 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
       renderPlanetReadings(data);
     } else {
       console.error('Planet readings: unexpected response',data);
-      showPlanetError(data?.error||'Unexpected response format');
+      const errMsg=data?.error||'Unexpected response format';
+      const errDetail=data?.detail?` — ${String(data.detail).slice(0,200)}`:'';
+      showPlanetError(errMsg+errDetail);
     }
   }catch(e){
     console.error('Planet readings error',e);
