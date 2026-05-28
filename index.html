@@ -1222,6 +1222,7 @@ async function buildChartAsync(){
   }
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);
+  setTimeout(()=>showFullChart(),800);
 }
 
 function goToPanel(n){
@@ -1593,10 +1594,7 @@ function renderDailyReading(r,dayName){
     </div>`;
   }
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
-  // Archive
   saveToArchive(r,dayName);
-  // Full chart tab
-  showFullChart();
 }
 
 function renderFallbackReading(dayName,now){
@@ -1734,7 +1732,6 @@ function renderFallbackReading(dayName,now){
     </div>
   `;
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
-  showFullChart();
 }
 
 function showFullChart(){
@@ -2170,6 +2167,7 @@ function switchTab(tab,el){
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
   if(tab==='remedies')renderArchive();
+  if(tab==='chart'&&!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
 }
 
 // ── CHANT ──
@@ -2448,8 +2446,10 @@ function resetChart(){
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
     showChart();
-    setTimeout(()=>loadNakshatraReading(),200);
     _activatePanel(5);
+    // Pre-render full chart and start soul map fetch in background immediately
+    setTimeout(()=>showFullChart(),100);
+    setTimeout(()=>loadNakshatraReading(),200);
     setTimeout(()=>showDailyReading(),200);
   }catch(e){}
 })();
