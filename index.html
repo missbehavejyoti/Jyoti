@@ -1914,21 +1914,25 @@ function showFullChart(){
       };
       const PHM = currentLang==='hi' ? PHM_HI : currentLang==='ta' ? PHM_TA : PHM_EN;
       const houseLabels=currentLang==='hi'?['स्वयं और उपस्थिति','धन और वाणी','संवाद और साहस','घर और जड़ें','रचनात्मकता और आनंद','स्वास्थ्य और सेवा','साझेदारी और अन्य','परिवर्तन और गहराई','ज्ञान और दर्शन','करियर और उद्देश्य','समुदाय और लाभ','एकांत और मोक्ष']:currentLang==='ta'?['சுயம் மற்றும் இருப்பு','செல்வம் மற்றும் குரல்','தொடர்பு மற்றும் தைரியம்','இல்லம் மற்றும் வேர்கள்','படைப்பாற்றல் மற்றும் மகிழ்ச்சி','ஆரோக்கியம் மற்றும் சேவை','கூட்டாண்மை மற்றும் பிறர்','மாற்றம் மற்றும் ஆழம்','ஞானம் மற்றும் தத்துவம்','தொழில் மற்றும் நோக்கம்','சமூகம் மற்றும் ஆதாயம்','தனிமை மற்றும் முக்தி']:['Self & Presence','Wealth & Voice','Communication & Courage','Home & Roots','Creativity & Joy','Health & Service','Partnership & Others','Transformation & Depth','Wisdom & Philosophy','Career & Purpose','Community & Gains','Solitude & Liberation'];
+      const houseWord=currentLang==='hi'?'भाव':currentLang==='ta'?'பாவம்':'House';
       const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
-      return Array.from({length:12},(_,i)=>{
-        const planetsInHouse=cd.planets.filter(p=>(p.sign-cd.ascSign+12)%12===i);
-        if(!planetsInHouse.length)return'';
-        const items=planetsInHouse.map(p=>{
-          const pIdx=cd.planets.indexOf(p);
-          const pName=pnames[pIdx];
-          const meaning=PHM[pName]?PHM[pName][i]:'';
-          return`<div style="padding:.35rem 0;border-bottom:1px solid rgba(200,169,74,.07);font-size:.85rem"><span style="color:var(--gold)">${p.sym} ${L2.planets[pIdx]}</span><span style="color:var(--muted)"> — ${meaning}</span></div>`;
-        }).join('');
-        return`<div style="margin-bottom:1rem;background:rgba(200,169,74,.03);border-radius:10px;padding:.7rem 1rem">
-          <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:var(--gold-l);margin-bottom:.4rem">${houseLabels[i].toUpperCase()}</div>
-          ${items}
-        </div>`;
-      }).join('');
+      const allEntries=[];
+      cd.planets.forEach(p=>{
+        const houseIdx=(p.sign-cd.ascSign+12)%12;
+        const pIdx=cd.planets.indexOf(p);
+        const pName=pnames[pIdx];
+        const meaning=PHM[pName]?PHM[pName][houseIdx]:'';
+        allEntries.push({sym:p.sym,planetName:L2.planets[pIdx],houseNum:houseIdx+1,houseLabel:houseLabels[houseIdx],meaning});
+      });
+      return`<div style="margin-top:.8rem">${allEntries.map(e=>`
+        <div style="padding:.6rem 0;border-bottom:1px solid rgba(200,169,74,.08)">
+          <div style="display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap;margin-bottom:.2rem">
+            <span style="color:var(--gold);font-size:.9rem">${e.sym} ${e.planetName}</span>
+            <span style="color:var(--gold-d);font-size:.72rem;font-family:'Cinzel',serif;letter-spacing:.05em;opacity:.8">${houseWord} ${e.houseNum} · ${e.houseLabel}</span>
+          </div>
+          <div style="color:var(--muted);font-size:.84rem;line-height:1.5">${e.meaning}</div>
+        </div>`).join('')}
+      </div>`;
     })()}
 
     <!-- Soul Map & Karmic Blueprint -->
