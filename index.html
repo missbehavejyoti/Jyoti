@@ -47,7 +47,7 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 /* Divider */
 .divider{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:var(--gold-d)}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
-.divider span{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;white-space:nowrap}
+.divider span{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.25em;white-space:nowrap}
 
 /* Steps */
 .steps{display:flex;justify-content:center;align-items:center;margin-bottom:2rem;flex-wrap:wrap;row-gap:.5rem}
@@ -1877,23 +1877,7 @@ function showFullChart(){
       <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
     </div>
 
-    <!-- Your Planetary Blueprint (Claude-generated) -->
-    <div class="divider"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint'}</span></div>
-    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह का आपके जीवन पर व्यक्तिगत प्रभाव।':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது.':'How each planet specifically operates in your life.'}</p>
-    <div id="planet-readings-wrap">
-      <div id="planet-readings-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
-        ${currentLang==='hi'?'ग्रह पठन लोड हो रहा है…':currentLang==='ta'?'கிரக வாசிப்பு ஏற்றப்படுகிறது…':'Loading your planetary reading…'}
-        <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span>
-        </div>
-      </div>
-      <div id="planet-readings-content" style="display:none"></div>
-    </div>
-
-    <!-- Planet Story -->
-    <div class="divider" style="margin-top:1.2rem"><span>${FC.chartReveals}</span></div>
+    <!-- House Meanings (static, classical) -->
     ${(()=>{
       const PHM_EN={
         Sun:['radiates your identity and vitality — you lead from sheer presence','illuminates your relationship with wealth and the power of your voice','shines through courage, communication, and the bonds with siblings','warms your home, your mother, and your need for emotional roots','glows in creative fire — romance, self-expression, and pride in your gifts','is devoted to health, service, and the refinement of daily life','finds itself through partnership and what others reflect back to you','empowers you through transformation, depth, and the hidden realm','seeks meaning through philosophy, teaching, and distant horizons','drives career ambition, authority, and your place in public life','brightens community, aspirations, and your circle of influence','seeks its fullest self through solitude, retreat, and spiritual surrender'],
@@ -1983,7 +1967,6 @@ function showFullChart(){
   `;
   // Trigger soul reading after HTML is set (defer so DOM is ready)
   setTimeout(()=>loadSoulReading(),50);
-  setTimeout(()=>loadPlanetReadings(),100);
 }
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
