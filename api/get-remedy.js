@@ -139,9 +139,24 @@ JSON structure:
       return res.status(200).json({ text: text.trim() });
     }
 
-    // Parse JSON response for remedy
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    // Parse JSON response for remedy/planets — robust extraction handles preamble text
+    let parsed;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(_) {
+      // Fallback: extract first {...} JSON object from response
+      const m = text.match(/\{[\s\S]*\}/);
+      if (!m) {
+        console.error('No JSON object in response:', text.slice(0, 300));
+        return res.status(502).json({ error: 'No JSON in response' });
+      }
+      try { parsed = JSON.parse(m[0]); }
+      catch(e2) {
+        console.error('JSON parse failed:', e2.message, text.slice(0, 300));
+        return res.status(502).json({ error: 'JSON parse error', detail: e2.message });
+      }
+    }
     return res.status(200).json(parsed);
 
   } catch(e) {

@@ -2038,11 +2038,15 @@ async function loadPlanetReadings(){
   }
   const cd=chartData;
   if(!cd||!cd.planets||!cd.asc)return;
+  const L_en=T['en'];
   const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
   const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
+  const sn=i=>cd.planets[i].signName||L_en.signs[cd.planets[i].sign]||'';
+  const nn=i=>cd.planets[i].nakshatraName||L_en.nakshatras[cd.planets[i].nakshatra]||'';
+  const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const summary=`Name: ${userData.name||'the seeker'}
-Ascendant: ${cd.asc.signName} ${cd.asc.degree}°
-${pnames.map((n,i)=>`${n}: ${cd.planets[i].signName} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${cd.planets[i].nakshatraName} Pada ${cd.planets[i].pada}`).join('\n')}`;
+Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
   try{
     const resp=await fetch('/api/get-remedy',{
       method:'POST',
