@@ -1879,21 +1879,6 @@ function showFullChart(){
       <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
     </div>
 
-    <!-- Your Planetary Blueprint (personalised AI reading) -->
-    <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint'}</span></div>
-    <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது':'How each planet operates specifically in your lifetime'}</p>
-    <div id="planet-readings-wrap">
-      <div id="planet-readings-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
-        ${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}
-        <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span>
-        </div>
-      </div>
-      <div id="planet-readings-content" style="display:none"></div>
-    </div>
-
     <!-- Soul Map & Karmic Blueprint -->
     <div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आत्मा का मानचित्र और कार्मिक खाका':currentLang==='ta'?'ஆத்ம வரைபடம் & கர்ம வடிவமைப்பு':'Soul Map & Karmic Blueprint'}</span></div>
     <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् पाराशर होरा शास्त्र, फलदीपिका, सारावली और नाडी परंपरा से।':currentLang==='ta'?'பரிஹாட பராஸர ஹோரா சாஸ்திரம், பலதீபிகா, சாரவலி மற்றும் நாடி மரபிலிருந்து.':'Drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali &amp; the Nadi tradition.'}</p>
@@ -1907,6 +1892,21 @@ function showFullChart(){
         </div>
       </div>
       <div id="soul-content" style="display:none"></div>
+    </div>
+
+    <!-- Your Planetary Blueprint (personalised AI reading) -->
+    <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint'}</span></div>
+    <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது':'How each planet operates specifically in your lifetime'}</p>
+    <div id="planet-readings-wrap">
+      <div id="planet-readings-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
+        ${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}
+        <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span>
+        </div>
+      </div>
+      <div id="planet-readings-content" style="display:none"></div>
     </div>
 
     <!-- Vimshottari Dasha -->
