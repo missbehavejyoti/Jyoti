@@ -116,7 +116,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 1200 : isPlanet ? 1200 : 1000,
+          max_tokens: isSoul ? 1200 : isPlanet ? 1800 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })
@@ -139,22 +139,31 @@ JSON structure:
       return res.status(200).json({ text: text.trim() });
     }
 
-    // Parse JSON response for remedy/planets — robust extraction handles preamble text
+    // Parse JSON response for remedy/planets — robust extraction handles preamble/truncation
     let parsed;
     try {
       const clean = text.replace(/```json|```/g, '').trim();
       parsed = JSON.parse(clean);
     } catch(_) {
-      // Fallback: extract first {...} JSON object from response
+      // Try to find a complete {...} block first
       const m = text.match(/\{[\s\S]*\}/);
-      if (!m) {
+      if (m) {
+        try { parsed = JSON.parse(m[0]); }
+        catch(_2) {
+          // Truncated JSON — extract completed "Key":"Value" pairs individually
+          const pairs = {};
+          const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\})/g;
+          let hit;
+          while ((hit = re.exec(text)) !== null) { try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_3) {} }
+          if (Object.keys(pairs).length > 0) { parsed = pairs; }
+          else {
+            console.error('JSON parse failed, no pairs found:', text.slice(0, 300));
+            return res.status(502).json({ error: 'JSON parse error' });
+          }
+        }
+      } else {
         console.error('No JSON object in response:', text.slice(0, 300));
         return res.status(502).json({ error: 'No JSON in response' });
-      }
-      try { parsed = JSON.parse(m[0]); }
-      catch(e2) {
-        console.error('JSON parse failed:', e2.message, text.slice(0, 300));
-        return res.status(502).json({ error: 'JSON parse error', detail: e2.message });
       }
     }
     return res.status(200).json(parsed);
