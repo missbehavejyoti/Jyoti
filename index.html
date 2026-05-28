@@ -1927,9 +1927,11 @@ function showFullChart(){
     </div>
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
-  // Trigger soul reading and planet readings after HTML is set (defer so DOM is ready)
-  setTimeout(()=>loadSoulReading(),50);
-  setTimeout(()=>loadPlanetReadings(),80);
+  // Trigger soul first, then planets — serialised to avoid concurrent Anthropic API calls
+  setTimeout(async ()=>{
+    await loadSoulReading().catch(()=>{});
+    loadPlanetReadings();
+  },50);
 }
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
