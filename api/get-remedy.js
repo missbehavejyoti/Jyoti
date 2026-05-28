@@ -29,6 +29,7 @@ module.exports = async (req, res) => {
 
   const isNakshatra = type === 'nakshatra';
   const isSoul      = type === 'soul';
+  const isPlanet    = type === 'planets';
 
   const systemPrompt = isNakshatra
     ? `You are Jyoti, a compassionate Nadi astrology guide. Write one beautiful, specific paragraph (3-4 sentences) about this person's Moon nakshatra. Warm, poetic, deeply accurate to classical Vedic tradition. Never alarming. Always uplifting and truthful. ${langInstruction} Return plain text only, no formatting, no preamble.`
@@ -53,6 +54,15 @@ Rahu marks the direction of soul growth — the unfamiliar territory the soul mu
 Tone: spiritually precise, compassionate, deeply informed by classical tradition. Soul-affirming. Poetic where the tradition is poetic. Never alarming. Never generic.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings, no bullets, no numbering.`
+
+    : isPlanet
+? `You are Jyoti, a Vedic astrology master drawing from Brihat Parashara Hora Shastra, Phaladeepika, and the Nadi tradition.
+
+Write a personalised reading for each planet in this person's birth chart. Each reading should feel direct, personal, and alive — like a master astrologer speaking to this specific person about their life, not a textbook definition. Cover: what this placement means in their actual lived experience, the dharmic gift it offers, and the growth challenge or karmic pattern to work with. 2-3 sentences per planet. Specific to their sign, house, and nakshatra placement.
+
+${langInstruction}
+Return valid JSON only — no markdown, no backticks:
+{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}`
 
     : `You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
 
@@ -89,6 +99,8 @@ JSON structure:
     ? chartSummary
     : isSoul
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the Soul Map & Karmic Blueprint.`
+    : isPlanet
+    ? `Here is the birth chart:\n${chartSummary}\n\nWrite the personalised planetary readings.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
   try {
@@ -104,7 +116,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : 1000,
+          max_tokens: isSoul ? 2000 : isPlanet ? 1800 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })

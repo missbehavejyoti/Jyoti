@@ -340,7 +340,7 @@ select option{background:var(--s2);color:var(--text)}
         </select>
       </div>
       <button class="btn btn-gold btn-full" onclick="goToPanel(2)" id="btn1">
-        <span data-en="Continue to Consent" data-hi="सहमति की ओर जारी रखें" data-ta="ஒப்புதலுக்கு தொடரவும்">Continue to Consent</span> ✦
+        <span data-en="Begin My Journey" data-hi="मेरी यात्रा शुरू करें" data-ta="என் பயணத்தை தொடங்கு">Begin My Journey</span> ✦
       </button>
       <button class="btn btn-ghost btn-full" onclick="loadDemo()" style="margin-top:.6rem;opacity:.7;font-size:.7rem;letter-spacing:.15em">
         ◈ Demo Mode — skip to full app
@@ -382,7 +382,7 @@ select option{background:var(--s2);color:var(--text)}
   <div class="panel" id="panel3">
     <div class="card" id="loading-card">
       <div class="loading">
-        <div class="loading-flame">🔥</div>
+        <div class="loading-flame">✦</div>
         <div class="loading-text" data-en="Reading the stars for you..." data-hi="आपके लिए तारों को पढ़ रहे हैं..." data-ta="உங்களுக்காக நட்சத்திரங்களை வாசிக்கிறோம்...">Reading the stars for you...</div>
       </div>
     </div>
@@ -1203,7 +1203,10 @@ async function buildChartAsync(){
       if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
+      try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr()}));}catch(e){}
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
+      planetReadingsCache=null;
+      try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_planets_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
       clearSoulArchive();
       lastErr='';
       break;
@@ -1511,6 +1514,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     if(!resp.ok) throw new Error('api-error');
     const data = await resp.json();
     if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)) throw new Error('bad-data');
+    try{localStorage.setItem('jyoti_daily_'+todayStr(),JSON.stringify({reading:data,lang:currentLang}));}catch(e){}
     renderDailyReading(data, dayName);
   }catch(e){
     clearTimeout(tid);
@@ -1843,6 +1847,21 @@ function showFullChart(){
       <span class="summary-value">${L2.signs[cd.ascSign]} ${parseFloat(cd.asc.degree).toFixed(1)}°</span>
     </div>
 
+    <!-- Your Planetary Blueprint (Claude-generated) -->
+    <div class="divider"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint'}</span></div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह का आपके जीवन पर व्यक्तिगत प्रभाव।':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது.':'How each planet specifically operates in your life.'}</p>
+    <div id="planet-readings-wrap">
+      <div id="planet-readings-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
+        ${currentLang==='hi'?'ग्रह पठन लोड हो रहा है…':currentLang==='ta'?'கிரக வாசிப்பு ஏற்றப்படுகிறது…':'Loading your planetary reading…'}
+        <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span>
+        </div>
+      </div>
+      <div id="planet-readings-content" style="display:none"></div>
+    </div>
+
     <!-- Planet Story -->
     <div class="divider" style="margin-top:1.2rem"><span>${FC.chartReveals}</span></div>
     ${(()=>{
@@ -1934,6 +1953,7 @@ function showFullChart(){
   `;
   // Trigger soul reading after HTML is set (defer so DOM is ready)
   setTimeout(()=>loadSoulReading(),50);
+  setTimeout(()=>loadPlanetReadings(),100);
 }
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
@@ -1993,7 +2013,7 @@ function renderSoulReading(text){
   if(!loadEl||!contentEl)return;
   loadEl.style.display='none';
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
-  const todayLabel=currentLang==='hi'?'आज का पठन':currentLang==='ta'?'இன்றைய வாசிப்பு':'Today\'s Reading';
+  const todayLabel=currentLang==='hi'?'वर्तमान काल':currentLang==='ta'?'தற்போதைய காலம்':'Current Period';
   const archiveLabel=currentLang==='hi'?'पिछले पठन':currentLang==='ta'?'கடந்த வாசிப்புகள்':'Past Readings';
   // Build archive HTML (all entries except today)
   const pratKey=currentPratKey();
@@ -2027,6 +2047,78 @@ function hideSoulLoading(){
 function showSoulError(detail){
   const loadEl=document.getElementById('soul-loading');
   if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'पुनः प्रयास करें':currentLang==='ta'?'மீண்டும் முயற்சிக்கவும்':'Could not load — tap to retry'}</p><p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail||''}</p><button onclick="soulReadingCache=null;loadSoulReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='ta'?'மீண்டும்':'Retry'}</button>`;
+}
+
+// ── PLANET READINGS ──
+function planetReadingsKey(){
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_planets_default';}
+}
+let planetReadingsCache=null;
+
+async function loadPlanetReadings(){
+  // Try localStorage first (permanent cache — positions don't change)
+  if(!planetReadingsCache){
+    try{const s=localStorage.getItem(planetReadingsKey());if(s)planetReadingsCache=JSON.parse(s);}catch(e){}
+  }
+  if(planetReadingsCache){
+    renderPlanetReadings(planetReadingsCache);
+    return;
+  }
+  const cd=chartData;
+  if(!cd||!cd.planets||!cd.asc)return;
+  const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+  const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
+  const summary=`Name: ${userData.name||'the seeker'}
+Ascendant: ${cd.asc.signName} ${cd.asc.degree}°
+${pnames.map((n,i)=>`${n}: ${cd.planets[i].signName} ${cd.planets[i].degree}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${cd.planets[i].nakshatraName} Pada ${cd.planets[i].pada}`).join('\n')}`;
+  try{
+    const resp=await fetch('/api/get-remedy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary:summary,lang:currentLang,type:'planets'})
+    });
+    if(!resp.ok)throw new Error('api '+resp.status);
+    const data=await resp.json();
+    if(data&&data.Sun){
+      planetReadingsCache=data;
+      try{localStorage.setItem(planetReadingsKey(),JSON.stringify(data));}catch(e){}
+      renderPlanetReadings(data);
+    } else {
+      showPlanetError();
+    }
+  }catch(e){
+    console.error('Planet readings error',e);
+    showPlanetError();
+  }
+}
+
+function renderPlanetReadings(readings){
+  const wrapEl=document.getElementById('planet-readings-wrap');
+  if(!wrapEl)return;
+  const loadEl=document.getElementById('planet-readings-loading');
+  if(loadEl)loadEl.style.display='none';
+  const contentEl=document.getElementById('planet-readings-content');
+  if(!contentEl)return;
+  const cd=chartData;
+  const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+  const syms=['☉','☽','♂','☿','♃','♀','♄','☊','☋'];
+  const houseOf=p=>(p.sign-cd.ascSign+12)%12+1;
+  contentEl.innerHTML=pnames.map((n,i)=>{
+    const p=cd.planets[i];
+    const reading=readings[n]||'';
+    if(!reading)return'';
+    const house=houseOf(p);
+    return`<div style="margin-bottom:1.4rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(200,169,74,.08)">
+      <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.12em;color:var(--gold);margin-bottom:.5rem">${syms[i]} ${n.toUpperCase()} — ${p.signName}, HOUSE ${house}</div>
+      <p style="font-size:.92rem;color:var(--text);line-height:1.9;margin:0">${reading}</p>
+    </div>`;
+  }).join('');
+  contentEl.style.display='';
+}
+
+function showPlanetError(){
+  const loadEl=document.getElementById('planet-readings-loading');
+  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">Could not load — tap to retry</p><button onclick="planetReadingsCache=null;loadPlanetReadings()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ Retry</button>`;
 }
 
 // ── ARCHIVE ──
