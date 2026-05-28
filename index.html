@@ -2053,18 +2053,24 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:summary,lang:currentLang,type:'planets'})
     });
-    if(!resp.ok)throw new Error('api '+resp.status);
+    if(!resp.ok){
+      const errText=await resp.text().catch(()=>'');
+      console.error('Planet API error',resp.status,errText);
+      showPlanetError(`${resp.status}: ${errText.slice(0,120)}`);
+      return;
+    }
     const data=await resp.json();
     if(data&&data.Sun){
       planetReadingsCache=data;
       try{localStorage.setItem(planetReadingsKey(),JSON.stringify(data));}catch(e){}
       renderPlanetReadings(data);
     } else {
-      showPlanetError();
+      console.error('Planet readings: unexpected response',data);
+      showPlanetError(data?.error||'Unexpected response format');
     }
   }catch(e){
     console.error('Planet readings error',e);
-    showPlanetError();
+    showPlanetError(e.message);
   }
 }
 
@@ -2097,9 +2103,9 @@ function renderPlanetReadings(readings){
   contentEl.style.display='';
 }
 
-function showPlanetError(){
+function showPlanetError(detail){
   const loadEl=document.getElementById('planet-readings-loading');
-  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">Could not load — tap to retry</p><button onclick="planetReadingsCache=null;loadPlanetReadings()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ Retry</button>`;
+  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">Could not load — tap to retry</p>${detail?`<p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail}</p>`:''}<button onclick="planetReadingsCache=null;loadPlanetReadings()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ Retry</button>`;
 }
 
 // ── ARCHIVE ──
