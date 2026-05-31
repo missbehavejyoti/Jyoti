@@ -2070,7 +2070,7 @@ function showSoulError(detail){
 
 // ── PLANET READINGS ──
 function planetReadingsKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets2_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_planets2_default';}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_planets3_default';}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;

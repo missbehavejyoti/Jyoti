@@ -58,7 +58,7 @@ Return plain text only — four paragraphs separated by blank lines. No headings
     : isPlanet
 ? `You are Jyoti, a Vedic astrology master drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali, and the Nadi tradition.
 
-Write a personalised lifetime reading for each planet in this person's birth chart. Each reading must be a full paragraph of 3-4 sentences — direct, personal, and alive — like a master astrologer speaking intimately to this specific person about their entire life's journey with this placement. Be deeply specific to their exact sign, house position, and nakshatra. Address: what this placement means in their lived experience across a lifetime, the dharmic gift or strength it bestows, and the karmic challenge or growth pattern it carries. Never be generic. Every sentence must be specific to THIS chart.
+Write a personalised lifetime reading for each planet in this person's birth chart. Each reading must be a full paragraph of 3-4 sentences — direct, personal, and alive — like a master astrologer speaking intimately to this specific person about their entire life's journey with this placement. Be deeply specific to their exact sign, house position, and nakshatra. Address: what this placement means in their lived experience across a lifetime, the dharmic gift or strength it bestows, and the karmic challenge or growth pattern it carries. Never be generic. Every sentence must be specific to THIS chart. It is critical that ALL nine planets are included — do not stop before completing Ketu.
 
 ${langInstruction}
 Return valid JSON only — no markdown, no backticks:
@@ -133,7 +133,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : isPlanet ? 2000 : 1000,
+          max_tokens: isSoul ? 2000 : isPlanet ? 3000 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })
