@@ -1600,6 +1600,18 @@ function renderDailyReading(r,dayName){
   } else {
     html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p>${r.no_remedy_message}</p></div>`;
   }
+  if(r.gemstone){
+    const g=r.gemstone;
+    html+=`<div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1rem 1.2rem;margin-top:1rem;display:flex;gap:.9rem;align-items:flex-start">
+      <div style="font-size:1.4rem;line-height:1">💎</div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.13em;color:var(--muted);margin-bottom:.3rem">${currentLang==='hi'?'रत्न सुझाव':currentLang==='ta'?'ரத்தின ஆலோசனை':'GEMSTONE GUIDANCE'}</div>
+        <div style="font-size:.95rem;color:var(--gold-pale);font-weight:500;margin-bottom:.2rem">${g.stone} <span style="color:var(--dim);font-size:.8rem;font-weight:400">· ${g.planet}</span></div>
+        <div style="font-size:.85rem;color:var(--muted);margin-bottom:.3rem">${g.why}</div>
+        <div style="font-size:.78rem;color:var(--dim);font-style:italic">${g.wear}</div>
+      </div>
+    </div>`;
+  }
   if(r.month_end_prep){
     const prep=r.month_end_prep;
     html+=`<div style="background:rgba(26,148,144,.06);border:1px solid rgba(26,148,144,.25);border-radius:12px;padding:1.2rem 1.5rem;margin-top:1rem">
