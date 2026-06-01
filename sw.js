@@ -1,4 +1,4 @@
-const CACHE = 'jyoti-v27';
+const CACHE = 'jyoti-v28';
 const SHELL = [
   '/',
   '/index.html',
@@ -16,6 +16,9 @@ self.addEventListener('activate', e => {
     caches.keys()
       .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({type:'window'}).then(clients =>
+        clients.forEach(c => c.postMessage({type:'SW_UPDATED'}))
+      ))
   );
 });
 
@@ -29,7 +32,20 @@ self.addEventListener('fetch', e => {
   if (!url.origin.includes(self.location.origin) &&
       !url.hostname.includes('fonts.g')) return;
 
-  // App shell + fonts — cache first, fall back to network
+  // App shell + fonts — network first for index.html, cache first for fonts
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    e.respondWith(
+      fetch(e.request).then(resp => {
+        if (resp && resp.status === 200) {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return resp;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;

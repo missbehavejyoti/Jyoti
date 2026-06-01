@@ -2394,6 +2394,9 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(reg => {
     swRegistration = reg;
   }).catch(()=>{});
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SW_UPDATED') window.location.reload();
+  });
 }
 
 // Save notification prefs to IndexedDB
