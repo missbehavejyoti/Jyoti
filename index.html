@@ -640,23 +640,10 @@ select option{background:var(--s2);color:var(--text)}
           <p style="text-align:center;font-style:italic;color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:1.4rem">Enter two birth charts to receive a progressive compatibility reading rooted in classical Vedic Jyotish. The reading unfolds in layers — you choose how deep to go.</p>
 
           <div style="border:1px solid rgba(200,169,74,.35);border-radius:12px;padding:1.2rem;margin-bottom:1rem;background:rgba(28,24,48,.6)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem">
-              <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold)">✦ YOUR CHART</div>
-              <span id="syn-a-edit-btn" onclick="toggleSynAEdit()" style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:var(--dim);cursor:pointer;padding:.15rem .5rem;border:1px solid var(--s4);border-radius:6px">Edit</span>
-            </div>
+            <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.9rem">✦ YOUR CHART</div>
             <div id="syn-a-prefilled" style="font-size:.85rem;color:var(--muted);line-height:1.8;padding:.3rem 0"></div>
-            <div id="syn-a-fields" style="display:none">
-              <div class="g2">
-                <div class="field"><label>Name or Initials</label><input type="text" id="syn-a-name" placeholder="e.g. Priya"></div>
-                <div class="field"><label>Date of Birth</label><input type="date" id="syn-a-dob"></div>
-              </div>
-              <div class="g2">
-                <div class="field"><label>Time of Birth</label><input type="time" id="syn-a-tob" value="12:00"><p class="hint">Approximate is fine</p></div>
-                <div class="field"><label>Place of Birth</label><input type="text" id="syn-a-pob" placeholder="City, Country"></div>
-              </div>
-            </div>
             <div class="field" style="margin-top:.6rem">
-              <label>Gender</label>
+              <label>Your Gender</label>
               <select id="syn-a-gender">
                 <option value="prefer_not">Prefer not to say</option>
                 <option value="female">Female (she/her)</option>
@@ -2697,10 +2684,10 @@ Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | ${L.nakshatras[p[8].nakshatra]} |
 }
 
 async function beginSynastry(){
-  const nameA=document.getElementById('syn-a-name').value.trim();
-  const dobA=document.getElementById('syn-a-dob').value;
-  const tobA=document.getElementById('syn-a-tob').value||'12:00';
-  const pobA=document.getElementById('syn-a-pob').value.trim();
+  const nameA=userData?.name||'';
+  const dobA=userData?.dob||'';
+  const tobA=userData?.tob||'12:00';
+  const pobA=userData?.pob||'';
   const genderA=document.getElementById('syn-a-gender').value;
   const nameB=document.getElementById('syn-b-name').value.trim();
   const dobB=document.getElementById('syn-b-dob').value;
@@ -2709,7 +2696,7 @@ async function beginSynastry(){
   const genderB=document.getElementById('syn-b-gender').value;
   const errEl=document.getElementById('syn-form-error');
   if(!nameA||!dobA||!pobA||!nameB||!dobB||!pobB){
-    errEl.textContent='Please fill in Name, Date, and Place for both people.';
+    errEl.textContent='Please fill in your chart first, then add Name, Date, and Place for the second person.';
     errEl.style.display='block';return;
   }
   errEl.style.display='none';
@@ -2747,8 +2734,18 @@ async function loadSynTier(type){
   const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
   try{
-    const resp=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type,lang:currentLang})});
+    const ctrl=new AbortController();
+    const tId=setTimeout(()=>ctrl.abort(),55000);
+    let resp;
+    try{
+      resp=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type,lang:currentLang}),
+        signal:ctrl.signal});
+    }catch(fetchErr){
+      clearTimeout(tId);
+      throw new Error(fetchErr.name==='AbortError'?'Loading timed out — tap to retry':fetchErr.message);
+    }
+    clearTimeout(tId);
     if(!resp.ok)throw new Error('api '+resp.status);
     const data=await resp.json();
     if(data.error)throw new Error(data.error);
@@ -2796,16 +2793,6 @@ function prefillSynPersonA(){
   if(preEl)preEl.innerHTML=`<strong style="color:var(--text)">${userData.name||'You'}</strong> &nbsp;·&nbsp; ${userData.dob||''} &nbsp;·&nbsp; ${userData.tob||''} &nbsp;·&nbsp; ${userData.pob||''}`;
   const fieldsEl=document.getElementById('syn-a-fields');
   if(fieldsEl)fieldsEl.style.display='none';
-}
-let synAEditing=false;
-function toggleSynAEdit(){
-  synAEditing=!synAEditing;
-  const fieldsEl=document.getElementById('syn-a-fields');
-  const preEl=document.getElementById('syn-a-prefilled');
-  const btnEl=document.getElementById('syn-a-edit-btn');
-  if(fieldsEl)fieldsEl.style.display=synAEditing?'block':'none';
-  if(preEl)preEl.style.display=synAEditing?'none':'block';
-  if(btnEl)btnEl.textContent=synAEditing?'Done':'Edit';
 }
 function exploreSyn(type){
   const door=document.getElementById('door-'+type);if(door)door.classList.add('explored');
@@ -2862,7 +2849,7 @@ function _renderTier1(d){
 
 function _renderSynSection(type,d){
   const el=_getOrCreateSection(type);
-  const nA=synUserA.name,nB=synUserB.name;
+  const nA=synUserA?.name||'Person A',nB=synUserB?.name||'Person B';
   let html='';
   if(type==='karmic'){
     if(!synTier2Done.has('karmic')){synTier2Done.add('karmic');synTier2Count++;}
@@ -3027,7 +3014,6 @@ function resetSynastry(){
   document.getElementById('syn-tier4').innerHTML='';
   document.getElementById('syn-tier4').style.display='none';
   document.getElementById('syn-form-error').style.display='none';
-  synAEditing=false;
   prefillSynPersonA();
 }
 </script>
