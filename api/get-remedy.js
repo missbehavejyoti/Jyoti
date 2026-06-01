@@ -123,7 +123,7 @@ JSON structure:
 
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8500);
+    const timer = setTimeout(() => ctrl.abort(), 55000);
     let response, data, text = '';
     try {
       response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -135,7 +135,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : isPlanet ? 2000 : isPlanetA ? 700 : isPlanetB ? 600 : 1000,
+          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : isPlanetA ? 350 : isPlanetB ? 300 : 900,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),

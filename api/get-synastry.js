@@ -258,7 +258,7 @@ Return JSON:
 
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8500);
+    const timer = setTimeout(() => ctrl.abort(), 55000);
 
     let response, data, text = '';
     try {

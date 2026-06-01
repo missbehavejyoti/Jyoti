@@ -2202,7 +2202,7 @@ Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
 ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
   const doFetch=async(batchType)=>{
     const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),25000);
+    const tId=setTimeout(()=>ctrl.abort(),58000);
     try{
       const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({chartSummary:summary,lang:currentLang,type:batchType}),signal:ctrl.signal});
@@ -2721,7 +2721,7 @@ async function loadSynTier(type){
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
   const doSynFetch=async(apiType)=>{
     const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),25000);
+    const tId=setTimeout(()=>ctrl.abort(),58000);
     try{
       const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:currentLang}),
