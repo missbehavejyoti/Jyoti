@@ -268,7 +268,7 @@ Tone: deeply classical, poetic where the tradition is poetic, never alarming. Pa
 ${langInstruction}
 Return plain text only.`,
       user: `${CHART_CONTEXT}\n\nWrite the full karmic depth reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -289,7 +289,7 @@ Tone: honest, compassionate, classically grounded. Neither inflating hope nor in
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full duration and depth reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -310,7 +310,7 @@ Tone: honest, loving, classically grounded. Name the shadow gently but clearly.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full gifts and shadows reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -331,7 +331,7 @@ Tone: deeply compassionate, genuinely practical, spiritually elevating.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full higher road reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -352,7 +352,7 @@ Tone: poetic, precise, deeply compassionate. Never guilt-inducing.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full soul debt and soul gift reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -373,7 +373,7 @@ Tone: practical and spiritually grounded. Real guidance a person can act on.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full work, life, and geography reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -394,7 +394,7 @@ Tone: specific, honest, neither inflating hope nor inducing anxiety. Frame timin
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full timing and dasha reading.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -415,7 +415,7 @@ Tone: honest, compassionate, liberating — giving ${A} real self-knowledge, not
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full reading for what ${A} truly needs in love.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     },
 
@@ -436,7 +436,7 @@ Tone: honest, compassionate, liberating.
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings.`,
       user: `${CHART_CONTEXT}\n\nWrite the full reading for what ${B} truly needs in love.`,
-      maxTokens: 1400,
+      maxTokens: 2000,
       isDeep: true
     }
 
