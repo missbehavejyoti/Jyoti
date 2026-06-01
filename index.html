@@ -1646,19 +1646,23 @@ Vara lord natal placement: ${(()=>{
 Today's date: ${now.toDateString()}
 Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()}
 `;
-  try{
-    const resp = await fetch('/api/get-remedy', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({chartSummary, lang: currentLang, type: 'daily'})
-    });
-    if(!resp.ok) throw new Error('api-error');
-    const data = await resp.json();
-    if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)) throw new Error('bad-data');
-    try{localStorage.setItem('jyoti_daily2_'+todayStr(),JSON.stringify({reading:data,lang:currentLang}));}catch(e){}
-    renderDailyReading(data, dayName);
-  }catch(e){
-    renderFallbackReading(dayName, now);
+  let dailyData=null;
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      const resp = await fetch('/api/get-remedy', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({chartSummary, lang: currentLang, type: 'daily'})
+      });
+      if(!resp.ok){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('api-error');}
+      const data = await resp.json();
+      if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('bad-data');}
+      dailyData=data;break;
+    }catch(e){if(attempt===2){renderFallbackReading(dayName,now);return;}}
+  }
+  if(dailyData){
+    try{localStorage.setItem('jyoti_daily2_'+todayStr(),JSON.stringify({reading:dailyData,lang:currentLang}));}catch(e){}
+    renderDailyReading(dailyData, dayName);
   }
 }
 
@@ -2201,15 +2205,26 @@ async function loadPlanetReadings(){
 Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
 ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
   const doFetch=async(batchType)=>{
-    const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),58000);
-    try{
-      const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chartSummary:summary,lang:currentLang,type:batchType}),signal:ctrl.signal});
-      clearTimeout(tId);
-      if(!r.ok)throw new Error(r.status+' timeout or server error');
-      return await r.json();
-    }catch(e){clearTimeout(tId);throw e;}
+    for(let attempt=0;attempt<3;attempt++){
+      const ctrl=new AbortController();
+      const tId=setTimeout(()=>ctrl.abort(),58000);
+      try{
+        const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chartSummary:summary,lang:currentLang,type:batchType}),signal:ctrl.signal});
+        clearTimeout(tId);
+        if(!r.ok){
+          if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+          throw new Error(r.status+' server error');
+        }
+        return await r.json();
+      }catch(e){
+        clearTimeout(tId);
+        if(e.name==='AbortError'||e.message.includes('fetch')){
+          if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+        }
+        throw e;
+      }
+    }
   };
   try{
     const [dataA,dataB]=await Promise.all([doFetch('planets_a'),doFetch('planets_b')]);
@@ -2720,18 +2735,29 @@ async function loadSynTier(type){
   const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
   const doSynFetch=async(apiType)=>{
-    const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),58000);
-    try{
-      const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:currentLang}),
-        signal:ctrl.signal});
-      clearTimeout(tId);
-      if(!r.ok)throw new Error('api '+r.status);
-      const d=await r.json();
-      if(d.error)throw new Error(d.error);
-      return d;
-    }catch(e){clearTimeout(tId);throw new Error(e.name==='AbortError'?'Loading timed out — tap to retry':e.message);}
+    for(let attempt=0;attempt<3;attempt++){
+      const ctrl=new AbortController();
+      const tId=setTimeout(()=>ctrl.abort(),58000);
+      try{
+        const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:currentLang}),
+          signal:ctrl.signal});
+        clearTimeout(tId);
+        if(!r.ok){
+          if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+          throw new Error('api '+r.status);
+        }
+        const d=await r.json();
+        if(d.error)throw new Error(d.error);
+        return d;
+      }catch(e){
+        clearTimeout(tId);
+        if(e.name==='AbortError'||e.message.includes('fetch')){
+          if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+        }
+        throw new Error(e.name==='AbortError'?'Reading took too long — tap to retry':e.message);
+      }
+    }
   };
   try{
     let data;

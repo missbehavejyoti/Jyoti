@@ -1,4 +1,4 @@
-const CACHE = 'jyoti-v25';
+const CACHE = 'jyoti-v26';
 const SHELL = [
   '/',
   '/index.html',
