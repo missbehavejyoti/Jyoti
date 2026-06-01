@@ -30,6 +30,8 @@ module.exports = async (req, res) => {
   const isNakshatra = type === 'nakshatra';
   const isSoul      = type === 'soul';
   const isPlanet    = type === 'planets';
+  const isPlanetA   = type === 'planets_a';
+  const isPlanetB   = type === 'planets_b';
 
   const systemPrompt = isNakshatra
     ? `You are Jyoti, a compassionate Nadi astrology guide. Write one beautiful, specific paragraph (3-4 sentences) about this person's Moon nakshatra. Warm, poetic, deeply accurate to classical Vedic tradition. Never alarming. Always uplifting and truthful. ${langInstruction} Return plain text only, no formatting, no preamble.`
@@ -55,14 +57,13 @@ Tone: spiritually precise, compassionate, deeply informed by classical tradition
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings, no bullets, no numbering.`
 
-    : isPlanet
+    : (isPlanet || isPlanetA || isPlanetB)
 ? `You are Jyoti, a Vedic astrology master drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali, and the Nadi tradition.
 
-Write a personalised lifetime reading for each planet in this person's birth chart. Each reading must be a full paragraph of 3-4 sentences — direct, personal, and alive — like a master astrologer speaking intimately to this specific person about their entire life's journey with this placement. Be deeply specific to their exact sign, house position, and nakshatra. Address: what this placement means in their lived experience across a lifetime, the dharmic gift or strength it bestows, and the karmic challenge or growth pattern it carries. Never be generic. Every sentence must be specific to THIS chart. It is critical that ALL nine planets are included — do not stop before completing Ketu.
+Write a personalised lifetime reading for each of the planets listed below. Each reading must be 2-3 sentences — direct, personal, alive — like a master astrologer speaking intimately to this specific person. Be specific to their exact sign, house position, and nakshatra. Cover: what this placement means in their lived experience, the dharmic gift it bestows, and the karmic challenge it carries. Never generic. Every sentence specific to THIS chart.
 
-${langInstruction}
-Return valid JSON only — no markdown, no backticks:
-{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}`
+${isPlanetA ? 'Write readings for: Sun, Moon, Mars, Mercury, Jupiter.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"..."}' : ''}${isPlanetB ? 'Write readings for: Venus, Saturn, Rahu, Ketu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
+${langInstruction}`
 
     : `You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
 
@@ -116,7 +117,7 @@ JSON structure:
     ? chartSummary
     : isSoul
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the Soul Map & Karmic Blueprint.`
-    : isPlanet
+    : (isPlanet || isPlanetA || isPlanetB)
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the personalised planetary readings.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
@@ -133,7 +134,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : isPlanet ? 3000 : 1000,
+          max_tokens: isSoul ? 2000 : isPlanet ? 3000 : isPlanetA ? 1200 : isPlanetB ? 900 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         })

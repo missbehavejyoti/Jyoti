@@ -2200,50 +2200,36 @@ async function loadPlanetReadings(){
   const summary=`Name: ${userData.name||'the seeker'}
 Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
 ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}° — House ${houseOf(cd.planets[i])} — Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
-  try{
+  const doFetch=async(batchType)=>{
     const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),50000);
-    let resp;
+    const tId=setTimeout(()=>ctrl.abort(),25000);
     try{
-      resp=await fetch('/api/get-remedy',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chartSummary:summary,lang:currentLang,type:'planets'}),
-        signal:ctrl.signal
-      });
-    }catch(fetchErr){
+      const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chartSummary:summary,lang:currentLang,type:batchType}),signal:ctrl.signal});
       clearTimeout(tId);
-      planetLoadingInProgress=false;
-      showPlanetError(fetchErr.name==='AbortError'?'Loading timed out — tap to retry':fetchErr.message);
-      return;
-    }
-    clearTimeout(tId);
-    if(!resp.ok){
-      const errText=await resp.text().catch(()=>'');
-      console.error('Planet API error',resp.status,errText);
-      planetLoadingInProgress=false;
-      showPlanetError(`${resp.status}: ${errText.slice(0,200)}`);
-      return;
-    }
-    const data=await resp.json();
+      if(!r.ok)throw new Error(r.status+' timeout or server error');
+      return await r.json();
+    }catch(e){clearTimeout(tId);throw e;}
+  };
+  try{
+    const [dataA,dataB]=await Promise.all([doFetch('planets_a'),doFetch('planets_b')]);
+    const data={...dataA,...dataB};
     const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
-    const hasData=data&&planets.some(k=>data[k]);
+    const hasData=planets.some(k=>data[k]);
     if(hasData){
       planetReadingsCache=data;
       try{localStorage.setItem(planetReadingsKey(),JSON.stringify(data));}catch(e){}
       planetLoadingInProgress=false;
       renderPlanetReadings(data);
-    } else {
-      console.error('Planet readings: unexpected response',data);
+    }else{
       const errMsg=data?.error||'Unexpected response format';
-      const errDetail=data?.detail?` — ${String(data.detail).slice(0,200)}`:'';
       planetLoadingInProgress=false;
-      showPlanetError(errMsg+errDetail);
+      showPlanetError(errMsg);
     }
   }catch(e){
     console.error('Planet readings error',e);
     planetLoadingInProgress=false;
-    showPlanetError(e.message);
+    showPlanetError(e.name==='AbortError'?'Loading timed out — tap to retry':e.message);
   }
 }
 
