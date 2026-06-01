@@ -174,15 +174,15 @@ Return JSON:
     work_life: {
       system: `You are Jyoti, analysing practical life domains.
 
-"work_life": 2 sentences — 10th house overlays, how ambitions align or compete, how each Saturn placement affects the other's purpose.
+"work_life": 3-4 sentences — 10th house overlays, how ambitions align or compete, how each Saturn placement affects the other's purpose, and what working or building together activates in each chart.
 
-"geography": 2 sentences — what chart patterns suggest about geography and distance. 4th house, 9th house, Rahu indicators of foreign connection.
+"geography": 3 sentences — what chart patterns suggest about geography and distance. 4th house, 9th house, Rahu indicators of foreign connection. What environments allow this bond to thrive?
 ${CORE_RULES}
 
 Return JSON:
 {"work_life":"...","geography":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the work, life, and geography analysis.`,
-      maxTokens: 400
+      maxTokens: 600
     },
 
     timing: {
@@ -234,21 +234,21 @@ Return JSON:
     soul_verdict: {
       system: `You are Jyoti, delivering the final classical synthesis.
 
-"classical_tradition_1": 2 sentences — what BPHS and Phaladeepika say about this combination. Lagna overlay, Moon compatibility, nodal axis. Poetic and precise.
+"classical_tradition_1": 3 sentences — what BPHS and Phaladeepika say about this combination. Lagna overlay, Moon compatibility, nodal axis. Poetic and precise. What does the tradition say this meeting is FOR?
 
-"classical_tradition_2": 2 sentences — what the Nadi tradition adds. The karmic signature of this meeting and what it accomplishes.
+"classical_tradition_2": 3 sentences — what the Nadi tradition adds. The karmic signature of this meeting, what it accomplishes, and what it asks of both souls.
 
-"flourish": one line — what makes this connection flourish when both are at their best.
-"founder": one line — the one thing that needs conscious tending.
+"flourish": one vivid line — what makes this connection flourish when both are at their best.
+"founder": one honest line — the one pattern that most needs conscious tending.
 "highest_role_a": one line — ${A}'s highest role in this bond.
 "highest_role_b": one line — ${B}'s highest role.
-"blessing": one sentence — a warm, sacred closing blessing.
+"blessing": 2 sentences — a warm, sacred closing blessing for both souls.
 ${CORE_RULES}
 
 Return JSON:
 {"classical_tradition_1":"...","classical_tradition_2":"...","flourish":"...","founder":"...","highest_role_a":"...","highest_role_b":"...","blessing":"..."}`,
       user: `${CHART_CONTEXT}\n\nDeliver the Soul Verdict.`,
-      maxTokens: 500
+      maxTokens: 800
     }
 
   };

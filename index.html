@@ -3003,6 +3003,7 @@ function _checkSoulVerdictUnlock(){
 }
 
 function _renderSoulVerdict(d){
+  const spinner=document.getElementById('syn-sec-soul_verdict');if(spinner)spinner.remove();
   const v=document.getElementById('syn-tier4');
   v.innerHTML=`<div class="syn-verdict-box">
     <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.32em;color:var(--gold-d);margin-bottom:1.4rem">✦ THE SOUL VERDICT ✦</div>
