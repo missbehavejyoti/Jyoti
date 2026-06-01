@@ -136,7 +136,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : (isPlanetA || isPlanetB || isPlanetC) ? 450 : 900,
+          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : isPlanetC ? 600 : (isPlanetA || isPlanetB) ? 500 : 900,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),
