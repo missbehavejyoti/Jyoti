@@ -2227,8 +2227,8 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
     }
   };
   try{
-    const [dataA,dataB,dataC]=await Promise.all([doFetch('planets_a'),doFetch('planets_b'),doFetch('planets_c')]);
-    const data={...dataA,...dataB,...dataC};
+    const [dataA,dataB,dataC,dataD]=await Promise.all([doFetch('planets_a'),doFetch('planets_b'),doFetch('planets_c'),doFetch('planets_d')]);
+    const data={...dataA,...dataB,...dataC,...dataD};
     const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
     const hasData=planets.some(k=>data[k]);
     if(hasData){
