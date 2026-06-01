@@ -256,6 +256,15 @@ select option{background:var(--s2);color:var(--text)}
   .planet-card .p-name{font-size:.8rem}
   input,select{font-size:16px}
 }
+.deep-modal-overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(8,6,18,.95);padding:1.5rem 1rem 3rem}
+.deep-modal-box{max-width:660px;margin:0 auto;background:var(--bg);border:1px solid rgba(200,169,74,.28);border-radius:16px;padding:2rem 1.5rem;position:relative}
+.deep-modal-header{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:1.4rem;padding-right:2rem;line-height:1.5}
+.deep-modal-close{position:absolute;top:.9rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;line-height:1;padding:.1rem .4rem;opacity:.6;transition:.15s}
+.deep-modal-close:hover{opacity:1;color:var(--gold)}
+.deep-modal-body p{color:var(--text);line-height:1.9;font-size:.93rem;margin-bottom:1.3rem}
+.deep-modal-body p:last-child{margin-bottom:0}
+.btn-full-read{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-d);background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:20px;padding:.38rem 1.2rem;cursor:pointer;transition:.2s;display:inline-block;margin-top:1rem}
+.btn-full-read:hover{background:rgba(200,169,74,.12);border-color:rgba(200,169,74,.4);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -2883,7 +2892,8 @@ function _renderSynSection(type,d){
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:.9rem 1.1rem;text-align:center">
         <div class="syn-sub-label" style="margin-bottom:.35rem">COMPLETION OR CONTINUATION</div>
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
-      </div></div>
+      </div>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">✦ Full Analysis</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
@@ -2906,7 +2916,8 @@ function _renderSynSection(type,d){
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
       </div>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE SEASON OF THIS CONNECTION</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season}</p></div>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">✦ Full Analysis</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
@@ -2928,7 +2939,8 @@ function _renderSynSection(type,d){
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE SHADOW DYNAMIC</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE HEALING POTENTIAL</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential}</p></div>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">✦ Full Analysis</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
@@ -2949,38 +2961,44 @@ function _renderSynSection(type,d){
       <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:10px;padding:1rem 1.1rem">
         <div class="syn-sub-label">A PRACTICE FOR BOTH</div>
         <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.practice}</p>
-      </div></div>`;
+      </div>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('higher_road')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }else if(type==='soul_debt'){
     html=`<div class="syn-section"><div class="syn-label">✦ SOUL DEBT & SOUL GIFT</div>
       <div class="syn-sub-label">WHAT ${nA.toUpperCase()} CARRIES FOR ${nB.toUpperCase()}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.owes_a_to_b}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nB.toUpperCase()} CARRIES FOR ${nA.toUpperCase()}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.owes_b_to_a}</p></div>`;
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.owes_b_to_a}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('soul_debt')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }else if(type==='work_life'){
     html=`<div class="syn-section"><div class="syn-label">✦ WORK & LIFE TOGETHER</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.work_life}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">GEOGRAPHY & DISTANCE</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.geography}</p></div>`;
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.geography}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('work_life')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }else if(type==='timing'){
     html=`<div class="syn-section"><div class="syn-label">✦ TIMING & WINDOWS</div>
       <div class="syn-sub-label">WHEN THIS CONNECTION OPENS</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.timing}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHEN IT ASKS MORE</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.pressure}</p></div>`;
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.pressure}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('timing')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }else if(type==='other_a'){
     html=`<div class="syn-section"><div class="syn-label">✦ OTHER MATCHES FOR ${nA.toUpperCase()}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nA.toUpperCase()} NEEDS</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">CHART SIGNATURES TO LOOK FOR</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p></div>`;
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_a')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }else if(type==='other_b'){
     html=`<div class="syn-section"><div class="syn-label">✦ OTHER MATCHES FOR ${nB.toUpperCase()}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nB.toUpperCase()} NEEDS</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">CHART SIGNATURES TO LOOK FOR</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p></div>`;
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_b')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
   }
   el.innerHTML=html;
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -3038,6 +3056,73 @@ function resetSynastry(){
   document.getElementById('syn-form-error').style.display='none';
   prefillSynPersonA();
 }
+
+const DEEP_TITLES={
+  karmic:'✦ The Karmic Thread',
+  duration:'✦ A Moment or a Lifetime',
+  gifts:'✦ Gifts & Shadows',
+  higher_road:'✦ The Higher Road',
+  soul_debt:'✦ Soul Debt & Soul Gift',
+  work_life:'✦ Work & Life Together',
+  timing:'✦ Timing & Windows',
+};
+
+function openDeepReadingByType(type){
+  let title=DEEP_TITLES[type];
+  if(type==='other_a')title='✦ What '+(synUserA?.name||'Person A')+' Truly Needs';
+  else if(type==='other_b')title='✦ What '+(synUserB?.name||'Person B')+' Truly Needs';
+  if(!title)title='✦ Full Analysis';
+  openDeepReading(type,title);
+}
+
+async function openDeepReading(type,title){
+  const modal=document.getElementById('deep-modal');
+  document.getElementById('deep-modal-title').textContent=title;
+  const contentEl=document.getElementById('deep-modal-content');
+  contentEl.innerHTML='<div style="text-align:center;padding:2.5rem 0"><div style="font-family:\'Cinzel\',serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);animation:pulse 1.5s ease-in-out infinite">Reading the depths...</div></div>';
+  modal.style.display='block';
+  document.body.style.overflow='hidden';
+  const cacheKey='deep_'+type;
+  if(synCache[cacheKey]){_renderDeepContent(synCache[cacheKey]);return;}
+  const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
+  const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
+  try{
+    const ctrl=new AbortController();
+    const tId=setTimeout(()=>ctrl.abort(),58000);
+    const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:cacheKey,lang:currentLang}),
+      signal:ctrl.signal});
+    clearTimeout(tId);
+    if(!r.ok)throw new Error('api '+r.status);
+    const d=await r.json();
+    if(d.error)throw new Error(d.error);
+    synCache[cacheKey]=d.text;
+    _renderDeepContent(d.text);
+  }catch(e){
+    const safeType=type.replace(/'/g,"\\'");const safeTitle=title.replace(/'/g,"\\'");
+    contentEl.innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--dim);margin-bottom:1rem">Could not load — please try again.</p><button onclick="delete synCache['deep_${safeType}'];openDeepReading('${safeType}','${safeTitle}')" class="btn-full-read">↺ Retry</button></div>`;
+  }
+}
+
+function _renderDeepContent(text){
+  const contentEl=document.getElementById('deep-modal-content');
+  const paras=text.split(/\n\n+/).filter(p=>p.trim());
+  contentEl.innerHTML=paras.map(p=>`<p>${p.trim()}</p>`).join('');
+}
+
+function closeDeepReading(){
+  document.getElementById('deep-modal').style.display='none';
+  document.body.style.overflow='';
+}
 </script>
+
+<!-- Deep Reading Modal -->
+<div id="deep-modal" class="deep-modal-overlay" style="display:none" onclick="if(event.target===this)closeDeepReading()">
+  <div class="deep-modal-box">
+    <button class="deep-modal-close" onclick="closeDeepReading()">×</button>
+    <div class="deep-modal-header" id="deep-modal-title"></div>
+    <div class="deep-modal-body" id="deep-modal-content"></div>
+  </div>
+</div>
 </body>
 </html>
