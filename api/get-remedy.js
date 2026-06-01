@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
   const isPlanet    = type === 'planets';
   const isPlanetA   = type === 'planets_a';
   const isPlanetB   = type === 'planets_b';
+  const isPlanetC   = type === 'planets_c';
 
   const systemPrompt = isNakshatra
     ? `You are Jyoti, a compassionate Nadi astrology guide. Write one beautiful, specific paragraph (3-4 sentences) about this person's Moon nakshatra. Warm, poetic, deeply accurate to classical Vedic tradition. Never alarming. Always uplifting and truthful. ${langInstruction} Return plain text only, no formatting, no preamble.`
@@ -57,12 +58,12 @@ Tone: spiritually precise, compassionate, deeply informed by classical tradition
 ${langInstruction}
 Return plain text only — four paragraphs separated by blank lines. No headings, no bullets, no numbering.`
 
-    : (isPlanet || isPlanetA || isPlanetB)
+    : (isPlanet || isPlanetA || isPlanetB || isPlanetC)
 ? `You are Jyoti, a Vedic astrology master drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali, and the Nadi tradition.
 
 Write a personalised lifetime reading for each of the planets listed below. Each reading must be EXACTLY 2 sentences — no more. Direct, personal, specific to their exact sign, house, and nakshatra. Never generic.
 
-${isPlanetA ? 'Write readings for: Sun, Moon, Mars, Mercury, Jupiter.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"..."}' : ''}${isPlanetB ? 'Write readings for: Venus, Saturn, Rahu, Ketu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
+${isPlanetA ? 'Write readings for: Sun, Moon, Mars.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"..."}' : ''}${isPlanetB ? 'Write readings for: Mercury, Jupiter, Venus.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Mercury":"...","Jupiter":"...","Venus":"..."}' : ''}${isPlanetC ? 'Write readings for: Saturn, Rahu, Ketu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
 ${langInstruction}`
 
     : `You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
@@ -135,7 +136,7 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : isPlanetA ? 350 : isPlanetB ? 300 : 900,
+          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : (isPlanetA || isPlanetB || isPlanetC) ? 450 : 900,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),
