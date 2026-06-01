@@ -578,7 +578,6 @@ select option{background:var(--s2);color:var(--text)}
       <div class="tabs">
         <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-ta="இன்றைய சாதனை">Today's Practice</div>
         <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-ta="முழு ஜாதகம்">Full Chart</div>
-        <div class="tab" onclick="switchTab('remedies',this)" data-en="Archive" data-hi="संग्रह" data-ta="காப்பகம்">Archive</div>
         <div class="tab" onclick="switchTab('compat',this)">Compatibility</div>
       </div>
 
@@ -631,9 +630,6 @@ select option{background:var(--s2);color:var(--text)}
       </div>
 
       <!-- Archive Tab -->
-      <div id="tab-remedies" style="display:none">
-        <div id="archive-content"></div>
-      </div>
 
       <!-- Compatibility Tab -->
       <div id="tab-compat" style="display:none">
@@ -1723,7 +1719,6 @@ function renderDailyReading(r,dayName){
     </div>`;
   }
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
-  saveToArchive(r,dayName);
 }
 
 function renderFallbackReading(dayName,now){
@@ -2272,33 +2267,14 @@ function showPlanetError(detail){
 }
 
 // ── ARCHIVE ──
-let archive=[];
-function saveToArchive(r,dayName){
-  archive.unshift({date:new Date().toLocaleDateString(),day:dayName,reading:r});
-  if(archive.length>30)archive.pop();
-}
-function renderArchive(){
-  const div=document.getElementById('archive-content');
-  if(archive.length===0){
-    div.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;padding:2rem">${currentLang==='hi'?'अभी तक कोई पुराना पठन नहीं।':currentLang==='ta'?'இதுவரை பழைய வாசிப்புகள் இல்லை.':'No past readings yet. Your journey begins today.'}</p>`;
-    return;
-  }
-  div.innerHTML=archive.map(a=>`
-    <div class="remedy-card" style="opacity:.8">
-      <div class="remedy-day">${a.day} — ${a.date}</div>
-      <p style="font-size:.88rem;color:var(--muted)">${a.reading.remedy?.practice||a.reading.no_remedy_message||''}</p>
-    </div>
-  `).join('');
-}
 
 // ── TABS ──
 function switchTab(tab,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  ['daily','chart','remedies','compat'].forEach(t=>{
+  ['daily','chart','compat'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
-  if(tab==='remedies')renderArchive();
   if(tab==='chart'){
     if(!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
     // Load planets every time chart tab is opened (guard inside prevents duplicate calls)
