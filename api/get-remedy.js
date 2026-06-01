@@ -60,7 +60,7 @@ Return plain text only — four paragraphs separated by blank lines. No headings
     : (isPlanet || isPlanetA || isPlanetB)
 ? `You are Jyoti, a Vedic astrology master drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali, and the Nadi tradition.
 
-Write a personalised lifetime reading for each of the planets listed below. Each reading must be 2-3 sentences — direct, personal, alive — like a master astrologer speaking intimately to this specific person. Be specific to their exact sign, house position, and nakshatra. Cover: what this placement means in their lived experience, the dharmic gift it bestows, and the karmic challenge it carries. Never generic. Every sentence specific to THIS chart.
+Write a personalised lifetime reading for each of the planets listed below. Each reading must be EXACTLY 2 sentences — no more. Direct, personal, specific to their exact sign, house, and nakshatra. Never generic.
 
 ${isPlanetA ? 'Write readings for: Sun, Moon, Mars, Mercury, Jupiter.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"..."}' : ''}${isPlanetB ? 'Write readings for: Venus, Saturn, Rahu, Ketu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
 ${langInstruction}`
@@ -122,9 +122,10 @@ JSON structure:
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
   try {
-    // Retry up to 3 times on HTTP errors OR empty text responses
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8500);
     let response, data, text = '';
-    for (let attempt = 0; attempt < 3; attempt++) {
+    try {
       response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -134,31 +135,29 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 2000 : isPlanet ? 3000 : isPlanetA ? 1200 : isPlanetB ? 1400 : 1000,
+          max_tokens: isSoul ? 2000 : isPlanet ? 2000 : isPlanetA ? 700 : isPlanetB ? 600 : 1000,
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
-        })
+        }),
+        signal: ctrl.signal
       });
-      if (!response.ok) {
-        if (![429, 502, 503, 529].includes(response.status)) break;
-        if (attempt < 2) await new Promise(r => setTimeout(r, 1500 * Math.pow(2, attempt)));
-        continue;
-      }
+    } catch (fetchErr) {
+      clearTimeout(timer);
+      if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Reading timed out — please retry' });
+      throw fetchErr;
+    }
+    clearTimeout(timer);
+    if (response.ok) {
       data = await response.json();
       text = data.content?.[0]?.text || '';
-      if (text) break; // got content — done
-      console.warn(`Attempt ${attempt+1}: empty text from Anthropic, retrying…`);
-      if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
     }
 
     if (!response.ok) {
       const err = await response.text().catch(() => '(unreadable)');
-      console.error('Anthropic API error:', err);
       return res.status(502).json({ error: 'API error', detail: err });
     }
 
-    if (!data) data = await response.json().catch(() => ({}));
-    if (!text) text = data.content?.[0]?.text || '';
+    if (!text) return res.status(502).json({ error: 'Empty response from API' });
 
     if (isNakshatra || isSoul) {
       return res.status(200).json({ text: text.trim() });
