@@ -105,12 +105,22 @@ Return JSON:
       maxTokens: 500
     },
 
-    gifts: {
-      system: `You are Jyoti, analysing the gifts and shadows this connection activates in each person.
+    gifts_ab: {
+      system: `You are Jyoti, analysing the gifts this connection activates in each person.
 
 "gifts_a": 3-4 sentences — what this connection specifically brings out in ${A}. What capacity or quality is awakened, strengthened, or expanded by this contact? Be specific to ${A}'s chart and the cross-chart activations.
 
 "gifts_b": 3-4 sentences — same for ${B}. What is awakened, strengthened, or expanded?
+${CORE_RULES}
+
+Return JSON:
+{"gifts_a":"...","gifts_b":"..."}`,
+      user: `${CHART_CONTEXT}\n\nProvide the gifts analysis for both people.`,
+      maxTokens: 350
+    },
+
+    gifts_shadow: {
+      system: `You are Jyoti, analysing the shadow dynamic and healing potential of this connection.
 
 "shadow_dynamic": 3-4 sentences — what each chart's wound pattern tends to trigger in the other. Name the dynamic gently and without blame: which planetary placements create reactive patterns, and what the underlying fear or wound is for each person.
 
@@ -118,9 +128,9 @@ Return JSON:
 ${CORE_RULES}
 
 Return JSON:
-{"gifts_a":"...","gifts_b":"...","shadow_dynamic":"...","healing_potential":"..."}`,
-      user: `${CHART_CONTEXT}\n\nProvide the gifts and shadows analysis.`,
-      maxTokens: 600
+{"shadow_dynamic":"...","healing_potential":"..."}`,
+      user: `${CHART_CONTEXT}\n\nProvide the shadow and healing potential analysis.`,
+      maxTokens: 350
     },
 
     higher_road: {

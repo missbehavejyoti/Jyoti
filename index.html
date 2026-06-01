@@ -2719,22 +2719,28 @@ async function loadSynTier(type){
   if(type!=='tier1')_showSynInlineLoading(type);
   const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
-  try{
+  const doSynFetch=async(apiType)=>{
     const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),55000);
-    let resp;
+    const tId=setTimeout(()=>ctrl.abort(),25000);
     try{
-      resp=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type,lang:currentLang}),
+      const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:currentLang}),
         signal:ctrl.signal});
-    }catch(fetchErr){
       clearTimeout(tId);
-      throw new Error(fetchErr.name==='AbortError'?'Loading timed out — tap to retry':fetchErr.message);
+      if(!r.ok)throw new Error('api '+r.status);
+      const d=await r.json();
+      if(d.error)throw new Error(d.error);
+      return d;
+    }catch(e){clearTimeout(tId);throw new Error(e.name==='AbortError'?'Loading timed out — tap to retry':e.message);}
+  };
+  try{
+    let data;
+    if(type==='gifts'){
+      const [ab,shadow]=await Promise.all([doSynFetch('gifts_ab'),doSynFetch('gifts_shadow')]);
+      data={...ab,...shadow};
+    }else{
+      data=await doSynFetch(type);
     }
-    clearTimeout(tId);
-    if(!resp.ok)throw new Error('api '+resp.status);
-    const data=await resp.json();
-    if(data.error)throw new Error(data.error);
     saveSynCache(type,data);synLoadingType=null;
     _renderSynResult(type,data);
   }catch(e){
