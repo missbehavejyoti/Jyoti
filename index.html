@@ -3454,7 +3454,7 @@ async function openDeepReading(type,title){
   const modal=document.getElementById('deep-modal');
   document.getElementById('deep-modal-title').textContent=title;
   const contentEl=document.getElementById('deep-modal-content');
-  contentEl.innerHTML='<div style="text-align:center;padding:2.5rem 0"><div style="font-family:\'Cinzel\',serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);animation:pulse 1.5s ease-in-out infinite">${currentLang==='hi'?'गहराई में पढ़ रहे हैं...':currentLang==='es'?'Leyendo las profundidades...':'Reading the depths...'}</div></div>';
+  contentEl.innerHTML=`<div style="text-align:center;padding:2.5rem 0"><div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);animation:pulse 1.5s ease-in-out infinite">${currentLang==='hi'?'गहराई में पढ़ रहे हैं...':currentLang==='es'?'Leyendo las profundidades...':'Reading the depths...'}</div></div>`;
   modal.style.display='block';
   document.body.style.overflow='hidden';
   const cacheKey='deep_'+type;
