@@ -1015,9 +1015,14 @@ function setLang(lang){
   });
   // Re-render dynamic sections when language changes and chart is loaded
   if(prevLang!==lang&&chartData&&chartData.planets){
+    showChart();
     const fc=document.getElementById('full-reading');
     if(fc&&fc.innerHTML.trim())showFullChart();
     showDailyReading();
+    // Clear planet readings in-memory cache; re-fetch if chart tab is open
+    planetReadingsCache=null;
+    const prEl=document.getElementById('planet-readings-wrap');
+    if(prEl&&document.getElementById('tab-chart')?.style.display!=='none')loadPlanetReadings();
     // Clear compat in-memory cache so next view re-fetches in new language
     if(typeof synCache!=='undefined'){
       synCache={};synLoadingType=null;
@@ -2454,7 +2459,7 @@ function showSoulError(detail){
 
 // ── PLANET READINGS ──
 function planetReadingsKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_planets3_default';}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_planets3_default_'+currentLang;}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;
