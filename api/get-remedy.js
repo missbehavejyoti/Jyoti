@@ -137,7 +137,16 @@ JSON structure:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: isSoul ? 1800 : isPlanet ? 1800 : isPlanetD ? 200 : isPlanetC ? 350 : (isPlanetA || isPlanetB) ? 500 : 900,
+          max_tokens: (()=>{
+            // Hindi (Devanagari) needs ~1.6× more tokens than English
+            const hi = lang === 'hi';
+            if (isSoul)                        return hi ? 2800 : 1800;
+            if (isPlanet)                      return hi ? 2800 : 1800;
+            if (isPlanetD)                     return hi ?  320 :  200;
+            if (isPlanetC)                     return hi ?  560 :  350;
+            if (isPlanetA || isPlanetB)        return hi ?  800 :  500;
+            return                                    hi ? 1500 :  900; // daily remedy
+          })(),
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),

@@ -460,7 +460,7 @@ Return plain text only — four paragraphs separated by blank lines. No headings
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: config.maxTokens,
+          max_tokens: lang === 'hi' ? Math.ceil(config.maxTokens * 1.6) : config.maxTokens,
           system: config.system,
           messages: [{ role: 'user', content: config.user }]
         }),
