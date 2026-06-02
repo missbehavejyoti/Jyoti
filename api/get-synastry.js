@@ -17,8 +17,8 @@ module.exports = async (req, res) => {
 
   const langInstruction = lang === 'hi'
     ? 'Respond entirely in Hindi (Devanagari script).'
-    : lang === 'ta'
-    ? 'Respond entirely in Tamil script.'
+    : lang === 'es'
+    ? 'Respond entirely in Spanish.'
     : 'Respond in English.';
 
   const A = nameA || 'Person A';

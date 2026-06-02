@@ -13,12 +13,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Your precise Nadi birth chart and daily sacred practice. Ancient Vedic wisdom, delivered daily.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 /* Non-Latin script support — override Cinzel/EB Garamond which lack these glyphs */
 :lang(hi) *{font-family:'Noto Sans Devanagari',Georgia,sans-serif!important;letter-spacing:0!important}
-:lang(ta) *{font-family:'Noto Sans Tamil',Georgia,sans-serif!important;letter-spacing:0!important}
 :root{
   --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
@@ -275,7 +274,7 @@ select option{background:var(--s2);color:var(--text)}
 <div class="lang-bar">
   <button class="lbtn active" onclick="setLang('en')">EN</button>
   <button class="lbtn" onclick="setLang('hi')">हिं</button>
-  <button class="lbtn" onclick="setLang('ta')">தமி</button>
+  <button class="lbtn" onclick="setLang('es')">ES</button>
 </div>
 
 <!-- Header -->
@@ -300,8 +299,8 @@ select option{background:var(--s2);color:var(--text)}
       </svg>
     </div>
     <span class="brand-name">Jyoti</span>
-    <span class="brand-sub" data-en="Nadi Astrology · Ancient Wisdom · Daily Light" data-hi="नाडी ज्योतिष · प्राचीन ज्ञान · दैनिक प्रकाश" data-ta="நாடி ஜோதிடம் · பண்டைய ஞானம் · தினசரி ஒளி">Nadi Astrology · Ancient Wisdom · Daily Light</span>
-    <p class="tagline" data-en="Your precise birth chart. Your daily sacred practice." data-hi="आपकी सटीक जन्म कुंडली। आपका दैनिक पवित्र अभ्यास।" data-ta="உங்கள் துல்லியமான ஜாதகம். உங்கள் தினசரி புனித சடங்கு.">Your precise birth chart. Your daily sacred practice.</p>
+    <span class="brand-sub" data-en="Nadi Astrology · Ancient Wisdom · Daily Light" data-hi="नाडी ज्योतिष · प्राचीन ज्ञान · दैनिक प्रकाश" data-es="Astrología Nadi · Sabiduría Antigua · Luz Diaria">Nadi Astrology · Ancient Wisdom · Daily Light</span>
+    <p class="tagline" data-en="Your precise birth chart. Your daily sacred practice." data-hi="आपकी सटीक जन्म कुंडली। आपका दैनिक पवित्र अभ्यास।" data-es="Tu carta natal precisa. Tu práctica sagrada diaria.">Your precise birth chart. Your daily sacred practice.</p>
     <div class="divider"><span>✦</span></div>
   </div>
 </header>
@@ -309,15 +308,15 @@ select option{background:var(--s2);color:var(--text)}
 <!-- Steps -->
 <div class="wrap">
   <div class="steps" id="steps">
-    <div class="step-item active" id="s1"><div class="sdot">1</div><span data-en="Birth Details" data-hi="जन्म विवरण" data-ta="பிறப்பு விவரங்கள்">Birth Details</span></div>
+    <div class="step-item active" id="s1"><div class="sdot">1</div><span data-en="Birth Details" data-hi="जन्म विवरण" data-es="Detalles de Nacimiento">Birth Details</span></div>
     <div class="sline"></div>
-    <div class="step-item" id="s2"><div class="sdot">2</div><span data-en="Legal & Consent" data-hi="कानूनी सहमति" data-ta="சட்ட ஒப்புதல்">Legal & Consent</span></div>
+    <div class="step-item" id="s2"><div class="sdot">2</div><span data-en="Legal & Consent" data-hi="कानूनी सहमति" data-es="Legal y Consentimiento">Legal & Consent</span></div>
     <div class="sline"></div>
-    <div class="step-item" id="s3"><div class="sdot">3</div><span data-en="Your Chart" data-hi="आपकी कुंडली" data-ta="உங்கள் ஜாதகம்">Your Chart</span></div>
+    <div class="step-item" id="s3"><div class="sdot">3</div><span data-en="Your Chart" data-hi="आपकी कुंडली" data-es="Tu Carta">Your Chart</span></div>
     <div class="sline"></div>
-    <div class="step-item" id="s4"><div class="sdot">4</div><span data-en="Subscribe" data-hi="सदस्यता" data-ta="சந்தா">Subscribe</span></div>
+    <div class="step-item" id="s4"><div class="sdot">4</div><span data-en="Subscribe" data-hi="सदस्यता" data-es="Suscribirse">Subscribe</span></div>
     <div class="sline"></div>
-    <div class="step-item" id="s5"><div class="sdot">5</div><span data-en="Daily Jyoti" data-hi="दैनिक ज्योति" data-ta="தினசரி ஜ்யோதி">Daily Jyoti</span></div>
+    <div class="step-item" id="s5"><div class="sdot">5</div><span data-en="Daily Jyoti" data-hi="दैनिक ज्योति" data-es="Jyoti Diario">Daily Jyoti</span></div>
   </div>
 
   <!-- PANEL 1: Birth Details -->
@@ -327,53 +326,53 @@ select option{background:var(--s2);color:var(--text)}
       <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Jyoti is rooted in <strong style="color:var(--gold-pale)">Vedic astrology (Jyotish)</strong> — the ancient science of light from India — which reads planets against the actual star constellations. If you know your Western sun sign, your Vedic sign may differ. This is natural: a 24° shift has developed over millennia between two great traditions, each carrying its own wisdom.</p>
     </div>
     <div class="card">
-      <div class="card-title" data-en="Enter Your Birth Details" data-hi="अपना जन्म विवरण दर्ज करें" data-ta="உங்கள் பிறப்பு விவரங்களை உள்ளிடுக">Enter Your Birth Details</div>
+      <div class="card-title" data-en="Enter Your Birth Details" data-hi="अपना जन्म विवरण दर्ज करें" data-es="Ingresa Tus Detalles de Nacimiento">Enter Your Birth Details</div>
       <div class="field">
-        <label data-en="Full Name" data-hi="पूरा नाम" data-ta="முழு பெயர்">Full Name</label>
-        <input type="text" id="fname" placeholder="Your name" data-phi="आपका नाम" data-pta="உங்கள் பெயர்">
+        <label data-en="Full Name" data-hi="पूरा नाम" data-es="Nombre Completo">Full Name</label>
+        <input type="text" id="fname" placeholder="Your name" data-phi="आपका नाम" data-pes="Tu nombre">
       </div>
       <div class="g2">
         <div class="field">
-          <label data-en="Date of Birth" data-hi="जन्म तिथि" data-ta="பிறந்த தேதி">Date of Birth</label>
+          <label data-en="Date of Birth" data-hi="जन्म तिथि" data-es="Fecha de Nacimiento">Date of Birth</label>
           <input type="date" id="dob">
         </div>
         <div class="field">
-          <label data-en="Exact Birth Time" data-hi="जन्म समय" data-ta="பிறந்த நேரம்">Exact Birth Time</label>
+          <label data-en="Exact Birth Time" data-hi="जन्म समय" data-es="Hora de Nacimiento">Exact Birth Time</label>
           <input type="time" id="tob" value="12:00:00" step="1">
-          <p class="hint" data-en="24-hour format · seconds refine the Lagna" data-hi="24 घंटे का प्रारूप · सेकंड लग्न को परिष्कृत करता है" data-ta="24 மணி நேர வடிவம் · வினாடிகள் லக்னத்தை மேம்படுத்தும்">24-hour format · seconds refine the Lagna</p>
+          <p class="hint" data-en="24-hour format · seconds refine the Lagna" data-hi="24 घंटे का प्रारूप · सेकंड लग्न को परिष्कृत करता है" data-es="Formato 24 horas · los segundos refinan el Lagna">24-hour format · seconds refine the Lagna</p>
         </div>
       </div>
       <div class="field">
-        <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-ta="பிறந்த இடம் (நகரம், நாடு)">Place of Birth (City, Country)</label>
-        <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pta="எ.கா. சென்னை, இந்தியா">
+        <label data-en="Place of Birth (City, Country)" data-hi="जन्म स्थान (शहर, देश)" data-es="Lugar de Nacimiento (Ciudad, País)">Place of Birth (City, Country)</label>
+        <input type="text" id="pob" placeholder="e.g. Mumbai, India" data-phi="जैसे मुंबई, भारत" data-pes="ej. Buenos Aires, Argentina">
       </div>
       <!-- UTC hidden — fully auto-detected from birth location, DST-aware -->
       <input type="hidden" id="utc-offset">
       <div class="g2">
         <div class="field">
-          <label data-en="Email Address" data-hi="ईमेल पता" data-ta="மின்னஞ்சல் முகவரி">Email Address</label>
+          <label data-en="Email Address" data-hi="ईमेल पता" data-es="Correo Electrónico">Email Address</label>
           <input type="email" id="email" placeholder="your@email.com">
         </div>
         <div class="field">
-          <label data-en="Gender" data-hi="लिंग" data-ta="பாலினம்">Gender</label>
+          <label data-en="Gender" data-hi="लिंग" data-es="Género">Gender</label>
           <select id="gender">
-            <option value="" data-en="Select..." data-hi="चुनें..." data-ta="தேர்ந்தெடுக்கவும்...">Select...</option>
-            <option value="female" data-en="Female" data-hi="महिला" data-ta="பெண்">Female</option>
-            <option value="male" data-en="Male" data-hi="पुरुष" data-ta="ஆண்">Male</option>
-            <option value="other" data-en="Other" data-hi="अन्य" data-ta="மற்றவை">Other</option>
+            <option value="" data-en="Select..." data-hi="चुनें..." data-es="Seleccionar...">Select...</option>
+            <option value="female" data-en="Female" data-hi="महिला" data-es="Femenino">Female</option>
+            <option value="male" data-en="Male" data-hi="पुरुष" data-es="Masculino">Male</option>
+            <option value="other" data-en="Other" data-hi="अन्य" data-es="Otro">Other</option>
           </select>
         </div>
       </div>
       <div class="field">
-        <label data-en="Preferred Language for Readings" data-hi="पठन की पसंदीदा भाषा" data-ta="வாசிப்புகளுக்கான விருப்பமான மொழி">Preferred Language for Readings</label>
+        <label data-en="Preferred Language for Readings" data-hi="पठन की पसंदीदा भाषा" data-es="Idioma Preferido para las Lecturas">Preferred Language for Readings</label>
         <select id="pref-lang">
           <option value="en">English</option>
           <option value="hi">हिंदी (Hindi)</option>
-          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="es">Español</option>
         </select>
       </div>
       <button class="btn btn-gold btn-full" onclick="goToPanel(2)" id="btn1">
-        <span data-en="Begin My Journey" data-hi="मेरी यात्रा शुरू करें" data-ta="என் பயணத்தை தொடங்கு">Begin My Journey</span> ✦
+        <span data-en="Begin My Journey" data-hi="मेरी यात्रा शुरू करें" data-es="Comenzar Mi Viaje">Begin My Journey</span> ✦
       </button>
       <button class="btn btn-ghost btn-full" onclick="loadDemo()" style="margin-top:.6rem;opacity:.7;font-size:.7rem;letter-spacing:.15em">
         ◈ Demo Mode — skip to full app
@@ -384,9 +383,9 @@ select option{background:var(--s2);color:var(--text)}
   <!-- PANEL 2: Legal & Consent -->
   <div class="panel" id="panel2">
     <div class="card">
-      <div class="card-title" data-en="Almost There" data-hi="लगभग हो गया" data-ta="கிட்டத்தட்ட முடிந்தது">Almost There</div>
+      <div class="card-title" data-en="Almost There" data-hi="लगभग हो गया" data-es="Casi Listo">Almost There</div>
 
-      <p style="text-align:center;font-style:italic;color:var(--muted);margin-bottom:1.8rem;font-size:.95rem" data-en="Before we reveal the stars, one moment of intention." data-hi="तारों को प्रकट करने से पहले, एक पल का संकल्प।" data-ta="நட்சத்திரங்களை வெளிப்படுத்துவதற்கு முன், ஒரு நிமிட நோக்கம்.">Before we reveal the stars, one moment of intention.</p>
+      <p style="text-align:center;font-style:italic;color:var(--muted);margin-bottom:1.8rem;font-size:.95rem" data-en="Before we reveal the stars, one moment of intention." data-hi="तारों को प्रकट करने से पहले, एक पल का संकल्प।" data-es="Antes de revelar las estrellas, un momento de intención.">Before we reveal the stars, one moment of intention.</p>
 
       <p style="font-size:.82rem;color:var(--dim);line-height:1.65;margin-bottom:1.2rem;text-align:center">Jyoti offers Nadi astrological readings for <strong style="color:var(--gold-pale)">spiritual guidance only</strong> — not a substitute for professional advice.</p>
 
@@ -403,9 +402,9 @@ select option{background:var(--s2);color:var(--text)}
       </button>
 
       <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-ta="திரும்பு">Back</span></button>
+        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Back" data-hi="वापस" data-es="Volver">Back</span></button>
         <button class="btn btn-gold" style="flex:1" onclick="goToPanel(3)" id="btn2" disabled>
-          <span data-en="Reveal My Chart" data-hi="मेरी कुंडली देखें" data-ta="என் ஜாதகம் காட்டு">Reveal My Chart</span> ✦
+          <span data-en="Reveal My Chart" data-hi="मेरी कुंडली देखें" data-es="Revelar Mi Carta">Reveal My Chart</span> ✦
         </button>
       </div>
     </div>
@@ -416,13 +415,13 @@ select option{background:var(--s2);color:var(--text)}
     <div class="card" id="loading-card">
       <div class="loading">
         <div class="loading-flame">✦</div>
-        <div class="loading-text" data-en="Reading the stars for you..." data-hi="आपके लिए तारों को पढ़ रहे हैं..." data-ta="உங்களுக்காக நட்சத்திரங்களை வாசிக்கிறோம்...">Reading the stars for you...</div>
+        <div class="loading-text" data-en="Reading the stars for you..." data-hi="आपके लिए तारों को पढ़ रहे हैं..." data-es="Leyendo las estrellas para ti...">Reading the stars for you...</div>
       </div>
     </div>
 
     <div class="card" id="chart-card" style="display:none">
       <div class="card-title">
-        <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-ta="உங்கள் நாடி ஜாதகம்">Your Nadi Birth Chart</span>
+        <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-es="Tu Carta Natal Nadi">Your Nadi Birth Chart</span>
       </div>
       <div id="chart-location-info" style="text-align:center;margin-bottom:.8rem"></div>
 
@@ -462,7 +461,7 @@ select option{background:var(--s2);color:var(--text)}
       </div>
 
       <!-- Free preview planets -->
-      <div class="divider"><span data-en="FREE PREVIEW" data-hi="निःशुल्क पूर्वावलोकन" data-ta="இலவச முன்னோட்டம்">FREE PREVIEW</span></div>
+      <div class="divider"><span data-en="FREE PREVIEW" data-hi="निःशुल्क पूर्वावलोकन" data-es="VISTA PREVIA GRATUITA">FREE PREVIEW</span></div>
 
       <div class="planet-grid" id="preview-planets"></div>
 
@@ -473,25 +472,25 @@ select option{background:var(--s2);color:var(--text)}
         <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name"></div>
         <div style="font-size:.95rem;color:var(--muted);line-height:1.75;font-style:italic" id="nak-reading">Loading your nakshatra reading...</div>
         <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
-          <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-ta="✦ உங்கள் நட்சத்திரம் பகிரவும்">✦ Share your nakshatra</span>
+          <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
           <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
         </div>
       </div>
 
       <!-- Malefic teaser -->
       <div class="malefic-section">
-        <h4 data-en="✦ Karmic Intensities" data-hi="✦ कार्मिक तीव्रताएं" data-ta="✦ கார்மீக தீவிரங்கள்">✦ Karmic Intensities</h4>
+        <h4 data-en="✦ Karmic Intensities" data-hi="✦ कार्मिक तीव्रताएं" data-es="✦ Intensidades Kármicas">✦ Karmic Intensities</h4>
         <div id="malefic-tags"></div>
-        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to reveal your full karmic chart and receive your personalised daily remedies" data-hi="अपनी पूर्ण कार्मिक कुंडली और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-ta="முழு கார்மீக ஜாதகம் மற்றும் தனிப்பயனாக்கப்பட்ட தினசரி தீர்வுகளை வெளிப்படுத்த சந்தா செலுத்துங்கள்">Subscribe to reveal your full karmic chart and receive your personalised daily remedies</p>
+        <p style="font-size:.88rem;color:var(--dim);font-style:italic;margin-top:.8rem" data-en="Subscribe to reveal your full karmic chart and receive your personalised daily remedies" data-hi="अपनी पूर्ण कार्मिक कुंडली और व्यक्तिगत दैनिक उपाय प्राप्त करने के लिए सदस्यता लें" data-es="Suscríbete para revelar tu carta kármica completa y recibir tus remedios diarios personalizados">Subscribe to reveal your full karmic chart and receive your personalised daily remedies</p>
       </div>
 
       <!-- Chart fingerprint — populated by showChart() -->
       <div id="chart-fingerprint"></div>
 
       <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Edit Details" data-hi="विवरण संपादित करें" data-ta="விவரங்களை திருத்தவும்">Edit Details</span></button>
+        <button class="btn btn-ghost" onclick="goToPanel(1)">← <span data-en="Edit Details" data-hi="विवरण संपादित करें" data-es="Editar Detalles">Edit Details</span></button>
         <button class="btn btn-gold" style="flex:1" onclick="goToPanel(4)">
-          <span data-en="Unlock Full Reading" data-hi="पूर्ण पठन अनलॉक करें" data-ta="முழு வாசிப்பை திறக்கவும்">Unlock Full Reading</span> ✦
+          <span data-en="Unlock Full Reading" data-hi="पूर्ण पठन अनलॉक करें" data-es="Desbloquear Lectura Completa">Unlock Full Reading</span> ✦
         </button>
       </div>
     </div>
@@ -500,27 +499,41 @@ select option{background:var(--s2);color:var(--text)}
   <!-- PANEL 4: Subscribe -->
   <div class="panel" id="panel4">
     <div class="card">
-      <div class="card-title" data-en="Begin Your Sacred Practice" data-hi="अपनी पवित्र साधना शुरू करें" data-ta="உங்கள் புனித சாதனையை தொடங்கவும்">Begin Your Sacred Practice</div>
+      <div class="card-title" data-en="Begin Your Sacred Practice" data-hi="अपनी पवित्र साधना शुरू करें" data-es="Comienza Tu Práctica Sagrada">Begin Your Sacred Practice</div>
 
       <div style="text-align:center;margin-bottom:1.5rem">
-        <p style="color:var(--gold-pale);font-style:italic;font-size:1rem;font-family:'EB Garamond',serif;line-height:1.8;margin-bottom:.9rem" data-en="What Jyoti generates for you has never been generated before — and never will be again." data-hi="जो ज्योति आपके लिए उत्पन्न करती है वह पहले कभी नहीं बना और न ही दोबारा बनेगा।" data-ta="ஜ்யோதி உங்களுக்காக உருவாக்குவது இதுவரை உருவாக்கப்பட்டதில்லை — இனிமேலும் உருவாக்கப்படாது.">What Jyoti generates for you has never been generated before — and never will be again.</p>
+        <p style="color:var(--gold-pale);font-style:italic;font-size:1rem;font-family:'EB Garamond',serif;line-height:1.8;margin-bottom:.9rem" data-en="What Jyoti generates for you has never been generated before — and never will be again." data-hi="जो ज्योति आपके लिए उत्पन्न करती है वह पहले कभी नहीं बना और न ही दोबारा बनेगा।" data-es="Lo que Jyoti genera para ti nunca ha sido generado antes — y nunca lo será.">What Jyoti generates for you has never been generated before — and never will be again.</p>
         <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.9rem;text-align:left">
-          <p style="font-size:.85rem;color:var(--muted);line-height:1.8;margin:0" data-en="Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed 800 million unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition." data-hi="नौ ग्रह। सत्ताईस नक्षत्र। आपके जन्म के सेकंड तक गणना की गई लग्न। तीन एक साथ चलने वाली दशा चक्र — महा, अंतर और प्रत्यंतर। आज के ग्रह गोचर के साथ मिलाकर, संभावित संयोजन 80 करोड़ से अधिक हैं। यह राशिफल नहीं है। यह आपकी कुंडली है, नाडी परंपरा की जीवित बुद्धि के माध्यम से।" data-ta="ஒன்பது கிரகங்கள். இருபத்தேழு நட்சத்திரங்கள். உங்கள் பிறந்த நொடி வரை கணக்கிடப்பட்ட லக்னம். மூன்று ஒரே நேரத்தில் இயங்கும் தசை சுழற்சிகள். இன்றைய கிரக சாரங்களுடன் சேர்த்தால், 80 கோடிக்கும் அதிகமான தனித்துவமான வடிவமைப்புகள் சாத்தியம். இது ராசி பலன் அல்ல. இது நாடி மரபின் ஜீவமான அறிவின் மூலம் இன்று சந்திக்கும் உங்கள் ஜாதகம்.">Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed <strong style="color:var(--gold)">800 million</strong> unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition.</p>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.8;margin:0" data-en="Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed 800 million unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition." data-hi="नौ ग्रह। सत्ताईस नक्षत्र। आपके जन्म के सेकंड तक गणना की गई लग्न। तीन एक साथ चलने वाली दशा चक्र — महा, अंतर और प्रत्यंतर। आज के ग्रह गोचर के साथ मिलाकर, संभावित संयोजन 80 करोड़ से अधिक हैं। यह राशिफल नहीं है। यह आपकी कुंडली है, नाडी परंपरा की जीवित बुद्धि के माध्यम से।" data-es="Nueve planetas. Veintisiete nakshatras. Un Ascendente calculado al segundo de tu nacimiento. Tres ciclos de Dasha simultáneos — Maha, Antar y Pratyantara. Combinados con los tránsitos planetarios de hoy, las posibles configuraciones superan los 800 millones únicos. Esto no es una columna de horóscopo. Es tu carta, encontrándose con hoy, a través de la inteligencia viva de la tradición Nadi.">Nine planets. Twenty-seven nakshatras. An Ascendant calculated to the second of your birth. Three simultaneous Dasha cycles — Maha, Antar and Pratyantara — each refining the next. Layered with today's planetary transits, the possible configurations in a Vedic chart exceed <strong style="color:var(--gold)">800 million</strong> unique combinations. This is not a horoscope column. It is your chart, meeting today, through the living intelligence of the Nadi tradition.</p>
         </div>
       </div>
 
-      <div class="plan-grid" style="max-width:380px;margin:0 auto 1.5rem">
-        <div class="plan" id="plan-monthly">
-          <div class="plan-name" data-en="MONTHLY" data-hi="मासिक" data-ta="மாதாந்திர">MONTHLY</div>
-          <div class="plan-price">$12<span class="plan-period" style="font-size:1rem"> AUD</span></div>
-          <div class="plan-period" data-en="per month · cancel anytime" data-hi="प्रति माह · कभी भी रद्द करें" data-ta="மாதத்திற்கு · எப்போதும் ரத்து செய்யலாம்">per month · cancel anytime</div>
+      <div class="plan-grid" style="max-width:420px;margin:0 auto 1.5rem;display:grid;gap:.8rem">
+        <div class="plan" id="plan-monthly" style="border:2px solid rgba(200,169,74,.45);position:relative">
+          <div style="position:absolute;top:-.7rem;left:50%;transform:translateX(-50%);background:var(--gold);color:#08060f;font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.15em;padding:.25rem .8rem;border-radius:10px;white-space:nowrap">BEST VALUE</div>
+          <div class="plan-name" data-en="MONTHLY" data-hi="मासिक" data-es="MENSUAL">MONTHLY</div>
+          <div class="plan-price">$14.99<span class="plan-period" style="font-size:1rem"> AUD</span></div>
+          <div class="plan-period" data-en="per month · cancel anytime" data-hi="प्रति माह · कभी भी रद्द करें" data-es="por mes · cancela cuando quieras">per month · cancel anytime</div>
           <ul class="plan-features">
-            <li data-en="Full birth chart analysis" data-hi="पूर्ण जन्म कुंडली विश्लेषण" data-ta="முழு ஜாதக பகுப்பாய்வு">Full birth chart analysis</li>
-            <li data-en="Full karmic intensity chart" data-hi="पूर्ण कार्मिक तीव्रता कुंडली" data-ta="முழு கார்மீக தீவிர ஜாதகம்">Full karmic intensity chart</li>
-            <li data-en="Precise daily remedy" data-hi="सटीक दैनिक उपाय" data-ta="துல்லியமான தினசரி தீர்வு">Precise daily remedy</li>
-            <li data-en="Sacred chant counter" data-hi="पवित्र जप काउंटर" data-ta="புனித ஜப கவுண்டர்">Sacred chant counter</li>
-            <li data-en="Daily practice reminders" data-hi="दैनिक साधना अनुस्मारक" data-ta="தினசரி சாதனை நினைவூட்டல்கள்">Daily practice reminders</li>
-            <li data-en="3 languages supported" data-hi="3 भाषाएं समर्थित" data-ta="3 மொழிகள் ஆதரிக்கப்படுகின்றன">3 languages supported</li>
+            <li data-en="Full birth chart analysis" data-hi="पूर्ण जन्म कुंडली विश्लेषण" data-es="Análisis completo de carta natal">Full birth chart analysis</li>
+            <li data-en="Full karmic intensity chart" data-hi="पूर्ण कार्मिक तीव्रता कुंडली" data-es="Carta kármica completa">Full karmic intensity chart</li>
+            <li data-en="Precise daily remedy" data-hi="सटीक दैनिक उपाय" data-es="Remedio diario preciso">Precise daily remedy</li>
+            <li data-en="Sacred chant counter" data-hi="पवित्र जप काउंटर" data-es="Contador de canto sagrado">Sacred chant counter</li>
+            <li data-en="Daily practice reminders" data-hi="दैनिक साधना अनुस्मारक" data-es="Recordatorios de práctica diaria">Daily practice reminders</li>
+            <li data-en="3 languages supported" data-hi="3 भाषाएं समर्थित" data-es="3 idiomas disponibles">3 languages supported</li>
+            <li style="color:var(--gold)">✦ Compatibility reading included</li>
+          </ul>
+        </div>
+        <div style="text-align:center;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--dim)">— OR —</div>
+        <div class="plan" id="plan-compat" style="background:rgba(26,148,144,.04);border:1px solid rgba(26,148,144,.3)">
+          <div class="plan-name" style="color:#5DCAC6">COMPATIBILITY</div>
+          <div class="plan-price" style="color:#5DCAC6">$9.99<span class="plan-period" style="font-size:1rem"> AUD</span></div>
+          <div class="plan-period">one-time · no subscription</div>
+          <ul class="plan-features" style="color:var(--muted)">
+            <li>Classical Vedic compatibility reading</li>
+            <li>Karmic thread · Soul debt · Gifts & Shadows</li>
+            <li>In-depth progressive analysis</li>
+            <li>No daily chart or remedies</li>
           </ul>
         </div>
       </div>
@@ -539,18 +552,18 @@ select option{background:var(--s2);color:var(--text)}
       <div class="notif-box">
         <div class="notif-icon">🔔</div>
         <div class="notif-text" style="flex:1">
-          <h4 data-en="Sacred Practice Reminders" data-hi="पवित्र साधना अनुस्मारक" data-ta="புனித சாதனை நினைவூட்டல்கள்">Sacred Practice Reminders</h4>
-          <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-ta="ஜ்யோதி உங்களை எப்போது நினைவூட்ட வேண்டும் என்று தேர்வு செய்யுங்கள்.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
+          <h4 data-en="Sacred Practice Reminders" data-hi="पवित्र साधना अनुस्मारक" data-es="Recordatorios de Práctica Sagrada">Sacred Practice Reminders</h4>
+          <p style="margin-bottom:.8rem" data-en="Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time." data-hi="चुनें कि ज्योति आपको कब याद दिलाए। वैदिक परंपरा में नया दिन सूर्यास्त पर शुरू होता है।" data-es="Elige cuándo Jyoti te recuerda.">Choose when Jyoti reminds you. In Vedic tradition the new day begins at sunset — so the evening reminder is your sacred preparation time.</p>
           <div style="display:flex;flex-direction:column;gap:.6rem">
             <button type="button" class="consent-btn agreed" id="nb-evening" onclick="toggleNotif('evening')">
               <div class="cbx"></div>
-              <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-ta="மாலை — இரவு 8 மணி">Evening — 8pm the night before</strong>
-              <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-ta="நாளைய தீர்வு இன்று இரவு — நீங்கள் தயாரிக்க">Tomorrow's remedy delivered tonight so you can prepare</span></span>
+              <span>🌙 <strong style="color:var(--gold-pale)" data-en="Evening — 8pm the night before" data-hi="शाम — रात 8 बजे" data-es="Tarde — 8pm la noche anterior">Evening — 8pm the night before</strong>
+              <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="Tomorrow's remedy delivered tonight so you can prepare" data-hi="कल का उपाय आज रात — ताकि आप तैयारी कर सकें" data-es="El remedio de mañana entregado esta noche para que puedas prepararte">Tomorrow's remedy delivered tonight so you can prepare</span></span>
             </button>
             <button type="button" class="consent-btn agreed" id="nb-morning" onclick="toggleNotif('morning')">
               <div class="cbx"></div>
-              <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-ta="சூரிய உதயம் — காலை 6 மணி">Sunrise — 6am on the day</strong>
-              <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-ta="உங்கள் சாதனையை தொடங்க ஒரு மென்மையான காலை நினைவூட்டல்">A gentle morning reminder to begin your practice</span></span>
+              <span>🌅 <strong style="color:var(--gold-pale)" data-en="Sunrise — 6am on the day" data-hi="सूर्योदय — सुबह 6 बजे" data-es="Amanecer — 6am">Sunrise — 6am on the day</strong>
+              <span style="display:block;font-size:.8rem;color:var(--dim)" data-en="A gentle morning reminder to begin your practice" data-hi="अपनी साधना शुरू करने के लिए एक सौम्य सुबह का अनुस्मारक" data-es="Un suave recordatorio matutino para comenzar tu práctica">A gentle morning reminder to begin your practice</span></span>
             </button>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
@@ -561,15 +574,18 @@ select option{background:var(--s2);color:var(--text)}
       </div>
 
       <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:10px;padding:1rem 1.2rem;margin:1rem 0;font-size:.82rem;color:var(--dim);line-height:1.6">
-        <span data-en="By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved." data-hi="सदस्यता लेकर आप पुष्टि करते हैं कि आपने सेवा की शर्तें और गोपनीयता नीति पढ़ी और सहमति दी है। केवल आध्यात्मिक मार्गदर्शन के लिए।" data-ta="சந்தா செலுத்துவதன் மூலம் சேவை விதிமுறைகளை படித்து ஒப்புக்கொண்டதை உறுதிப்படுத்துகிறீர்கள். ஆன்மீக வழிகாட்டுதலுக்காக மட்டுமே.">By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved.</span>
+        <span data-en="By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved." data-hi="सदस्यता लेकर आप पुष्टि करते हैं कि आपने सेवा की शर्तें और गोपनीयता नीति पढ़ी और सहमति दी है। केवल आध्यात्मिक मार्गदर्शन के लिए।" data-es="Al suscribirte confirmas que has leído y aceptado los Términos de Servicio y la Política de Privacidad. Solo para orientación espiritual.">By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved.</span>
       </div>
 
       <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="goToPanel(3)">← <span data-en="View Chart" data-hi="कुंडली देखें" data-ta="ஜாதகம் பார்க்கவும்">View Chart</span></button>
-        <button class="btn btn-gold" style="flex:1" onclick="goToPayment()">
-          <span data-en="Begin My Jyoti Journey" data-hi="मेरी ज्योति यात्रा शुरू करें" data-ta="என் ஜ்யோதி பயணத்தை தொடங்கவும்">Begin My Jyoti Journey</span> ✦
+        <button class="btn btn-ghost" onclick="goToPanel(3)">← <span data-en="View Chart" data-hi="कुंडली देखें" data-es="Ver Carta">View Chart</span></button>
+        <button class="btn btn-gold" style="flex:1" onclick="goToPayment('monthly')">
+          <span data-en="Begin My Jyoti Journey" data-hi="मेरी ज्योति यात्रा शुरू करें" data-es="Comenzar Mi Viaje Jyoti">Begin My Jyoti Journey</span> ✦
         </button>
       </div>
+      <button class="btn btn-ghost btn-full" onclick="goToPayment('compatibility')" style="margin-top:.6rem;color:#5DCAC6;border-color:rgba(26,148,144,.35)">
+        ✦ Compatibility Reading Only — $9.99
+      </button>
     </div>
   </div>
 
@@ -586,8 +602,8 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Tab nav -->
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-ta="இன்றைய சாதனை">Today's Practice</div>
-        <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-ta="முழு ஜாதகம்">Full Chart</div>
+        <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-es="Práctica de Hoy">Today's Practice</div>
+        <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-es="Carta Completa">Full Chart</div>
         <div class="tab" onclick="switchTab('compat',this)">Compatibility</div>
       </div>
 
@@ -595,7 +611,7 @@ select option{background:var(--s2);color:var(--text)}
       <div id="tab-daily">
         <div id="daily-loading" class="loading" style="padding:2rem">
           <div class="loading-flame">✨</div>
-          <div class="loading-text" data-en="Consulting the cosmos for today..." data-hi="आज के लिए ब्रह्मांड से परामर्श..." data-ta="இன்றைக்கு அண்டவெளியை கலந்தாலோசிக்கிறோம்...">Consulting the cosmos for today...</div>
+          <div class="loading-text" data-en="Consulting the cosmos for today..." data-hi="आज के लिए ब्रह्मांड से परामर्श..." data-es="Consultando el cosmos para hoy...">Consulting the cosmos for today...</div>
         </div>
         <div id="daily-content" style="display:none">
           <div class="remedy-card" id="main-remedy"></div>
@@ -718,14 +734,14 @@ select option{background:var(--s2);color:var(--text)}
 
   <!-- Legal Footer -->
   <div class="legal-footer">
-    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-ta="ஜ்யோதி ஆன்மீக மற்றும் தனிப்பட்ட வளர்ச்சி நோக்கங்களுக்காக மட்டுமே ஜோதிட வழிகாட்டுதலை வழங்குகிறது.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only.</p>
-    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-ta="© 2025 ஜ்யோதி. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.">© 2025 Jyoti. All rights reserved. ABN registered Australia.</p>
+    <p data-en="Jyoti provides astrological guidance for spiritual and personal enrichment purposes only." data-hi="ज्योति केवल आध्यात्मिक और व्यक्तिगत समृद्धि के उद्देश्य से ज्योतिष मार्गदर्शन प्रदान करती है।" data-es="Jyoti proporciona orientación astrológica solo con fines espirituales y de crecimiento personal.">Jyoti provides astrological guidance for spiritual and personal enrichment purposes only.</p>
+    <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-es="© 2025 Jyoti. Todos los derechos reservados.">© 2025 Jyoti. All rights reserved. ABN registered Australia.</p>
     <p style="margin-top:.3rem;font-size:.68rem;color:var(--s5)">If you need support: Lifeline 13 11 14 · Beyond Blue 1300 22 4636</p>
     <div class="legal-links">
-      <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-ta="சேவை விதிமுறைகள்">Terms of Service</a>
-      <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-ta="தனியுரிமைக் கொள்கை">Privacy Policy</a>
-      <a href="#" onclick="openModal('disclaimer')" data-en="Disclaimer" data-hi="अस्वीकरण" data-ta="மறுப்பு">Disclaimer</a>
-      <a href="mailto:hellojyoti@proton.me" data-en="Contact" data-hi="संपर्क" data-ta="தொடர்பு">Contact</a>
+      <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-es="Términos de Servicio">Terms of Service</a>
+      <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-es="Política de Privacidad">Privacy Policy</a>
+      <a href="#" onclick="openModal('disclaimer')" data-en="Disclaimer" data-hi="अस्वीकरण" data-es="Aviso Legal">Disclaimer</a>
+      <a href="mailto:hellojyoti@proton.me" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
     </div>
   </div>
 <!-- Chant Modal -->
@@ -733,15 +749,15 @@ select option{background:var(--s2);color:var(--text)}
   <div class="chant-inner">
     <div class="chant-mantra" id="cm-mantra"></div>
     <div id="cm-phonetic-section" class="phonetic-section" style="display:none">
-      <div class="phonetic-label" data-en="PRONUNCIATION GUIDE" data-hi="उच्चारण गाइड" data-ta="உச்சரிப்பு வழிகாட்டி">PRONUNCIATION GUIDE</div>
+      <div class="phonetic-label" data-en="PRONUNCIATION GUIDE" data-hi="उच्चारण गाइड" data-es="Guía de Pronunciación">PRONUNCIATION GUIDE</div>
       <div id="cm-phonetic" class="phonetic-text"></div>
     </div>
     <div class="chant-meaning" id="cm-meaning"></div>
     <div class="chant-counter" id="cm-count">0</div>
     <div class="chant-target" id="cm-target"></div>
     <div class="chant-progress"><div class="chant-bar" id="cm-bar"></div></div>
-    <div class="chant-tap" onclick="tapChant()" data-en="TAP" data-hi="टैप" data-ta="TAP">TAP</div>
-    <button class="btn btn-ghost btn-sm" onclick="closeChant()" data-en="Done" data-hi="हो गया" data-ta="முடிந்தது">Done</button>
+    <div class="chant-tap" onclick="tapChant()" data-en="TAP" data-hi="टैप" data-es="TOCA">TAP</div>
+    <button class="btn btn-ghost btn-sm" onclick="closeChant()" data-en="Done" data-hi="हो गया" data-es="Listo">Done</button>
   </div>
 </div>
 
@@ -749,7 +765,7 @@ select option{background:var(--s2);color:var(--text)}
 <div class="modal" id="modal-terms">
   <div class="modal-inner">
     <div class="modal-close"><button onclick="closeModal('terms')">✕ Close</button></div>
-    <div class="modal-title" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-ta="சேவை விதிமுறைகள்">Terms of Service</div>
+    <div class="modal-title" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-es="Términos de Servicio">Terms of Service</div>
     <div class="modal-section"><h3>1. Acceptance</h3><p>By accessing or using Jyoti, you agree to be bound by these Terms of Service. If you do not agree, please do not use the service.</p></div>
     <div class="modal-section"><h3>2. Nature of Service</h3><p>Jyoti is an astrological guidance platform. All readings, remedies, and content are provided for spiritual guidance and personal enrichment purposes only. Nothing constitutes professional medical, psychiatric, psychological, financial, or legal advice.</p></div>
     <div class="modal-section"><h3>3. Personal Use</h3><p>Your subscription is for personal, non-commercial use only. Content generated by Jyoti including readings, remedies, and interpretations may not be reproduced, distributed, sold, or used commercially without written permission. All intellectual property belongs to Jyoti.</p></div>
@@ -924,20 +940,20 @@ const T={
     rulers:['रविवार — सूर्य','सोमवार — चंद्र','मंगलवार — मंगल','बुधवार — बुध','गुरुवार — गुरु','शुक्रवार — शुक्र','शनिवार — शनि'],
     greeting:'नमस्ते'
   },
-  ta:{
-    days:['ஞாயிறு','திங்கள்','செவ்வாய்','புதன்','வியாழன்','வெள்ளி','சனி'],
-    planets:['சூரியன்','சந்திரன்','செவ்வாய்','புதன்','குரு','சுக்கிரன்','சனி','ராகு','கேது'],
-    signs:['மேஷம்','ரிஷபம்','மிதுனம்','கடகம்','சிம்மம்','கன்னி','துலாம்','விருச்சிகம்','தனுசு','மகரம்','கும்பம்','மீனம்'],
-    nakshatras:['அஸ்வினி','பரணி','கார்த்திகை','ரோகிணி','மிருகசீரிஷம்','திருவாதிரை','புனர்பூசம்','பூசம்','ஆயில்யம்','மகம்','பூரம்','உத்திரம்','அஸ்தம்','சித்திரை','சுவாதி','விசாகம்','அனுஷம்','கேட்டை','மூலம்','பூராடம்','உத்திராடம்','திருவோணம்','அவிட்டம்','சதயம்','பூரட்டாதி','உத்திரட்டாதி','ரேவதி'],
-    rulers:['ஞாயிறு — சூரியன்','திங்கள் — சந்திரன்','செவ்வாய் — செவ்வாய்','புதன் — புதன்','வியாழன் — குரு','வெள்ளி — சுக்கிரன்','சனி — சனி'],
-    greeting:'வணக்கம்'
+  es:{
+    days:['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+    planets:['Sol','Luna','Marte','Mercurio','Júpiter','Venus','Saturno','Rahu','Ketu'],
+    signs:['Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'],
+    nakshatras:['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'],
+    rulers:['Domingo — Sol','Lunes — Luna','Martes — Marte','Miércoles — Mercurio','Jueves — Júpiter','Viernes — Venus','Sábado — Saturno'],
+    greeting:'Namaste'
   }
 };
 
 // ── LANGUAGE ──
 function setLang(lang){
   currentLang=lang;
-  document.documentElement.lang=lang==='hi'?'hi':lang==='ta'?'ta':'en';
+  document.documentElement.lang=lang==='hi'?'hi':lang==='es'?'es':'en';
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.lbtn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.querySelectorAll('[data-en]').forEach(el=>{
@@ -946,7 +962,7 @@ function setLang(lang){
   });
   document.querySelectorAll('input[data-phi]').forEach(el=>{
     if(lang==='hi')el.placeholder=el.getAttribute('data-phi');
-    else if(lang==='ta')el.placeholder=el.getAttribute('data-pta')||el.placeholder;
+    else if(lang==='es')el.placeholder=el.getAttribute('data-pes')||el.placeholder;
     else el.placeholder=el.getAttribute('placeholder')||el.placeholder;
   });
 }
@@ -969,19 +985,21 @@ function checkConsent(){
 
 // ── PAYMENT ──
 const SQUARE_LINKS = {
-  monthly: 'https://square.link/u/APfv6wgq'
+  monthly: 'https://square.link/u/APfv6wgq',
+  compatibility: '' // set when Square compatibility link is ready
 };
 
-function goToPayment(){
-  const link = SQUARE_LINKS.monthly;
-  // Store user intent so we can resume after payment
+function goToPayment(plan='monthly'){
+  const link = SQUARE_LINKS[plan] || SQUARE_LINKS.monthly;
   try {
     sessionStorage.setItem('jyoti_pending_name', userData.name || '');
-    sessionStorage.setItem('jyoti_pending_plan', 'monthly');
+    sessionStorage.setItem('jyoti_pending_plan', plan);
   } catch(e){}
-  // Open Square payment in new tab
+  if(!link){
+    alert('Payment link coming soon — contact hellojyoti@proton.me to purchase.');
+    return;
+  }
   window.open(link, '_blank');
-  // Show a friendly "after payment" message and let them continue to the app
   showPostPaymentMessage();
 }
 
@@ -994,7 +1012,7 @@ function showPostPaymentMessage(){
     <div style="font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">✦ COMPLETE YOUR PAYMENT IN THE NEW TAB</div>
     <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem">Once payment is complete, return here and tap the button below to enter your daily practice.</p>
     <button class="btn btn-gold" onclick="goToPanel(5)" style="width:100%">
-      <span data-en="I've Paid — Enter Jyoti" data-hi="मैंने भुगतान किया — ज्योति में प्रवेश करें" data-ta="பணம் செலுத்தினேன் — ஜ்யோதியில் நுழைவேன்">I've Paid — Enter Jyoti ✦</span>
+      <span data-en="I've Paid — Enter Jyoti" data-hi="मैंने भुगतान किया — ज्योति में प्रवेश करें" data-es="Pagué — Entrar a Jyoti">I've Paid — Enter Jyoti ✦</span>
     </button>
     <p style="font-size:.75rem;color:var(--dim);margin-top:.6rem">Having trouble? Contact <a href="mailto:hellojyoti@proton.me" style="color:var(--gold)">hellojyoti@proton.me</a></p>
   `;
@@ -1338,7 +1356,7 @@ function goToPanel(n){
     const pob=document.getElementById('pob').value;
     const email=document.getElementById('email').value;
     if(!name||!dob||!pob||!email){
-      alert(currentLang==='hi'?'कृपया सभी आवश्यक फ़ील्ड भरें':currentLang==='ta'?'அனைத்து தேவையான புலங்களையும் நிரப்பவும்':'Please fill in all required fields.');
+      alert(currentLang==='hi'?'कृपया सभी आवश्यक फ़ील्ड भरें':currentLang==='es'?'Por favor completa todos los campos requeridos.':'Please fill in all required fields.');
       return;
     }
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
@@ -1377,8 +1395,8 @@ function showChart(){
   const preview=[
     {sym:'☉',name:L.planets[0],pos:`${L.signs[chartData.planets[0].sign]} ${chartData.planets[0].degree}°`},
     {sym:'☽',name:L.planets[1],pos:`${L.signs[chartData.planets[1].sign]} ${chartData.planets[1].degree}°`},
-    {sym:'⬆',name:currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Ascendant',pos:`${L.signs[chartData.ascSign]} ${parseFloat(chartData.asc.degree).toFixed(1)}°`},
-    {sym:'✦',name:currentLang==='hi'?'नक्षत्र':currentLang==='ta'?'நட்சத்திரம்':'Nakshatra',pos:`${L.nakshatras[chartData.moonNak]} pada ${chartData.planets[1].pada}`},
+    {sym:'⬆',name:currentLang==='hi'?'लग्न':currentLang==='es'?'Ascendente':'Ascendant',pos:`${L.signs[chartData.ascSign]} ${parseFloat(chartData.asc.degree).toFixed(1)}°`},
+    {sym:'✦',name:currentLang==='hi'?'नक्षत्र':currentLang==='es'?'Nakshatra':'Nakshatra',pos:`${L.nakshatras[chartData.moonNak]} pada ${chartData.planets[1].pada}`},
     {sym:'♃',name:L.planets[4],pos:`${L.signs[chartData.planets[4].sign]}`},
     {sym:'♄',name:L.planets[6],pos:`${L.signs[chartData.planets[6].sign]}`},
   ];
@@ -1393,7 +1411,7 @@ function showChart(){
   const mDiv=document.getElementById('malefic-tags');
   mDiv.innerHTML=chartData.malefics.map(m=>`
     <span class="tag tag-karmic">✦ ${m.name}</span>
-  `).join('')+'<span class="tag tag-ok">✦ '+(currentLang==='hi'?'शुभ योग विद्यमान हैं':currentLang==='ta'?'சுப யோகங்கள் உள்ளன':'Graceful yogas present')+'</span>';
+  `).join('')+'<span class="tag tag-ok">✦ '+(currentLang==='hi'?'शुभ योग विद्यमान हैं':currentLang==='es'?'Yogas auspiciosos presentes':'Graceful yogas present')+'</span>';
   // Show detected location + UTC for verification
   const locEl=document.getElementById('chart-location-info');
   if(locEl&&chartData._coords){
@@ -1413,17 +1431,17 @@ function showChart(){
     const antar = dp.antar?.lord || '';
     const prat = dp.pratyantara?.lord || '';
     const dashaStr = prat ? `${maha} / ${antar} / ${prat}` : maha;
-    const labelNak  = currentLang==='hi'?'चंद्र नक्षत्र':currentLang==='ta'?'சந்திர நட்சத்திரம்':'Moon Nakshatra';
-    const labelAsc  = currentLang==='hi'?'लग्न':currentLang==='ta'?'லக்னம்':'Lagna';
-    const labelDash = currentLang==='hi'?'सक्रिय दशा':currentLang==='ta'?'செயலில் தசை':'Active Dasha';
+    const labelNak  = currentLang==='hi'?'चंद्र नक्षत्र':currentLang==='es'?'Nakshatra de la Luna':'Moon Nakshatra';
+    const labelAsc  = currentLang==='hi'?'लग्न':currentLang==='es'?'Lagna':'Lagna';
+    const labelDash = currentLang==='hi'?'सक्रिय दशा':currentLang==='es'?'Dasha Activo':'Active Dasha';
     const labelUniq = currentLang==='hi'
       ? '80 करोड़ से अधिक संभावित संयोजनों में से एक — केवल आपका।'
-      : currentLang==='ta'
-      ? '80 கோடிக்கும் அதிகமான சாத்தியமான வடிவமைப்புகளில் ஒன்று — உங்களுக்கு மட்டுமே.'
+      : currentLang==='es'
+      ? 'Uno de más de 800 millones de configuraciones posibles — únicamente tuyo.'
       : 'One of over 800 million possible configurations — uniquely yours.';
     fpEl.innerHTML = `
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:12px;padding:.9rem 1.1rem;margin:.8rem 0">
-        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.7rem;text-transform:uppercase">✦ ${currentLang==='hi'?'आपकी कुंडली का विशेष संयोजन':currentLang==='ta'?'உங்கள் ஜாதக தனித்துவம்':'Your Chart Fingerprint'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.7rem;text-transform:uppercase">✦ ${currentLang==='hi'?'आपकी कुंडली का विशेष संयोजन':currentLang==='es'?'Huella de tu Carta':'Your Chart Fingerprint'}</div>
         <div style="display:flex;flex-wrap:wrap;gap:.5rem .8rem;margin-bottom:.7rem">
           <span style="font-size:.82rem;color:var(--text)"><span style="color:var(--gold-d);font-size:.7rem">${labelNak}</span><br><strong>${nakName}</strong></span>
           <span style="color:var(--s4);align-self:center">·</span>
@@ -1499,34 +1517,34 @@ const NAKSHATRA_DATA = {
     {name:"उत्तर भाद्रपद",desc:"आप गहरे जल के सर्प हैं — बुद्धिमान, करुणामय।"},
     {name:"रेवती",desc:"आप घर का रास्ता दिखाने वाले प्रकाश हैं।"},
   ],
-  ta: [
-    {name:"அஸ்வினி",desc:"நீங்கள் தெய்வீக குணப்படுத்துபவரின் ஆற்றலை கொண்டுள்ளீர்கள் — விரைவான, முன்னோடி மற்றும் உயிர் சக்தி நிறைந்தவர்."},
-    {name:"பரணி",desc:"நீங்கள் சிருஷ்டி மற்றும் மாற்றத்தின் புனித சக்தியை கொண்டுள்ளீர்கள்."},
-    {name:"கார்த்திகை",desc:"தூய்மைப்படுத்தும் அக்னி உங்களில் வாழ்கிறது — கூர்மையான, விவேகமுள்ள மற்றும் ஒளிமயமானவர்."},
-    {name:"ரோகிணி",desc:"நீங்கள் அழகு, வளம் மற்றும் வளமான பூமியில் வேரூன்றியிருக்கிறீர்கள்."},
-    {name:"மிருகசீரிஷம்",desc:"நீங்கள் நித்திய தேடுபவர் — ஆர்வமுள்ள, மென்மையான மற்றும் எப்போதும் தேடுபவர்."},
-    {name:"திருவாதிரை",desc:"உங்களுக்குள் புயல் இருக்கிறது — தீவிரமான, மாற்றும் சக்தி கொண்டவர்."},
-    {name:"புனர்பூசம்",desc:"நீங்கள் திரும்பும் ஒளி. ஒவ்வொரு புயலுக்கும் பிறகு வீட்டிற்கு வழி கண்டுபிடிப்பீர்கள்."},
-    {name:"பூசம்",desc:"நீங்கள் உலகங்களை போஷிப்பவர். நிலையான, அன்பான மற்றும் ஆழமாக அர்பணிக்கப்பட்டவர்."},
-    {name:"ஆயில்யம்",desc:"நீங்கள் பண்டைய பாம்பு ஞானத்தை கொண்டுள்ளீர்கள் — உள்ளுணர்வு கொண்டவர்."},
-    {name:"மகம்",desc:"உங்களுக்குள் மூதாதையர் அரியணை உள்ளது. கம்பீரமான, பெருமையான."},
-    {name:"பூரம்",desc:"நீங்கள் தூய படைப்பு மகிழ்ச்சி — விளையாட்டான, காந்தமான மற்றும் ஆழமாக அன்பான."},
-    {name:"உத்திரம்",desc:"நீங்கள் நிரந்தரமான விஷயங்களை கட்டுபவர் — கூட்டாண்மை, நிறுவனங்கள்."},
-    {name:"அஸ்தம்",desc:"உங்கள் கைகளில் குணப்படுத்தும் சக்தி உள்ளது. திறமையான, புத்திசாலியான."},
-    {name:"சித்திரை",desc:"நீங்கள் வான வாஸ்து கலைஞர் — அழகு, தொலைநோக்கு கொண்டவர்."},
-    {name:"சுவாதி",desc:"நீங்கள் காற்று — சுதந்திரமான, சுயாதீனமான."},
-    {name:"விசாகம்",desc:"நீங்கள் புனித நோக்கத்தால் எரிகிறீர்கள். உந்துதல் மிக்க, லட்சிய முள்ள."},
-    {name:"அனுஷம்",desc:"நீங்கள் அர்பணிக்கப்பட்ட நண்பர், விசுவாசமான இதயம்."},
-    {name:"கேட்டை",desc:"நீங்கள் மூத்தவரின் அதிகாரம் கொண்டுள்ளீர்கள் — பாதுகாப்பான, சக்திவாய்ந்த."},
-    {name:"மூலம்",desc:"நீங்கள் வேர் தேடுபவர் — விஷயங்களின் அடிப்படைக்கு செல்ல கட்டாயப்படுகிறீர்கள்."},
-    {name:"பூராடம்",desc:"நீங்கள் அஜேயர் — உறுதியான, உணர்ச்சிமிக்க."},
-    {name:"உத்திராடம்",desc:"நீங்கள் உலகளாவிய வெற்றியை கொண்டுள்ளீர்கள் — நீதியின் மூலம்."},
-    {name:"திருவோணம்",desc:"நீங்கள் புனித கேட்பவர் — பிரபஞ்சத்தின் நுண்ணிய குரலுக்கு ஒத்திசைக்கப்பட்டவர்."},
-    {name:"அவிட்டம்",desc:"நீங்கள் தாளம், வளம் மற்றும் வான இசை ஆவீர்கள்."},
-    {name:"சதயம்",desc:"நீங்கள் நூறு நட்சத்திரங்களின் குணப்படுத்துபவர்."},
-    {name:"பூரட்டாதி",desc:"நீங்கள் மாற்றத்தின் புனித அக்னியை கொண்டுள்ளீர்கள்."},
-    {name:"உத்திரட்டாதி",desc:"நீங்கள் ஆழ்ந்த நீரின் பாம்பு — ஞானமுள்ள, கருணையுள்ள."},
-    {name:"ரேவதி",desc:"நீங்கள் வீட்டிற்கு வழிகாட்டும் ஒளி. அனைத்து உயிர்களுக்கும் அன்பான பாதுகாவலர்."},
+  es: [
+    {name:"Ashwini",desc:"Llevas la energía del sanador divino — veloz, pionero y lleno de fuerza vital. Tu alma se mueve rápido y tus instintos son agudos. Estás aquí para iniciar, sanar y comenzar lo que otros no pueden."},
+    {name:"Bharani",desc:"Sostienes el sagrado poder de la creación y la transformación. Profundo, magnético e intrépido ante los extremos de la vida, llevas la sabiduría de la diosa Yama — que el nacimiento y la muerte son un río sagrado continuo."},
+    {name:"Krittika",desc:"El fuego de la purificación vive en ti. Agudo, discerniente y luminoso, cortas la ilusión con precisión natural. Estás aquí para iluminar, refinar y quemar lo que ya no sirve."},
+    {name:"Rohini",desc:"Estás enraizado en la belleza, la abundancia y la tierra fértil. Creativo, sensual y profundamente magnético — la Luna te ama más. Atraes lo que deseas y tu presencia nutre a todos a tu alrededor."},
+    {name:"Mrigashira",desc:"Eres el eterno buscador — curioso, gentil, siempre en búsqueda de algo más allá del horizonte. Tu mente es luminosa e inquieta. El don de tu alma es el viaje en sí, no solo el destino."},
+    {name:"Ardra",desc:"Llevas la tormenta dentro de ti — intenso, transformador y profundamente vivo. Gobernado por Rudra, señor del vendaval, abres las cosas para que algo más verdadero pueda emerger. Tus lágrimas riegan las semillas de la renovación."},
+    {name:"Punarvasu",desc:"Eres la luz que regresa. Después de cada tormenta encuentras el camino a casa — a la alegría, la bondad, la esperanza. Generoso, sabio y eternamente optimista, restauras lo perdido y devuelves a otros a sí mismos."},
+    {name:"Pushya",desc:"Eres el nutridor de mundos. Estable, nutritivo y profundamente devoto, llevas la energía más fértil de Júpiter. La gente confía en ti instintivamente. Tu llamado es proteger, sostener y verter tu ser en lo que amas."},
+    {name:"Ashlesha",desc:"Llevas sabiduría ancestral de la serpiente — perceptivo, penetrante y profundamente intuitivo. Ves bajo la superficie y entiendes lo que otros no ven. Tu poder es profundo cuando se alinea con la verdad y la compasión."},
+    {name:"Magha",desc:"Llevas el trono ancestral dentro de ti. Regio, orgulloso y conectado al linaje de tus antepasados, estás aquí para honrar lo que vino antes y construir algo digno de ser recordado."},
+    {name:"Purva Phalguni",desc:"Eres pura alegría creativa — juguetón, magnético y profundamente amoroso. Venus y el sol del mediodía te bendicen con una naturaleza que deleita en la belleza, el placer y el arte sagrado de la conexión."},
+    {name:"Uttara Phalguni",desc:"Eres constructor de cosas duraderas — asociaciones, instituciones, compromisos sagrados. Cálido, confiable y profundamente humano, tejes los hilos de la sociedad con amor y silenciosa fortaleza."},
+    {name:"Hasta",desc:"Tus manos llevan sanación. Hábil, inteligente y preciso, tienes un don para dar forma a las cosas — a través del oficio, el cuidado y la sabia aplicación de tu notable destreza y percepción."},
+    {name:"Chitra",desc:"Eres el arquitecto celestial — dotado de belleza, visión y ojo para la perfección. Marte y Vishwakarma te bendicen con fuego creativo y brillantez estructural. Haces visible lo invisible."},
+    {name:"Swati",desc:"Eres el viento — libre, independiente e imposible de contener. Adaptable y socialmente dotado, te mueves por el mundo con gracia y siempre encuentras tu propio camino, inclinándote ante nada más que tu propia verdad."},
+    {name:"Vishakha",desc:"Ardes con propósito sagrado. Motivado, ambicioso y profundamente devoto a lo que eliges servir, llevas el doble fuego de Indra y Agni — el rayo del poder y la llama sagrada de la devoción."},
+    {name:"Anuradha",desc:"Eres el amigo devoto, el corazón leal, quien honra el compromiso como sagrado. Saturno y Mitra te bendicen con la capacidad de la amistad profunda y la tenacidad de amar en cada estación."},
+    {name:"Jyeshtha",desc:"Llevas la autoridad del anciano — protector, poderoso y profundamente responsable. Cargas lo que otros no pueden y tu coraje bajo presión es tu mayor don al mundo."},
+    {name:"Mula",desc:"Eres el buscador de raíces — impulsado a ir a los fundamentos mismos de las cosas. Ketu y Nirriti te bendicen con una indagación intrépida. Estás aquí para disolver lo falso y descubrir lo eternamente real."},
+    {name:"Purva Ashadha",desc:"Eres el invencible — resiliente, apasionado e imposible de vencer. Venus y las aguas de la purificación te dan el poder de limpiar, refrescar y levantarte una y otra vez con gracia."},
+    {name:"Uttara Ashadha",desc:"Llevas la victoria universal — no por fuerza sino por justicia. Paciente, con principios y en última instancia imparable, estás aquí para completar lo que fue iniciado y defender lo verdadero."},
+    {name:"Shravana",desc:"Eres el escuchador sagrado — sintonizado con la sutil voz del cosmos. Vishnu y el oído de la sabiduría te bendicen con la capacidad de escuchar lo no dicho y aprender de todo a tu alrededor."},
+    {name:"Dhanishtha",desc:"Eres ritmo, abundancia y música celestial. Los ocho Vasus te bendicen con prosperidad, poder y una sintonía natural con el flujo de la vida. Estás aquí para prosperar y compartir tu riqueza generosamente."},
+    {name:"Shatabhisha",desc:"Eres el sanador de cien estrellas — solitario, visionario y silenciosamente profundo. Varuna, señor de la ley cósmica, te da una perspicacia penetrante y la capacidad de sanar lo que otros ni siquiera pueden ver."},
+    {name:"Purva Bhadrapada",desc:"Llevas el fuego sagrado de la transformación — intenso, filosófico e intrépido ante las profundidades. Aja Ekapada te bendice con un feroz hambre espiritual que quema todo lo ordinario."},
+    {name:"Uttara Bhadrapada",desc:"Eres la serpiente de las aguas profundas — sabio, compasivo y pacientemente ilimitado. Ahir Budhnya te da la capacidad de sostener una gran profundidad en la quietud y bendecir todo lo que tocas."},
+    {name:"Revati",desc:"Eres la luz que guía el viaje a casa. El último nakshatra, bendecido por Pushan, llevas un amor tierno y protector por todos los seres. Tu alma es antigua, bondadosa y está aquí para guiar a otros con seguridad."},
   ]
 };
 
@@ -1573,7 +1591,7 @@ async function showDailyReading(){
   const L=T[currentLang];
   const now=new Date();
   const dayName=L.days[now.getDay()];
-  const dateStr=now.toLocaleDateString(currentLang==='hi'?'hi-IN':currentLang==='ta'?'ta-IN':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dateStr=now.toLocaleDateString(currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
 
@@ -1690,13 +1708,13 @@ function renderDailyReading(r,dayName){
         ${rem.timing?`<p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
         ${rem.mantra?`
         <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='ta'?'மந்திரம்':'MANTRA'}</div>
+          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='es'?'MANTRA':'MANTRA'}</div>
           <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
           <div style="font-size:.8rem;color:var(--dim)">${rem.mantra_meaning||''}</div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${rem.mantra_count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${rem.mantra_count} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
         </div>
         <div class="remedy-actions">
-          <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${rem.mantra_count},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+          <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${rem.mantra_count},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
         </div>`:''}
         <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>
       </div>
@@ -1709,7 +1727,7 @@ function renderDailyReading(r,dayName){
     html+=`<div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1rem 1.2rem;margin-top:1rem;display:flex;gap:.9rem;align-items:flex-start">
       <div style="font-size:1.4rem;line-height:1">💎</div>
       <div>
-        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.13em;color:var(--muted);margin-bottom:.3rem">${currentLang==='hi'?'रत्न सुझाव':currentLang==='ta'?'ரத்தின ஆலோசனை':'GEMSTONE GUIDANCE'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.13em;color:var(--muted);margin-bottom:.3rem">${currentLang==='hi'?'रत्न सुझाव':currentLang==='es'?'ORIENTACIÓN GEMOLÓGICA':'GEMSTONE GUIDANCE'}</div>
         <div style="font-size:.95rem;color:var(--gold-pale);font-weight:500;margin-bottom:.2rem">${g.stone} <span style="color:var(--dim);font-size:.8rem;font-weight:400">· ${g.planet}</span></div>
         <div style="font-size:.85rem;color:var(--muted);margin-bottom:.3rem">${g.why}</div>
         <div style="font-size:.78rem;color:var(--dim);font-style:italic">${g.wear}</div>
@@ -1813,12 +1831,12 @@ function renderFallbackReading(dayName,now){
   const moonSign = chartData?.planets?.[1]?.signName      || '';
 
   const greeting = currentLang==='hi' ? `नमस्ते, ${userData.name}`
-                 : currentLang==='ta' ? `வணக்கம், ${userData.name}`
+                 : currentLang==='es' ? `Namaste, ${userData.name}`
                  : `Namaste, ${userData.name}`;
 
   // Dasha badge — all three tiers
   const pratEnd  = dp?.pratyantara?.endDate || '';
-  const _until   = currentLang==='hi'?'तक':currentLang==='ta'?'வரை':'until';
+  const _until   = currentLang==='hi'?'तक':currentLang==='es'?'hasta':'until';
   const dashaTag = mahaLord
     ? `${mahaLord} · ${antarLord||mahaLord} · ${pratLord||'—'}${pratEnd?' '+_until+' '+pratEnd:''}`
     : '';
@@ -1828,16 +1846,16 @@ function renderFallbackReading(dayName,now){
   if (pratLord && antarLord && mahaLord) {
     if (currentLang === 'hi') {
       cosmicLine = `आप <strong>${mahaLord} महा दशा</strong> में हैं — हर चीज़ के नीचे बहने वाली गहरी धारा। इसके भीतर, <strong>${antarLord} अंतर दशा</strong> आपके जीवन के इस मौसम को आकार देती है। और अभी, <strong>${pratLord} प्रत्यंतर</strong>${pratEnd?' ('+pratEnd+' तक)':''} आपके क्षेत्र में सबसे तत्काल सक्रिय ऊर्जा है। आज का अभ्यास ${pratLord} के प्रभाव से सीधे आता है।`;
-    } else if (currentLang === 'ta') {
-      cosmicLine = `நீங்கள் <strong>${mahaLord} மஹா தசை</strong>யில் இருக்கிறீர்கள் — எல்லாவற்றிற்கும் கீழே ஓடும் ஆழமான நீரோட்டம். அதற்குள், <strong>${antarLord} அந்தர தசை</strong> உங்கள் வாழ்க்கையின் இந்த காலகட்டத்தை வடிவமைக்கிறது. இப்போது, <strong>${pratLord} பிரத்யந்தர</strong>${pratEnd?' ('+pratEnd+' வரை)':''} உங்கள் துறையில் மிகவும் உடனடியான ஆற்றல். இன்றைய பயிற்சி ${pratLord}ன் தாக்கத்திலிருந்து நேரடியாக வருகிறது.`;
+    } else if (currentLang === 'es') {
+      cosmicLine = `Estás en <strong>${mahaLord} Maha Dasha</strong> — la larga corriente bajo todo. Dentro de ella, <strong>${antarLord} Antar Dasha</strong> da forma a esta temporada de tu vida. Y ahora mismo, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (hasta '+pratEnd+')':''} es la energía más inmediata activa en tu campo. La práctica de hoy se nutre directamente de la influencia de ${pratLord}.`;
     } else {
       cosmicLine = `You are in <strong>${mahaLord} Maha Dasha</strong> — the long current beneath everything. Within it, <strong>${antarLord} Antar Dasha</strong> shapes this season of your life. And right now, <strong>${pratLord} Pratyantara</strong>${pratEnd?' (until '+pratEnd+')':''} is the most immediate energy active in your field. Today's practice draws directly from ${pratLord}'s influence.`;
     }
   } else if (mahaLord && moonSign) {
     if (currentLang === 'hi') {
       cosmicLine = `आप अपनी ${mahaLord} दशा से गुजर रहे हैं${moonNak?' — '+moonSign+' में आपका चंद्रमा ('+moonNak+' नक्षत्र) यह बताता है कि आप इस ऊर्जा को कैसे ग्रहण करते हैं':''}.`;
-    } else if (currentLang === 'ta') {
-      cosmicLine = `நீங்கள் உங்கள் ${mahaLord} தசையில் செல்கிறீர்கள்${moonNak?' — '+moonSign+'ல் உங்கள் சந்திரன் ('+moonNak+' நட்சத்திரம்) இந்த ஆற்றலை நீங்கள் எவ்வாறு பெறுகிறீர்கள் என்பதை வடிவமைக்கிறது':''}.`;
+    } else if (currentLang === 'es') {
+      cosmicLine = `Estás transitando tu ${mahaLord} Dasha${moonNak?' — tu Luna en '+moonSign+' ('+moonNak+' Nakshatra) moldea cómo recibes esta energía':''}.`;
     } else {
       cosmicLine = `You are moving through your ${mahaLord} Dasha${moonNak?' — your Moon in '+moonSign+' ('+moonNak+' Nakshatra) shapes how you receive this energy':''}.`;
     }
@@ -1852,14 +1870,14 @@ function renderFallbackReading(dayName,now){
       <div class="remedy-text">${di.practice}</div>
       <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='ta'?'மந்திரம்':'MANTRA'}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='es'?'MANTRA':'MANTRA'}</div>
         <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${di.mantra}</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='ta'?'முறை':'times'}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='ta'?'ஜபிக்கவும்':'Chant'}</button>
+        <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
       </div>
-      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${currentLang==='hi'?`आज का अभ्यास आपकी आत्मा और ब्रह्मांड के बीच एक संवाद है। अपनी यात्रा के समय पर विश्वास रखें, ${userData.name}।`:currentLang==='ta'?`இன்றைய பயிற்சி உங்கள் ஆன்மாவுக்கும் பிரபஞ்சத்துக்கும் இடையிலான உரையாடல். உங்கள் பயணத்தின் நேரத்தை நம்புங்கள், ${userData.name}.`:`Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.`}</p>
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${currentLang==='hi'?`आज का अभ्यास आपकी आत्मा और ब्रह्मांड के बीच एक संवाद है। अपनी यात्रा के समय पर विश्वास रखें, ${userData.name}।`:currentLang==='es'?`Tu práctica hoy es una conversación entre tu alma y el cosmos. Confía en el momento de tu viaje, ${userData.name}.`:`Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.`}</p>
     </div>
   `;
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
@@ -1894,16 +1912,16 @@ function showFullChart(){
     karmicTeacher:'एक कार्मिक गुरु — यह तीव्रता आपकी सबसे गहरी वृद्धि को धारण करती है। दैनिक अभ्यास इस ऊर्जा के साथ सचेत रूप से काम करता है।',
     tradition:'शास्त्रीय नाडी और वैदिक परंपरा · लाहिरी अयनांश · केवल आध्यात्मिक मार्गदर्शन के लिए',
     exalted:' ★ उच्च',debilitated:' ↓ नीच',own:' ◉ स्व',yearsRem:'वर्ष शेष'
-  }:currentLang==='ta'?{
-    birthDetails:'பிறப்பு விவரங்கள்',name:'பெயர்',date:'தேதி',time:'நேரம்',place:'இடம்',
-    timezone:'நேர மண்டலம்',ayanamsa:'அயனாம்சம்',asc:'⬆ லக்னம்',
-    planetPos:'கிரக நிலைகள்',chartReveals:'உங்கள் ஜாதகம் என்ன வெளிப்படுத்துகிறது',
-    dashaTitle:'விம்சோத்தரி தசை — மூன்று நிலைகள்',
-    dashaDesc:'மிகவும் உடனடியான தசை (பிரத்யந்தர) இன்றைய பயிற்சியை நிர்வகிக்கிறது. அந்தர இந்த காலகட்டத்தை வடிவமைக்கிறது. மஹா தசை எல்லாவற்றிற்கும் கீழே ஆழமான நீரோட்டம்.',
-    karmic:'கார்மீக தீவிரங்கள்',
-    karmicTeacher:'ஒரு கார்மீக குரு — இந்த தீவிரம் உங்கள் ஆழமான வளர்ச்சியை வைத்திருக்கிறது. தினசரி பயிற்சி இந்த ஆற்றலுடன் உணர்வுடன் பணிபுரிகிறது.',
-    tradition:'பண்டைய நாடி மற்றும் வேத மரபு · லாஹிரி அயனாம்சம் · ஆன்மீக வழிகாட்டுதலுக்காக மட்டுமே',
-    exalted:' ★ உச்சம்',debilitated:' ↓ நீசம்',own:' ◉ சொந்த இல்லம்',yearsRem:'ஆண்டுகள் மீதம்'
+  }:currentLang==='es'?{
+    birthDetails:'Detalles de Nacimiento',name:'Nombre',date:'Fecha',time:'Hora',place:'Lugar',
+    timezone:'Zona Horaria',ayanamsa:'Ayanamsa',asc:'⬆ Ascendente (Lagna)',
+    planetPos:'Posiciones Planetarias',chartReveals:'Lo que Revela tu Carta',
+    dashaTitle:'Dasha Vimshottari — Tres Niveles',
+    dashaDesc:'El dasha más inmediato (Pratyantara) rige la práctica de hoy. El Antar da forma a esta temporada. El Maha es la corriente profunda bajo todo.',
+    karmic:'Intensidades Kármicas',
+    karmicTeacher:'Un maestro kármico — esta intensidad sostiene tu crecimiento más profundo. La práctica diaria trabaja conscientemente con esta energía.',
+    tradition:'Tradición clásica Nadi y Védica · Ayanamsa Lahiri · Solo para orientación espiritual',
+    exalted:' ★ Exaltado',debilitated:' ↓ Debilitado',own:' ◉ Propio',yearsRem:'años restantes'
   }:{
     birthDetails:'BIRTH DETAILS',name:'Name',date:'Date',time:'Time',place:'Place',
     timezone:'Timezone',ayanamsa:'Ayanamsa',asc:'⬆ Ascendant (Lagna)',
@@ -1925,10 +1943,10 @@ function showFullChart(){
     maha:'महा दशा — मुख्य काल', mahaName:'महा दशा', antar:'अंतर दशा — उप-काल (भुक्ति)', antarName:'अंतर दशा',
     prat:'प्रत्यंतर — अभी सक्रिय', pratName:'प्रत्यंतर', upcoming:'आगामी अंतर दशाएं',
     yearsRemaining:'वर्ष शेष', ends:'समाप्त', next:'अगला'
-  } : currentLang==='ta' ? {
-    maha:'மஹா தசை — முக்கிய காலம்', mahaName:'மஹா தசை', antar:'அந்தர தசை — உப காலம் (புக்தி)', antarName:'அந்தர தசை',
-    prat:'பிரத்யந்தர — இப்போது செயலில்', pratName:'பிரத்யந்தர', upcoming:'வரவிருக்கும் அந்தர தசைகள்',
-    yearsRemaining:'ஆண்டுகள் மீதம்', ends:'முடிவு', next:'அடுத்தது'
+  } : currentLang==='es' ? {
+    maha:'MAHA DASHA — Período Principal', mahaName:'Maha Dasha', antar:'ANTAR DASHA — Sub-Período (Bhukti)', antarName:'Antar Dasha',
+    prat:'PRATYANTARA — Activo Ahora', pratName:'Pratyantara', upcoming:'PRÓXIMOS ANTAR DASHAS',
+    yearsRemaining:'años restantes', ends:'termina', next:'siguiente'
   } : {
     maha:'MAHA DASHA — Major Period', mahaName:'Maha Dasha', antar:'ANTAR DASHA — Sub-Period (Bhukti)', antarName:'Antar Dasha',
     prat:'PRATYANTARA — Active Right Now', pratName:'Pratyantara', upcoming:'UPCOMING ANTAR DASHAS',
@@ -2006,11 +2024,11 @@ function showFullChart(){
     </div>
 
     <!-- Soul Map & Karmic Blueprint -->
-    <div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आत्मा का मानचित्र और कार्मिक खाका':currentLang==='ta'?'ஆத்ம வரைபடம் & கர்ம வடிவமைப்பு':'Soul Map & Karmic Blueprint'}</span></div>
-    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् पाराशर होरा शास्त्र, फलदीपिका, सारावली और नाडी परंपरा से।':currentLang==='ta'?'பரிஹாட பராஸர ஹோரா சாஸ்திரம், பலதீபிகா, சாரவலி மற்றும் நாடி மரபிலிருந்து.':'Drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali &amp; the Nadi tradition.'}</p>
+    <div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आत्मा का मानचित्र और कार्मिक खाका':currentLang==='es'?'Mapa del Alma y Plano Kármico':'Soul Map & Karmic Blueprint'}</span></div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् पाराशर होरा शास्त्र, फलदीपिका, सारावली और नाडी परंपरा से।':currentLang==='es'?'Desde Brihat Parashara Hora Shastra, Phaladeepika, Saravali y la tradición Nadi.':'Drawing from Brihat Parashara Hora Shastra, Phaladeepika, Saravali &amp; the Nadi tradition.'}</p>
     <div id="soul-reading-wrap">
       <div id="soul-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
-        ${currentLang==='hi'?'शास्त्रीय ग्रंथों से परामर्श…':currentLang==='ta'?'பழங்கால நூல்களை ஆராய்கிறது…':'Consulting the classical texts…'}
+        ${currentLang==='hi'?'शास्त्रीय ग्रंथों से परामर्श…':currentLang==='es'?'Consultando los textos clásicos…':'Consulting the classical texts…'}
         <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
           <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
           <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
@@ -2021,11 +2039,11 @@ function showFullChart(){
     </div>
 
     <!-- Your Planetary Blueprint (personalised AI reading) -->
-    <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='ta'?'உங்கள் கிரக வடிவமைப்பு':'Your Planetary Blueprint'}</span></div>
-    <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='ta'?'ஒவ்வொரு கிரகமும் உங்கள் வாழ்க்கையில் எவ்வாறு செயல்படுகிறது':'How each planet operates specifically in your lifetime'}</p>
+    <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='es'?'Tu Plano Planetario':'Your Planetary Blueprint'}</span></div>
+    <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='es'?'Cómo opera cada planeta específicamente en tu vida':'How each planet operates specifically in your lifetime'}</p>
     <div id="planet-readings-wrap">
       <div id="planet-readings-loading" style="text-align:center;padding:1.5rem 0;color:var(--dim);font-style:italic;font-size:.85rem">
-        ${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}
+        ${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='es'?'Preparando tus lecturas planetarias personalizadas…':'Preparing your personalised planet readings…'}
         <div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center">
           <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span>
           <span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span>
@@ -2135,8 +2153,8 @@ function renderSoulReading(text){
   if(!loadEl||!contentEl)return;
   loadEl.style.display='none';
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
-  const todayLabel=currentLang==='hi'?'वर्तमान काल':currentLang==='ta'?'தற்போதைய காலம்':'Current Period';
-  const archiveLabel=currentLang==='hi'?'पिछले पठन':currentLang==='ta'?'கடந்த வாசிப்புகள்':'Past Readings';
+  const todayLabel=currentLang==='hi'?'वर्तमान काल':currentLang==='es'?'Período Actual':'Current Period';
+  const archiveLabel=currentLang==='hi'?'पिछले पठन':currentLang==='es'?'Lecturas Pasadas':'Past Readings';
   // Build archive HTML (all entries except today)
   const pratKey=currentPratKey();
   const arc=getSoulArchive().filter(r=>r.pratKey!==pratKey);
@@ -2170,12 +2188,12 @@ function retrySoulReading(){
   soulReadingCache=null;
   soulLoadingPromise=null;
   const el=document.getElementById('soul-loading');
-  if(el){el.style.display='';el.innerHTML=`<span style="font-style:italic;font-size:.85rem;color:var(--dim)">${currentLang==='hi'?'शास्त्रीय ग्रंथों से परामर्श…':currentLang==='ta'?'பழங்கால நூல்களை ஆராய்கிறது…':'Consulting the classical texts…'}</span><div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;}
+  if(el){el.style.display='';el.innerHTML=`<span style="font-style:italic;font-size:.85rem;color:var(--dim)">${currentLang==='hi'?'शास्त्रीय ग्रंथों से परामर्श…':currentLang==='es'?'Consultando los textos clásicos…':'Consulting the classical texts…'}</span><div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;}
   loadSoulReading();
 }
 function showSoulError(detail){
   const loadEl=document.getElementById('soul-loading');
-  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'पुनः प्रयास करें':currentLang==='ta'?'மீண்டும் முயற்சிக்கவும்':'Could not load — tap to retry'}</p><p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail||''}</p><button onclick="retrySoulReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='ta'?'மீண்டும்':'Retry'}</button>`;
+  if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar — toca para reintentar':'Could not load — tap to retry'}</p><p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail||''}</p><button onclick="retrySoulReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button>`;
 }
 
 // ── PLANET READINGS ──
@@ -2199,7 +2217,7 @@ async function loadPlanetReadings(){
   const spinnerEl=document.getElementById('planet-readings-loading');
   if(spinnerEl){
     spinnerEl.style.display='';
-    spinnerEl.innerHTML=`${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}<div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;
+    spinnerEl.innerHTML=`${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='es'?'Preparando tus lecturas planetarias personalizadas…':'Preparing your personalised planet readings…'}<div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;
   }
   planetLoadingInProgress=true;
   const cd=chartData;
@@ -2267,7 +2285,7 @@ function renderPlanetReadings(readings){
   const cd=chartData;
   const L2=T[currentLang]||T['en'];
   const pnames=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
-  const houseLabels=currentLang==='hi'?['स्वयं और उपस्थिति','धन और वाणी','संवाद और साहस','घर और जड़ें','रचनात्मकता और आनंद','स्वास्थ्य और सेवा','साझेदारी और अन्य','परिवर्तन और गहराई','ज्ञान और दर्शन','करियर और उद्देश्य','समुदाय और लाभ','एकांत और मोक्ष']:currentLang==='ta'?['சுயம் மற்றும் இருப்பு','செல்வம் மற்றும் குரல்','தொடர்பு மற்றும் தைரியம்','இல்லம் மற்றும் வேர்கள்','படைப்பாற்றல் மற்றும் மகிழ்ச்சி','ஆரோக்கியம் மற்றும் சேவை','கூட்டாண்மை மற்றும் பிறர்','மாற்றம் மற்றும் ஆழம்','ஞானம் மற்றும் தத்துவம்','தொழில் மற்றும் நோக்கம்','சமூகம் மற்றும் ஆதாயம்','தனிமை மற்றும் முக்தி']:['Self & Presence','Wealth & Voice','Communication & Courage','Home & Roots','Creativity & Joy','Health & Service','Partnership & Others','Transformation & Depth','Wisdom & Philosophy','Career & Purpose','Community & Gains','Solitude & Liberation'];
+  const houseLabels=currentLang==='hi'?['स्वयं और उपस्थिति','धन और वाणी','संवाद और साहस','घर और जड़ें','रचनात्मकता और आनंद','स्वास्थ्य और सेवा','साझेदारी और अन्य','परिवर्तन और गहराई','ज्ञान और दर्शन','करियर और उद्देश्य','समुदाय और लाभ','एकांत और मोक्ष']:currentLang==='es'?['Yo y Presencia','Riqueza y Voz','Comunicación y Valentía','Hogar y Raíces','Creatividad y Alegría','Salud y Servicio','Pareja y Otros','Transformación y Profundidad','Sabiduría y Filosofía','Carrera y Propósito','Comunidad y Ganancias','Soledad y Liberación']:['Self & Presence','Wealth & Voice','Communication & Courage','Home & Roots','Creativity & Joy','Health & Service','Partnership & Others','Transformation & Depth','Wisdom & Philosophy','Career & Purpose','Community & Gains','Solitude & Liberation'];
   contentEl.innerHTML=pnames.map((n,i)=>{
     const p=cd.planets[i];
     const reading=readings[n]||'';
@@ -2290,7 +2308,7 @@ function retryPlanetReadings(){
   planetReadingsCache=null;
   planetLoadingInProgress=false;
   const el=document.getElementById('planet-readings-loading');
-  if(el){el.style.display='';el.innerHTML=`${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='ta'?'கிரக வாசிப்புகளை தொகுக்கிறது…':'Preparing your personalised planet readings…'}<div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;}
+  if(el){el.style.display='';el.innerHTML=`${currentLang==='hi'?'ग्रह पठन तैयार हो रहे हैं…':currentLang==='es'?'Preparando tus lecturas planetarias personalizadas…':'Preparing your personalised planet readings…'}<div style="margin-top:.6rem;display:flex;gap:.3rem;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .3s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold-d);animation:pulse 1.4s ease-in-out .6s infinite"></span></div>`;}
   loadPlanetReadings();
 }
 function showPlanetError(detail){
@@ -2359,7 +2377,7 @@ function openChant(mantra,meaning,target,phonetic){
   // Update phonetic label language
   const phLabel=phSec&&phSec.querySelector('.phonetic-label');
   if(phLabel){
-    phLabel.textContent=currentLang==='hi'?'उच्चारण गाइड':currentLang==='ta'?'உச்சரிப்பு வழிகாட்டி':'PRONUNCIATION GUIDE';
+    phLabel.textContent=currentLang==='hi'?'उच्चारण गाइड':currentLang==='es'?'GUÍA DE PRONUNCIACIÓN':'PRONUNCIATION GUIDE';
   }
   document.getElementById('chant-modal').classList.add('open');
 }

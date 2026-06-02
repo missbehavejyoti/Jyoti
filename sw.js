@@ -1,8 +1,8 @@
-const CACHE = 'jyoti-v35';
+const CACHE = 'jyoti-v36';
 const SHELL = [
   '/',
   '/index.html',
-  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&display=swap'
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500&display=swap'
 ];
 
 self.addEventListener('install', e => {
