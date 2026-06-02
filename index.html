@@ -1019,8 +1019,9 @@ function setLang(lang){
     const fc=document.getElementById('full-reading');
     if(fc&&fc.innerHTML.trim())showFullChart();
     showDailyReading();
-    // Clear planet readings in-memory cache; re-fetch if chart tab is open
+    // Clear planet readings cache; abort any in-flight fetch for old language
     planetReadingsCache=null;
+    planetLoadingInProgress=false;
     const prEl=document.getElementById('planet-readings-wrap');
     if(prEl&&document.getElementById('tab-chart')?.style.display!=='none')loadPlanetReadings();
     // Clear compat in-memory cache so next view re-fetches in new language
@@ -1825,10 +1826,11 @@ function checkNotifOnLoad(){
 
 // ── DAILY READING via Claude API ──
 async function showDailyReading(){
-  const L=T[currentLang];
+  const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
+  const L=T[capturedLang];
   const now=new Date();
   const dayName=L.days[now.getDay()];
-  const dateStr=now.toLocaleDateString(currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dateStr=now.toLocaleDateString(capturedLang==='hi'?'hi-IN':capturedLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
   renderStreak();
@@ -1839,7 +1841,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_daily3_'+todayStr()+'_'+currentLang)||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_daily3_'+todayStr()+'_'+capturedLang)||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
     if(cached&&hasContent){
@@ -1937,16 +1939,16 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
       const resp = await fetch('/api/get-remedy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({chartSummary, lang: currentLang, type: 'daily'})
+        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily'})
       });
       if(!resp.ok){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('api-error');}
       const data = await resp.json();
       if(!data || data.error || (!data.has_remedy && !data.no_remedy_message)){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('bad-data');}
       dailyData=data;break;
-    }catch(e){if(attempt===2){renderFallbackReading(dayName,now);return;}}
+    }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
-  if(dailyData){
-    try{localStorage.setItem('jyoti_daily3_'+todayStr()+'_'+currentLang,JSON.stringify({reading:dailyData}));}catch(e){}
+  if(dailyData&&capturedLang===currentLang){
+    try{localStorage.setItem('jyoti_daily3_'+todayStr()+'_'+capturedLang,JSON.stringify({reading:dailyData}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2458,17 +2460,19 @@ function showSoulError(detail){
 }
 
 // ── PLANET READINGS ──
-function planetReadingsKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_planets3_default_'+currentLang;}
+function planetReadingsKey(lang){
+  const l=lang||currentLang;
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets3_default_'+l;}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;
 
 async function loadPlanetReadings(){
   if(planetLoadingInProgress)return;
+  const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
   // Try localStorage first (permanent cache — positions don't change)
   if(!planetReadingsCache){
-    try{const s=localStorage.getItem(planetReadingsKey());if(s)planetReadingsCache=JSON.parse(s);}catch(e){}
+    try{const s=localStorage.getItem(planetReadingsKey(capturedLang));if(s)planetReadingsCache=JSON.parse(s);}catch(e){}
   }
   if(planetReadingsCache){
     renderPlanetReadings(planetReadingsCache);
@@ -2498,7 +2502,7 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
       const tId=setTimeout(()=>ctrl.abort(),58000);
       try{
         const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chartSummary:summary,lang:currentLang,type:batchType}),signal:ctrl.signal});
+          body:JSON.stringify({chartSummary:summary,lang:capturedLang,type:batchType}),signal:ctrl.signal});
         clearTimeout(tId);
         if(!r.ok){
           if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
@@ -2520,8 +2524,10 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
     const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
     const hasData=planets.some(k=>data[k]);
     if(hasData){
+      // Discard if user switched language while fetch was in flight
+      if(capturedLang!==currentLang){planetLoadingInProgress=false;return;}
       planetReadingsCache=data;
-      try{localStorage.setItem(planetReadingsKey(),JSON.stringify(data));}catch(e){}
+      try{localStorage.setItem(planetReadingsKey(capturedLang),JSON.stringify(data));}catch(e){}
       planetLoadingInProgress=false;
       renderPlanetReadings(data);
     }else{
@@ -3141,6 +3147,7 @@ async function loadSynTier(type){
   if(synLoadingType===type)return;
   if(synCache[type]){_renderSynResult(type,synCache[type]);return;}
   synLoadingType=type;
+  const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
   if(type!=='tier1')_showSynInlineLoading(type);
   const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
@@ -3150,7 +3157,7 @@ async function loadSynTier(type){
       const tId=setTimeout(()=>ctrl.abort(),58000);
       try{
         const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:currentLang}),
+          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang}),
           signal:ctrl.signal});
         clearTimeout(tId);
         if(!r.ok){
@@ -3177,6 +3184,7 @@ async function loadSynTier(type){
     }else{
       data=await doSynFetch(type);
     }
+    if(capturedLang!==currentLang){synLoadingType=null;return;}
     saveSynCache(type,data);synLoadingType=null;
     _renderSynResult(type,data);
   }catch(e){
