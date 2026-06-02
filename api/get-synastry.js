@@ -26,19 +26,25 @@ module.exports = async (req, res) => {
 
   const CHART_CONTEXT = `Here are the two birth charts:\n\n${chartA}\n\n${chartB}`;
 
+  const LANG_PREFIX = lang === 'hi'
+    ? 'LANGUAGE: Respond entirely in Hindi (Devanagari script). Every single word must be in Hindi — do not use English at any point.\n\n'
+    : lang === 'es'
+    ? 'LANGUAGE: Respond entirely in Spanish. Every single word must be in Spanish — do not use English at any point.\n\n'
+    : '';
+
   const CORE_RULES = `
 CRITICAL RULES:
 - Use each person's pronouns as stated in their chart header.
 - Every sentence must be specific to THESE exact charts — never generic.
 - Tone: spiritually precise, compassionate, warm. Challenges are growth invitations.
 - For spiritual guidance only. Never medical, psychiatric, financial or legal advice.
-- ${langInstruction}
+- ${langInstruction} Every single word must be in the requested language.
 - Return valid JSON only — no markdown, no backticks, no preamble.`;
 
   const prompts = {
 
     tier1: {
-      system: `You are Jyoti, a master Vedic astrology consultant. Given two birth charts, write the opening compatibility assessment.
+      system: `${LANG_PREFIX}You are Jyoti, a master Vedic astrology consultant. Given two birth charts, write the opening compatibility assessment.
 
 "resonance_label" must be exactly one of:
 "Deep Karmic" | "Dharmic Building" | "Soul Mirror" | "Passing Teacher" | "Twin Fire" | "Ancient Completion"
@@ -460,8 +466,10 @@ Return plain text only — four paragraphs separated by blank lines. No headings
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: lang === 'hi' ? Math.ceil(config.maxTokens * 1.6) : config.maxTokens,
-          system: config.system,
+          max_tokens: lang === 'hi'
+            ? (config.isDeep ? 2000 : Math.min(Math.ceil(config.maxTokens * 1.4), 1400))
+            : config.maxTokens,
+          system: LANG_PREFIX + config.system,
           messages: [{ role: 'user', content: config.user }]
         }),
         signal: ctrl.signal

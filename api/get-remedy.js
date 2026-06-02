@@ -140,14 +140,14 @@ JSON structure:
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
           max_tokens: (()=>{
-            // Hindi (Devanagari) needs ~1.6× more tokens than English
+            // Hindi (Devanagari) needs more tokens than English but high limits cause 504s
             const hi = lang === 'hi';
-            if (isSoul)                        return hi ? 2800 : 1800;
-            if (isPlanet)                      return hi ? 2800 : 1800;
-            if (isPlanetD)                     return hi ?  320 :  200;
-            if (isPlanetC)                     return hi ?  560 :  350;
-            if (isPlanetA || isPlanetB)        return hi ?  800 :  500;
-            return                                    hi ? 2000 :  900; // daily remedy
+            if (isSoul)                        return hi ? 1800 : 1600;
+            if (isPlanet)                      return hi ? 1800 : 1600;
+            if (isPlanetD)                     return hi ?  300 :  200;
+            if (isPlanetC)                     return hi ?  500 :  350;
+            if (isPlanetA || isPlanetB)        return hi ?  750 :  500;
+            return                                    hi ? 1800 :  900; // daily remedy
           })(),
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
