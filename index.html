@@ -221,6 +221,7 @@ select option{background:var(--s2);color:var(--text)}
 
 /* Hora card */
 .hora-hint{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--dim);text-align:center;margin-bottom:.6rem}
+.star8{display:inline-block;vertical-align:middle;color:var(--gold)}
 
 /* Share chart button */
 .share-chart-btn{display:inline-flex;align-items:center;gap:.35rem;background:none;border:1px solid var(--s4);border-radius:20px;color:var(--dim);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;padding:.22rem .75rem;cursor:pointer;transition:.2s;margin-top:.3rem}
@@ -294,6 +295,16 @@ select option{background:var(--s2);color:var(--text)}
 
 <canvas id="stars"></canvas>
 
+<!-- Reusable 8-pointed star symbol -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="star8" viewBox="0 0 64 64">
+      <polygon points="32,7 36,22.3 49.7,14.3 41.7,28 57,32 41.7,36 49.7,49.7 36,41.7 32,57 28,41.7 14.3,49.7 22.3,36 7,32 22.3,28 14.3,14.3 28,22.3" fill="currentColor"/>
+      <circle cx="32" cy="32" r="5.5" fill="rgba(255,255,255,.32)"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- Language Bar -->
 <div class="lang-bar">
   <button class="lbtn active" onclick="setLang('en')">EN</button>
@@ -325,7 +336,7 @@ select option{background:var(--s2);color:var(--text)}
     <span class="brand-name">Jyoti</span>
     <span class="brand-sub" data-en="Nadi Astrology · Ancient Wisdom · Daily Light" data-hi="नाडी ज्योतिष · प्राचीन ज्ञान · दैनिक प्रकाश" data-es="Astrología Nadi · Sabiduría Antigua · Luz Diaria">Nadi Astrology · Ancient Wisdom · Daily Light</span>
     <p class="tagline" data-en="Your precise birth chart. Your daily sacred practice." data-hi="आपकी सटीक जन्म कुंडली। आपका दैनिक पवित्र अभ्यास।" data-es="Tu carta natal precisa. Tu práctica sagrada diaria.">Your precise birth chart. Your daily sacred practice.</p>
-    <div class="divider"><span>✦</span></div>
+    <div class="divider"><span><svg class="star8" width="14" height="14"><use href="#star8"/></svg></span></div>
   </div>
 </header>
 
@@ -618,13 +629,13 @@ select option{background:var(--s2);color:var(--text)}
     <div class="card">
       <!-- Daily Practice header -->
       <div style="text-align:center;margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:1px solid var(--s4)">
-        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem">✦ Sacred Daily Practice ✦</div>
+        <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> Sacred Daily Practice <svg class="star8" width="10" height="10"><use href="#star8"/></svg></div>
         <div style="font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);margin-bottom:.4rem" id="today-greeting"></div>
         <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--muted)" id="today-date"></div>
         <div style="margin-top:.5rem;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.4rem">
-          <span id="streak-badge" style="display:none" class="streak-badge"><span class="streak-flame">✦</span><span id="streak-count">1</span> <span id="streak-label">day</span></span>
+          <span id="streak-badge" style="display:none" class="streak-badge"><span class="streak-flame"><svg class="star8" width="11" height="11"><use href="#star8"/></svg></span><span id="streak-count">1</span> <span id="streak-label">day</span></span>
           <span id="moon-pill" class="moon-pill" style="display:none"></span>
-          <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none">✦ <span id="share-chart-label">Share my chart</span></button>
+          <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> <span id="share-chart-label">Share my chart</span></button>
         </div>
       </div>
 
