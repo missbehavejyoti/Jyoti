@@ -212,6 +212,17 @@ select option{background:var(--s2);color:var(--text)}
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
 .crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
+/* Glossary terms */
+.gloss-term{border-bottom:1px dotted rgba(200,169,74,.55);cursor:pointer;color:inherit;transition:border-color .2s,color .2s}
+.gloss-term:hover{border-bottom-color:var(--gold);color:var(--gold-pale)}
+#gloss-popup{display:none;position:fixed;z-index:500;max-width:300px;width:90vw;background:var(--s2);border:1px solid rgba(200,169,74,.4);border-radius:14px;padding:1rem 1.1rem;box-shadow:0 8px 40px rgba(0,0,0,.7);pointer-events:auto}
+#gloss-popup.open{display:block}
+#gloss-popup::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
+.gloss-popup-term{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.13em;color:var(--gold);margin-bottom:.4rem;text-transform:uppercase}
+.gloss-popup-def{font-size:.88rem;color:var(--muted);line-height:1.65}
+.gloss-popup-close{position:absolute;top:.4rem;right:.6rem;background:none;border:none;color:var(--dim);cursor:pointer;font-size:1rem;line-height:1;padding:.1rem .3rem}
+.gloss-popup-close:hover{color:var(--gold)}
+
 /* Karmic intensities section */
 .malefic-section{background:rgba(122,97,32,.06);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1.2rem 1.5rem;margin:1rem 0}
 .malefic-section h4{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.8rem;text-transform:uppercase}
@@ -744,6 +755,12 @@ select option{background:var(--s2);color:var(--text)}
       <a href="mailto:hellojyoti@proton.me" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
     </div>
   </div>
+<!-- Glossary Popup -->
+<div id="gloss-popup" role="tooltip" aria-live="polite">
+  <button class="gloss-popup-close" onclick="closeGloss()" aria-label="Close">✕</button>
+  <div class="gloss-popup-term" id="gloss-popup-term"></div>
+  <div class="gloss-popup-def" id="gloss-popup-def"></div>
+</div>
 <!-- Chant Modal -->
 <div class="chant-modal" id="chant-modal">
   <div class="chant-inner">
@@ -1717,9 +1734,9 @@ function renderDailyReading(r,dayName){
     html=`
       <div class="remedy-card">
         <div class="remedy-day">${rem.title||dayName}</div>
-        ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${r.cosmic_weather}</p>`:''}
-        ${rem.what_is_happening?`<p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${rem.what_is_happening}</p>`:''}
-        ${rem.practice?`<div class="remedy-text">${rem.practice}</div>`:''}
+        ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${glossify(r.cosmic_weather)}</p>`:''}
+        ${rem.what_is_happening?`<p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${glossify(rem.what_is_happening)}</p>`:''}
+        ${rem.practice?`<div class="remedy-text">${glossify(rem.practice)}</div>`:''}
         ${rem.timing?`<p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
         ${rem.mantra?`
         <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
@@ -1731,12 +1748,12 @@ function renderDailyReading(r,dayName){
         <div class="remedy-actions">
           <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
         </div>`:''}
-        ${rem.loving_close?`<p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>`:''}
-        ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.6rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${r.tomorrow_preview}</p>`:''}
+        ${rem.loving_close?`<p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${glossify(rem.loving_close)}</p>`:''}
+        ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.6rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${glossify(r.tomorrow_preview)}</p>`:''}
       </div>
     `;
   } else {
-    html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p>${r.no_remedy_message}</p></div>`;
+    html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p>${glossify(r.no_remedy_message||'')}</p></div>`;
   }
   if(r.gemstone){
     const g=r.gemstone;
@@ -2186,13 +2203,13 @@ function renderSoulReading(text){
             ✦ ${r.pratLord} Pratyantara${r.pratEnd?' — ended '+r.pratEnd:''}
           </button>
           <div style="display:none;padding:.8rem 0;border-bottom:1px solid var(--s3)">
-            ${r.text.split(/\n\n+/).filter(p=>p.trim()).map(p=>`<p style="font-size:.85rem;color:var(--muted);line-height:1.85;margin-bottom:.9rem">${p.trim()}</p>`).join('')}
+            ${r.text.split(/\n\n+/).filter(p=>p.trim()).map(p=>`<p style="font-size:.85rem;color:var(--muted);line-height:1.85;margin-bottom:.9rem">${glossify(p.trim())}</p>`).join('')}
           </div>
         </div>`).join('')}
     </div>`:'';
   contentEl.innerHTML=`
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;color:var(--gold-d);margin-bottom:.8rem">${todayLabel.toUpperCase()} · ${currentLabel}</div>
-    ${paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${p.trim()}</p>`).join('')}
+    ${paras.map(p=>`<p style="font-size:.95rem;color:var(--text);line-height:1.95;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid rgba(200,169,74,.07)">${glossify(p.trim())}</p>`).join('')}
     ${arcHTML}`;
   contentEl.style.display='';
 }
@@ -2314,7 +2331,7 @@ function renderPlanetReadings(readings){
         <span style="color:var(--gold);font-size:1rem;font-weight:500">${p.sym} ${L2.planets[i]}</span>
         <span style="color:var(--gold-d);font-size:.78rem;font-family:'Cinzel',serif;letter-spacing:.06em">${signName} · ${houseLabel}</span>
       </div>
-      <p style="color:var(--muted);font-size:.92rem;line-height:1.7;margin:0">${reading}</p>
+      <p style="color:var(--muted);font-size:.92rem;line-height:1.7;margin:0">${glossify(reading)}</p>
     </div>`;
   }).join('');
   contentEl.style.display='';
@@ -2352,6 +2369,121 @@ function switchTab(tab,el){
     wait.then(()=>loadPlanetReadings());
   }
 }
+
+// ── GLOSSARY ──
+const GLOSSARY = {
+  'nakshatra':     'One of the 27 lunar mansions in Vedic astrology, each spanning 13°20\' of the zodiac. The Moon moves through one nakshatra roughly every day. Your Moon nakshatra is the soul\'s most primal emotional fingerprint.',
+  'nakshatras':    'The 27 lunar mansions of Vedic astrology, each spanning 13°20\' of the zodiac. They map the Moon\'s journey and carry ancient mythic qualities that shape personality, karma, and destiny.',
+  'lagna':         'The Ascendant, or rising sign — the zodiac sign climbing over the eastern horizon at the exact moment and place of birth. The Lagna defines your dharmic mission, your body, and the lens through which your entire chart is read.',
+  'ascendant':     'The Ascendant (Lagna) is the zodiac sign rising on the eastern horizon at the moment of birth. It represents the physical self, life purpose, and the overall lens of the chart.',
+  'vara':          'The weekday ruler in Vedic astrology. Each day of the week is governed by a planet (Vara lord) — Sunday by the Sun, Monday by the Moon, Tuesday by Mars, Wednesday by Mercury, Thursday by Jupiter, Friday by Venus, Saturday by Saturn. The Vara lord shapes the spiritual tone of the entire day.',
+  'vara lord':     'The planetary ruler of the current day. Each weekday is governed by a planet whose energy defines the spiritual opportunity and remedy for that day.',
+  'maha dasha':    'The major planetary period in the Vimshottari Dasha system. Each of the nine planets rules a period lasting 6–20 years in turn. The Maha Dasha lord colours the dominant theme of a life chapter.',
+  'antardasha':    'The sub-period within a Maha Dasha, lasting months to a few years. It is the secondary planetary voice within the larger period, refining its themes.',
+  'pratyantara':   'The sub-sub-period (Pratyantara Dasha) — the most immediate and granular planetary influence active right now. It changes every few weeks.',
+  'pratyantara dasha': 'The innermost sub-sub-period of the Vimshottari Dasha system, active for just a few weeks at a time. It represents the most immediate karmic energy in operation.',
+  'vimshottari':   'The 120-year planetary period system (Vimshottari Dasha) used in Vedic astrology, calculated from the Moon\'s nakshatra at birth. Each of the nine planets rules a sequence of years in a grand cycle.',
+  'dasha':         'A planetary period in Vedic astrology. The Vimshottari system divides life into major periods (Maha Dasha), sub-periods (Antardasha), and sub-sub-periods (Pratyantara Dasha), each governed by a planet.',
+  'rahu':          'The north node of the Moon — a shadow planet (Chaya Graha) with no physical body. Rahu represents karmic hunger, worldly ambition, and the unfamiliar territory the soul is here to explore and claim in this lifetime.',
+  'ketu':          'The south node of the Moon — a shadow point opposite Rahu. Ketu represents past-life mastery, spiritual detachment, and the gifts and compulsions the soul carries from previous incarnations. It points toward liberation.',
+  'yoga':          'A specific planetary combination in the birth chart conferring particular results. Yogas can be auspicious (Raja Yoga for authority, Dhana Yoga for wealth) or challenging. They arise when planets occupy specific houses or aspects in relation to each other.',
+  'graha':         'Planet, literally "that which grasps." In Jyotish, the nine Grahas are: Sun (Surya), Moon (Chandra), Mars (Mangal), Mercury (Budha), Jupiter (Guru), Venus (Shukra), Saturn (Shani), Rahu, and Ketu.',
+  'grahas':        'The nine planets of Jyotish: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, and the lunar nodes Rahu and Ketu. The word means "that which grasps" — they seize and shape the soul\'s experience.',
+  'bhava':         'House — one of the 12 divisions of the birth chart, each governing a specific area of life: self, wealth, communication, home, creativity, health, partnership, transformation, wisdom, career, community, and liberation.',
+  'bhavas':        'The 12 houses (Bhavas) of the birth chart, each presiding over a different domain of life from the physical body and personality (1st) through to spiritual liberation (12th).',
+  'jyotish':       'The ancient Indian science of light — Vedic astrology. The word means "divine light" (jyoti = light, ish = divine). It is one of the six Vedangas (limbs of the Vedas) and provides a map of the soul\'s karma and dharma.',
+  'nadi':          'An ancient tradition of palm-leaf astrology originating in South India, said to contain readings inscribed thousands of years ago for specific souls destined to seek them out. Nadi astrology draws on extraordinarily precise chart analysis.',
+  'karma':         'Action and its consequence — the accumulated effects of past actions (across lifetimes) shaping present circumstances. In Jyotish, karma is encoded in the birth chart as planetary placements, aspects, and period lords.',
+  'dharma':        'One\'s sacred duty, life purpose, and righteous path — what the soul incarnated to embody and offer to the world. In the chart, dharma is primarily seen through the 1st, 5th, and 9th houses and the Lagna lord.',
+  'atmakaraka':    'The planet with the highest degree in the birth chart (among the seven classical planets). The Atmakaraka is the significator of the soul — it carries the soul\'s deepest desire and the central lesson of this lifetime.',
+  'amatyakaraka':  'The planet with the second-highest degree in the birth chart. The Amatyakaraka represents career, livelihood, and the "minister" serving the soul\'s mission (Atmakaraka).',
+  'navamsa':       'The D9 divisional chart — the chart of the soul, marriage, and the inner strength of planets. A planet strong in the Navamsa fulfils its promise in the birth chart. It is the most important divisional chart in Jyotish.',
+  'exaltation':    'The sign where a planet reaches its highest expression and maximum power. Sun is exalted in Aries, Moon in Taurus, Mars in Capricorn, Mercury in Virgo, Jupiter in Cancer, Venus in Pisces, Saturn in Libra.',
+  'debilitation':  'The sign where a planet is at its weakest, directly opposite its exaltation sign. A debilitated planet faces its deepest karmic test but also carries a hidden gift when overcome (Neecha Bhanga — cancellation of debilitation).',
+  'neecha bhanga': 'Cancellation of debilitation — when specific planetary conditions neutralise a planet\'s weakness in its debilitation sign, often turning the challenge into a profound source of strength.',
+  'raja yoga':     'Kingly combinations — auspicious planetary alignments conferring authority, success, status, and prominence. They arise from specific relationships between lords of trine houses (1st, 5th, 9th) and angle houses (1st, 4th, 7th, 10th).',
+  'gandanta':      'The karmic knot — the sensitive junction point at the boundary between a water sign (Cancer, Scorpio, Pisces) and a fire sign (Aries, Leo, Sagittarius). Planets or the Lagna placed here carry deep karmic significance.',
+  'parivartana':   'Mutual exchange (Parivartana Yoga) — when two planets occupy each other\'s own signs, creating a powerful bond that activates both houses they rule simultaneously.',
+  'puja':          'Ritual worship — a sacred offering practice performed to honour a deity, planet, or sacred principle. Puja typically involves a lamp (diya), incense, flowers, water, and chanting.',
+  'mantra':        'A sacred sound vibration in Sanskrit. Mantras are precise sound formulas whose repetition (Japa) creates specific vibrational effects in consciousness and the subtle body. Each planet has its own Beeja (seed) mantras.',
+  'japa':          'The meditative repetition of a mantra, typically counted on a mala of 108 beads. Japa aligns the mind with the vibrational frequency of the deity or planet invoked.',
+  'stotram':       'A Sanskrit hymn of praise offered to a deity. Stotras are devotional compositions recited to invoke divine blessings and attune to a particular planetary or divine energy.',
+  'ratna chikitsa': 'Gemstone therapy — the classical Vedic system of prescribing gems to strengthen planetary energies. Each planet has an associated gemstone that amplifies its qualities when worn correctly.',
+  'muhurta':       'Electional astrology — the classical Vedic science of choosing the most auspicious moment (muhurta) for important activities: marriages, travel, business launches, medical procedures.',
+  'sandhi':        'The junction or cusp between two zodiac signs (the last 1° of one sign and first 1° of the next). Planets placed in Sandhi are in a transitional, weakened state.',
+  'guna':          'The three fundamental qualities (gunas) of all material nature: Sattva (clarity and light), Rajas (activity and passion), and Tamas (inertia and heaviness). Each nakshatra and planet carries a dominant guna.',
+  'sattva':        'The guna (quality) of purity, clarity, and spiritual light — the highest quality cultivated through meditation, Ahimsa (non-harm), and selfless service. Spiritually oriented planets and practices cultivate Sattva.',
+  'rajas':         'The guna of activity, desire, and passionate engagement with the world. Rajasic energy drives ambition, creativity, and worldly striving.',
+  'tamas':         'The guna of inertia, heaviness, and darkness. Tamasic energy creates resistance, lethargy, and unconscious patterns — it is not negative but calls for transformation into Sattva.',
+  'jiva':          'The individual soul — the living conscious essence animating each being. In Vedic philosophy, the Jiva is eternal and takes on successive embodiments to work through karma and evolve toward liberation (Moksha).',
+  'moksha':        'Liberation from the cycle of birth and death (Samsara). The ultimate goal of the soul\'s journey in Vedic philosophy — union with the supreme consciousness. The 12th house in Jyotish represents Moksha.',
+  'arghya':        'A sacred water offering — primarily offered to the rising Sun (Surya Arghya) at dawn. The practitioner pours water from a copper vessel in an arc, allowing sunlight to refract through the water as an offering.',
+  'ghee':          'Clarified butter — a sacred substance in Vedic tradition used in fire offerings (Homa/Havan), lamps (diyas), and as a consecrated food. Offering ghee in fire is said to nourish the planets and cosmic forces.',
+  'pada':          'A quarter of a nakshatra, spanning 3°20\'. Each of the 27 nakshatras has four padas. The pada of a planet adds further precision: it carries the qualities of one of the four signs of the Navamsa chart.',
+  'karakas':       'Natural significators — each planet naturally represents specific life areas across all charts. The Sun signifies the father and authority, the Moon the mother and mind, Mars energy and siblings, Mercury communication, Jupiter wisdom and children, Venus relationships and beauty, Saturn discipline and longevity.',
+  'digbala':       'Directional strength — a planet\'s special power based on the quadrant of the chart it occupies. The Sun and Mars are strong in the 10th house, Jupiter and Mercury in the 1st, Saturn in the 7th, and the Moon and Venus in the 4th.',
+  'homa':          'Sacred fire ritual (also Havan) — an ancient Vedic ceremony in which offerings of ghee, herbs, grains, and wood are made into a consecrated fire while specific mantras are chanted. Different Homas address different planets and intentions.',
+  'beeja mantra':  'Seed mantra — a single-syllable or short Sanskrit sound encoding the essence of a planet or deity. For example, the Sun\'s Beeja is "Hreem," the Moon\'s is "Shreem," and Mars\' is "Kreem." Beeja mantras carry concentrated vibrational power.',
+  'surya':         'The Sun — one of the nine Grahas (planets) in Jyotish. Surya represents the soul\'s light, the father, authority, confidence, government, and vitality. Exalted in Aries, debilitated in Libra.',
+  'chandra':       'The Moon — one of the nine Grahas. Chandra governs the mind, emotions, the mother, the public, and the rhythms of life. Exalted in Taurus, debilitated in Scorpio. The fastest-moving Graha.',
+  'mangal':        'Mars — the warrior Graha governing courage, energy, action, siblings, land, and conflict. Mangal is exalted in Capricorn and debilitated in Cancer. Tuesday (Mangalvara) is ruled by Mars.',
+  'budha':         'Mercury — the Graha of intelligence, communication, commerce, learning, and skill. Budha is exalted in Virgo and debilitated in Pisces. Wednesday (Budhavara) is ruled by Mercury.',
+  'guru':          'Jupiter — the great benefic Graha of wisdom, grace, expansion, children, dharma, and teachers. Also called Brihaspati. Exalted in Cancer, debilitated in Capricorn. Thursday (Guruvara) is ruled by Jupiter.',
+  'shukra':        'Venus — the Graha of love, beauty, pleasure, the arts, relationships, and abundance. Shukra is exalted in Pisces and debilitated in Virgo. Friday (Shukravara) is ruled by Venus.',
+  'shani':         'Saturn — the Graha of karma, discipline, time, limitations, service, and longevity. Shani moves slowly and teaches through restriction and delay. Exalted in Libra, debilitated in Aries. Saturday (Shanivara) is ruled by Saturn.',
+  'bhrigu':        'The sage Bhrigu — one of the primary ancient seers of Vedic astrology. The Bhrigu Nadi tradition holds that Bhrigu personally recorded readings for specific souls across vast time. Venus (Shukra) is said to be his son.',
+  'parashara':     'The great sage Maharishi Parashara, author of Brihat Parashara Hora Shastra (BPHS) — the foundational classical text of Vedic astrology. Nearly all classical Jyotish principles flow from his teachings.',
+  'bphs':          'Brihat Parashara Hora Shastra — the foundational scripture of Vedic astrology, attributed to the sage Parashara. It covers all major principles of chart interpretation, planetary periods, divisional charts, and remedies.',
+};
+
+const _GLOSS_REGEX = (() => {
+  const terms = Object.keys(GLOSSARY).sort((a,b)=>b.length-a.length);
+  const escaped = terms.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  return new RegExp(`\\b(${escaped.join('|')})\\b`,'gi');
+})();
+
+function glossify(html){
+  // Replace in text nodes only — don't touch HTML tags or attributes
+  // We parse the string and skip anything inside < >
+  return html.replace(/(<[^>]+>)|([^<]+)/g,(match,tag,text)=>{
+    if(tag) return tag;
+    if(!text) return text;
+    // Track if we're inside a word boundary-sensitive spot
+    return text.replace(_GLOSS_REGEX,(word)=>{
+      const key=word.toLowerCase();
+      if(!GLOSSARY[key]) return word;
+      return `<span class="gloss-term" onclick="showGloss(event,'${key.replace(/'/g,"\\'")}')">${word}</span>`;
+    });
+  });
+}
+
+function showGloss(e,key){
+  e.stopPropagation();
+  const def=GLOSSARY[key];
+  if(!def) return;
+  const pop=document.getElementById('gloss-popup');
+  document.getElementById('gloss-popup-term').textContent=key.charAt(0).toUpperCase()+key.slice(1);
+  document.getElementById('gloss-popup-def').textContent=def;
+  pop.classList.add('open');
+  // Position near click but keep on screen
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const pw=Math.min(300,vw*0.9);
+  let left=e.clientX-pw/2, top=e.clientY+18;
+  left=Math.max(8,Math.min(left,vw-pw-8));
+  if(top+220>vh) top=e.clientY-230;
+  top=Math.max(8,top);
+  pop.style.left=left+'px';
+  pop.style.top=top+'px';
+  pop.style.width=pw+'px';
+}
+function closeGloss(){
+  document.getElementById('gloss-popup').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  const pop=document.getElementById('gloss-popup');
+  if(pop&&pop.classList.contains('open')&&!pop.contains(e.target)&&!e.target.classList.contains('gloss-term'))closeGloss();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGloss();});
 
 // ── CHANT ──
 const MANTRA_PHONETICS = {
@@ -3059,8 +3191,8 @@ function _renderSoulVerdict(d){
   const v=document.getElementById('syn-tier4');
   v.innerHTML=`<div class="syn-verdict-box">
     <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.32em;color:var(--gold-d);margin-bottom:1.4rem">✦ THE SOUL VERDICT ✦</div>
-    <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.1rem">${d.classical_tradition_1}</p>
-    <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.6rem">${d.classical_tradition_2}</p>
+    <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.1rem">${glossify(d.classical_tradition_1||'')}</p>
+    <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.6rem">${glossify(d.classical_tradition_2||'')}</p>
     <div style="border-top:1px solid rgba(200,169,74,.2);padding-top:1.3rem">
       <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;color:var(--gold-d);margin-bottom:.9rem">THE THREE THINGS</div>
       <div class="syn-three">
@@ -3141,7 +3273,7 @@ async function openDeepReading(type,title){
 function _renderDeepContent(text){
   const contentEl=document.getElementById('deep-modal-content');
   const paras=text.split(/\n\n+/).filter(p=>p.trim());
-  contentEl.innerHTML=paras.map(p=>`<p>${p.trim()}</p>`).join('');
+  contentEl.innerHTML=paras.map(p=>`<p>${glossify(p.trim())}</p>`).join('');
 }
 
 function closeDeepReading(){
