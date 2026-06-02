@@ -212,7 +212,20 @@ select option{background:var(--s2);color:var(--text)}
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
 .crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
-/* Glossary terms */
+/* Streak badge */
+.streak-badge{display:inline-flex;align-items:center;gap:.35rem;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);background:rgba(200,169,74,.07);border:1px solid rgba(200,169,74,.2);border-radius:20px;padding:.22rem .75rem;margin-top:.5rem}
+.streak-flame{font-size:.85rem;line-height:1}
+
+/* Moon phase pill */
+.moon-pill{display:inline-flex;align-items:center;gap:.3rem;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--s4);border-radius:20px;padding:.2rem .65rem;margin-left:.5rem}
+
+/* Hora card */
+.hora-hint{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--dim);text-align:center;margin-bottom:.6rem}
+
+/* Share chart button */
+.share-chart-btn{display:inline-flex;align-items:center;gap:.35rem;background:none;border:1px solid var(--s4);border-radius:20px;color:var(--dim);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;padding:.22rem .75rem;cursor:pointer;transition:.2s;margin-top:.3rem}
+.share-chart-btn:hover{border-color:var(--gold);color:var(--gold)}
+
 .gloss-term{border-bottom:1px dotted rgba(200,169,74,.55);cursor:pointer;color:inherit;transition:border-color .2s,color .2s}
 .gloss-term:hover{border-bottom-color:var(--gold);color:var(--gold-pale)}
 #gloss-popup{display:none;position:fixed;z-index:500;max-width:300px;width:90vw;background:var(--s2);border:1px solid rgba(200,169,74,.4);border-radius:14px;padding:1rem 1.1rem;box-shadow:0 8px 40px rgba(0,0,0,.7);pointer-events:auto}
@@ -608,7 +621,12 @@ select option{background:var(--s2);color:var(--text)}
         <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.5rem">✦ Sacred Daily Practice ✦</div>
         <div style="font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);margin-bottom:.4rem" id="today-greeting"></div>
         <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--muted)" id="today-date"></div>
-        <div style="margin-top:.6rem"><span onclick="resetChart()" style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);cursor:pointer;opacity:.6;text-decoration:none;padding:.2rem .5rem" title="Enter new birth details">✦ New chart</span></div>
+        <div style="margin-top:.5rem;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.4rem">
+          <span id="streak-badge" style="display:none" class="streak-badge"><span class="streak-flame">🔥</span><span id="streak-count">1</span> <span id="streak-label">day</span></span>
+          <span id="moon-pill" class="moon-pill" style="display:none"></span>
+          <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none">✦ <span id="share-chart-label">Share my chart</span></button>
+        </div>
+        <div style="margin-top:.4rem"><span onclick="resetChart()" style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;color:var(--dim);cursor:pointer;opacity:.6;text-decoration:none;padding:.2rem .5rem" title="Enter new birth details">✦ New chart</span></div>
       </div>
 
       <!-- Tab nav -->
@@ -620,6 +638,7 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Daily Tab -->
       <div id="tab-daily">
+        <div id="hora-hint" class="hora-hint" style="display:none"></div>
         <div id="daily-loading" class="loading" style="padding:2rem">
           <div class="loading-flame">✨</div>
           <div class="loading-text" data-en="Consulting the cosmos for today..." data-hi="आज के लिए ब्रह्मांड से परामर्श..." data-es="Consultando el cosmos para hoy...">Consulting the cosmos for today...</div>
@@ -1603,6 +1622,174 @@ function shareNakshatra(){
   }
 }
 
+// ── STREAK ──
+function updateStreak(){
+  try{
+    const s=JSON.parse(localStorage.getItem('jyoti_streak')||'null');
+    const today=todayStr();
+    const d=new Date();d.setDate(d.getDate()-1);
+    const yest=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    let count=1;
+    if(s){
+      if(s.date===today)count=s.count;
+      else if(s.date===yest)count=s.count+1;
+      else count=1;
+    }
+    localStorage.setItem('jyoti_streak',JSON.stringify({date:today,count}));
+    return count;
+  }catch(e){return 1;}
+}
+function renderStreak(){
+  const count=updateStreak();
+  const badge=document.getElementById('streak-badge');
+  const countEl=document.getElementById('streak-count');
+  const labelEl=document.getElementById('streak-label');
+  if(!badge)return;
+  countEl.textContent=count;
+  const label=count===1?(currentLang==='hi'?'दिन':currentLang==='es'?'día':'day'):(currentLang==='hi'?'दिन':currentLang==='es'?'días':'days');
+  labelEl.textContent=' '+label;
+  badge.style.display='inline-flex';
+}
+
+// ── MOON PHASE ──
+function getMoonPhase(){
+  const now=new Date();
+  const todayS=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const tr=calcChart(todayS,'12:00',{lat:0,lon:0},0);
+  const sunLon=tr.planets[0].lon, moonLon=tr.planets[1].lon;
+  const diff=(moonLon-sunLon+360)%360;
+  const idx=Math.floor(diff/45);
+  const phases=[
+    {en:'New Moon',hi:'अमावस्या',es:'Luna Nueva',emoji:'🌑'},
+    {en:'Waxing Crescent',hi:'बढ़ता चाँद',es:'Creciente',emoji:'🌒'},
+    {en:'First Quarter',hi:'प्रथम चतुर्थांश',es:'Cuarto Creciente',emoji:'🌓'},
+    {en:'Waxing Gibbous',hi:'बढ़ता पूर्ण चाँद',es:'Gibosa Creciente',emoji:'🌔'},
+    {en:'Full Moon',hi:'पूर्णिमा',es:'Luna Llena',emoji:'🌕'},
+    {en:'Waning Gibbous',hi:'घटता पूर्ण चाँद',es:'Gibosa Menguante',emoji:'🌖'},
+    {en:'Last Quarter',hi:'अंतिम चतुर्थांश',es:'Cuarto Menguante',emoji:'🌗'},
+    {en:'Waning Crescent',hi:'घटता चाँद',es:'Menguante',emoji:'🌘'},
+  ];
+  return phases[idx];
+}
+function renderMoonPhase(){
+  try{
+    const p=getMoonPhase();
+    const pill=document.getElementById('moon-pill');
+    if(!pill)return;
+    const name=currentLang==='hi'?p.hi:currentLang==='es'?p.es:p.en;
+    pill.innerHTML=`${p.emoji} ${name}`;
+    pill.style.display='inline-flex';
+  }catch(e){}
+}
+
+// ── PLANETARY HORA ──
+const _HORA_SEQ=['Sun','Venus','Mercury','Moon','Saturn','Jupiter','Mars'];
+const _HORA_START=[0,1,2,4,5,6,3]; // index for each weekday (Sun=0..Sat=6)
+const _HORA_SYMBOL={Sun:'☀️',Moon:'🌙',Mars:'♂',Mercury:'☿',Jupiter:'♃',Venus:'♀',Saturn:'♄'};
+function getCurrentHora(){
+  const now=new Date();
+  const day=now.getDay();
+  // Approximate sunrise 6am, each hora ~1hr (simplified; exact needs lat-based sunrise)
+  const horaIdx=Math.floor(((now.getHours()-6+24)%24));
+  return _HORA_SEQ[(_HORA_START[day]+horaIdx)%7];
+}
+function getNextFavourableHora(varaLord){
+  // Find next hora in next 8 hours that matches vara lord or its natural friend
+  const FRIENDS={Sun:['Sun','Moon','Mars','Jupiter'],Moon:['Sun','Moon','Mercury','Venus'],
+    Mars:['Sun','Moon','Mars','Jupiter'],Mercury:['Sun','Venus','Mercury','Rahu'],
+    Jupiter:['Sun','Moon','Mars','Jupiter'],Venus:['Mercury','Venus','Saturn','Rahu'],
+    Saturn:['Mercury','Venus','Saturn','Rahu']};
+  const friends=FRIENDS[varaLord]||[varaLord];
+  const now=new Date();
+  const day=now.getDay();
+  const currentHoraIdx=Math.floor(((now.getHours()-6+24)%24));
+  for(let i=1;i<=8;i++){
+    const idx=(currentHoraIdx+i)%24;
+    const planet=_HORA_SEQ[(_HORA_START[day]+idx)%7];
+    if(friends.includes(planet)){
+      const h=((6+(_HORA_START[day]+idx))%24);
+      const ampm=h>=12?'pm':'am';
+      const h12=h%12||12;
+      return `${h12}${ampm} ${planet} hora`;
+    }
+  }
+  return null;
+}
+function renderHoraHint(){
+  try{
+    const hint=document.getElementById('hora-hint');
+    if(!hint||!chartData)return;
+    const now=new Date();
+    const day=now.getDay();
+    const varaLords=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+    const vara=varaLords[day];
+    const current=getCurrentHora();
+    const sym=_HORA_SYMBOL[current]||'';
+    const next=getNextFavourableHora(vara);
+    const isNow=current===vara;
+    let text='';
+    if(currentLang==='hi'){
+      text=isNow?`${sym} अभी ${current} होरा — अभ्यास का उत्तम समय`:(next?`उत्तम अभ्यास समय: ${next}`:'');
+    } else if(currentLang==='es'){
+      text=isNow?`${sym} Hora de ${current} ahora — momento ideal para tu práctica`:(next?`Mejor momento hoy: ${next}`:'');
+    } else {
+      text=isNow?`${sym} ${current} hora now — ideal time for your practice`:(next?`Best practice window today: ${next}`:'');
+    }
+    if(text){hint.textContent=text;hint.style.display='block';}
+  }catch(e){}
+}
+
+// ── SHARE CHART ──
+function shareChart(){
+  if(!chartData)return;
+  const p=chartData.planets;
+  const L=T['en'];
+  const nakName=L.nakshatras[chartData.moonNak]||'';
+  const ascName=L.signs[chartData.ascSign]||'';
+  const sunSign=L.signs[p[0].sign]||'';
+  const moonSign=L.signs[p[1].sign]||'';
+  const dp=chartData.dashaPeriod;
+  const dashaLine=dp?`\n🕰️ Dasha: ${dp.lord}${dp.antar?.lord?' · '+dp.antar.lord:''}${dp.pratyantara?.lord?' · '+dp.pratyantara.lord:''}`:'' ;
+  const text=`✦ My Vedic Birth Chart ✦\n\n☀️ Sun: ${sunSign}\n🌙 Moon: ${moonSign}, ${nakName} nakshatra\n⬆️ Ascendant: ${ascName}${dashaLine}\n\nDiscover your Jyotish birth chart at jyoti.app ✦`;
+  const titleText=currentLang==='hi'?'मेरी वैदिक कुंडली, ज्योति':currentLang==='es'?'Mi carta védica, Jyoti':'My Vedic Birth Chart, Jyoti';
+  if(navigator.share){
+    navigator.share({title:titleText,text}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text).then(()=>{
+      const btn=document.getElementById('share-chart-btn');
+      if(btn){const orig=btn.innerHTML;btn.innerHTML='✦ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
+    }).catch(()=>alert(text));
+  }
+}
+function renderShareBtn(){
+  const btn=document.getElementById('share-chart-btn');
+  const lbl=document.getElementById('share-chart-label');
+  if(!btn||!chartData)return;
+  if(lbl)lbl.textContent=currentLang==='hi'?'कुंडली साझा करें':currentLang==='es'?'Compartir mi carta':'Share my chart';
+  btn.style.display='inline-flex';
+}
+
+// ── NOTIFY ON LOAD ──
+function checkNotifOnLoad(){
+  try{
+    const pref=localStorage.getItem('jyoti_notif');
+    if(!pref||Notification.permission!=='granted')return;
+    const shown=localStorage.getItem('jyoti_notif_shown_'+todayStr());
+    if(shown)return;
+    const h=new Date().getHours();
+    const hit=((pref==='evening'||pref==='both')&&h>=20&&h<22)||((pref==='morning'||pref==='both')&&h>=6&&h<8);
+    if(!hit)return;
+    localStorage.setItem('jyoti_notif_shown_'+todayStr(),'1');
+    const name=userData?.name||'';
+    const day=new Date().toLocaleDateString('en-AU',{weekday:'long'});
+    new Notification('Jyoti ✦ Your daily practice',{
+      body:`${name?name+', your':''} ${day} sacred practice is ready.`,
+      icon:'/icons/icon-192.png',
+      tag:'jyoti-daily'
+    });
+  }catch(e){}
+}
+
 // ── DAILY READING via Claude API ──
 async function showDailyReading(){
   const L=T[currentLang];
@@ -1611,6 +1798,11 @@ async function showDailyReading(){
   const dateStr=now.toLocaleDateString(currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
+  renderStreak();
+  renderMoonPhase();
+  renderHoraHint();
+  renderShareBtn();
+  checkNotifOnLoad();
 
   // Serve cached reading for today if same language and has real content
   try{
@@ -2629,6 +2821,10 @@ async function requestNotifications() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
+      // Save preference to localStorage so checkNotifOnLoad works across sessions
+      if(evening&&morning) localStorage.setItem('jyoti_notif','both');
+      else if(evening) localStorage.setItem('jyoti_notif','evening');
+      else if(morning) localStorage.setItem('jyoti_notif','morning');
       scheduleLocalNotifications(evening, morning);
       if(btn) btn.style.display = 'none';
       if(status){
@@ -2670,7 +2866,7 @@ function scheduleLocalNotifications(evening, morning) {
     if (msUntil < 12 * 60 * 60 * 1000) { // within 12 hours
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification("Jyoti ✨ — Tomorrow's Practice", {
+          new Notification("Jyoti ✨ Tomorrow's Practice", {
             body: `${userData.name ? userData.name + ', your' : 'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`,
             icon: '/icons/icon-192.png',
             tag: 'evening-prep'
