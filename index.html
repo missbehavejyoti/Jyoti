@@ -932,7 +932,7 @@ let chantCurrent=0,chantTarget=108;
 // Readings stored as [{pratLord, pratEnd, text}], newest first, max 30
 // Refreshes only when the Pratyantara Dasha lord changes — ~3-6 months
 function soulArchiveKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc2_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16);}catch(e){return'jyoti_soul_arc2_default';}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_soul_arc3_default_'+currentLang;}
 }
 function getSoulArchive(){
   try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
@@ -1019,6 +1019,10 @@ function setLang(lang){
     const fc=document.getElementById('full-reading');
     if(fc&&fc.innerHTML.trim())showFullChart();
     showDailyReading();
+    // Soul map — clear cache so it re-fetches in new language
+    soulReadingCache=null;
+    const soulEl=document.getElementById('soul-content');
+    if(soulEl&&soulEl.style.display!=='none')loadSoulReading().catch(()=>{});
     // Clear planet readings cache; abort any in-flight fetch for old language
     planetReadingsCache=null;
     planetLoadingInProgress=false;
@@ -1841,7 +1845,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_daily3_'+todayStr()+'_'+capturedLang)||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_daily4_'+todayStr()+'_'+capturedLang)||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
     if(cached&&hasContent){
@@ -1948,7 +1952,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_daily3_'+todayStr()+'_'+capturedLang,JSON.stringify({reading:dailyData}));}catch(e){}
+    try{localStorage.setItem('jyoti_daily4_'+todayStr()+'_'+capturedLang,JSON.stringify({reading:dailyData}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2341,6 +2345,7 @@ function showFullChart(){
 
 // ── SOUL MAP & KARMIC BLUEPRINT ──
 async function loadSoulReading(){
+  const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
   // Check archive for a reading matching the current Pratyantara period
   if(!soulReadingCache){
     const pratKey=currentPratKey();
@@ -2382,25 +2387,26 @@ Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const resp=await fetch('/api/get-remedy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartSummary:soulSummary, lang:currentLang, type:'soul'})
+      body:JSON.stringify({chartSummary:soulSummary, lang:capturedLang, type:'soul'})
     });
     if(!resp.ok){
       const errText=await resp.text().catch(()=>'');
       let detail=errText;
       try{const j=JSON.parse(errText);detail=j.detail||j.error||errText;}catch(_){}
       console.error('Soul API error',resp.status,errText);
-      showSoulError(`${resp.status}: ${String(detail).slice(0,200)}`);
+      if(capturedLang===currentLang)showSoulError(`${resp.status}: ${String(detail).slice(0,200)}`);
       return;
     }
     const data=await resp.json();
     const text=data.text||'';
     if(text){
+      if(capturedLang!==currentLang)return; // language changed mid-flight — discard
       soulReadingCache=text;
       saveSoulReading(text);
       renderSoulReading(text);
     } else {
       console.error('Soul API returned empty text',data);
-      showSoulError(currentLang==='hi'?'खाली प्रतिक्रिया':currentLang==='es'?'Respuesta vacía':'Empty response');
+      if(capturedLang===currentLang)showSoulError(capturedLang==='hi'?'खाली प्रतिक्रिया':capturedLang==='es'?'Respuesta vacía':'Empty response');
     }
   }catch(e){
     console.error('Soul fetch error',e);
@@ -2462,7 +2468,7 @@ function showSoulError(detail){
 // ── PLANET READINGS ──
 function planetReadingsKey(lang){
   const l=lang||currentLang;
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets3_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets3_default_'+l;}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets4_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets4_default_'+l;}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;
