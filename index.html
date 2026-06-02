@@ -375,7 +375,7 @@ select option{background:var(--s2);color:var(--text)}
         <span data-en="Begin My Journey" data-hi="मेरी यात्रा शुरू करें" data-es="Comenzar Mi Viaje">Begin My Journey</span> ✦
       </button>
       <button class="btn btn-ghost btn-full" onclick="loadDemo()" style="margin-top:.6rem;opacity:.7;font-size:.7rem;letter-spacing:.15em">
-        ◈ Demo Mode — skip to full app
+        ◈ Demo Mode, skip to full app
       </button>
     </div>
   </div>
@@ -421,7 +421,7 @@ select option{background:var(--s2);color:var(--text)}
 
     <div class="card" id="chart-card" style="display:none">
       <div class="card-title">
-        <span id="chart-name"></span> — <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-es="Tu Carta Natal Nadi">Your Nadi Birth Chart</span>
+        <span id="chart-name"></span> · <span data-en="Your Nadi Birth Chart" data-hi="आपकी नाडी जन्म कुंडली" data-es="Tu Carta Natal Nadi">Your Nadi Birth Chart</span>
       </div>
       <div id="chart-location-info" style="text-align:center;margin-bottom:.8rem"></div>
 
@@ -528,7 +528,7 @@ select option{background:var(--s2);color:var(--text)}
         <div class="plan" id="plan-compat" style="background:rgba(26,148,144,.04);border:1px solid rgba(26,148,144,.3)">
           <div class="plan-name" style="color:#5DCAC6">COMPATIBILITY</div>
           <div class="plan-price" style="color:#5DCAC6">$9.99<span class="plan-period" style="font-size:1rem"> AUD</span></div>
-          <div class="plan-period">one-time · no subscription</div>
+          <div class="plan-period">one time · no subscription</div>
           <ul class="plan-features" style="color:var(--muted)">
             <li>Classical Vedic compatibility reading</li>
             <li>Karmic thread · Soul debt · Gifts & Shadows</li>
@@ -574,7 +574,7 @@ select option{background:var(--s2);color:var(--text)}
       </div>
 
       <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:10px;padding:1rem 1.2rem;margin:1rem 0;font-size:.82rem;color:var(--dim);line-height:1.6">
-        <span data-en="By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved." data-hi="सदस्यता लेकर आप पुष्टि करते हैं कि आपने सेवा की शर्तें और गोपनीयता नीति पढ़ी और सहमति दी है। केवल आध्यात्मिक मार्गदर्शन के लिए।" data-es="Al suscribirte confirmas que has leído y aceptado los Términos de Servicio y la Política de Privacidad. Solo para orientación espiritual.">By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only — not medical advice. Jyoti Pty Ltd © 2025. All rights reserved.</span>
+        <span data-en="By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only, not medical advice. Jyoti Pty Ltd © 2025. All rights reserved." data-hi="सदस्यता लेकर आप पुष्टि करते हैं कि आपने सेवा की शर्तें और गोपनीयता नीति पढ़ी और सहमति दी है। केवल आध्यात्मिक मार्गदर्शन के लिए।" data-es="Al suscribirte confirmas que has leído y aceptado los Términos de Servicio y la Política de Privacidad. Solo para orientación espiritual.">By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only, not medical advice. Jyoti Pty Ltd © 2025. All rights reserved.</span>
       </div>
 
       <div style="display:flex;gap:1rem;flex-wrap:wrap">
@@ -584,7 +584,7 @@ select option{background:var(--s2);color:var(--text)}
         </button>
       </div>
       <button class="btn btn-ghost btn-full" onclick="goToPayment('compatibility')" style="margin-top:.6rem;color:#5DCAC6;border-color:rgba(26,148,144,.35)">
-        ✦ Compatibility Reading Only — $9.99
+        ✦ Compatibility Reading Only, $9.99
       </button>
     </div>
   </div>
@@ -839,7 +839,7 @@ function loadDemo(){
 
   // Show a quick toast
   const toast = document.createElement('div');
-  toast.textContent = '◈ Demo mode — exploring as Priya Sharma';
+  toast.textContent = '◈ Demo mode, exploring as Priya Sharma';
   toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:rgba(200,169,74,.15);border:1px solid rgba(200,169,74,.3);color:var(--gold);font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1.4rem;border-radius:20px;z-index:999;white-space:nowrap';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
@@ -996,7 +996,7 @@ function goToPayment(plan='monthly'){
     sessionStorage.setItem('jyoti_pending_plan', plan);
   } catch(e){}
   if(!link){
-    alert('Payment link coming soon — contact hellojyoti@proton.me to purchase.');
+    alert('Payment link coming soon. Contact hellojyoti@proton.me to purchase.');
     return;
   }
   window.open(link, '_blank');
@@ -1012,7 +1012,7 @@ function showPostPaymentMessage(){
     <div style="font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.12em;color:var(--teal);margin-bottom:.5rem">✦ COMPLETE YOUR PAYMENT IN THE NEW TAB</div>
     <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem">Once payment is complete, return here and tap the button below to enter your daily practice.</p>
     <button class="btn btn-gold" onclick="goToPanel(5)" style="width:100%">
-      <span data-en="I've Paid — Enter Jyoti" data-hi="मैंने भुगतान किया — ज्योति में प्रवेश करें" data-es="Pagué — Entrar a Jyoti">I've Paid — Enter Jyoti ✦</span>
+      <span data-en="I've Paid, Enter Jyoti" data-hi="मैंने भुगतान किया, ज्योति में प्रवेश करें" data-es="Pagué, Entrar a Jyoti">I've Paid, Enter Jyoti ✦</span>
     </button>
     <p style="font-size:.75rem;color:var(--dim);margin-top:.6rem">Having trouble? Contact <a href="mailto:hellojyoti@proton.me" style="color:var(--gold)">hellojyoti@proton.me</a></p>
   `;
@@ -1435,10 +1435,10 @@ function showChart(){
     const labelAsc  = currentLang==='hi'?'लग्न':currentLang==='es'?'Lagna':'Lagna';
     const labelDash = currentLang==='hi'?'सक्रिय दशा':currentLang==='es'?'Dasha Activo':'Active Dasha';
     const labelUniq = currentLang==='hi'
-      ? '80 करोड़ से अधिक संभावित संयोजनों में से एक — केवल आपका।'
+      ? '80 करोड़ से अधिक संभावित संयोजनों में से एक, केवल आपका।'
       : currentLang==='es'
-      ? 'Uno de más de 800 millones de configuraciones posibles — únicamente tuyo.'
-      : 'One of over 800 million possible configurations — uniquely yours.';
+      ? 'Uno de más de 800 millones de configuraciones posibles, únicamente tuyo.'
+      : 'One of over 800 million possible configurations, uniquely yours.';
     fpEl.innerHTML = `
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:12px;padding:.9rem 1.1rem;margin:.8rem 0">
         <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.7rem;text-transform:uppercase">✦ ${currentLang==='hi'?'आपकी कुंडली का विशेष संयोजन':currentLang==='es'?'Huella de tu Carta':'Your Chart Fingerprint'}</div>
@@ -1460,44 +1460,44 @@ function showChart(){
 // ── NAKSHATRA FREE READING ──
 const NAKSHATRA_DATA = {
   en: [
-    {name:"Ashwini",desc:"You carry the energy of the divine healer — swift, pioneering, and full of vital force. Your soul moves fast and your instincts are sharp. You are here to initiate, to heal, and to begin what others cannot."},
+    {name:"Ashwini",desc:"You carry the energy of the divine healer, swift, pioneering, and full of vital force. Your soul moves fast and your instincts are sharp. You are here to initiate, to heal, and to begin what others cannot."},
     {name:"Bharani",desc:"You hold the sacred power of creation and transformation. Deep, magnetic, and unafraid of life's extremes, you carry the goddess Yama's wisdom — that birth and death are one continuous sacred river."},
     {name:"Krittika",desc:"The fire of purification lives in you. Sharp, discerning, and luminous, you cut through illusion with natural precision. You are here to illumine, to refine, and to burn away what no longer serves."},
-    {name:"Rohini",desc:"You are rooted in beauty, abundance, and the fertile earth. Creative, sensuous, and deeply magnetic — the Moon loves you most. You attract what you desire and your presence nourishes everyone around you."},
-    {name:"Mrigashira",desc:"You are the eternal seeker — curious, gentle, and always searching for something just beyond the horizon. Your mind is luminous and restless. Your soul's gift is the journey itself, not only the destination."},
-    {name:"Ardra",desc:"You carry the storm within you — intense, transformative, and profoundly alive. Ruled by Rudra, lord of the tempest, you break things open so something truer can emerge. Your tears water the seeds of renewal."},
-    {name:"Punarvasu",desc:"You are the light that returns. After every storm you find your way home — to joy, to goodness, to hope. Generous, wise, and eternally optimistic, you restore what was lost and bring others back to themselves."},
+    {name:"Rohini",desc:"You are rooted in beauty, abundance, and the fertile earth. Creative, sensuous, and deeply magnetic, the Moon loves you most. You attract what you desire and your presence nourishes everyone around you."},
+    {name:"Mrigashira",desc:"You are the eternal seeker, curious, gentle, and always searching for something just beyond the horizon. Your mind is luminous and restless. Your soul's gift is the journey itself, not only the destination."},
+    {name:"Ardra",desc:"You carry the storm within you — intense, transformative, and profoundly alive. Ruled by Rudra, lord of the tempest. You break things open so something truer can emerge. Your tears water the seeds of renewal."},
+    {name:"Punarvasu",desc:"You are the light that returns. After every storm you find your way home, to joy, to goodness, to hope. Generous, wise, and eternally optimistic, you restore what was lost and bring others back to themselves."},
     {name:"Pushya",desc:"You are the nourisher of worlds. Steady, nurturing, and deeply devoted, you carry Jupiter's most fertile energy. People trust you instinctively. Your calling is to protect, sustain, and pour yourself into what you love."},
-    {name:"Ashlesha",desc:"You carry ancient serpent wisdom — perceptive, penetrating, and deeply intuitive. You see beneath surfaces and understand what others miss. Your power is profound when aligned with truth and compassion."},
+    {name:"Ashlesha",desc:"You carry ancient serpent wisdom, perceptive, penetrating, and deeply intuitive. You see beneath surfaces and understand what others miss. Your power is profound when aligned with truth and compassion."},
     {name:"Magha",desc:"You carry the ancestral throne within you. Regal, proud, and connected to the lineage of your forebears, you are here to honour what came before and build something worthy of being remembered."},
-    {name:"Purva Phalguni",desc:"You are pure creative joy — playful, magnetic, and deeply loving. Venus and the sun of midday bless you with a nature that delights in beauty, pleasure, and the sacred art of connection."},
-    {name:"Uttara Phalguni",desc:"You are a builder of lasting things — partnerships, institutions, sacred commitments. Warm, reliable, and deeply humane, you weave the threads of society together with love and quiet strength."},
-    {name:"Hasta",desc:"Your hands carry healing. Skilled, clever, and precise, you have a gift for bringing things into form — through craft, care, and the wise application of your remarkable dexterity and perception."},
-    {name:"Chitra",desc:"You are the celestial architect — gifted with beauty, vision, and an eye for perfection. Mars and Vishwakarma bless you with creative fire and structural brilliance. You make the invisible visible."},
-    {name:"Swati",desc:"You are the wind — free, independent, and impossible to contain. Adaptable and socially gifted, you move through the world with grace and always find your own way, bowing to nothing but your own truth."},
-    {name:"Vishakha",desc:"You burn with sacred purpose. Driven, ambitious, and deeply devoted to whatever you choose to serve, you carry Indra and Agni's dual fire — the lightning bolt of power and the sacred flame of devotion."},
+    {name:"Purva Phalguni",desc:"You are pure creative joy, playful, magnetic, and deeply loving. Venus and the sun of midday bless you with a nature that delights in beauty, pleasure, and the sacred art of connection."},
+    {name:"Uttara Phalguni",desc:"You are a builder of lasting things: partnerships, institutions, sacred commitments. Warm, reliable, and deeply humane, you weave the threads of society together with love and quiet strength."},
+    {name:"Hasta",desc:"Your hands carry healing. Skilled, clever, and precise, you have a gift for bringing things into form, through craft, care, and the wise application of your remarkable dexterity and perception."},
+    {name:"Chitra",desc:"You are the celestial architect, gifted with beauty, vision, and an eye for perfection. Mars and Vishwakarma bless you with creative fire and structural brilliance. You make the invisible visible."},
+    {name:"Swati",desc:"You are the wind, free, independent, and impossible to contain. Adaptable and socially gifted, you move through the world with grace and always find your own way, bowing to nothing but your own truth."},
+    {name:"Vishakha",desc:"You burn with sacred purpose. Driven, ambitious, and deeply devoted to whatever you choose to serve, you carry Indra and Agni's dual fire, the lightning bolt of power and the sacred flame of devotion."},
     {name:"Anuradha",desc:"You are the devoted friend, the loyal heart, the one who honours commitment as sacred. Saturn and Mitra bless you with the capacity for profound friendship and the tenacity to love through every season."},
-    {name:"Jyeshtha",desc:"You carry the elder's authority — protective, powerful, and deeply responsible. You shoulder what others cannot and your courage under pressure is your greatest gift to the world."},
-    {name:"Mula",desc:"You are the root-seeker — compelled to go to the very foundation of things. Ketu and Nirriti bless you with fearless inquiry. You are here to dissolve what is false and discover what is eternally real."},
-    {name:"Purva Ashadha",desc:"You are the invincible one — resilient, passionate, and impossible to defeat. Venus and the waters of purification give you the power to cleanse, to refresh, and to rise again and again with grace."},
-    {name:"Uttara Ashadha",desc:"You carry universal victory — not through force but through righteousness. Patient, principled, and ultimately unstoppable, you are here to complete what was started and to stand for what is true."},
-    {name:"Shravana",desc:"You are the sacred listener — attuned to the subtle voice of the cosmos. Vishnu and the ear of wisdom bless you with the capacity to hear what is unspoken and to learn from everything around you."},
+    {name:"Jyeshtha",desc:"You carry the elder's authority, protective, powerful, and deeply responsible. You shoulder what others cannot and your courage under pressure is your greatest gift to the world."},
+    {name:"Mula",desc:"You are the root seeker, compelled to go to the very foundation of things. Ketu and Nirriti bless you with fearless inquiry. You are here to dissolve what is false and discover what is eternally real."},
+    {name:"Purva Ashadha",desc:"You are the invincible one, resilient, passionate, and impossible to defeat. Venus and the waters of purification give you the power to cleanse, to refresh, and to rise again and again with grace."},
+    {name:"Uttara Ashadha",desc:"You carry universal victory, not through force but through righteousness. Patient, principled, and ultimately unstoppable, you are here to complete what was started and to stand for what is true."},
+    {name:"Shravana",desc:"You are the sacred listener, attuned to the subtle voice of the cosmos. Vishnu and the ear of wisdom bless you with the capacity to hear what is unspoken and to learn from everything around you."},
     {name:"Dhanishtha",desc:"You are rhythm, abundance, and celestial music. The eight Vasus bless you with prosperity, power, and a natural attunement to the flow of life. You are here to prosper and to share your wealth generously."},
-    {name:"Shatabhisha",desc:"You are the healer of a hundred stars — solitary, visionary, and quietly profound. Varuna, lord of cosmic law, gives you penetrating insight and the capacity to heal what others cannot even see."},
+    {name:"Shatabhisha",desc:"You are the healer of a hundred stars, solitary, visionary, and quietly profound. Varuna, lord of cosmic law, gives you penetrating insight and the capacity to heal what others cannot even see."},
     {name:"Purva Bhadrapada",desc:"You carry the sacred fire of transformation — intense, philosophical, and unafraid of the depths. Aja Ekapada blesses you with a fierce spiritual hunger that burns away everything ordinary."},
-    {name:"Uttara Bhadrapada",desc:"You are the serpent of the deep waters — wise, compassionate, and endlessly patient. Ahir Budhnya gives you the capacity to hold great depth within stillness and to bless everything you touch."},
+    {name:"Uttara Bhadrapada",desc:"You are the serpent of the deep waters, wise, compassionate, and endlessly patient. Ahir Budhnya gives you the capacity to hold great depth within stillness and to bless everything you touch."},
     {name:"Revati",desc:"You are the light that guides the journey home. The last nakshatra, blessed by Pushan, you carry a tender, protective love for all beings. Your soul is ancient, kind, and here to shepherd others safely."},
   ],
   hi: [
     {name:"अश्विनी",desc:"आप दिव्य चिकित्सक की ऊर्जा लेकर चलते हैं — तेज़, अग्रणी और जीवन शक्ति से भरपूर। आपकी आत्मा तेज़ी से चलती है और आपकी सहज प्रवृत्ति तीक्ष्ण है।"},
     {name:"भरणी",desc:"आप सृजन और परिवर्तन की पवित्र शक्ति रखते हैं। गहरे, चुंबकीय और जीवन की चरम सीमाओं से निडर।"},
-    {name:"कृत्तिका",desc:"आपमें शुद्धिकरण की अग्नि है। तीक्ष्ण, विवेकशील और प्रकाशमान — आप भ्रम को काटते हैं।"},
+    {name:"कृत्तिका",desc:"आपमें शुद्धिकरण की अग्नि है। तीक्ष्ण, विवेकशील और प्रकाशमान, आप भ्रम को काटते हैं।"},
     {name:"रोहिणी",desc:"आप सौंदर्य, समृद्धि और उपजाऊ धरती में निहित हैं। रचनात्मक, संवेदनशील और गहरे चुंबकीय।"},
     {name:"मृगशिरा",desc:"आप शाश्वत साधक हैं — जिज्ञासु, कोमल, हमेशा क्षितिज से परे कुछ ढूंढते हुए।"},
-    {name:"आर्द्रा",desc:"आपके भीतर तूफान है — तीव्र, परिवर्तनकारी और गहरे जीवंत।"},
+    {name:"आर्द्रा",desc:"आपके भीतर तूफान है, तीव्र, परिवर्तनकारी और गहरे जीवंत।"},
     {name:"पुनर्वसु",desc:"आप वह प्रकाश हैं जो लौटता है। हर तूफान के बाद आप घर का रास्ता खोज लेते हैं।"},
     {name:"पुष्य",desc:"आप संसार के पोषणकर्ता हैं। स्थिर, पालन-पोषण करने वाले और गहरे समर्पित।"},
-    {name:"आश्लेषा",desc:"आप प्राचीन सर्प ज्ञान रखते हैं — अंतर्दृष्टिपूर्ण, भेदक और गहरे सहज।"},
+    {name:"आश्लेषा",desc:"आप प्राचीन सर्प ज्ञान रखते हैं, अंतर्दृष्टिपूर्ण, भेदक और गहरे सहज।"},
     {name:"मघा",desc:"आपके भीतर पूर्वजों का सिंहासन है। राजसी, गर्वित और अपने वंश से जुड़े हुए।"},
     {name:"पूर्व फाल्गुनी",desc:"आप शुद्ध रचनात्मक आनंद हैं — चंचल, चुंबकीय और गहरे प्रेमपूर्ण।"},
     {name:"उत्तर फाल्गुनी",desc:"आप स्थायी चीज़ें बनाने वाले हैं — साझेदारी, संस्थाएं, पवित्र प्रतिबद्धताएं।"},
@@ -1518,32 +1518,32 @@ const NAKSHATRA_DATA = {
     {name:"रेवती",desc:"आप घर का रास्ता दिखाने वाले प्रकाश हैं।"},
   ],
   es: [
-    {name:"Ashwini",desc:"Llevas la energía del sanador divino — veloz, pionero y lleno de fuerza vital. Tu alma se mueve rápido y tus instintos son agudos. Estás aquí para iniciar, sanar y comenzar lo que otros no pueden."},
+    {name:"Ashwini",desc:"Llevas la energía del sanador divino, veloz, pionero y lleno de fuerza vital. Tu alma se mueve rápido y tus instintos son agudos. Estás aquí para iniciar, sanar y comenzar lo que otros no pueden."},
     {name:"Bharani",desc:"Sostienes el sagrado poder de la creación y la transformación. Profundo, magnético e intrépido ante los extremos de la vida, llevas la sabiduría de la diosa Yama — que el nacimiento y la muerte son un río sagrado continuo."},
     {name:"Krittika",desc:"El fuego de la purificación vive en ti. Agudo, discerniente y luminoso, cortas la ilusión con precisión natural. Estás aquí para iluminar, refinar y quemar lo que ya no sirve."},
-    {name:"Rohini",desc:"Estás enraizado en la belleza, la abundancia y la tierra fértil. Creativo, sensual y profundamente magnético — la Luna te ama más. Atraes lo que deseas y tu presencia nutre a todos a tu alrededor."},
-    {name:"Mrigashira",desc:"Eres el eterno buscador — curioso, gentil, siempre en búsqueda de algo más allá del horizonte. Tu mente es luminosa e inquieta. El don de tu alma es el viaje en sí, no solo el destino."},
-    {name:"Ardra",desc:"Llevas la tormenta dentro de ti — intenso, transformador y profundamente vivo. Gobernado por Rudra, señor del vendaval, abres las cosas para que algo más verdadero pueda emerger. Tus lágrimas riegan las semillas de la renovación."},
+    {name:"Rohini",desc:"Estás enraizado en la belleza, la abundancia y la tierra fértil. Creativo, sensual y profundamente magnético, la Luna te ama más. Atraes lo que deseas y tu presencia nutre a todos a tu alrededor."},
+    {name:"Mrigashira",desc:"Eres el eterno buscador, curioso, gentil, siempre en búsqueda de algo más allá del horizonte. Tu mente es luminosa e inquieta. El don de tu alma es el viaje en sí, no solo el destino."},
+    {name:"Ardra",desc:"Llevas la tormenta dentro de ti, intenso, transformador y profundamente vivo. Gobernado por Rudra, señor del vendaval, abres las cosas para que algo más verdadero pueda emerger. Tus lágrimas riegan las semillas de la renovación."},
     {name:"Punarvasu",desc:"Eres la luz que regresa. Después de cada tormenta encuentras el camino a casa — a la alegría, la bondad, la esperanza. Generoso, sabio y eternamente optimista, restauras lo perdido y devuelves a otros a sí mismos."},
     {name:"Pushya",desc:"Eres el nutridor de mundos. Estable, nutritivo y profundamente devoto, llevas la energía más fértil de Júpiter. La gente confía en ti instintivamente. Tu llamado es proteger, sostener y verter tu ser en lo que amas."},
-    {name:"Ashlesha",desc:"Llevas sabiduría ancestral de la serpiente — perceptivo, penetrante y profundamente intuitivo. Ves bajo la superficie y entiendes lo que otros no ven. Tu poder es profundo cuando se alinea con la verdad y la compasión."},
+    {name:"Ashlesha",desc:"Llevas sabiduría ancestral de la serpiente, perceptivo, penetrante y profundamente intuitivo. Ves bajo la superficie y entiendes lo que otros no ven. Tu poder es profundo cuando se alinea con la verdad y la compasión."},
     {name:"Magha",desc:"Llevas el trono ancestral dentro de ti. Regio, orgulloso y conectado al linaje de tus antepasados, estás aquí para honrar lo que vino antes y construir algo digno de ser recordado."},
-    {name:"Purva Phalguni",desc:"Eres pura alegría creativa — juguetón, magnético y profundamente amoroso. Venus y el sol del mediodía te bendicen con una naturaleza que deleita en la belleza, el placer y el arte sagrado de la conexión."},
-    {name:"Uttara Phalguni",desc:"Eres constructor de cosas duraderas — asociaciones, instituciones, compromisos sagrados. Cálido, confiable y profundamente humano, tejes los hilos de la sociedad con amor y silenciosa fortaleza."},
-    {name:"Hasta",desc:"Tus manos llevan sanación. Hábil, inteligente y preciso, tienes un don para dar forma a las cosas — a través del oficio, el cuidado y la sabia aplicación de tu notable destreza y percepción."},
-    {name:"Chitra",desc:"Eres el arquitecto celestial — dotado de belleza, visión y ojo para la perfección. Marte y Vishwakarma te bendicen con fuego creativo y brillantez estructural. Haces visible lo invisible."},
-    {name:"Swati",desc:"Eres el viento — libre, independiente e imposible de contener. Adaptable y socialmente dotado, te mueves por el mundo con gracia y siempre encuentras tu propio camino, inclinándote ante nada más que tu propia verdad."},
-    {name:"Vishakha",desc:"Ardes con propósito sagrado. Motivado, ambicioso y profundamente devoto a lo que eliges servir, llevas el doble fuego de Indra y Agni — el rayo del poder y la llama sagrada de la devoción."},
+    {name:"Purva Phalguni",desc:"Eres pura alegría creativa, juguetón, magnético y profundamente amoroso. Venus y el sol del mediodía te bendicen con una naturaleza que deleita en la belleza, el placer y el arte sagrado de la conexión."},
+    {name:"Uttara Phalguni",desc:"Eres constructor de cosas duraderas: asociaciones, instituciones, compromisos sagrados. Cálido, confiable y profundamente humano, tejes los hilos de la sociedad con amor y silenciosa fortaleza."},
+    {name:"Hasta",desc:"Tus manos llevan sanación. Hábil, inteligente y preciso, tienes un don para dar forma a las cosas, a través del oficio, el cuidado y la sabia aplicación de tu notable destreza y percepción."},
+    {name:"Chitra",desc:"Eres el arquitecto celestial, dotado de belleza, visión y ojo para la perfección. Marte y Vishwakarma te bendicen con fuego creativo y brillantez estructural. Haces visible lo invisible."},
+    {name:"Swati",desc:"Eres el viento, libre, independiente e imposible de contener. Adaptable y socialmente dotado, te mueves por el mundo con gracia y siempre encuentras tu propio camino, inclinándote ante nada más que tu propia verdad."},
+    {name:"Vishakha",desc:"Ardes con propósito sagrado. Motivado, ambicioso y profundamente devoto a lo que eliges servir, llevas el doble fuego de Indra y Agni, el rayo del poder y la llama sagrada de la devoción."},
     {name:"Anuradha",desc:"Eres el amigo devoto, el corazón leal, quien honra el compromiso como sagrado. Saturno y Mitra te bendicen con la capacidad de la amistad profunda y la tenacidad de amar en cada estación."},
-    {name:"Jyeshtha",desc:"Llevas la autoridad del anciano — protector, poderoso y profundamente responsable. Cargas lo que otros no pueden y tu coraje bajo presión es tu mayor don al mundo."},
-    {name:"Mula",desc:"Eres el buscador de raíces — impulsado a ir a los fundamentos mismos de las cosas. Ketu y Nirriti te bendicen con una indagación intrépida. Estás aquí para disolver lo falso y descubrir lo eternamente real."},
-    {name:"Purva Ashadha",desc:"Eres el invencible — resiliente, apasionado e imposible de vencer. Venus y las aguas de la purificación te dan el poder de limpiar, refrescar y levantarte una y otra vez con gracia."},
-    {name:"Uttara Ashadha",desc:"Llevas la victoria universal — no por fuerza sino por justicia. Paciente, con principios y en última instancia imparable, estás aquí para completar lo que fue iniciado y defender lo verdadero."},
-    {name:"Shravana",desc:"Eres el escuchador sagrado — sintonizado con la sutil voz del cosmos. Vishnu y el oído de la sabiduría te bendicen con la capacidad de escuchar lo no dicho y aprender de todo a tu alrededor."},
+    {name:"Jyeshtha",desc:"Llevas la autoridad del anciano, protector, poderoso y profundamente responsable. Cargas lo que otros no pueden y tu coraje bajo presión es tu mayor don al mundo."},
+    {name:"Mula",desc:"Eres el buscador de raíces, impulsado a ir a los fundamentos mismos de las cosas. Ketu y Nirriti te bendicen con una indagación intrépida. Estás aquí para disolver lo falso y descubrir lo eternamente real."},
+    {name:"Purva Ashadha",desc:"Eres el invencible, resiliente, apasionado e imposible de vencer. Venus y las aguas de la purificación te dan el poder de limpiar, refrescar y levantarte una y otra vez con gracia."},
+    {name:"Uttara Ashadha",desc:"Llevas la victoria universal, no por fuerza sino por justicia. Paciente, con principios y en última instancia imparable, estás aquí para completar lo que fue iniciado y defender lo verdadero."},
+    {name:"Shravana",desc:"Eres el escuchador sagrado, sintonizado con la sutil voz del cosmos. Vishnu y el oído de la sabiduría te bendicen con la capacidad de escuchar lo no dicho y aprender de todo a tu alrededor."},
     {name:"Dhanishtha",desc:"Eres ritmo, abundancia y música celestial. Los ocho Vasus te bendicen con prosperidad, poder y una sintonía natural con el flujo de la vida. Estás aquí para prosperar y compartir tu riqueza generosamente."},
-    {name:"Shatabhisha",desc:"Eres el sanador de cien estrellas — solitario, visionario y silenciosamente profundo. Varuna, señor de la ley cósmica, te da una perspicacia penetrante y la capacidad de sanar lo que otros ni siquiera pueden ver."},
+    {name:"Shatabhisha",desc:"Eres el sanador de cien estrellas, solitario, visionario y silenciosamente profundo. Varuna, señor de la ley cósmica, te da una perspicacia penetrante y la capacidad de sanar lo que otros ni siquiera pueden ver."},
     {name:"Purva Bhadrapada",desc:"Llevas el fuego sagrado de la transformación — intenso, filosófico e intrépido ante las profundidades. Aja Ekapada te bendice con un feroz hambre espiritual que quema todo lo ordinario."},
-    {name:"Uttara Bhadrapada",desc:"Eres la serpiente de las aguas profundas — sabio, compasivo y pacientemente ilimitado. Ahir Budhnya te da la capacidad de sostener una gran profundidad en la quietud y bendecir todo lo que tocas."},
+    {name:"Uttara Bhadrapada",desc:"Eres la serpiente de las aguas profundas, sabio, compasivo y pacientemente ilimitado. Ahir Budhnya te da la capacidad de sostener una gran profundidad en la quietud y bendecir todo lo que tocas."},
     {name:"Revati",desc:"Eres la luz que guía el viaje a casa. El último nakshatra, bendecido por Pushan, llevas un amor tierno y protector por todos los seres. Tu alma es antigua, bondadosa y está aquí para guiar a otros con seguridad."},
   ]
 };
@@ -1956,16 +1956,16 @@ function showFullChart(){
   const DASHA_YEARS2=[7,20,6,10,7,18,16,19,17];
   // Dasha section localisation
   const DL = currentLang==='hi' ? {
-    maha:'महा दशा — मुख्य काल', mahaName:'महा दशा', antar:'अंतर दशा — उप-काल (भुक्ति)', antarName:'अंतर दशा',
-    prat:'प्रत्यंतर — अभी सक्रिय', pratName:'प्रत्यंतर', upcoming:'आगामी अंतर दशाएं',
+    maha:'महा दशा, मुख्य काल', mahaName:'महा दशा', antar:'अंतर दशा, उप काल (भुक्ति)', antarName:'अंतर दशा',
+    prat:'प्रत्यंतर, अभी सक्रिय', pratName:'प्रत्यंतर', upcoming:'आगामी अंतर दशाएं',
     yearsRemaining:'वर्ष शेष', ends:'समाप्त', next:'अगला'
   } : currentLang==='es' ? {
-    maha:'MAHA DASHA — Período Principal', mahaName:'Maha Dasha', antar:'ANTAR DASHA — Sub-Período (Bhukti)', antarName:'Antar Dasha',
-    prat:'PRATYANTARA — Activo Ahora', pratName:'Pratyantara', upcoming:'PRÓXIMOS ANTAR DASHAS',
+    maha:'MAHA DASHA, Período Principal', mahaName:'Maha Dasha', antar:'ANTAR DASHA, Sub-Período (Bhukti)', antarName:'Antar Dasha',
+    prat:'PRATYANTARA, Activo Ahora', pratName:'Pratyantara', upcoming:'PRÓXIMOS ANTAR DASHAS',
     yearsRemaining:'años restantes', ends:'termina', next:'siguiente'
   } : {
-    maha:'MAHA DASHA — Major Period', mahaName:'Maha Dasha', antar:'ANTAR DASHA — Sub-Period (Bhukti)', antarName:'Antar Dasha',
-    prat:'PRATYANTARA — Active Right Now', pratName:'Pratyantara', upcoming:'UPCOMING ANTAR DASHAS',
+    maha:'MAHA DASHA, Major Period', mahaName:'Maha Dasha', antar:'ANTAR DASHA, Sub-Period (Bhukti)', antarName:'Antar Dasha',
+    prat:'PRATYANTARA, Active Right Now', pratName:'Pratyantara', upcoming:'UPCOMING ANTAR DASHAS',
     yearsRemaining:'years remaining', ends:'ends', next:'next'
   };
   let dashaRows='';
@@ -2610,7 +2610,7 @@ const _BE=new Date('2026-06-08T00:00:00').getTime();
 function redeemBeta(){
   const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
   const msg=document.getElementById('beta-msg');
-  if(Date.now()>_BE){msg.style.color='var(--rose)';msg.textContent='This beta period has ended — subscribe to continue.';return;}
+  if(Date.now()>_BE){msg.style.color='var(--rose)';msg.textContent='This beta period has ended. Subscribe to continue.';return;}
   if(_BC[code]){
     msg.style.color='var(--teal)';msg.textContent='✦ Welcome — enjoy your free beta access';
     setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
