@@ -37,8 +37,8 @@ canvas#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 /* Header */
 header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .flame{display:inline-block;margin-bottom:1.2rem;position:relative}
-.flame svg{width:56px;height:64px;animation:flicker 3s ease-in-out infinite}
-@keyframes flicker{0%,100%{filter:drop-shadow(0 0 8px rgba(200,169,74,.4))}50%{filter:drop-shadow(0 0 22px rgba(200,169,74,.8))}}
+.flame svg{width:62px;height:62px;animation:flicker 4s ease-in-out infinite}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 6px rgba(200,169,74,.35))}50%{filter:drop-shadow(0 0 22px rgba(200,169,74,.85)) drop-shadow(0 0 44px rgba(200,169,74,.2))}}
 .brand-name{font-family:'Cinzel Decorative',serif;font-size:clamp(1.8rem,5vw,3rem);font-weight:400;letter-spacing:.15em;color:var(--gold);display:block;margin-bottom:.2rem}
 .brand-sub{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.45em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem}
 .tagline{font-style:italic;color:var(--muted);font-size:1.1rem}
@@ -305,19 +305,31 @@ select option{background:var(--s2);color:var(--text)}
 <header>
   <div class="wrap">
     <div class="flame">
-      <svg viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fg)" opacity=".9"/>
-        <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fg2)" opacity=".7"/>
-        <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer halo ring -->
+        <circle cx="32" cy="32" r="29" stroke="url(#sr)" stroke-width=".8" opacity=".45"/>
+        <!-- 8-pointed star (Ashta-konam) -->
+        <polygon points="32,7 36,22.3 49.7,14.3 41.7,28 57,32 41.7,36 49.7,49.7 36,41.7 32,57 28,41.7 14.3,49.7 22.3,36 7,32 22.3,28 14.3,14.3 28,22.3" fill="url(#sg)"/>
+        <!-- Central radiant core -->
+        <circle cx="32" cy="32" r="5.5" fill="url(#sc)"/>
+        <!-- Cardinal sparkle dots -->
+        <circle cx="32" cy="2.5" r="1.4" fill="#FFF5D0" opacity=".55"/>
+        <circle cx="61.5" cy="32" r="1.4" fill="#FFF5D0" opacity=".55"/>
+        <circle cx="32" cy="61.5" r="1.4" fill="#FFF5D0" opacity=".55"/>
+        <circle cx="2.5" cy="32" r="1.4" fill="#FFF5D0" opacity=".55"/>
         <defs>
-          <linearGradient id="fg" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#E8D070"/>
-            <stop offset="60%" stop-color="#C8A94A"/>
-            <stop offset="100%" stop-color="#7A4020"/>
+          <linearGradient id="sg" x1="32" y1="7" x2="32" y2="57" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFF5D0"/>
+            <stop offset="40%" stop-color="#E8D070"/>
+            <stop offset="100%" stop-color="#C8A94A"/>
           </linearGradient>
-          <linearGradient id="fg2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/>
-            <stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+          <radialGradient id="sc" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFFDE8"/>
+            <stop offset="100%" stop-color="#E8D070" stop-opacity=".4"/>
+          </radialGradient>
+          <linearGradient id="sr" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#E8D070" stop-opacity=".7"/>
+            <stop offset="100%" stop-color="#C8A94A" stop-opacity=".15"/>
           </linearGradient>
         </defs>
       </svg>
