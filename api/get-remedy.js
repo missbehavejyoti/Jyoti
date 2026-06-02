@@ -67,7 +67,9 @@ Write a personalised lifetime reading for each of the planets listed below. Each
 ${isPlanetA ? 'Write readings for: Sun, Moon, Mars.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"..."}' : ''}${isPlanetB ? 'Write readings for: Mercury, Jupiter, Venus.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Mercury":"...","Jupiter":"...","Venus":"..."}' : ''}${isPlanetC ? 'Write readings for: Saturn, Rahu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Saturn":"...","Rahu":"..."}' : ''}${isPlanetD ? 'Write the reading for Ketu only.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
 ${langInstruction}`
 
-    : `You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
+    : `${langInstruction} Every single word of your response must be in the requested language — do not switch to English at any point.
+
+You are Jyoti, a precise and compassionate Nadi astrology guidance system rooted in classical Vedic and Nadi tradition.
 
 CLASSICAL REMEDY REPERTOIRE — draw from these when the planet is active, afflicted, or ruling the day. You are not limited to these; use other classical Vedic remedies when they are more appropriate for the specific chart and conditions:
 • Sun: Gayatri Mantra, Aditya Hrudayam Stotram — especially when Sun is afflicted, weak, or it is Sunday
@@ -145,7 +147,7 @@ JSON structure:
             if (isPlanetD)                     return hi ?  320 :  200;
             if (isPlanetC)                     return hi ?  560 :  350;
             if (isPlanetA || isPlanetB)        return hi ?  800 :  500;
-            return                                    hi ? 1500 :  900; // daily remedy
+            return                                    hi ? 2000 :  900; // daily remedy
           })(),
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]

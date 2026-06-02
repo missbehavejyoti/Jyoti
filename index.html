@@ -2133,8 +2133,8 @@ function renderFallbackReading(dayName,now){
       <div class="remedy-day">${dayName}</div>
       ${dashaTag?`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--gold-d);margin-bottom:.6rem;text-transform:uppercase">✦ ${dashaTag}</div>`:''}
       ${cosmicLine?`<p style="font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem">${cosmicLine}</p>`:''}
-      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${di.whatIsHappening}</p>
-      <div class="remedy-text">${di.practice}</div>
+      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${currentLang==='hi'?'आज का विस्तृत अभ्यास लोड हो रहा है। कृपया इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।':currentLang==='es'?'La práctica detallada de hoy está cargando. Por favor verifica tu conexión e intenta de nuevo.':di.whatIsHappening}</p>
+      <div class="remedy-text">${currentLang==='en'?di.practice:''}</div>
       <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
         <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='es'?'MANTRA':'MANTRA'}</div>
