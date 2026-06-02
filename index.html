@@ -1713,24 +1713,26 @@ function renderDailyReading(r,dayName){
   let html='';
   if(r.has_remedy&&r.remedy){
     const rem=r.remedy;
+    const _mc=rem.mantra_count||108;
     html=`
       <div class="remedy-card">
         <div class="remedy-day">${rem.title||dayName}</div>
-        <p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${r.cosmic_weather}</p>
-        <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${rem.what_is_happening}</p>
-        <div class="remedy-text">${rem.practice}</div>
+        ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--dim);margin-bottom:.8rem">${r.cosmic_weather}</p>`:''}
+        ${rem.what_is_happening?`<p style="font-weight:500;color:var(--gold-pale);margin-bottom:.4rem">${rem.what_is_happening}</p>`:''}
+        ${rem.practice?`<div class="remedy-text">${rem.practice}</div>`:''}
         ${rem.timing?`<p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
         ${rem.mantra?`
         <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
           <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='es'?'MANTRA':'MANTRA'}</div>
           <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
           <div style="font-size:.8rem;color:var(--dim)">${rem.mantra_meaning||''}</div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${rem.mantra_count} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
         </div>
         <div class="remedy-actions">
-          <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${rem.mantra_count},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
+          <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
         </div>`:''}
-        <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>
+        ${rem.loving_close?`<p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${rem.loving_close}</p>`:''}
+        ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.6rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${r.tomorrow_preview}</p>`:''}
       </div>
     `;
   } else {
