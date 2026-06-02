@@ -1620,22 +1620,36 @@ VIMSHOTTARI DASHA (most important for today's practice — work from innermost o
 The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's energy (${prat?.lord||dasha.lord}), then layer in the Antar lord (${antr?.lord||dasha.lord}) as secondary influence, with the Maha Dasha (${dasha.lord}) as deep background context.` : '';
 
   // Compute current planetary transits using local ephemeris
+  // Use birth location for accurate transit ascendant; planet longitudes are geocentric (same everywhere)
   const _tUTCH=now.getUTCHours(), _tUTCM=now.getUTCMinutes();
   const _tTOB=`${String(_tUTCH).padStart(2,'0')}:${String(_tUTCM).padStart(2,'0')}:00`;
-  const _tr=calcChart(todayStr(),_tTOB,{lat:0,lon:0},0);
+  const _birthLat=chartData.lat||20.59, _birthLon=chartData.lon||78.96;
+  const _tr=calcChart(todayStr(),_tTOB,{lat:_birthLat,lon:_birthLon},0);
   const tr=_tr.planets;
+  const trAsc=_tr.asc;
   const S=L_en.signs;
+  // Helper: house of transit planet relative to natal ascendant
+  const trHouse=i=>(tr[i].sign-chartData.ascSign+12)%12+1;
+  // Helper: detect close conjunction to any natal planet (within 5°)
+  const trConj=i=>{
+    const tLon=tr[i].lon;
+    const hits=[];
+    const pnames2=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+    p.forEach((np,ni)=>{const d=Math.min(Math.abs(tLon-np.lon),360-Math.abs(tLon-np.lon));if(d<=5)hits.push(`conjunct natal ${pnames2[ni]} (${d.toFixed(1)}°)`);});
+    return hits.length?` ⚡ ${hits.join(', ')}`:''};
   const transitBlock=`
 CURRENT PLANETARY TRANSITS — exact positions right now (${now.toUTCString()}):
-  Transit Sun: ${S[tr[0].sign]} ${tr[0].degree}°
-  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°
-  Transit Mars: ${S[tr[2].sign]} ${tr[2].degree}°
-  Transit Mercury: ${S[tr[3].sign]} ${tr[3].degree}°
-  Transit Jupiter: ${S[tr[4].sign]} ${tr[4].degree}°
-  Transit Venus: ${S[tr[5].sign]} ${tr[5].degree}°
-  Transit Saturn: ${S[tr[6].sign]} ${tr[6].degree}°
-  Transit Rahu: ${S[tr[7].sign]} ${tr[7].degree}°
-  Transit Ketu: ${S[tr[8].sign]} ${tr[8].degree}°`;
+Location used for transit ascendant: ${_birthLat.toFixed(2)}°N ${_birthLon.toFixed(2)}°E (birth location)
+Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
+  Transit Sun: ${S[tr[0].sign]} ${tr[0].degree}° — natal House ${trHouse(0)}${trConj(0)}
+  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}° — natal House ${trHouse(1)}${trConj(1)}
+  Transit Mars: ${S[tr[2].sign]} ${tr[2].degree}° — natal House ${trHouse(2)}${trConj(2)}
+  Transit Mercury: ${S[tr[3].sign]} ${tr[3].degree}° — natal House ${trHouse(3)}${trConj(3)}
+  Transit Jupiter: ${S[tr[4].sign]} ${tr[4].degree}° — natal House ${trHouse(4)}${trConj(4)}
+  Transit Venus: ${S[tr[5].sign]} ${tr[5].degree}° — natal House ${trHouse(5)}${trConj(5)}
+  Transit Saturn: ${S[tr[6].sign]} ${tr[6].degree}° — natal House ${trHouse(6)}${trConj(6)}
+  Transit Rahu: ${S[tr[7].sign]} ${tr[7].degree}° — natal House ${trHouse(7)}${trConj(7)}
+  Transit Ketu: ${S[tr[8].sign]} ${tr[8].degree}° — natal House ${trHouse(8)}${trConj(8)}`;
 
   const chartSummary=`
 Name: ${userData.name}
