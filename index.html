@@ -923,7 +923,7 @@ function loadDemo(){
 })();
 
 // ── STATE ──
-let currentLang='en';
+let currentLang=(()=>{try{return localStorage.getItem('jyoti_lang')||'en';}catch(e){return'en';}})();
 let userData={};
 let chartData={};
 let chantCurrent=0,chantTarget=108;
@@ -998,7 +998,9 @@ const T={
 
 // ── LANGUAGE ──
 function setLang(lang){
+  const prevLang=currentLang;
   currentLang=lang;
+  try{localStorage.setItem('jyoti_lang',lang);}catch(e){}
   document.documentElement.lang=lang==='hi'?'hi':lang==='es'?'es':'en';
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.lbtn[onclick="setLang('${lang}')"]`).classList.add('active');
@@ -1009,8 +1011,24 @@ function setLang(lang){
   document.querySelectorAll('input[data-hi], input[data-es]').forEach(el=>{
     const v=el.getAttribute('data-'+lang);
     if(v)el.placeholder=v;
-    else if(lang==='en')el.placeholder=el.getAttribute('placeholder')||el.placeholder;
+    else if(lang==='en')el.placeholder=el.getAttribute('data-en')||el.getAttribute('placeholder')||el.placeholder;
   });
+  // Re-render dynamic sections when language changes and chart is loaded
+  if(prevLang!==lang&&chartData&&chartData.planets){
+    const fc=document.getElementById('full-reading');
+    if(fc&&fc.innerHTML.trim())showFullChart();
+    showDailyReading();
+    // Clear compat in-memory cache so next view re-fetches in new language
+    if(typeof synCache!=='undefined'){
+      synCache={};synLoadingType=null;
+      const synR=document.getElementById('syn-reading');
+      if(synR&&synR.style.display!=='none'){
+        synR.style.display='none';
+        const fw=document.getElementById('syn-form-wrap');
+        if(fw)fw.style.display='block';
+      }
+    }
+  }
 }
 
 // ── CONSENT ──
@@ -1816,10 +1834,10 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_daily3_'+todayStr())||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_daily3_'+todayStr()+'_'+currentLang)||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
-    if(cached&&cached.lang===currentLang&&hasContent){
+    if(cached&&hasContent){
       renderDailyReading(r, dayName);
       return;
     }
@@ -1923,7 +1941,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData){
-    try{localStorage.setItem('jyoti_daily3_'+todayStr(),JSON.stringify({reading:dailyData,lang:currentLang}));}catch(e){}
+    try{localStorage.setItem('jyoti_daily3_'+todayStr()+'_'+currentLang,JSON.stringify({reading:dailyData}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2171,7 +2189,7 @@ function showFullChart(){
     tradition:'Classical Nadi & Vedic tradition · Lahiri ayanamsa · For spiritual guidance only',
     exalted:' ★ Exalted',debilitated:' ↓ Debilitated',own:' ◉ Own',yearsRem:'years remaining'
   };
-  const houseNames=['Self & Body','Wealth & Speech','Siblings & Courage','Home & Mother','Children & Creativity','Health & Service','Partnership & Others','Transformation & Longevity','Dharma & Higher Learning','Career & Status','Gains & Community','Loss & Liberation'];
+  const houseNames=currentLang==='hi'?['स्वयं व शरीर','धन व वाणी','भाई-बहन व साहस','घर व माता','संतान व सृजन','स्वास्थ्य व सेवा','साझेदारी व अन्य','परिवर्तन व आयु','धर्म व उच्च शिक्षा','कर्म व प्रतिष्ठा','लाभ व समाज','हानि व मोक्ष']:currentLang==='es'?['Ser y Cuerpo','Riqueza y Habla','Hermanos y Valor','Hogar y Madre','Hijos y Creatividad','Salud y Servicio','Pareja y Otros','Transformación y Longevidad','Dharma y Alto Aprendizaje','Carrera y Estatus','Ganancias y Comunidad','Pérdida y Liberación']:['Self & Body','Wealth & Speech','Siblings & Courage','Home & Mother','Children & Creativity','Health & Service','Partnership & Others','Transformation & Longevity','Dharma & Higher Learning','Career & Status','Gains & Community','Loss & Liberation'];
   // ── Dasha timeline — three tiers, dates from server ──
   const DSM={Ketu:'☋',Venus:'♀',Sun:'☉',Moon:'☽',Mars:'♂',Rahu:'☊',Jupiter:'♃',Saturn:'♄',Mercury:'☿'};
   const DASHA_LORDS2=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
@@ -3000,7 +3018,7 @@ let synCache={};
 function synCacheKey(){
   const a=(synUserA.dob||'')+(synUserA.pob||'');
   const b=(synUserB.dob||'')+(synUserB.pob||'');
-  try{return'jyoti_syn_'+btoa(a+'||'+b).slice(0,20);}catch(e){return'jyoti_syn_default';}
+  try{return'jyoti_syn_'+btoa(a+'||'+b).slice(0,20)+'_'+currentLang;}catch(e){return'jyoti_syn_default_'+currentLang;}
 }
 function saveSynCache(type,data){
   synCache[type]=data;
@@ -3488,6 +3506,22 @@ function _renderDeepContent(text){
 function closeDeepReading(){
   document.getElementById('deep-modal').style.display='none';
   document.body.style.overflow='';
+}
+
+// Apply saved language preference on load (without triggering re-render since chart not yet loaded)
+if(currentLang!=='en'){
+  document.documentElement.lang=currentLang==='hi'?'hi':'es';
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
+  const _lb=document.querySelector(`.lbtn[onclick="setLang('${currentLang}')"]`);
+  if(_lb)_lb.classList.add('active');
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const v=el.getAttribute('data-'+currentLang);
+    if(v){if(v.includes('<'))el.innerHTML=v;else el.textContent=v;}
+  });
+  document.querySelectorAll('input[data-hi], input[data-es]').forEach(el=>{
+    const v=el.getAttribute('data-'+currentLang);
+    if(v)el.placeholder=v;
+  });
 }
 </script>
 
