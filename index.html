@@ -2530,8 +2530,12 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
     const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
     const hasData=planets.some(k=>data[k]);
     if(hasData){
-      // Discard if user switched language while fetch was in flight
-      if(capturedLang!==currentLang){planetLoadingInProgress=false;return;}
+      // Discard if user switched language while fetch was in flight; restart for current language
+      if(capturedLang!==currentLang){
+        planetLoadingInProgress=false;
+        if(document.getElementById('tab-chart')?.style.display!=='none')loadPlanetReadings();
+        return;
+      }
       planetReadingsCache=data;
       try{localStorage.setItem(planetReadingsKey(capturedLang),JSON.stringify(data));}catch(e){}
       planetLoadingInProgress=false;
@@ -3250,41 +3254,112 @@ function _getOrCreateSection(type){
   return el;
 }
 
+const SYN_L={
+  en:{
+    compatHdr:'✦ COMPATIBILITY READING ✦',bondNature:'THE NATURE OF THIS BOND',connAsks:'THIS CONNECTION ASKS',together:'Together:',
+    exploreDeeper:'Explore Deeper',goDeeper:'GO DEEPER',fullAnalysis:'✦ Full Analysis',
+    d_karmic:['✦ Karmic or Dharmic?','Unfinished business from past lives, or a new soul contract being opened?'],
+    d_duration:['✦ A Moment or a Lifetime?','How long does this connection last — and does it span multiple lifetimes?'],
+    d_gifts:['✦ Gifts & Shadows','What does this connection bring out in each person — and what does it challenge?'],
+    d_higher_road:['✦ The Higher Road','How does each person transcend the karmic pattern — especially when the connection breaks?'],
+    d_soul_debt:['✦ Soul Debt & Soul Gift','What each person owes and offers the other across lifetimes.'],
+    d_work_life:['✦ Work & Life Together','How do these two charts balance ambition, rest, home, and purpose together?'],
+    d_timing:['✦ Timing & Windows','Dasha windows where this connection is most alive — and most challenging.'],
+    sl_karmic:'✦ KARMIC OR DHARMIC?',sl_thread:'THE KARMIC THREAD',sl_dharmic:'THE DHARMIC POSSIBILITY',sl_verdict:'COMPLETION OR CONTINUATION',
+    sl_duration:'✦ A MOMENT OR A LIFETIME?',sl_dur:'DURATION',sl_season:'THE SEASON OF THIS CONNECTION',
+    sl_gifts:'✦ GIFTS & SHADOWS',sl_shadow:'THE SHADOW DYNAMIC',sl_healing:'THE HEALING POTENTIAL',
+    sl_higher:'✦ THE HIGHER ROAD',sl_practice:'A PRACTICE FOR BOTH',sl_debt:'✦ SOUL DEBT & SOUL GIFT',
+    sl_work:'✦ WORK & LIFE TOGETHER',sl_geo:'GEOGRAPHY & DISTANCE',sl_timing:'✦ TIMING & WINDOWS',
+    sl_opens:'WHEN THIS CONNECTION OPENS',sl_asks:'WHEN IT ASKS MORE',sl_chart_sig:'CHART SIGNATURES TO LOOK FOR',
+    verdictCard:'✦ The Soul Verdict',verdictSub:"What the classical tradition says about this combination as a whole. The master astrologer's final word.",
+    verdictHdr:'✦ THE SOUL VERDICT ✦',threeThings:'THE THREE THINGS',
+    dt_karmic:'✦ The Karmic Thread',dt_duration:'✦ A Moment or a Lifetime',dt_gifts:'✦ Gifts & Shadows',
+    dt_higher_road:'✦ The Higher Road',dt_soul_debt:'✦ Soul Debt & Soul Gift',dt_work_life:'✦ Work & Life Together',dt_timing:'✦ Timing & Windows',
+    dt_other_pre:'✦ What ',dt_other_suf:' Truly Needs',
+  },
+  hi:{
+    compatHdr:'✦ अनुकूलता पाठन ✦',bondNature:'इस बंधन का स्वभाव',connAsks:'यह संबंध मांगता है',together:'साथ मिलकर:',
+    exploreDeeper:'गहराई में जाएं',goDeeper:'गहराई में जाएं',fullAnalysis:'✦ पूर्ण विश्लेषण',
+    d_karmic:['✦ कार्मिक या धार्मिक?','पिछले जन्मों के अधूरे काम, या एक नया आत्मा अनुबंध खुल रहा है?'],
+    d_duration:['✦ एक पल या पूरा जीवन?','यह संबंध कितने समय तक चलता है — और क्या यह कई जन्मों तक फैला है?'],
+    d_gifts:['✦ उपहार और छाया','यह संबंध प्रत्येक व्यक्ति में क्या जगाता है — और क्या चुनौती देता है?'],
+    d_higher_road:['✦ उच्चतर मार्ग','हर व्यक्ति कार्मिक पैटर्न को कैसे पार करता है — विशेष रूप से जब संबंध टूटता है?'],
+    d_soul_debt:['✦ आत्मा ऋण और आत्मा उपहार','जो प्रत्येक व्यक्ति जन्मों भर दूसरे पर बकाया है और देता है।'],
+    d_work_life:['✦ साथ काम और जीवन','ये दोनों कुंडलियां महत्वाकांक्षा, विश्राम, घर और उद्देश्य को कैसे संतुलित करती हैं?'],
+    d_timing:['✦ समय और खिड़कियां','दशा खिड़कियां जहां यह संबंध सबसे जीवंत है — और सबसे चुनौतीपूर्ण।'],
+    sl_karmic:'✦ कार्मिक या धार्मिक?',sl_thread:'कार्मिक धागा',sl_dharmic:'धार्मिक संभावना',sl_verdict:'पूर्णता या निरंतरता',
+    sl_duration:'✦ एक पल या पूरा जीवन?',sl_dur:'अवधि',sl_season:'इस संबंध का मौसम',
+    sl_gifts:'✦ उपहार और छाया',sl_shadow:'छाया गतिशीलता',sl_healing:'उपचार की संभावना',
+    sl_higher:'✦ उच्चतर मार्ग',sl_practice:'दोनों के लिए अभ्यास',sl_debt:'✦ आत्मा ऋण और आत्मा उपहार',
+    sl_work:'✦ साथ काम और जीवन',sl_geo:'भूगोल और दूरी',sl_timing:'✦ समय और खिड़कियां',
+    sl_opens:'जब यह संबंध खुलता है',sl_asks:'जब यह अधिक मांगता है',sl_chart_sig:'खोजने के लिए कुंडली संकेत',
+    verdictCard:'✦ आत्मा का निर्णय',verdictSub:'इस संयोजन के बारे में शास्त्रीय परंपरा क्या कहती है। महान ज्योतिषी का अंतिम वचन।',
+    verdictHdr:'✦ आत्मा का निर्णय ✦',threeThings:'तीन बातें',
+    dt_karmic:'✦ कार्मिक धागा',dt_duration:'✦ एक पल या पूरा जीवन',dt_gifts:'✦ उपहार और छाया',
+    dt_higher_road:'✦ उच्चतर मार्ग',dt_soul_debt:'✦ आत्मा ऋण और आत्मा उपहार',dt_work_life:'✦ साथ काम और जीवन',dt_timing:'✦ समय और खिड़कियां',
+    dt_other_pre:'✦ ',dt_other_suf:' की वास्तविक जरूरत',
+  },
+  es:{
+    compatHdr:'✦ LECTURA DE COMPATIBILIDAD ✦',bondNature:'LA NATURALEZA DE ESTE VÍNCULO',connAsks:'ESTA CONEXIÓN PIDE',together:'Juntos:',
+    exploreDeeper:'Explorar Más Profundo',goDeeper:'IR MÁS PROFUNDO',fullAnalysis:'✦ Análisis Completo',
+    d_karmic:['✦ ¿Kármico o Dhármico?','¿Asuntos pendientes de vidas pasadas, o un nuevo contrato del alma abriéndose?'],
+    d_duration:['✦ ¿Un Momento o una Vida Entera?','¿Cuánto tiempo dura esta conexión — y abarca múltiples vidas?'],
+    d_gifts:['✦ Dones y Sombras','¿Qué despierta esta conexión en cada persona — y qué desafía?'],
+    d_higher_road:['✦ El Camino Superior','¿Cómo trasciende cada persona el patrón kármico — especialmente cuando la conexión se rompe?'],
+    d_soul_debt:['✦ Deuda y Don del Alma','Lo que cada persona debe y ofrece a la otra a través de las vidas.'],
+    d_work_life:['✦ Trabajo y Vida Juntos','¿Cómo equilibran estas dos cartas la ambición, el descanso, el hogar y el propósito?'],
+    d_timing:['✦ Tiempo y Ventanas','Ventanas de Dasha donde esta conexión está más viva — y más desafiante.'],
+    sl_karmic:'✦ ¿KÁRMICO O DHÁRMICO?',sl_thread:'EL HILO KÁRMICO',sl_dharmic:'LA POSIBILIDAD DHÁRMICA',sl_verdict:'COMPLETITUD O CONTINUACIÓN',
+    sl_duration:'✦ ¿UN MOMENTO O UNA VIDA ENTERA?',sl_dur:'DURACIÓN',sl_season:'LA TEMPORADA DE ESTA CONEXIÓN',
+    sl_gifts:'✦ DONES Y SOMBRAS',sl_shadow:'LA DINÁMICA DE LA SOMBRA',sl_healing:'EL POTENCIAL DE SANACIÓN',
+    sl_higher:'✦ EL CAMINO SUPERIOR',sl_practice:'UNA PRÁCTICA PARA AMBOS',sl_debt:'✦ DEUDA Y DON DEL ALMA',
+    sl_work:'✦ TRABAJO Y VIDA JUNTOS',sl_geo:'GEOGRAFÍA Y DISTANCIA',sl_timing:'✦ TIEMPO Y VENTANAS',
+    sl_opens:'CUANDO ESTA CONEXIÓN SE ABRE',sl_asks:'CUANDO PIDE MÁS',sl_chart_sig:'FIRMAS DE LA CARTA A BUSCAR',
+    verdictCard:'✦ El Veredicto del Alma',verdictSub:'Lo que la tradición clásica dice sobre esta combinación en su conjunto. La palabra final del maestro astrólogo.',
+    verdictHdr:'✦ EL VEREDICTO DEL ALMA ✦',threeThings:'LAS TRES COSAS',
+    dt_karmic:'✦ El Hilo Kármico',dt_duration:'✦ ¿Un Momento o una Vida Entera?',dt_gifts:'✦ Dones y Sombras',
+    dt_higher_road:'✦ El Camino Superior',dt_soul_debt:'✦ Deuda y Don del Alma',dt_work_life:'✦ Trabajo y Vida Juntos',dt_timing:'✦ Tiempo y Ventanas',
+    dt_other_pre:'✦ Lo que ',dt_other_suf:' verdaderamente necesita',
+  }
+};
+function _sl(){return SYN_L[currentLang]||SYN_L.en;}
+
 function _renderTier1(d){
   document.getElementById('syn-loading').style.display='none';
   document.getElementById('syn-reading').style.display='block';
   const nA=synUserA.name,nB=synUserB.name;
+  const sl=_sl();
   document.getElementById('syn-tier1').innerHTML=`
     <div style="text-align:center;margin-bottom:1.4rem">
-      <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">✦ COMPATIBILITY READING ✦</div>
+      <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">${sl.compatHdr}</div>
       <div style="font-family:'Cinzel',serif;font-size:.82rem;color:var(--muted);margin-bottom:.8rem">${nA} · ${nB}</div>
       <div class="resonance-pill">${d.resonance_label||'Deep Connection'}</div>
     </div>
     <div class="syn-section">
-      <div class="syn-label">THE NATURE OF THIS BOND</div>
+      <div class="syn-label">${sl.bondNature}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.95rem">${d.bond_nature}</p>
     </div>
     <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin:.8rem 0">
-      <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;color:var(--gold-d);margin-bottom:.6rem">THIS CONNECTION ASKS</div>
+      <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;color:var(--gold-d);margin-bottom:.6rem">${sl.connAsks}</div>
       <div style="font-size:.88rem;color:var(--muted);line-height:1.75">
         <div style="padding:.3rem 0;display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nA}:</span><span>${d.asks_of_a}</span></div>
         <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nB}:</span><span>${d.asks_of_b}</span></div>
-        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">Together:</span><span>${d.asks_of_both}</span></div>
+        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${sl.together}</span><span>${d.asks_of_both}</span></div>
       </div>
     </div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1.4rem 0 .8rem;text-transform:uppercase">Explore Deeper</div>
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1.4rem 0 .8rem;text-transform:uppercase">${sl.exploreDeeper}</div>
     <div class="doorway-grid">
       <div class="doorway-card" id="door-karmic" onclick="exploreSyn('karmic')">
-        <div class="doorway-title">✦ Karmic or Dharmic?</div>
-        <div class="doorway-sub">Unfinished business from past lives, or a new soul contract being opened?</div>
+        <div class="doorway-title">${sl.d_karmic[0]}</div>
+        <div class="doorway-sub">${sl.d_karmic[1]}</div>
       </div>
       <div class="doorway-card" id="door-duration" onclick="exploreSyn('duration')">
-        <div class="doorway-title">✦ A Moment or a Lifetime?</div>
-        <div class="doorway-sub">How long does this connection last — and does it span multiple lifetimes?</div>
+        <div class="doorway-title">${sl.d_duration[0]}</div>
+        <div class="doorway-sub">${sl.d_duration[1]}</div>
       </div>
       <div class="doorway-card" id="door-gifts" onclick="exploreSyn('gifts')">
-        <div class="doorway-title">✦ Gifts & Shadows</div>
-        <div class="doorway-sub">What does this connection bring out in each person — and what does it challenge?</div>
+        <div class="doorway-title">${sl.d_gifts[0]}</div>
+        <div class="doorway-sub">${sl.d_gifts[1]}</div>
       </div>
     </div>`;
 }
@@ -3292,125 +3367,133 @@ function _renderTier1(d){
 function _renderSynSection(type,d){
   const el=_getOrCreateSection(type);
   const nA=synUserA?.name||'Person A',nB=synUserB?.name||'Person B';
+  const sl=_sl();
+  const inConn=currentLang==='hi'?'इस संबंध में':currentLang==='es'?'EN ESTA CONEXIÓN':'IN THIS CONNECTION';
+  const carriesFor=(x,y)=>currentLang==='hi'?`${x} ${y} के लिए`:currentLang==='es'?`LO QUE ${x} LLEVA PARA ${y}`:`WHAT ${x} CARRIES FOR ${y}`;
+  const otherMatchTitle=(n)=>currentLang==='hi'?`✦ ${n} के अन्य साथी`:currentLang==='es'?`✦ Otras Coincidencias para ${n}`:`✦ Other Matches for ${n}`;
+  const otherMatchLabel=(n)=>currentLang==='hi'?`✦ ${n.toUpperCase()} के अन्य साथी`:currentLang==='es'?`✦ OTRAS COINCIDENCIAS PARA ${n.toUpperCase()}`:`✦ OTHER MATCHES FOR ${n.toUpperCase()}`;
+  const otherSub1=(n)=>currentLang==='hi'?`${n} की कुंडली को वास्तव में क्या चाहिए — और वह अनुनाद दुनिया में कहाँ और रहता है।`:currentLang==='es'?`La carta de ${n} verdaderamente necesita — y dónde más vive esa resonancia en el mundo.`:`What ${n}'s chart truly needs — and where else that resonance lives in the world.`;
+  const otherSub2=(n)=>currentLang==='hi'?`क्या यह ${n} के लिए एक दुर्लभ संयोग है, या कुंडली आसानी से अनुनाद पाती है?`:currentLang==='es'?`¿Es esta una combinación rara para ${n}, o la carta encuentra resonancia fácilmente?`:`Is this a rare match for ${n}, or does the chart find resonance easily?`;
+  const whatNeeds=(n)=>currentLang==='hi'?`${n.toUpperCase()} को क्या चाहिए`:currentLang==='es'?`LO QUE ${n.toUpperCase()} NECESITA`:`WHAT ${n.toUpperCase()} NEEDS`;
   let html='';
   if(type==='karmic'){
     if(!synTier2Done.has('karmic')){synTier2Done.add('karmic');synTier2Count++;}
     const vCol=d.verdict_type==='completion'?'var(--gold)':d.verdict_type==='continuation'?'var(--teal)':'var(--gold-pale)';
-    html=`<div class="syn-section"><div class="syn-label">✦ KARMIC OR DHARMIC?</div>
-      <div class="syn-sub-label" style="margin-top:.2rem">THE KARMIC THREAD</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_karmic}</div>
+      <div class="syn-sub-label" style="margin-top:.2rem">${sl.sl_thread}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.karmic_thread}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE DHARMIC POSSIBILITY</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_dharmic}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.dharmic_possibility}</p>
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:.9rem 1.1rem;text-align:center">
-        <div class="syn-sub-label" style="margin-bottom:.35rem">COMPLETION OR CONTINUATION</div>
+        <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_verdict}</div>
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
       </div>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">✦ Full Analysis</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
-        <div class="doorway-title">✦ The Higher Road</div>
-        <div class="doorway-sub">How does each person transcend the karmic pattern — especially when the connection breaks?</div>
+        <div class="doorway-title">${sl.d_higher_road[0]}</div>
+        <div class="doorway-sub">${sl.d_higher_road[1]}</div>
       </div>
       <div class="doorway-card" id="door-soul_debt" onclick="exploreSyn('soul_debt')">
-        <div class="doorway-title">✦ Soul Debt & Soul Gift</div>
-        <div class="doorway-sub">What each person owes and offers the other across lifetimes.</div>
+        <div class="doorway-title">${sl.d_soul_debt[0]}</div>
+        <div class="doorway-sub">${sl.d_soul_debt[1]}</div>
       </div>
     </div>`;
   }else if(type==='duration'){
     if(!synTier2Done.has('duration')){synTier2Done.add('duration');synTier2Count++;}
     const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'#E8D0FF'};
     const vCol=vColMap[d.verdict_type]||'var(--gold)';
-    html=`<div class="syn-section"><div class="syn-label">✦ A MOMENT OR A LIFETIME?</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_duration}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.duration_signature}</p>
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:.9rem 1.1rem;text-align:center;margin:.8rem 0">
-        <div class="syn-sub-label" style="margin-bottom:.35rem">DURATION</div>
+        <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_dur}</div>
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
       </div>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE SEASON OF THIS CONNECTION</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_season}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">✦ Full Analysis</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
-        <div class="doorway-title">✦ Work & Life Together</div>
-        <div class="doorway-sub">How do these two charts balance ambition, rest, home, and purpose together?</div>
+        <div class="doorway-title">${sl.d_work_life[0]}</div>
+        <div class="doorway-sub">${sl.d_work_life[1]}</div>
       </div>
       <div class="doorway-card" id="door-timing" onclick="exploreSyn('timing')">
-        <div class="doorway-title">✦ Timing & Windows</div>
-        <div class="doorway-sub">Dasha windows where this connection is most alive — and most challenging.</div>
+        <div class="doorway-title">${sl.d_timing[0]}</div>
+        <div class="doorway-sub">${sl.d_timing[1]}</div>
       </div>
     </div>`;
   }else if(type==='gifts'){
     if(!synTier2Done.has('gifts')){synTier2Done.add('gifts');synTier2Count++;}
-    html=`<div class="syn-section"><div class="syn-label">✦ GIFTS & SHADOWS</div>
-      <div class="syn-sub-label">${nA.toUpperCase()} IN THIS CONNECTION</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_gifts}</div>
+      <div class="syn-sub-label">${nA.toUpperCase()} ${inConn}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_a}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${nB.toUpperCase()} IN THIS CONNECTION</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${nB.toUpperCase()} ${inConn}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_b}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE SHADOW DYNAMIC</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_shadow}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">THE HEALING POTENTIAL</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_healing}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">✦ Full Analysis</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">GO DEEPER</div>
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
+    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
     <div class="doorway-grid-2">
       <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
-        <div class="doorway-title">✦ Other Matches for ${nA}</div>
-        <div class="doorway-sub">What ${nA}'s chart truly needs — and where else that resonance lives in the world.</div>
+        <div class="doorway-title">${otherMatchTitle(nA)}</div>
+        <div class="doorway-sub">${otherSub1(nA)}</div>
       </div>
       <div class="doorway-card" id="door-other_b" onclick="exploreSyn('other_b')">
-        <div class="doorway-title">✦ Other Matches for ${nB}</div>
-        <div class="doorway-sub">Is this a rare match for ${nB}, or does the chart find resonance easily?</div>
+        <div class="doorway-title">${otherMatchTitle(nB)}</div>
+        <div class="doorway-sub">${otherSub2(nB)}</div>
       </div>
     </div>`;
   }else if(type==='higher_road'){
-    html=`<div class="syn-section"><div class="syn-label">✦ THE HIGHER ROAD</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_higher}</div>
       <div class="syn-sub-label">${nA.toUpperCase()}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_a}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${nB.toUpperCase()}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_b}</p>
       <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:10px;padding:1rem 1.1rem">
-        <div class="syn-sub-label">A PRACTICE FOR BOTH</div>
+        <div class="syn-sub-label">${sl.sl_practice}</div>
         <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.practice}</p>
       </div>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('higher_road')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('higher_road')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='soul_debt'){
-    html=`<div class="syn-section"><div class="syn-label">✦ SOUL DEBT & SOUL GIFT</div>
-      <div class="syn-sub-label">WHAT ${nA.toUpperCase()} CARRIES FOR ${nB.toUpperCase()}</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_debt}</div>
+      <div class="syn-sub-label">${carriesFor(nA.toUpperCase(),nB.toUpperCase())}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.owes_a_to_b}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nB.toUpperCase()} CARRIES FOR ${nA.toUpperCase()}</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${carriesFor(nB.toUpperCase(),nA.toUpperCase())}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.owes_b_to_a}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('soul_debt')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('soul_debt')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='work_life'){
-    html=`<div class="syn-section"><div class="syn-label">✦ WORK & LIFE TOGETHER</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_work}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.work_life}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">GEOGRAPHY & DISTANCE</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_geo}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.geography}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('work_life')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('work_life')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='timing'){
-    html=`<div class="syn-section"><div class="syn-label">✦ TIMING & WINDOWS</div>
-      <div class="syn-sub-label">WHEN THIS CONNECTION OPENS</div>
+    html=`<div class="syn-section"><div class="syn-label">${sl.sl_timing}</div>
+      <div class="syn-sub-label">${sl.sl_opens}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.timing}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHEN IT ASKS MORE</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_asks}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.pressure}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('timing')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('timing')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='other_a'){
-    html=`<div class="syn-section"><div class="syn-label">✦ OTHER MATCHES FOR ${nA.toUpperCase()}</div>
+    html=`<div class="syn-section"><div class="syn-label">${otherMatchLabel(nA)}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nA.toUpperCase()} NEEDS</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${whatNeeds(nA)}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">CHART SIGNATURES TO LOOK FOR</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_chart_sig}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_a')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_a')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='other_b'){
-    html=`<div class="syn-section"><div class="syn-label">✦ OTHER MATCHES FOR ${nB.toUpperCase()}</div>
+    html=`<div class="syn-section"><div class="syn-label">${otherMatchLabel(nB)}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">WHAT ${nB.toUpperCase()} NEEDS</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${whatNeeds(nB)}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
-      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">CHART SIGNATURES TO LOOK FOR</div>
+      <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_chart_sig}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_b')" class="btn-full-read">✦ Full Analysis</button></div></div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_b')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }
   el.innerHTML=html;
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -3422,11 +3505,12 @@ function _checkSoulVerdictUnlock(){
     const v=document.getElementById('syn-tier4');
     if(v&&v.style.display==='none'&&!v.innerHTML.trim()){
       v.style.display='block';
+      const sl=_sl();
       v.innerHTML=`<div style="text-align:center;padding:1.5rem 0 .5rem">
         <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);margin-bottom:1rem">✦ ✦ ✦</div>
         <div class="doorway-card" style="max-width:380px;margin:0 auto;border-color:rgba(200,169,74,.4);background:rgba(200,169,74,.05)" id="door-verdict" onclick="exploreSynVerdict()">
-          <div class="doorway-title" style="font-size:.8rem;text-align:center;margin-bottom:.4rem">✦ The Soul Verdict</div>
-          <div class="doorway-sub" style="text-align:center">What the classical tradition says about this combination as a whole. The master astrologer's final word.</div>
+          <div class="doorway-title" style="font-size:.8rem;text-align:center;margin-bottom:.4rem">${sl.verdictCard}</div>
+          <div class="doorway-sub" style="text-align:center">${sl.verdictSub}</div>
         </div></div>`;
     }
   }
@@ -3435,12 +3519,13 @@ function _checkSoulVerdictUnlock(){
 function _renderSoulVerdict(d){
   const spinner=document.getElementById('syn-sec-soul_verdict');if(spinner)spinner.remove();
   const v=document.getElementById('syn-tier4');
+  const sl=_sl();
   v.innerHTML=`<div class="syn-verdict-box">
-    <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.32em;color:var(--gold-d);margin-bottom:1.4rem">✦ THE SOUL VERDICT ✦</div>
+    <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.32em;color:var(--gold-d);margin-bottom:1.4rem">${sl.verdictHdr}</div>
     <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.1rem">${glossify(d.classical_tradition_1||'')}</p>
     <p style="color:var(--text);line-height:1.9;font-size:.96rem;margin-bottom:1.6rem">${glossify(d.classical_tradition_2||'')}</p>
     <div style="border-top:1px solid rgba(200,169,74,.2);padding-top:1.3rem">
-      <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;color:var(--gold-d);margin-bottom:.9rem">THE THREE THINGS</div>
+      <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;color:var(--gold-d);margin-bottom:.9rem">${sl.threeThings}</div>
       <div class="syn-three">
         <div class="syn-three-item" style="border-left-color:var(--teal)">🌿 ${d.flourish}</div>
         <div class="syn-three-item" style="border-left-color:var(--rose)">⚡ ${d.founder}</div>
@@ -3469,21 +3554,13 @@ function resetSynastry(){
   prefillSynPersonA();
 }
 
-const DEEP_TITLES={
-  karmic:'✦ The Karmic Thread',
-  duration:'✦ A Moment or a Lifetime',
-  gifts:'✦ Gifts & Shadows',
-  higher_road:'✦ The Higher Road',
-  soul_debt:'✦ Soul Debt & Soul Gift',
-  work_life:'✦ Work & Life Together',
-  timing:'✦ Timing & Windows',
-};
-
 function openDeepReadingByType(type){
-  let title=DEEP_TITLES[type];
-  if(type==='other_a')title='✦ What '+(synUserA?.name||'Person A')+' Truly Needs';
-  else if(type==='other_b')title='✦ What '+(synUserB?.name||'Person B')+' Truly Needs';
-  if(!title)title='✦ Full Analysis';
+  const sl=_sl();
+  const titles={karmic:sl.dt_karmic,duration:sl.dt_duration,gifts:sl.dt_gifts,higher_road:sl.dt_higher_road,soul_debt:sl.dt_soul_debt,work_life:sl.dt_work_life,timing:sl.dt_timing};
+  let title=titles[type];
+  if(type==='other_a')title=sl.dt_other_pre+(synUserA?.name||'Person A')+sl.dt_other_suf;
+  else if(type==='other_b')title=sl.dt_other_pre+(synUserB?.name||'Person B')+sl.dt_other_suf;
+  if(!title)title=sl.fullAnalysis;
   openDeepReading(type,title);
 }
 
