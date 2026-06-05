@@ -1863,7 +1863,7 @@ async function showDailyReading(){
   try{
     const cached=JSON.parse(localStorage.getItem('jyoti_daily4_'+todayStr()+'_'+capturedLang)||'null');
     const r=cached?.reading;
-    const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
+    const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
     if(cached&&hasContent){
       renderDailyReading(r, dayName);
       return;
@@ -2053,64 +2053,55 @@ function renderFallbackReading(dayName,now){
       count:108,
       color:'saffron, copper or gold',
       timing:'Within one hour of sunrise, facing east',
-      whatIsHappening:'Sun Dasha calls you into your own authority and luminosity. The soul\'s relationship with power, purpose, and the father principle is being refined. Wherever you have hidden yourself, this period asks you to become visible and to own your presence fully.',
-      practice:'Fill a copper or clay vessel with clean water. Stand or sit facing east at sunrise. Hold the vessel above your head and pour a slow arc of water while chanting the mantra 108 times. This is Surya Arghya, the ancient solar offering. As the water falls, feel the Sun\'s prana entering through your crown. After the offering, sit for five minutes in stillness, spine erect, eyes closed, visualising a golden light at the centre of your chest. Wear saffron, copper or gold today. The Gayatri Mantra (Om Bhur Bhuvah Swah...) can also be recited 108 times at sunrise; it is specifically a solar mantra and profoundly strengthens Sun Dasha.'},
+      practices:['At sunrise facing east, pour water in a slow arc from a copper vessel while chanting Om Hraam Hreem Hraum Sah Suryaya Namah 108 times — this is Surya Arghya, the ancient solar offering.','After the offering, sit for 5 minutes in stillness, spine erect, visualising golden light at the centre of your chest.','Wear saffron, copper or gold today. Give something of genuine value to someone without expectation.']},
     Moon:{
       mantra:'Om Shraam Shreem Shraum Sah Chandraya Namah',
       count:108,
       color:'white or silver',
       timing:'Dusk, or by water',
-      whatIsHappening:'Moon Dasha deepens the inner world; emotions, intuition, ancestry and the rhythms of the body all carry heightened meaning. The mind becomes more sensitive and more receptive. Dreams carry messages. What is felt is as real as what is thought.',
-      practice:'At dusk, bathe if possible, then light a ghee or sesame oil lamp and place a small bowl of clean water beside it. Chant the mantra 108 times facing the lamp and water. The Moon governs all water, and chanting near it amplifies the vibration. After chanting, sit in Om Namah Shivaya (108 times). Shiva governs the Moon and wearing it as the crescent crown. Drink warm milk with a pinch of cardamom before sleep. On full moon nights, sit outdoors or by an open window under moonlight and chant for at least 21 minutes; this is the most potent practice of the lunar cycle. Wear or carry silver.'},
+      practices:['At dusk, light a ghee or sesame oil lamp beside a small bowl of water. Chant Om Shraam Shreem Shraum Sah Chandraya Namah 108 times facing the lamp.','Drink warm milk with a pinch of cardamom before sleep tonight.','Wear or carry silver today. On full moon nights, sit in open moonlight for 21 minutes.']},
     Mars:{
       mantra:'Om Kraam Kreem Kraum Sah Bhaumaya Namah',
       count:21,
       color:'red or coral',
       timing:'Tuesday morning, before noon',
-      whatIsHappening:'Mars Dasha sharpens courage, determination and the capacity for decisive action. Energy is higher than usual and must be channelled consciously, through discipline, physical practice, and clear intention; otherwise it accumulates as frustration or conflict.',
-      practice:'Light a pure ghee lamp; ghee is Mars\'s offering substance, clarifying scattered fire into directed flame. Place something red nearby: red cloth, red flowers, or red lentils as a symbol of Mars\'s vibrational colour. Chant the mantra 21 times with full breath and steady voice, facing south, Mars\'s direction. Then recite the Hanuman Chalisa or at minimum the opening verse: "Jai Hanuman gyan gun sagar..." Hanuman represents Mars energy in its highest expression, boundless strength placed entirely in service. Physical discipline today is itself a sacred practice: exercise, yoga, or vigorous breathwork with complete intention. Fast on Tuesdays or eat only once if this period is challenging.'},
+      practices:['Light a ghee lamp and place something red nearby. Chant Om Kraam Kreem Kraum Sah Bhaumaya Namah 21 times facing south, with full breath and steady voice.','Recite the Hanuman Chalisa or its opening verse — Hanuman embodies Mars energy at its highest.','Channel Mars energy physically today: exercise, yoga, or vigorous breathwork with full intention.']},
     Mercury:{
       mantra:'Om Braam Breem Braum Sah Budhaya Namah',
       count:108,
       color:'grass green or emerald',
       timing:'Wednesday morning, after sunrise',
-      whatIsHappening:'Mercury Dasha is a period of heightened intelligence, communication and discernment. The voice, written, spoken and expressed, carries unusual power and reach. The mind is sharp. What is learned now is retained. What is said now resonates further than usual.',
-      practice:'Begin with Nadi Shodhana (alternate nostril breathing), 10 rounds minimum. Mercury governs the nervous system and the breath; this pranayama purifies the Mercury channel directly. Then chant the mantra 108 times, keeping the mind precisely on each syllable. After chanting, sit for 10 minutes and study something of genuine sacred or intellectual value, not casually, but with full absorption. The Vishnu Sahasranama is the classical Mercury-era text: Vishnu is cosmic intelligence and Mercury carries that intelligence into worldly expression. Wear or carry something green. On Wednesdays, write your intentions for the Mercury period, clear, specific, grounded.'},
+      practices:['Begin with 10 rounds of Nadi Shodhana (alternate nostril breathing), then chant Om Braam Breem Braum Sah Budhaya Namah 108 times with full attention on each syllable.','Study something of genuine intellectual or sacred value for 10 minutes with full absorption — not casually.','Wear or carry something green. On Wednesdays, write your intentions clearly and specifically.']},
     Jupiter:{
       mantra:'Om Graam Greem Graum Sah Gurave Namah',
       count:108,
       color:'yellow or turmeric gold',
       timing:'Thursday morning, facing northeast, the direction of Guru',
-      whatIsHappening:'Jupiter Dasha is the great opening; wisdom, expansion, dharma and grace are all amplified. Teachers appear when you are ready to receive them. Doors open that were previously sealed. This is a period when the soul is being asked to grow into a larger version of itself.',
-      practice:'Apply a turmeric tilak (mark) to your forehead at the ajna chakra; turmeric is Jupiter\'s substance and this activates Jupiter\'s wisdom. Light a ghee lamp and offer yellow flowers if available. Chant the mantra 108 times facing northeast. Then recite the Guru Vandana: "Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah, Gurur Sakshat Param Brahma, Tasmai Shri Gurave Namah"; bow to all the teachers of your life, seen and unseen, living and ancestral. Jupiter Dasha specifically expands through giving: today, give something of genuine value, your time, your knowledge, your care, with no expectation of return. Fast on Thursdays or eat only yellow or golden foods.'},
+      practices:['Apply a turmeric tilak to your forehead, light a ghee lamp, offer yellow flowers. Chant Om Graam Greem Graum Sah Gurave Namah 108 times facing northeast.','Recite the Guru Vandana: \'Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah...\' — bow inwardly to all teachers of your life.','Give something of genuine value today — time, knowledge, or care — with no expectation of return.']},
     Venus:{
       mantra:'Om Draam Dreem Draum Sah Shukraya Namah',
       count:108,
       color:'white, cream or soft pink',
       timing:'Friday dusk, when Venus rises as the evening star',
-      whatIsHappening:'Venus Dasha weaves beauty, creative power and deep relational grace through your life. The Shakti principle is amplified; receptivity, aesthetic sense, love and artistic expression all carry heightened potency. This is a period when the quality of what surrounds you shapes your inner state more than usual.',
-      practice:'At dusk, bathe and dress in white or cream. Light rose, jasmine or vetiver incense; these are Venus\'s sacred fragrances. Place white flowers at your altar or table as an offering to Lakshmi, the presiding goddess of Venus. Chant the mantra 108 times, then follow with the Lakshmi seed mantra: "Om Shreem Mahalakshmyai Namah" (108 times). Shri Suktam from the Vedas is the most potent Venus-era recitation if you know it. Venus Dasha responds to beauty maintained as a spiritual discipline: keep your space clean and harmonious, dress with care, engage with music and art as sacred acts, not distractions. On Fridays, fast or eat only white and sweet foods.'},
+      practices:['At dusk, light rose or jasmine incense and place white flowers as an offering to Lakshmi. Chant Om Draam Dreem Draum Sah Shukraya Namah 108 times, then Om Shreem Mahalakshmyai Namah 108 times.','Dress with care today and keep your space clean and harmonious — beauty as spiritual discipline.','Engage with music or art as a sacred act today, not a distraction.']},
     Saturn:{
       mantra:'Om Praam Preem Praum Sah Shanaischaraya Namah',
       count:108,
       color:'dark blue, black or dark grey',
       timing:'Saturday morning, before eating, on an empty stomach',
-      whatIsHappening:'Saturn Dasha is the great karmic refiner. Nothing inessential survives it, and that is precisely its gift. This period strips away what was borrowed, what was performed, what was not truly yours, leaving only what is real and tested. Patience, discipline and sustained effort are both the remedy and the reward.',
-      practice:'On an empty stomach, light a sesame oil lamp; black sesame is Saturn\'s grain and its oil burns with Saturn\'s quality: slow, steady, complete. Face west, Saturn\'s direction. Chant the mantra 108 times in a measured, unhurried rhythm; do not rush the Saturn mantra. Then recite the Hanuman Chalisa: Hanuman is traditionally regarded as the one deity who can temper Saturn\'s severity, and this recitation is one of the most time-honoured Shani remedies in the classical tradition. Wear dark blue or black on Saturdays. Practice one act of genuine service today, not for recognition, but in the spirit of nishkama karma (desireless action). The Shani Stotram "Nilanjana Samabhasam Raviputram Yamagrajam..." may also be recited.'},
+      practices:['On an empty stomach, light a sesame oil lamp and face west. Chant Om Praam Preem Praum Sah Shanaischaraya Namah 108 times in a slow, unhurried rhythm — do not rush Saturn.','Recite the Hanuman Chalisa — this is the most classical Shani remedy in the tradition.','Perform one act of genuine service today with no expectation of recognition. Wear dark blue or black.']},
     Rahu:{
       mantra:'Om Bhraam Bhreem Bhraum Sah Rahave Namah',
       count:18,
       color:'deep indigo, dark violet or smoke blue',
       timing:'At dusk, the twilight threshold, Rahu\'s hour',
-      whatIsHappening:'Rahu Pratyantara brings its eclipsing, intensifying energy into sharp focus right now. Desire, ambition, restlessness and the pull toward something beyond the ordinary are all heightened. Rahu is the shadow that creates urgency; the practice is to move through it with awareness rather than being consumed by it.',
-      practice:'At dusk, light a camphor flame; camphor burns completely to nothing, leaving no residue. This is Rahu\'s teaching: the ego consumed by the fire of awareness. Sit facing southwest, Rahu\'s direction. Chant the beej mantra 18 times, placing total attention on each syllable. The "Bhraam" seed syllable carries Rahu\'s vibrational frequency directly; feel it resonate in the skull and brow as you chant. After chanting, practice Trataka (steady gazing at the camphor flame) for five minutes without blinking; this is an ancient Rahu remedy that sharpens the witnessing faculty and dissolves Rahu\'s tendency toward mental scattering. Then sit in complete stillness and observe the mind\'s movements without engaging any of them for five minutes. Durga mantra "Om Dum Durgayai Namah" (108 times) is the classical remedy for a difficult Rahu period; Devi in her fierce form dissolves Rahu\'s illusions. If coconut is available, offer a whole coconut to flowing water; this is the traditional Vedic Rahu offering, dissolving attachment and obsession.'},
+      practices:['At dusk, light a camphor flame and sit facing southwest. Chant Om Bhraam Bhreem Bhraum Sah Rahave Namah 18 times with total attention on each syllable.','Practice Trataka — steady gazing at the camphor flame for 5 minutes without blinking. Then sit in complete stillness for 5 minutes, observing the mind without engaging it.','If available, offer a whole coconut to flowing water — the classical Vedic Rahu offering for dissolving attachment.']},
     Ketu:{
       mantra:'Om Sraam Sreem Sraum Sah Ketave Namah',
       count:7,
       color:'grey, smoke or earthy brown',
       timing:'Evening, as daylight fades',
-      whatIsHappening:'Ketu Dasha draws the soul toward its origin. Past-life impressions surface. Attachments loosen, sometimes painfully, always purposefully. The ordinary loses its grip and something deeper begins to call. This is not dissolution but distillation: the soul is finding its most essential shape.',
-      practice:'As daylight fades, burn camphor in a small bowl or vessel; sit before it and simply watch. The camphor, like Ketu, consumes itself completely in the service of light. Chant the mantra 7 times, Ketu\'s number, with slow, full breath. Then practice Nadi Shodhana pranayama for 7 full rounds (inhale left, exhale right, inhale right, exhale left = 1 round). Ketu governs the subtle body and these breath practices directly address its domain. After pranayama, sit in absolute stillness for a minimum of 10 minutes. Chant the Ganesha mantra "Om Gam Ganapataye Namah" 108 times; Ganesha and Ketu share a deep correspondence in classical Jyotish, both governing the capacity to remove what is no longer needed. Practice mauna (intentional silence) for one hour today if possible: Ketu\'s deepest teaching arrives in silence.'}
+      practices:['As daylight fades, burn camphor and sit before it. Chant Om Sraam Sreem Sraum Sah Ketave Namah 7 times with slow, full breath, then chant Om Gam Ganapataye Namah 108 times.','Practice 7 rounds of Nadi Shodhana pranayama, then sit in absolute stillness for 10 minutes.','Practice one hour of mauna (intentional silence) today if possible — Ketu\'s deepest teaching arrives in silence.']}
   };
 
   // ── Three-tier dasha — most immediate layer drives the practice ──
@@ -2160,10 +2151,9 @@ function renderFallbackReading(dayName,now){
     <div class="remedy-card">
       <div class="remedy-day">${dayName}</div>
       ${dashaTag?`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;color:var(--gold-d);margin-bottom:.6rem;text-transform:uppercase">✦ ${dashaTag}</div>`:''}
-      ${cosmicLine?`<p style="font-size:.9rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem">${cosmicLine}</p>`:''}
-      <p style="font-weight:500;color:var(--gold-pale);margin-bottom:.5rem">${currentLang==='hi'?'आज का विस्तृत अभ्यास लोड हो रहा है। कृपया इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।':currentLang==='es'?'La práctica detallada de hoy está cargando. Por favor verifica tu conexión e intenta de nuevo.':di.whatIsHappening}</p>
-      <div class="remedy-text">${currentLang==='en'?di.practice:''}</div>
-      <p style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem">⏰ ${di.timing}</p>
+      ${cosmicLine?`<p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;line-height:1.6">${cosmicLine}</p>`:''}
+      <ul style="list-style:none;padding:0;margin:0 0 .8rem">${(di.practices||[]).map(p=>`<li style="padding:.45rem 0;border-bottom:1px solid rgba(200,169,74,.07);line-height:1.7;color:var(--text)">${p}</li>`).join('')}</ul>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">⏰ ${di.timing}</p>
       <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
         <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${currentLang==='hi'?'मंत्र':currentLang==='es'?'MANTRA':'MANTRA'}</div>
         <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${di.mantra}</div>
