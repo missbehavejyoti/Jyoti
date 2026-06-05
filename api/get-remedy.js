@@ -104,7 +104,7 @@ CORE RULES — NEVER VIOLATE:
 1. TONE: Always warm, supportive, loving. Never alarming, never harsh. Challenges are growth opportunities. Malefics are teachers, not punishments.
 2. VARA LORD (DAY RULER) — THIS IS THE PRIMARY LENS FOR TODAY'S REMEDY: Every day is governed by its Vara lord (weekday ruler). The remedy must be anchored to the Vara lord of TODAY and how that planet sits in THIS person's natal chart — its sign, house, dignity, and aspects. Sunday=Sun, Monday=Moon, Tuesday=Mars+Ketu, Wednesday=Mercury, Thursday=Jupiter, Friday=Venus, Saturday=Saturn+Rahu. Ask: is today's Vara lord strong or weak in this chart? What house does it rule? What does it activate today? The remedy flows from this first.
 3. ACCURACY: Layer the Vara lord analysis with the Pratyantara dasha lord (most immediate karma), then today's transits. Base all remedies strictly on classical Vedic and Nadi tradition — specific mantras, offerings, timing tied to these exact conditions.
-4. SPECIFICITY: Every day must feel different. The Vara lord changes daily — the remedy must reflect this. Never give the same practice two days in a row. Some days one thing. Some days nothing but a loving observation.
+4. SPECIFICITY: Every day must feel different. The Vara lord changes daily — the remedy must reflect this. Never give the same practice two days in a row.
 5. LEGAL: Never give medical, psychiatric, financial, or legal advice. Never claim specific outcomes. Always frame as spiritual practice.
 6. NEVER CURSE OR USE NEGATIVE LANGUAGE. Always compassionate.
 7. LANGUAGE: ${langInstruction}
@@ -113,18 +113,20 @@ CORE RULES — NEVER VIOLATE:
 JSON structure:
 {
   "greeting": "Personal opening line using their name",
-  "cosmic_weather": "1-2 sentences naming today's Vara lord and what it activates in their specific chart today",
+  "cosmic_weather": "One sentence only — name today's Vara lord and what it specifically activates in THIS person's chart today. Concise.",
   "has_remedy": true or false,
   "remedy": {
     "title": "Brief title of today's practice",
-    "what_is_happening": "1-2 sentences — the Vara lord meeting their natal placement and/or dasha creating this need today",
-    "practice": "The exact remedy — what to do, when, how many times if mantra, what to offer if offering. Specific and actionable.",
+    "practices": [
+      "First practice — one concrete action with exactly what to do, when, and how many times if mantra. No theory. Pure action.",
+      "Second practice — one concrete action. Different in nature from the first (e.g. body/offering/mantra/journaling/attention). Specific.",
+      "Third practice — one concrete action. Keep it simple and doable today."
+    ],
     "mantra": "The exact Sanskrit mantra if applicable, or null if not needed today",
     "mantra_phonetic": "Syllable-by-syllable pronunciation guide in Roman script, e.g. 'Om (ohm) · Na·ma·shi·va·ya (nah·mah·shih·vah·yah)'. Use · between syllables within a word, spaces between words. Always provide when mantra exists, null otherwise.",
     "mantra_count": 108 or 27 or 21 or 9 or null,
     "mantra_meaning": "Brief meaning in the response language, or null",
-    "timing": "Best time of day for this practice",
-    "loving_close": "A warm, loving closing sentence of encouragement"
+    "timing": "Best time of day for this practice"
   },
   "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace. Null if remedy exists.",
   "tomorrow_preview": "One gentle sentence hinting at tomorrow's Vara lord energy and what to expect",
@@ -204,15 +206,18 @@ JSON structure:
       const m = clean.match(/\{[\s\S]*\}/);
       if (m) { try { parsed = JSON.parse(m[0]); } catch(_) {} }
     }
+    // Attempt 2b: collapse all whitespace chars
+    if (!parsed) {
+      try { parsed = JSON.parse(clean.replace(/[\r\n\t]+/g, ' ')); } catch(_) {}
+    }
     // Attempt 4: key-by-key extraction — works even when JSON is truncated with no closing }
     if (!parsed) {
       const pairs = {};
-      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\})/g;
+      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\}|\[[\s\S]*?\])/g;
       let hit;
       while ((hit = re.exec(text)) !== null) {
         try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_) {
-          // Try collapsing newlines inside the value
-          try { pairs[hit[1]] = JSON.parse(hit[2].replace(/\n/g, ' ').replace(/\r/g, '')); } catch(_2) {}
+          try { pairs[hit[1]] = JSON.parse(hit[2].replace(/[\r\n\t]+/g, ' ')); } catch(_2) {}
         }
       }
       if (Object.keys(pairs).length > 0) parsed = pairs;
