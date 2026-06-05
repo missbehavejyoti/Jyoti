@@ -35,6 +35,16 @@ module.exports = async (req, res) => {
   const isPlanetC   = type === 'planets_c';
   const isPlanetD   = type === 'planets_d';
 
+  // Prepend strong language enforcement for daily remedy (plain prompts — not planets which have explicit key rules)
+  const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD;
+  const LANG_PREFIX = isDailyRemedy
+    ? (lang === 'hi'
+      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English.\n\n'
+      : lang === 'es'
+      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés.\n\n'
+      : '')
+    : '';
+
   const systemPrompt = isNakshatra
     ? `You are Jyoti, a compassionate Nadi astrology guide. Write one beautiful, specific paragraph (3-4 sentences) about this person's Moon nakshatra. Warm, poetic, deeply accurate to classical Vedic tradition. Never alarming. Always uplifting and truthful. ${langInstruction} Return plain text only, no formatting, no preamble.`
 
@@ -65,7 +75,11 @@ Return plain text only — four paragraphs separated by blank lines. No headings
 Write a personalised lifetime reading for each of the planets listed below. Each reading must be EXACTLY 2 sentences — no more. Direct, personal, specific to their exact sign, house, and nakshatra. Never generic.
 
 ${isPlanetA ? 'Write readings for: Sun, Moon, Mars.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"..."}' : ''}${isPlanetB ? 'Write readings for: Mercury, Jupiter, Venus.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Mercury":"...","Jupiter":"...","Venus":"..."}' : ''}${isPlanetC ? 'Write readings for: Saturn, Rahu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Saturn":"...","Rahu":"..."}' : ''}${isPlanetD ? 'Write the reading for Ketu only.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
-${langInstruction}`
+${lang === 'hi'
+  ? 'IMPORTANT: Write the reading text in Hindi (Devanagari script). The JSON keys — "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu" — must remain in English exactly as shown. Only the reading values (the text after the colon) should be in Hindi.'
+  : lang === 'es'
+  ? 'IMPORTANT: Write the reading text in Spanish. The JSON keys must remain in English exactly as shown. Only the reading values should be in Spanish.'
+  : 'Write the readings in English.'}`
 
     : `${langInstruction} Every single word of your response must be in the requested language — do not switch to English at any point.
 
@@ -149,7 +163,7 @@ JSON structure:
             if (isPlanetA || isPlanetB)        return hi ?  750 :  500;
             return                                    hi ? 1800 :  900; // daily remedy
           })(),
-          system: systemPrompt,
+          system: LANG_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),
         signal: ctrl.signal

@@ -1,10 +1,13 @@
 {
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": ".",
   "functions": {
     "api/get-remedy.js": { "maxDuration": 60 },
     "api/get-synastry.js": { "maxDuration": 60 }
   },
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
