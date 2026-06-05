@@ -3297,7 +3297,15 @@ async function loadSynTier(type){
   }
 }
 
+// Required fields per type — if all are missing the parse failed silently
+const SYN_REQUIRED={karmic:['karmic_thread','dharmic_possibility'],duration:['duration_signature','season'],gifts:['gifts_a','gifts_b'],higher_road:['higher_road_a','higher_road_b'],soul_debt:['owes_a_to_b','owes_b_to_a'],work_life:['work_life','geography'],timing:['timing','pressure'],other_a:['rahu_warning','profile'],other_b:['rahu_warning','profile'],soul_verdict:['classical_tradition_1','blessing'],tier1:['bond_nature','resonance_label']};
 function _renderSynResult(type,data){
+  const req=SYN_REQUIRED[type]||[];
+  if(!data||typeof data!=='object'||req.every(k=>!data[k])){
+    if(type==='tier1'){document.getElementById('syn-form-wrap').style.display='block';document.getElementById('syn-loading').style.display='none';const err=document.getElementById('syn-form-error');err.textContent=currentLang==='hi'?'पठन तैयार नहीं हो सका। कृपया पुनः प्रयास करें।':currentLang==='es'?'No se pudo generar la lectura. Por favor inténtalo de nuevo.':'Could not generate the reading. Please try again.';err.style.display='block';}
+    else _showSynSectionError(type,currentLang==='hi'?'पठन उपलब्ध नहीं — पुनः प्रयास करें':currentLang==='es'?'Lectura no disponible — reintenta':'Reading unavailable — tap to retry');
+    return;
+  }
   if(type==='tier1')_renderTier1(data);
   else if(type==='soul_verdict')_renderSoulVerdict(data);
   else _renderSynSection(type,data);
@@ -3426,14 +3434,14 @@ function _renderTier1(d){
     </div>
     <div class="syn-section">
       <div class="syn-label">${sl.bondNature}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.95rem">${d.bond_nature}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.95rem">${d.bond_nature||''}</p>
     </div>
     <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:12px;padding:1rem 1.2rem;margin:.8rem 0">
       <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;color:var(--gold-d);margin-bottom:.6rem">${sl.connAsks}</div>
       <div style="font-size:.88rem;color:var(--muted);line-height:1.75">
-        <div style="padding:.3rem 0;display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nA}:</span><span>${d.asks_of_a}</span></div>
-        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nB}:</span><span>${d.asks_of_b}</span></div>
-        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${sl.together}</span><span>${d.asks_of_both}</span></div>
+        <div style="padding:.3rem 0;display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nA}:</span><span>${d.asks_of_a||''}</span></div>
+        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${nB}:</span><span>${d.asks_of_b||''}</span></div>
+        <div style="padding:.3rem 0;border-top:1px solid rgba(200,169,74,.1);display:flex;gap:.6rem"><span style="color:var(--gold-d);flex-shrink:0;font-family:'Cinzel',serif;font-size:.78rem">${sl.together}</span><span>${d.asks_of_both||''}</span></div>
       </div>
     </div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1.4rem 0 .8rem;text-transform:uppercase">${sl.exploreDeeper}</div>
@@ -3473,12 +3481,12 @@ function _renderSynSection(type,d){
     const vCol=_ktype==='completion'?'var(--gold)':_ktype==='continuation'?'var(--teal)':'var(--gold-pale)';
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_karmic}</div>
       <div class="syn-sub-label" style="margin-top:.2rem">${sl.sl_thread}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.karmic_thread}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.karmic_thread||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_dharmic}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.dharmic_possibility}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.dharmic_possibility||''}</p>
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:.9rem 1.1rem;text-align:center">
         <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_verdict}</div>
-        <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
+        <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict||''}</div>
       </div>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
@@ -3500,13 +3508,13 @@ function _renderSynSection(type,d){
     const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'#E8D0FF'};
     const vCol=vColMap[_dtype]||'var(--gold)';
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_duration}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.duration_signature}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.duration_signature||''}</p>
       <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:.9rem 1.1rem;text-align:center;margin:.8rem 0">
         <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_dur}</div>
-        <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict}</div>
+        <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict||''}</div>
       </div>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_season}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
     <div class="doorway-grid-2">
@@ -3523,13 +3531,13 @@ function _renderSynSection(type,d){
     if(!synTier2Done.has('gifts')){synTier2Done.add('gifts');synTier2Count++;}
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_gifts}</div>
       <div class="syn-sub-label">${nA.toUpperCase()} ${inConn}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_a}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_a||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${nB.toUpperCase()} ${inConn}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_b}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_b||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_shadow}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_healing}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
     <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
     <div class="doorway-grid-2">
@@ -3545,49 +3553,49 @@ function _renderSynSection(type,d){
   }else if(type==='higher_road'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_higher}</div>
       <div class="syn-sub-label">${nA.toUpperCase()}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_a}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_a||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${nB.toUpperCase()}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_b}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.higher_road_b||''}</p>
       <div style="background:rgba(200,169,74,.04);border:1px solid rgba(200,169,74,.15);border-radius:10px;padding:1rem 1.1rem">
         <div class="syn-sub-label">${sl.sl_practice}</div>
-        <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.practice}</p>
+        <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.practice||''}</p>
       </div>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('higher_road')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='soul_debt'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_debt}</div>
       <div class="syn-sub-label">${carriesFor(nA.toUpperCase(),nB.toUpperCase())}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.owes_a_to_b}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.owes_a_to_b||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${carriesFor(nB.toUpperCase(),nA.toUpperCase())}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.owes_b_to_a}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.owes_b_to_a||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('soul_debt')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='work_life'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_work}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.work_life}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.work_life||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_geo}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.geography}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.geography||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('work_life')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='timing'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_timing}</div>
       <div class="syn-sub-label">${sl.sl_opens}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.timing}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.timing||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_asks}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.pressure}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.pressure||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('timing')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='other_a'){
     html=`<div class="syn-section"><div class="syn-label">${otherMatchLabel(nA)}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${whatNeeds(nA)}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_chart_sig}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_a')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='other_b'){
     html=`<div class="syn-section"><div class="syn-label">${otherMatchLabel(nB)}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.rahu_warning||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${whatNeeds(nB)}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.profile||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_chart_sig}</div>
-      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types}</p>
+      <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.chart_types||''}</p>
       <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('other_b')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }
   el.innerHTML=html;
@@ -3622,14 +3630,14 @@ function _renderSoulVerdict(d){
     <div style="border-top:1px solid rgba(200,169,74,.2);padding-top:1.3rem">
       <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;color:var(--gold-d);margin-bottom:.9rem">${sl.threeThings}</div>
       <div class="syn-three">
-        <div class="syn-three-item" style="border-left-color:var(--teal)">🌿 ${d.flourish}</div>
-        <div class="syn-three-item" style="border-left-color:var(--rose)">⚡ ${d.founder}</div>
-        <div class="syn-three-item">✦ ${d.highest_role_a}</div>
-        <div class="syn-three-item">✦ ${d.highest_role_b}</div>
+        <div class="syn-three-item" style="border-left-color:var(--teal)">🌿 ${d.flourish||''}</div>
+        <div class="syn-three-item" style="border-left-color:var(--rose)">⚡ ${d.founder||''}</div>
+        <div class="syn-three-item">✦ ${d.highest_role_a||''}</div>
+        <div class="syn-three-item">✦ ${d.highest_role_b||''}</div>
       </div>
     </div>
     <div style="border-top:1px solid rgba(200,169,74,.2);padding-top:1.3rem;margin-top:.8rem">
-      <p style="color:var(--gold-pale);font-style:italic;font-size:1rem;line-height:1.85">${d.blessing}</p>
+      <p style="color:var(--gold-pale);font-style:italic;font-size:1rem;line-height:1.85">${d.blessing||''}</p>
     </div>
   </div>`;
   v.scrollIntoView({behavior:'smooth',block:'start'});

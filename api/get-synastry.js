@@ -448,24 +448,31 @@ Return JSON:
     const clean = text.replace(/```json|```/g, '').trim();
     // Attempt 1: direct parse
     try { parsed = JSON.parse(clean); } catch(_) {}
-    // Attempt 2: collapse literal newlines
+    // Attempt 2: collapse literal newlines inside string values
     if (!parsed) {
-      try { parsed = JSON.parse(clean.replace(/\n/g, ' ').replace(/\r/g, '')); } catch(_) {}
+      // Replace literal newlines/tabs that appear inside JSON string values with spaces
+      const safe = clean.replace(/[\r\n\t]+/g, ' ');
+      try { parsed = JSON.parse(safe); } catch(_) {}
     }
-    // Attempt 3: find outermost {...} block
+    // Attempt 3: find outermost {...} block and collapse whitespace
     if (!parsed) {
       const m = clean.match(/\{[\s\S]*\}/);
-      if (m) { try { parsed = JSON.parse(m[0]); } catch(_) {} }
+      if (m) {
+        try { parsed = JSON.parse(m[0]); } catch(_) {}
+        if (!parsed) { try { parsed = JSON.parse(m[0].replace(/[\r\n\t]+/g, ' ')); } catch(_) {} }
+      }
     }
-    // Attempt 4: key-by-key extraction (handles truncated/malformed JSON from Hindi/Spanish)
+    // Attempt 4: key-by-key extraction — matches multiline values by scanning between keys
     if (!parsed) {
       const pairs = {};
-      const ALL_KEYS = 'resonance_label|bond_nature|asks_of_a|asks_of_b|asks_of_both|karmic_thread|dharmic_possibility|verdict|verdict_type|duration_signature|season|gifts_a|gifts_b|shadow_dynamic|healing_potential|higher_road_a|higher_road_b|practice|owes_a_to_b|owes_b_to_a|work_life|geography|timing|pressure|rahu_warning|profile|chart_types|classical_tradition_1|classical_tradition_2|flourish|founder|highest_role_a|highest_role_b|blessing';
-      const re = new RegExp('"(' + ALL_KEYS + ')"\\s*:\\s*("(?:[^"\\\\]|\\\\.)*"|true|false)', 'g');
+      const ALL_KEYS = ['resonance_label','bond_nature','asks_of_a','asks_of_b','asks_of_both','karmic_thread','dharmic_possibility','verdict','verdict_type','duration_signature','season','gifts_a','gifts_b','shadow_dynamic','healing_potential','higher_road_a','higher_road_b','practice','owes_a_to_b','owes_b_to_a','work_life','geography','timing','pressure','rahu_warning','profile','chart_types','classical_tradition_1','classical_tradition_2','flourish','founder','highest_role_a','highest_role_b','blessing'];
+      // Use a lookahead for the next key or end-of-object to capture multiline values
+      const keyPat = ALL_KEYS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const re = new RegExp('"(' + keyPat + ')"\\s*:\\s*"((?:[^"\\\\]|\\\\[\\s\\S])*)"', 'g');
       let hit;
-      while ((hit = re.exec(text)) !== null) {
-        try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_) {
-          try { pairs[hit[1]] = JSON.parse(hit[2].replace(/\n/g, ' ').replace(/\r/g, '')); } catch(_2) {}
+      while ((hit = re.exec(clean)) !== null) {
+        try { pairs[hit[1]] = JSON.parse('"' + hit[2] + '"'); } catch(_) {
+          pairs[hit[1]] = hit[2].replace(/\\n/g, ' ').replace(/\\"/g, '"').replace(/\n/g, ' ').trim();
         }
       }
       if (Object.keys(pairs).length > 0) parsed = pairs;
