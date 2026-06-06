@@ -36,6 +36,7 @@ module.exports = async (req, res) => {
 
   const CORE_RULES = `
 CRITICAL RULES:
+- TRADITION: This is Vedic / Jyotish astrology ONLY — sidereal zodiac, nakshatras, Lagna (ascendant), planetary dignity, houses, and Vimshottari Dasha as given in the chart data below. NEVER use Western/tropical astrology concepts: no "sun sign" personality types, no fire/earth/air/water "elements", no cardinal/fixed/mutable "modalities", no tropical-zodiac dates or descriptions. Every sign, degree and nakshatra given is already sidereal (Lahiri ayanamsa) — use it exactly as stated, do not reinterpret or convert it.
 - Use each person's pronouns as stated in their chart header (she/her, he/him, they/them, or name only if prefer_not).
 - Every sentence must be specific to THESE exact charts — never generic.
 - Tone: spiritually precise, compassionate, warm. Never alarming. Challenges are growth invitations.

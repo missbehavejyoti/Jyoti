@@ -3062,6 +3062,10 @@ function resetChart(){
 })();
 
 // ── SYNASTRY ──
+// Bump this whenever synastry prompts or chart computation change — invalidates
+// every previously cached compatibility reading so stale (e.g. pre-fix, truncated,
+// or non-sidereal) text is never served again from localStorage.
+const SYN_CACHE_VER='v2';
 let synChartA=null,synChartB=null;
 let synUserA={},synUserB={};
 let synTier2Count=0;
@@ -3072,7 +3076,7 @@ let synCache={};
 function synCacheKey(){
   const a=(synUserA.dob||'')+(synUserA.pob||'');
   const b=(synUserB.dob||'')+(synUserB.pob||'');
-  try{return'jyoti_syn_'+btoa(a+'||'+b).slice(0,20)+'_'+currentLang;}catch(e){return'jyoti_syn_default_'+currentLang;}
+  try{return'jyoti_syn_'+SYN_CACHE_VER+'_'+btoa(a+'||'+b).slice(0,20)+'_'+currentLang;}catch(e){return'jyoti_syn_'+SYN_CACHE_VER+'_default_'+currentLang;}
 }
 function saveSynCache(type,data){
   synCache[type]=data;
@@ -3655,8 +3659,9 @@ async function openDeepReading(type,title){
   contentEl.innerHTML=`<div style="text-align:center;padding:2.5rem 0"><div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);animation:pulse 1.5s ease-in-out infinite">${capturedLang==='hi'?'गहराई में पढ़ रहे हैं...':capturedLang==='es'?'Leyendo las profundidades...':'Reading the depths...'}</div></div>`;
   modal.style.display='block';
   document.body.style.overflow='hidden';
-  // Cache key includes language so switching language forces re-fetch
-  const cacheKey='deep_'+type+'_'+capturedLang;
+  // Cache key includes language + version so switching language or shipping
+  // prompt/chart fixes both force a re-fetch instead of replaying stale text
+  const cacheKey='deep_'+SYN_CACHE_VER+'_'+type+'_'+capturedLang;
   if(synCache[cacheKey]){_renderDeepContent(synCache[cacheKey]);return;}
   const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
