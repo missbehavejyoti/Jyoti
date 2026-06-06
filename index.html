@@ -1863,7 +1863,7 @@ async function showDailyReading(){
   try{
     const cached=JSON.parse(localStorage.getItem('jyoti_daily4_'+todayStr()+'_'+capturedLang)||'null');
     const r=cached?.reading;
-    const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening))||r.no_remedy_message);
+    const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=2)||r.no_remedy_message);
     if(cached&&hasContent){
       renderDailyReading(r, dayName);
       return;
