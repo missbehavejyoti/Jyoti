@@ -42,9 +42,10 @@ CRITICAL RULES:
 - Tone: spiritually precise, compassionate, warm. Never alarming. Challenges are growth invitations.
 - For spiritual guidance only. Never give medical, psychiatric, financial or legal advice.
 - LANGUAGE: ${langInstruction} Every word of text content must be in this language. Do not mix languages.
-- PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings — never translate them.
-- NEVER place a literal double-quote character (") inside any text value — it breaks JSON parsing and truncates your sentence. If you want to set off a word or phrase, use single quotation marks (' ') or an em dash — never " ".
-- Return valid JSON only — no markdown, no backticks, no preamble. Every string value must be properly closed with a matching double-quote before the next key or closing brace.`;
+- PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings, never translate them.
+- NEVER place a literal double-quote character (") inside any text value, it breaks JSON parsing and truncates your sentence. If you want to set off a word or phrase, use single quotation marks (' ') instead, never " ".
+- PUNCTUATION: NEVER use an em dash (—) or en dash (–) anywhere in your written text. This is a strict rule. Use a comma, period, semicolon, colon, or parentheses instead, whichever reads most naturally in the sentence.
+- Return valid JSON only, no markdown, no backticks, no preamble. Every string value must be properly closed with a matching double-quote before the next key or closing brace.`;
 
   const prompts = {
 
@@ -80,9 +81,9 @@ Return JSON:
 "dharmic_possibility": One paragraph — what new soul-growth is being invited IF both choose to engage consciously with this connection. What can they build or heal together that neither could alone?
 
 "verdict": One of exactly three options:
-- "This is primarily completion energy — an ancient thread being honoured and released."
-- "This is primarily continuation energy — a new soul chapter is being opened together."
-- "This holds both — a closing that seeds new growth across the threshold."
+- "This is primarily completion energy: an ancient thread being honoured and released."
+- "This is primarily continuation energy: a new soul chapter is being opened together."
+- "This holds both: a closing that seeds new growth across the threshold."
 
 "verdict_type": exactly one of these code strings — NEVER translate, these are programmatic identifiers: "completion" | "continuation" | "both"
 ${CORE_RULES}
@@ -99,11 +100,11 @@ Return JSON:
 "duration_signature": One paragraph — analyse Saturn contacts between the charts (do they create longevity and structure?), Jupiter contacts (blessing and expansion), Rahu/Ketu overlays (fated duration), and 7th house activations. Be specific to these exact planetary positions.
 
 "verdict": One of exactly five options — choose the one most precisely supported by the chart contacts:
-- "A Moment of Profound Teaching — this connection has a natural arc of completion written into it"
-- "A Chapter — significant, life-shaping, but time-bounded by its own inner arc"
-- "A Season of Years — active and formative for two to five years, then naturally transforms"
-- "A Lifetime Bond — the Saturn contacts and nodal axis together point to a soul-epoch connection"
-- "Spans Multiple Lifetimes — an ancient soul connection with roots deeper than this incarnation"
+- "A Moment of Profound Teaching: this connection has a natural arc of completion written into it"
+- "A Chapter: significant, life-shaping, but time-bounded by its own inner arc"
+- "A Season of Years: active and formative for two to five years, then naturally transforms"
+- "A Lifetime Bond: the Saturn contacts and nodal axis together point to a soul-epoch connection"
+- "Spans Multiple Lifetimes: an ancient soul connection with roots deeper than this incarnation"
 
 "verdict_type": exactly one of these code strings — NEVER translate: "moment" | "chapter" | "season" | "lifetime" | "lifetimes"
 

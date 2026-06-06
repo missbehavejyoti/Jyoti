@@ -155,14 +155,14 @@ module.exports = async (req, res) => {
     // ── Malefic detection ──
     const ang = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
     const malefics = [];
-    if (ang(planets[1].lon, planets[6].lon) < 30) malefics.push({ name: 'Saturn–Moon conjunction', house: planets[1].sign + 1, severity: 'moderate' });
-    if (ang(planets[1].lon, rahuSid) < 45)        malefics.push({ name: 'Rahu–Moon influence',     house: planets[1].sign + 1, severity: 'strong' });
+    if (ang(planets[1].lon, planets[6].lon) < 30) malefics.push({ name: 'Saturn-Moon conjunction', house: planets[1].sign + 1, severity: 'moderate' });
+    if (ang(planets[1].lon, rahuSid) < 45)        malefics.push({ name: 'Rahu-Moon influence',     house: planets[1].sign + 1, severity: 'strong' });
     if (ang(ketuSid, ascSid) < 30)                malefics.push({ name: 'Ketu near Ascendant',      house: 1, severity: 'moderate' });
     if (planets[2].sign === (asc.sign + 7) % 12)  malefics.push({ name: 'Mars in 8th House',        house: 8, severity: 'strong' });
     if (!malefics.length) {
       const ss = (planets[6].lon - planets[1].lon + 360) % 360;
       malefics.push(ss < 30 || ss > 330
-        ? { name: 'Sade Sati — Saturn near Moon', house: planets[1].sign + 1, severity: 'moderate' }
+        ? { name: 'Sade Sati, Saturn near Moon', house: planets[1].sign + 1, severity: 'moderate' }
         : { name: 'Saturn aspects 7th house',      house: 7, severity: 'mild' });
     }
 
