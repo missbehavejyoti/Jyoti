@@ -42,7 +42,8 @@ CRITICAL RULES:
 - For spiritual guidance only. Never give medical, psychiatric, financial or legal advice.
 - LANGUAGE: ${langInstruction} Every word of text content must be in this language. Do not mix languages.
 - PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings — never translate them.
-- Return valid JSON only — no markdown, no backticks, no preamble.`;
+- NEVER place a literal double-quote character (") inside any text value — it breaks JSON parsing and truncates your sentence. If you want to set off a word or phrase, use single quotation marks (' ') or an em dash — never " ".
+- Return valid JSON only — no markdown, no backticks, no preamble. Every string value must be properly closed with a matching double-quote before the next key or closing brace.`;
 
   const prompts = {
 
@@ -105,7 +106,7 @@ Return JSON:
 
 "verdict_type": exactly one of these code strings — NEVER translate: "moment" | "chapter" | "season" | "lifetime" | "lifetimes"
 
-"season": One paragraph — when is this connection most activated right now? Consider the current Vimshottari dashas of both charts if inferable from the planetary positions. When does it ask the most? When does it naturally rest?
+"season": One paragraph — when is this connection most activated right now? Each chart summary states its EXACT current Vimshottari Dasha (Maha → Antar → Pratyantara, with end dates) — use these precise periods directly, naming the actual ruling planets and how they touch the synastry points between the two charts. When does it ask the most? When does it naturally rest?
 ${CORE_RULES}
 
 Return JSON:
@@ -179,7 +180,7 @@ Return JSON:
     timing: {
       system: `You are Jyoti, reading the timing windows for this connection.
 
-"timing": One paragraph — when are the Vimshottari dashas of these two charts most aligned to open this connection fully? Look at the planetary rulers currently active (inferable from chart positions and typical dasha patterns), Jupiter transits, and Rahu/Ketu transits over key connection points. When is this most alive, most generative, most likely to move forward?
+"timing": One paragraph — each chart summary states its EXACT current Vimshottari Dasha (Maha → Antar → Pratyantara, with end dates). Name these actual ruling planets directly and explain how they activate the synastry points between these two specific charts — when are these precise dasha periods most aligned to open this connection fully? When is this most alive, most generative, most likely to move forward?
 
 "pressure": One paragraph — when do the dasha periods or transits create friction, distance, or testing in this connection? What periods ask the most from both people? Not alarming — framed as the seasons of necessary difficulty.
 ${CORE_RULES}
@@ -246,7 +247,7 @@ Paragraph 1 — THE STRUCTURAL BONDS: Examine every Saturn contact between these
 
 Paragraph 2 — THE NODAL ARC: The Rahu/Ketu axis carries the fated dimension of time. Where do the nodes of one chart fall in the other's houses? What does this suggest about the soul-epochal quality and karmic duration of this bond?
 
-Paragraph 3 — THE CURRENT SEASON: Drawing from the Vimshottari dasha signatures visible in both charts, when is this connection most alive and generative right now? When does it naturally deepen? When does it pull back? Be specific about the quality of the present moment.
+Paragraph 3 — THE CURRENT SEASON: Each chart summary states its EXACT current Vimshottari Dasha (Maha → Antar → Pratyantara, with end dates). Name these actual ruling planets directly for both ${A} and ${B} and explain how they shape this connection right now. When is it most alive and generative? When does it naturally deepen? When does it pull back?
 
 Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded or a lifetime bond, each carries its own wisdom. How should each person hold the natural arc of this connection? What orientation helps them remain true to both the karmic timing and their own sovereignty?
 
@@ -327,7 +328,7 @@ ${langInstruction}`,
     deep_timing: {
       system: `You are Jyoti, reading the timing windows of this connection in depth — four rich paragraphs separated by blank lines. No headings. No bullets. No JSON.
 
-Paragraph 1 — WHEN THIS CONNECTION OPENS: Drawing from both charts' Vimshottari dasha signatures (inferable from planetary positions), when are the current and near-future dasha periods most aligned to open, deepen, or activate this connection? Be specific about which planetary periods are active and how they touch the key synastry points.
+Paragraph 1 — WHEN THIS CONNECTION OPENS: Each chart summary states its EXACT current Vimshottari Dasha (Maha → Antar → Pratyantara, with end dates). Name these actual ruling planets directly — do not hedge or speak generally. Explain precisely how the current and near-future dasha periods of BOTH charts touch the key synastry points and align (or don't yet) to open, deepen, or activate this connection.
 
 Paragraph 2 — WHEN IT ASKS MORE: The seasons of pressure and testing are not failures — they are when the connection asks both people to grow. When do the dasha periods create friction or distance in this bond? What is the nature of that testing, and what does it ask each person to develop?
 
@@ -466,9 +467,11 @@ Return JSON:
     if (!parsed) {
       const pairs = {};
       const ALL_KEYS = ['resonance_label','bond_nature','asks_of_a','asks_of_b','asks_of_both','karmic_thread','dharmic_possibility','verdict','verdict_type','duration_signature','season','gifts_a','gifts_b','shadow_dynamic','healing_potential','higher_road_a','higher_road_b','practice','owes_a_to_b','owes_b_to_a','work_life','geography','timing','pressure','rahu_warning','profile','chart_types','classical_tradition_1','classical_tradition_2','flourish','founder','highest_role_a','highest_role_b','blessing'];
-      // Use a lookahead for the next key or end-of-object to capture multiline values
+      // Capture up to a closing quote that is actually followed by the next known key
+      // (or end-of-object) — not just the first quote, so stray/unescaped quotes
+      // embedded inside a sentence (e.g. 'soul echo') don't truncate the value.
       const keyPat = ALL_KEYS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-      const re = new RegExp('"(' + keyPat + ')"\\s*:\\s*"((?:[^"\\\\]|\\\\[\\s\\S])*)"', 'g');
+      const re = new RegExp('"(' + keyPat + ')"\\s*:\\s*"([\\s\\S]*?)"\\s*(?=,\\s*"(?:' + keyPat + ')"\\s*:|\\s*\\})', 'g');
       let hit;
       while ((hit = re.exec(clean)) !== null) {
         try { pairs[hit[1]] = JSON.parse('"' + hit[2] + '"'); } catch(_) {

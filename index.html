@@ -3130,17 +3130,30 @@ function buildSynChartSummary(user,chart,label){
   const L=T['en'];const p=chart.planets;
   const h=pl=>(pl.sign-chart.ascSign+12)%12+1;
   const pronounStr=user.gender==='female'?'she/her':user.gender==='male'?'he/him':'they/them';
+  // Dignity + Lagna lord — same classical tables used for the daily reading, so synastry gets equally precise data
+  const _ex={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const _db={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const _ow={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const _pn=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const _dg=(i,s)=>i>=7?'':_ex[_pn[i]]===s?' (exalted)':_db[_pn[i]]===s?' (debilitated)':(_ow[_pn[i]]||[]).includes(s)?' (own sign)':'';
+  const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+  const _llName=_rulers[chart.ascSign];
+  const _llIdx=_pn.indexOf(_llName);
+  const _ll=_llIdx>=0?` | Lagna Lord ${_llName} in ${L.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${h(p[_llIdx])}`:'';
+  // Precise server-calculated Vimshottari Dasha — gives the model real data instead of forcing it to guess
+  const dp=chart.dashaPeriod;
+  const dashaLine=dp?`\nVimshottari Dasha right now: ${dp.lord} Maha Dasha (${dp.remaining} yrs remaining, ends ${dp.endDate}) → ${dp.antar?.lord||'?'} Antar Dasha (ends ${dp.antar?.endDate||'?'}) → ${dp.pratyantara?.lord||'?'} Pratyantara Dasha (current sub-sub-period, ends ${dp.pratyantara?.endDate||'?'})`:'';
   return `${label} — ${user.name}, born ${user.dob}, ${user.pob} [pronouns: ${pronounStr}]
-Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°
-Sun: ${L.signs[p[0].sign]} ${p[0].degree}° | ${L.nakshatras[p[0].nakshatra]} pada ${p[0].pada} | House ${h(p[0])}
-Moon: ${L.signs[p[1].sign]} ${p[1].degree}° | ${L.nakshatras[p[1].nakshatra]} pada ${p[1].pada} | House ${h(p[1])}
-Mars: ${L.signs[p[2].sign]} ${p[2].degree}° | ${L.nakshatras[p[2].nakshatra]} | House ${h(p[2])}
-Mercury: ${L.signs[p[3].sign]} ${p[3].degree}° | ${L.nakshatras[p[3].nakshatra]} | House ${h(p[3])}
-Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}° | ${L.nakshatras[p[4].nakshatra]} | House ${h(p[4])}
-Venus: ${L.signs[p[5].sign]} ${p[5].degree}° | ${L.nakshatras[p[5].nakshatra]} | House ${h(p[5])}
-Saturn: ${L.signs[p[6].sign]} ${p[6].degree}° | ${L.nakshatras[p[6].nakshatra]} | House ${h(p[6])}
+Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°${_ll}
+Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | ${L.nakshatras[p[0].nakshatra]} pada ${p[0].pada} | House ${h(p[0])}
+Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | ${L.nakshatras[p[1].nakshatra]} pada ${p[1].pada} | House ${h(p[1])}
+Mars: ${L.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | ${L.nakshatras[p[2].nakshatra]} | House ${h(p[2])}
+Mercury: ${L.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | ${L.nakshatras[p[3].nakshatra]} | House ${h(p[3])}
+Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | ${L.nakshatras[p[4].nakshatra]} | House ${h(p[4])}
+Venus: ${L.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | ${L.nakshatras[p[5].nakshatra]} | House ${h(p[5])}
+Saturn: ${L.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | ${L.nakshatras[p[6].nakshatra]} | House ${h(p[6])}
 Rahu: ${L.signs[p[7].sign]} ${p[7].degree}° | ${L.nakshatras[p[7].nakshatra]} | House ${h(p[7])}
-Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | ${L.nakshatras[p[8].nakshatra]} | House ${h(p[8])}`;
+Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | ${L.nakshatras[p[8].nakshatra]} | House ${h(p[8])}${dashaLine}`;
 }
 
 async function beginSynastry(){
@@ -3176,8 +3189,14 @@ async function beginSynastry(){
     setT(currentLang==='hi'?'दोनों कुंडलियां गणना हो रही हैं...':currentLang==='es'?'Calculando las dos cartas...':'Calculating the two charts...');
     synUserA={name:nameA,dob:dobA,tob:tobA,pob:pobA,gender:genderA};
     synUserB={name:nameB,dob:dobB,tob:tobB,pob:pobB,gender:genderB};
-    synChartA=calcChart(dobA,tobA+':00',{lat:geoA.lat,lon:geoA.lon},geoA.utcOff);
-    synChartB=calcChart(dobB,tobB+':00',{lat:geoB.lat,lon:geoB.lon},geoB.utcOff);
+    const _calcSynChart=async(dob,tob,geo)=>{
+      const r=await fetch('/api/calc-chart',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({dob,tob:tob+':00',lat:geo.lat,lon:geo.lon,birthTZ:geo.tz})});
+      if(!r.ok)return calcChart(dob,tob+':00',{lat:geo.lat,lon:geo.lon},geo.utcOff);
+      return await r.json();
+    };
+    synChartA=await _calcSynChart(dobA,tobA,geoA);
+    synChartB=await _calcSynChart(dobB,tobB,geoB);
     synTier2Count=0;synTier2Done=new Set();synCache={};synLoadingType=null;
     loadSynCacheFromStorage();
     setT(currentLang==='hi'?'तारे पढ़ रहे हैं...':currentLang==='es'?'Leyendo las estrellas...':'Reading the stars...');
