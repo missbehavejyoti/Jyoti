@@ -237,7 +237,7 @@ Paragraph 4 — THE WISE WAY FORWARD: A classical Vedic prescription for how bot
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -254,7 +254,7 @@ Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -271,7 +271,7 @@ Paragraph 4 — THE ALCHEMICAL POSSIBILITY: If both people engage consciously wi
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -288,7 +288,7 @@ Paragraph 4 — WHAT LOVE ASKS: The higher road is not detachment — it is full
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -305,7 +305,7 @@ Paragraph 4 — HOW TO SETTLE WITH GRACE: The classical tradition offers wisdom 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -322,7 +322,7 @@ Paragraph 4 — THE SHARED LIFE: What would a shared life actually look like for
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -339,7 +339,7 @@ Paragraph 4 — HOW TO WORK WITH TIME: Neither person can force this connection 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -356,7 +356,7 @@ Paragraph 4 — THE INVITATION TO ${A}: A loving, direct invitation to ${A} to s
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
@@ -373,7 +373,7 @@ Paragraph 4 — THE INVITATION TO ${B}: A loving invitation to ${B} to see their
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
-      maxTokens: lang === 'hi' ? 1600 : lang === 'es' ? 1300 : 1100,
+      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
       isText: true
     },
 
