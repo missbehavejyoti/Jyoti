@@ -212,9 +212,6 @@ select option{background:var(--s2);color:var(--text)}
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
 .crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
-/* Streak badge */
-.streak-badge{display:inline-flex;align-items:center;gap:.35rem;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);background:rgba(200,169,74,.07);border:1px solid rgba(200,169,74,.2);border-radius:20px;padding:.22rem .75rem;margin-top:.5rem}
-.streak-flame{font-size:.85rem;line-height:1}
 
 /* Moon phase pill */
 .moon-pill{display:inline-flex;align-items:center;gap:.3rem;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--s4);border-radius:20px;padding:.2rem .65rem;margin-left:.5rem}
@@ -633,7 +630,6 @@ select option{background:var(--s2);color:var(--text)}
         <div style="font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);margin-bottom:.4rem" id="today-greeting"></div>
         <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--muted)" id="today-date"></div>
         <div style="margin-top:.5rem;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.4rem">
-          <span id="streak-badge" style="display:none" class="streak-badge"><span class="streak-flame"><svg class="star8" width="11" height="11"><use href="#star8"/></svg></span><span id="streak-count">1</span> <span id="streak-label">day</span></span>
           <span id="moon-pill" class="moon-pill" style="display:none"></span>
           <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> <span id="share-chart-label">Share my chart</span></button>
         </div>
@@ -1676,35 +1672,6 @@ function shareNakshatra(){
   }
 }
 
-// ── STREAK ──
-function updateStreak(){
-  try{
-    const s=JSON.parse(localStorage.getItem('jyoti_streak')||'null');
-    const today=todayStr();
-    const d=new Date();d.setDate(d.getDate()-1);
-    const yest=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    let count=1;
-    if(s){
-      if(s.date===today)count=s.count;
-      else if(s.date===yest)count=s.count+1;
-      else count=1;
-    }
-    localStorage.setItem('jyoti_streak',JSON.stringify({date:today,count}));
-    return count;
-  }catch(e){return 1;}
-}
-function renderStreak(){
-  const count=updateStreak();
-  const badge=document.getElementById('streak-badge');
-  const countEl=document.getElementById('streak-count');
-  const labelEl=document.getElementById('streak-label');
-  if(!badge)return;
-  countEl.textContent=count;
-  const label=count===1?(currentLang==='hi'?'दिन':currentLang==='es'?'día':'day'):(currentLang==='hi'?'दिन':currentLang==='es'?'días':'days');
-  labelEl.textContent=' '+label;
-  badge.style.display='inline-flex';
-}
-
 // ── MOON PHASE ──
 function getMoonPhase(){
   const now=new Date();
@@ -1853,7 +1820,6 @@ async function showDailyReading(){
   const dateStr=now.toLocaleDateString(capturedLang==='hi'?'hi-IN':capturedLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
-  renderStreak();
   renderMoonPhase();
   renderHoraHint();
   renderShareBtn();
