@@ -179,12 +179,12 @@ JSON structure:
           max_tokens: (()=>{
             // Hindi (Devanagari) needs more tokens than English but high limits cause 504s
             const hi = lang === 'hi';
-            if (isSoul)                        return hi ? 1800 : 1600;
-            if (isPlanet)                      return hi ? 1800 : 1600;
-            if (isPlanetD)                     return hi ?  300 :  200;
-            if (isPlanetC)                     return hi ?  500 :  350;
-            if (isPlanetA || isPlanetB)        return hi ?  750 :  500;
-            return                                    hi ? 1800 :  900; // daily remedy
+            if (isSoul)                        return hi ? 2200 : 2000;
+            if (isPlanet)                      return hi ? 2000 : 1800;
+            if (isPlanetD)                     return hi ?  350 :  250;
+            if (isPlanetC)                     return hi ?  600 :  450;
+            if (isPlanetA || isPlanetB)        return hi ?  900 :  650;
+            return                                    hi ? 2000 : 1100; // daily remedy
           })(),
           system: LANG_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]

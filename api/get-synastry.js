@@ -70,7 +70,7 @@ ${CORE_RULES}
 Return JSON:
 {"resonance_label":"...","bond_nature":"...","asks_of_a":"...","asks_of_b":"...","asks_of_both":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the opening compatibility assessment.`,
-      maxTokens: 1000
+      maxTokens: 1600
     },
 
     karmic: {
@@ -91,7 +91,7 @@ ${CORE_RULES}
 Return JSON:
 {"karmic_thread":"...","dharmic_possibility":"...","verdict":"...","verdict_type":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the karmic vs dharmic analysis.`,
-      maxTokens: 1400
+      maxTokens: 2000
     },
 
     duration: {
@@ -114,7 +114,7 @@ ${CORE_RULES}
 Return JSON:
 {"duration_signature":"...","verdict":"...","verdict_type":"...","season":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the duration and depth analysis.`,
-      maxTokens: 1400
+      maxTokens: 2000
     },
 
     gifts: {
@@ -132,7 +132,7 @@ ${CORE_RULES}
 Return JSON:
 {"gifts_a":"...","gifts_b":"...","shadow_dynamic":"...","healing_potential":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the gifts and shadows analysis.`,
-      maxTokens: 1600
+      maxTokens: 2200
     },
 
     higher_road: {
@@ -148,7 +148,7 @@ ${CORE_RULES}
 Return JSON:
 {"higher_road_a":"...","higher_road_b":"...","practice":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the higher road guidance.`,
-      maxTokens: 1400
+      maxTokens: 2000
     },
 
     soul_debt: {
@@ -162,7 +162,7 @@ ${CORE_RULES}
 Return JSON:
 {"owes_a_to_b":"...","owes_b_to_a":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the soul debt and soul gift analysis.`,
-      maxTokens: 1200
+      maxTokens: 1800
     },
 
     work_life: {
@@ -176,7 +176,7 @@ ${CORE_RULES}
 Return JSON:
 {"work_life":"...","geography":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the work, life, and geography analysis.`,
-      maxTokens: 1200
+      maxTokens: 1800
     },
 
     timing: {
@@ -190,7 +190,7 @@ ${CORE_RULES}
 Return JSON:
 {"timing":"...","pressure":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the timing and dasha window analysis.`,
-      maxTokens: 1200
+      maxTokens: 1800
     },
 
     other_a: {
@@ -206,7 +206,7 @@ ${CORE_RULES}
 Return JSON:
 {"rahu_warning":"...","profile":"...","chart_types":"..."}`,
       user: `${CHART_CONTEXT}\n\nAnalyse what ${A}'s chart needs and where other compatible charts live.`,
-      maxTokens: 1400
+      maxTokens: 2000
     },
 
     other_b: {
@@ -222,7 +222,7 @@ ${CORE_RULES}
 Return JSON:
 {"rahu_warning":"...","profile":"...","chart_types":"..."}`,
       user: `${CHART_CONTEXT}\n\nAnalyse what ${B}'s chart needs and where other compatible charts live.`,
-      maxTokens: 1400
+      maxTokens: 2000
     },
 
     deep_karmic: {
@@ -238,7 +238,7 @@ Paragraph 4 — THE WISE WAY FORWARD: A classical Vedic prescription for how bot
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -255,7 +255,7 @@ Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -272,7 +272,7 @@ Paragraph 4 — THE ALCHEMICAL POSSIBILITY: If both people engage consciously wi
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -289,7 +289,7 @@ Paragraph 4 — WHAT LOVE ASKS: The higher road is not detachment — it is full
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -306,7 +306,7 @@ Paragraph 4 — HOW TO SETTLE WITH GRACE: The classical tradition offers wisdom 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -323,7 +323,7 @@ Paragraph 4 — THE SHARED LIFE: What would a shared life actually look like for
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -340,7 +340,7 @@ Paragraph 4 — HOW TO WORK WITH TIME: Neither person can force this connection 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -357,7 +357,7 @@ Paragraph 4 — THE INVITATION TO ${A}: A loving, direct invitation to ${A} to s
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -374,7 +374,7 @@ Paragraph 4 — THE INVITATION TO ${B}: A loving invitation to ${B} to see their
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2700 : 2200,
+      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
       isText: true
     },
 
@@ -399,7 +399,7 @@ ${CORE_RULES}
 Return JSON:
 {"classical_tradition_1":"...","classical_tradition_2":"...","flourish":"...","founder":"...","highest_role_a":"...","highest_role_b":"...","blessing":"..."}`,
       user: `${CHART_CONTEXT}\n\nDeliver the Soul Verdict — the final classical synthesis.`,
-      maxTokens: 1600
+      maxTokens: 2200
     }
 
   };
