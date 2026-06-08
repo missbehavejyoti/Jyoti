@@ -3068,7 +3068,7 @@ function resetChart(){
 // Bump this whenever synastry prompts or chart computation change — invalidates
 // every previously cached compatibility reading so stale (e.g. pre-fix, truncated,
 // or non-sidereal) text is never served again from localStorage.
-const SYN_CACHE_VER='v3';
+const SYN_CACHE_VER='v4';
 let synChartA=null,synChartB=null;
 let synUserA={},synUserB={};
 let synTier2Count=0;
@@ -3077,8 +3077,8 @@ let synLoadingType=null;
 let synCache={};
 
 function synCacheKey(){
-  const a=(synUserA.dob||'')+(synUserA.pob||'');
-  const b=(synUserB.dob||'')+(synUserB.pob||'');
+  const a=(synUserA.dob||'')+(synUserA.tob||'')+(synUserA.pob||'');
+  const b=(synUserB.dob||'')+(synUserB.tob||'')+(synUserB.pob||'');
   try{return'jyoti_syn_'+SYN_CACHE_VER+'_'+btoa(a+'||'+b).slice(0,20)+'_'+currentLang;}catch(e){return'jyoti_syn_'+SYN_CACHE_VER+'_default_'+currentLang;}
 }
 function saveSynCache(type,data){
@@ -3119,16 +3119,30 @@ async function synGeocode(pob,dob){
   }
   if(!coords)throw new Error(currentLang==='hi'?'"'+pob+'" नहीं मिला, देश का नाम जोड़ें':currentLang==='es'?'No se encontró "'+pob+'", agrega el nombre del país':'Could not locate "'+pob+'", try adding the country name');
   let tz=null;
+  // Primary: timeapi.io
   try{
-    const r=await Promise.race([fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${coords.lat}&longitude=${coords.lon}`),new Promise((_,rej)=>setTimeout(()=>rej(),4000))]);
+    const r=await Promise.race([fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${coords.lat}&longitude=${coords.lon}`),new Promise((_,rej)=>setTimeout(()=>rej(),5000))]);
     if(r.ok){const d=await r.json();if(d?.timeZone)tz=d.timeZone;}
   }catch(e){}
-  if(!tz){
-    const TBL={IN:'Asia/Kolkata',NZ:'Pacific/Auckland',AU:'Australia/Sydney',GB:'Europe/London',IE:'Europe/Dublin',US:'America/New_York',CA:'America/Toronto',DE:'Europe/Berlin',FR:'Europe/Paris',ES:'Europe/Madrid',IT:'Europe/Rome',NL:'Europe/Amsterdam',BE:'Europe/Brussels',CH:'Europe/Zurich',AT:'Europe/Vienna',PL:'Europe/Warsaw',SE:'Europe/Stockholm',NO:'Europe/Oslo',DK:'Europe/Copenhagen',FI:'Europe/Helsinki',PT:'Europe/Lisbon',GR:'Europe/Athens',TR:'Europe/Istanbul',RU:'Europe/Moscow',JP:'Asia/Tokyo',CN:'Asia/Shanghai',KR:'Asia/Seoul',TW:'Asia/Taipei',HK:'Asia/Hong_Kong',SG:'Asia/Singapore',MY:'Asia/Kuala_Lumpur',TH:'Asia/Bangkok',PH:'Asia/Manila',ID:'Asia/Jakarta',VN:'Asia/Ho_Chi_Minh',PK:'Asia/Karachi',LK:'Asia/Colombo',BD:'Asia/Dhaka',NP:'Asia/Kathmandu',AE:'Asia/Dubai',SA:'Asia/Riyadh',IL:'Asia/Jerusalem',IR:'Asia/Tehran',IQ:'Asia/Baghdad',ZA:'Africa/Johannesburg',NG:'Africa/Lagos',KE:'Africa/Nairobi',EG:'Africa/Cairo',BR:'America/Sao_Paulo',AR:'America/Argentina/Buenos_Aires',MX:'America/Mexico_City',CO:'America/Bogota',PE:'America/Lima'};
+  // Fallback 1: Open-Meteo
+  if(!tz){try{
+    const r=await Promise.race([fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=temperature_2m&forecast_days=1&timezone=auto`),new Promise((_,rej)=>setTimeout(()=>rej(),5000))]);
+    if(r.ok){const d=await r.json();if(d?.timezone&&d.timezone!=='GMT')tz=d.timezone;}
+  }catch(e){}}
+  // Fallback 2: BigDataCloud
+  if(!tz){try{
+    const r=await Promise.race([fetch(`https://api.bigdatacloud.net/data/timezone-by-location?latitude=${coords.lat}&longitude=${coords.lon}`),new Promise((_,rej)=>setTimeout(()=>rej(),5000))]);
+    if(r.ok){const d=await r.json();if(d?.ianaTimeId&&d.ianaTimeId!=='Etc/UTC')tz=d.ianaTimeId;}
+  }catch(e){}}
+  // Fallback 3: Comprehensive country/region table (150+ countries)
+  if(!tz&&coords.cc){
+    const TBL={IN:'Asia/Kolkata',NP:'Asia/Kathmandu',LK:'Asia/Colombo',BD:'Asia/Dhaka',BT:'Asia/Thimphu',MV:'Indian/Maldives',PK:'Asia/Karachi',AF:'Asia/Kabul',IR:'Asia/Tehran',JP:'Asia/Tokyo',KR:'Asia/Seoul',KP:'Asia/Pyongyang',TH:'Asia/Bangkok',VN:'Asia/Ho_Chi_Minh',MY:'Asia/Kuala_Lumpur',SG:'Asia/Singapore',PH:'Asia/Manila',MM:'Asia/Rangoon',KH:'Asia/Phnom_Penh',LA:'Asia/Vientiane',BN:'Asia/Brunei',TL:'Asia/Dili',MN:'Asia/Ulaanbaatar',AE:'Asia/Dubai',SA:'Asia/Riyadh',QA:'Asia/Qatar',KW:'Asia/Kuwait',BH:'Asia/Bahrain',OM:'Asia/Muscat',YE:'Asia/Aden',JO:'Asia/Amman',SY:'Asia/Damascus',LB:'Asia/Beirut',IL:'Asia/Jerusalem',IQ:'Asia/Baghdad',GE:'Asia/Tbilisi',AM:'Asia/Yerevan',AZ:'Asia/Baku',TW:'Asia/Taipei',HK:'Asia/Hong_Kong',GB:'Europe/London',IE:'Europe/Dublin',FR:'Europe/Paris',DE:'Europe/Berlin',IT:'Europe/Rome',ES:'Europe/Madrid',PT:'Europe/Lisbon',NL:'Europe/Amsterdam',BE:'Europe/Brussels',LU:'Europe/Luxembourg',CH:'Europe/Zurich',AT:'Europe/Vienna',PL:'Europe/Warsaw',CZ:'Europe/Prague',SK:'Europe/Bratislava',HU:'Europe/Budapest',RO:'Europe/Bucharest',BG:'Europe/Sofia',HR:'Europe/Zagreb',SI:'Europe/Ljubljana',RS:'Europe/Belgrade',BA:'Europe/Sarajevo',ME:'Europe/Podgorica',MK:'Europe/Skopje',AL:'Europe/Tirane',GR:'Europe/Athens',CY:'Asia/Nicosia',TR:'Europe/Istanbul',FI:'Europe/Helsinki',EE:'Europe/Tallinn',LV:'Europe/Riga',LT:'Europe/Vilnius',BY:'Europe/Minsk',UA:'Europe/Kiev',MD:'Europe/Chisinau',SE:'Europe/Stockholm',NO:'Europe/Oslo',DK:'Europe/Copenhagen',IS:'Atlantic/Reykjavik',MT:'Europe/Malta',EG:'Africa/Cairo',ZA:'Africa/Johannesburg',NG:'Africa/Lagos',KE:'Africa/Nairobi',ET:'Africa/Addis_Ababa',GH:'Africa/Accra',TZ:'Africa/Dar_es_Salaam',UG:'Africa/Kampala',RW:'Africa/Kigali',MA:'Africa/Casablanca',DZ:'Africa/Algiers',TN:'Africa/Tunis',LY:'Africa/Tripoli',SD:'Africa/Khartoum',ZM:'Africa/Lusaka',ZW:'Africa/Harare',MZ:'Africa/Maputo',MG:'Indian/Antananarivo',CR:'America/Costa_Rica',PA:'America/Panama',GT:'America/Guatemala',BZ:'America/Belize',SV:'America/El_Salvador',HN:'America/Tegucigalpa',NI:'America/Managua',CU:'America/Havana',JM:'America/Jamaica',HT:'America/Port-au-Prince',DO:'America/Santo_Domingo',TT:'America/Port_of_Spain',BB:'America/Barbados',GY:'America/Guyana',SR:'America/Paramaribo',PE:'America/Lima',EC:'America/Guayaquil',BO:'America/La_Paz',PY:'America/Asuncion',UY:'America/Montevideo',CO:'America/Bogota',VE:'America/Caracas',MX:'America/Mexico_City',AR:'America/Argentina/Buenos_Aires',NZ:'Pacific/Auckland',FJ:'Pacific/Fiji',PG:'Pacific/Port_Moresby',WS:'Pacific/Apia',TO:'Pacific/Tongatapu'};
     tz=TBL[coords.cc]||'UTC';
-    if(coords.cc==='AU'){const A={'new south wales':'Australia/Sydney','victoria':'Australia/Melbourne','queensland':'Australia/Brisbane','south australia':'Australia/Adelaide','western australia':'Australia/Perth','tasmania':'Australia/Hobart','northern territory':'Australia/Darwin'};const k=Object.keys(A).find(k=>coords.state.includes(k));if(k)tz=A[k];}
-    else if(coords.cc==='US'){const U={'california':'America/Los_Angeles','new york':'America/New_York','texas':'America/Chicago','florida':'America/New_York','illinois':'America/Chicago','washington':'America/Los_Angeles','massachusetts':'America/New_York','georgia':'America/New_York','arizona':'America/Phoenix','colorado':'America/Denver','hawaii':'Pacific/Honolulu','alaska':'America/Anchorage','michigan':'America/Detroit','ohio':'America/New_York','pennsylvania':'America/New_York','virginia':'America/New_York'};const k=Object.keys(U).find(k=>coords.state.includes(k));if(k)tz=U[k];}
-    else if(coords.cc==='CA'){const C={'ontario':'America/Toronto','british columbia':'America/Vancouver','quebec':'America/Montreal','alberta':'America/Edmonton','nova scotia':'America/Halifax','manitoba':'America/Winnipeg'};const k=Object.keys(C).find(k=>coords.state.includes(k));if(k)tz=C[k];}
+    if(coords.state){
+      const RTBL={'new south wales':'Australia/Sydney','victoria':'Australia/Melbourne','queensland':'Australia/Brisbane','south australia':'Australia/Adelaide','western australia':'Australia/Perth','tasmania':'Australia/Hobart','northern territory':'Australia/Darwin','australian capital territory':'Australia/Sydney','california':'America/Los_Angeles','new york':'America/New_York','texas':'America/Chicago','florida':'America/New_York','illinois':'America/Chicago','washington':'America/Los_Angeles','massachusetts':'America/New_York','georgia':'America/New_York','michigan':'America/Detroit','ohio':'America/New_York','pennsylvania':'America/New_York','north carolina':'America/New_York','virginia':'America/New_York','new jersey':'America/New_York','hawaii':'Pacific/Honolulu','alaska':'America/Anchorage','arizona':'America/Phoenix','colorado':'America/Denver','oregon':'America/Los_Angeles','nevada':'America/Los_Angeles','ontario':'America/Toronto','british columbia':'America/Vancouver','quebec':'America/Montreal','alberta':'America/Edmonton','nova scotia':'America/Halifax','manitoba':'America/Winnipeg','sao paulo':'America/Sao_Paulo','rio de janeiro':'America/Sao_Paulo','bahia':'America/Bahia','amazonas':'America/Manaus'};
+      const rk=Object.keys(RTBL).find(k=>coords.state.includes(k));
+      if(rk)tz=RTBL[rk];
+    }
   }
   return{...coords,tz:tz||'UTC',utcOff:ianaToOffset(tz||'UTC',dob)};
 }
@@ -3150,17 +3164,21 @@ function buildSynChartSummary(user,chart,label){
   // Precise server-calculated Vimshottari Dasha — gives the model real data instead of forcing it to guess
   const dp=chart.dashaPeriod;
   const dashaLine=dp?`\nVimshottari Dasha right now: ${dp.lord} Maha Dasha (${dp.remaining} yrs remaining, ends ${dp.endDate}) → ${dp.antar?.lord||'?'} Antar Dasha (ends ${dp.antar?.endDate||'?'}) → ${dp.pratyantara?.lord||'?'} Pratyantara Dasha (current sub-sub-period, ends ${dp.pratyantara?.endDate||'?'})`:'';
-  return `${label}: ${user.name}, born ${user.dob}, ${user.pob} [pronouns: ${pronounStr}]
+  // nakshatraName from server is authoritative; L.nakshatras[] is fallback
+  const _n=pl=>(pl.nakshatraName||L.nakshatras[pl.nakshatra]||'');
+  const maleficsLine=chart.malefics&&chart.malefics.length?`\nMalefic influences (natal): ${chart.malefics.map(m=>m.name).join(', ')}`:'';
+  const metaLine=`\nAyanamsa (Lahiri): ${chart.ayanamsa||''}°  |  Birth UT: ${chart.birthUT||''}`;
+  return `${label}: ${user.name}, born ${user.dob} at ${user.tob||'unknown'}, ${user.pob} [pronouns: ${pronounStr}]
 Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°${_ll}
-Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | ${L.nakshatras[p[0].nakshatra]} pada ${p[0].pada} | House ${h(p[0])}
-Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | ${L.nakshatras[p[1].nakshatra]} pada ${p[1].pada} | House ${h(p[1])}
-Mars: ${L.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | ${L.nakshatras[p[2].nakshatra]} | House ${h(p[2])}
-Mercury: ${L.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | ${L.nakshatras[p[3].nakshatra]} | House ${h(p[3])}
-Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | ${L.nakshatras[p[4].nakshatra]} | House ${h(p[4])}
-Venus: ${L.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | ${L.nakshatras[p[5].nakshatra]} | House ${h(p[5])}
-Saturn: ${L.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | ${L.nakshatras[p[6].nakshatra]} | House ${h(p[6])}
-Rahu: ${L.signs[p[7].sign]} ${p[7].degree}° | ${L.nakshatras[p[7].nakshatra]} | House ${h(p[7])}
-Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | ${L.nakshatras[p[8].nakshatra]} | House ${h(p[8])}${dashaLine}`;
+Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} pada ${p[0].pada} | House ${h(p[0])}
+Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} pada ${p[1].pada} | House ${h(p[1])}
+Mars: ${L.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | Nakshatra: ${_n(p[2])} pada ${p[2].pada} | House ${h(p[2])}
+Mercury: ${L.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | Nakshatra: ${_n(p[3])} pada ${p[3].pada} | House ${h(p[3])}
+Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])} pada ${p[4].pada} | House ${h(p[4])}
+Venus: ${L.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | Nakshatra: ${_n(p[5])} pada ${p[5].pada} | House ${h(p[5])}
+Saturn: ${L.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])} pada ${p[6].pada} | House ${h(p[6])}
+Rahu: ${L.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])} pada ${p[7].pada} | House ${h(p[7])}
+Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])} pada ${p[8].pada} | House ${h(p[8])}${maleficsLine}${dashaLine}${metaLine}`;
 }
 
 async function beginSynastry(){
