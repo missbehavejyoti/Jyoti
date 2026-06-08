@@ -3215,10 +3215,19 @@ async function beginSynastry(){
     synUserA={name:nameA,dob:dobA,tob:tobA,pob:pobA,gender:genderA};
     synUserB={name:nameB,dob:dobB,tob:tobB,pob:pobB,gender:genderB};
     const _calcSynChart=async(dob,tob,geo)=>{
-      const r=await fetch('/api/calc-chart',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({dob,tob:tob+':00',lat:geo.lat,lon:geo.lon,birthTZ:geo.tz})});
-      if(!r.ok)return calcChart(dob,tob+':00',{lat:geo.lat,lon:geo.lon},geo.utcOff);
-      return await r.json();
+      let lastErr='';
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          if(attempt>0)await new Promise(r=>setTimeout(r,1500*attempt));
+          const r=await fetch('/api/calc-chart',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({dob,tob:tob+':00',lat:geo.lat,lon:geo.lon,birthTZ:geo.tz})});
+          if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'Server error '+r.status);}
+          const data=await r.json();
+          if(!data||!data.planets)throw new Error('Invalid chart data from server');
+          return data;
+        }catch(e){lastErr=e.message||'Network error';}
+      }
+      throw new Error(currentLang==='hi'?'कुंडली गणना विफल: '+lastErr:currentLang==='es'?'Error al calcular la carta: '+lastErr:'Chart calculation failed: '+lastErr);
     };
     synChartA=await _calcSynChart(dobA,tobA,geoA);
     synChartB=await _calcSynChart(dobB,tobB,geoB);
