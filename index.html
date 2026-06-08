@@ -1936,7 +1936,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
       const resp = await fetch('/api/get-remedy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily'})
+        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily', daysUntilMonthEnd: new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()})
       });
       if(!resp.ok){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('api-error');}
       const data = await resp.json();
@@ -2004,6 +2004,8 @@ function renderDailyReading(r,dayName){
       ${prep.timing_note?`<p style="font-size:.8rem;color:var(--dim);font-style:italic;margin-top:.7rem">${prep.timing_note}</p>`:''}
     </div>`;
   }
+  // Push notification — fires once per calendar month when monthly prep list is present
+  if(r.month_end_prep){try{const _nd=new Date();const _pk='jyoti_prep_notif_'+_nd.getFullYear()+'_'+(_nd.getMonth()+1);if(!localStorage.getItem(_pk)){localStorage.setItem(_pk,'1');if('Notification' in window){const _nm=new Date(_nd.getFullYear(),_nd.getMonth()+1,1).toLocaleString('en-AU',{month:'long'});const _fire=()=>{try{new Notification('Jyoti: Your '+_nm+' Practice Supplies',{body:r.month_end_prep.intro||r.month_end_prep.title||'Your spiritual supplies list for next month is ready.',icon:'/icons/icon-192.png'});}catch(_){}};if(Notification.permission==='granted'){_fire();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')_fire();});}}}}catch(_){}}
   if(!html){renderFallbackReading(dayName,new Date());return;}
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
 }

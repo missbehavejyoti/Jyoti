@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { chartSummary, lang, type } = req.body || {};
+  const { chartSummary, lang, type, daysUntilMonthEnd } = req.body || {};
 
   if (!chartSummary) {
     return res.status(400).json({ error: 'Missing chart data' });
@@ -37,6 +37,16 @@ module.exports = async (req, res) => {
 
   // Prepend strong language enforcement for daily remedy (plain prompts — not planets which have explicit key rules)
   const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD;
+
+  // Detect month-end prep window (last 7 days of month)
+  const _daysLeft = (() => {
+    const d = parseInt(daysUntilMonthEnd);
+    if (!isNaN(d) && d >= 0) return d;
+    const m2 = (chartSummary || '').match(/Days until month end:\s*(\d+)/);
+    return m2 ? parseInt(m2[1]) : 99;
+  })();
+  const isMonthEndPrep = isDailyRemedy && _daysLeft >= 0 && _daysLeft <= 7;
+
   const LANG_PREFIX = isDailyRemedy
     ? (lang === 'hi'
       ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English.\n\n'
@@ -111,7 +121,7 @@ CORE RULES — NEVER VIOLATE:
 7. LANGUAGE: ${langInstruction}
 8. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
 9. PUNCTUATION: NEVER use an em dash (—) or en dash (–) anywhere in your written text. This is a strict rule with no exceptions. Use a comma, period, semicolon, colon, or parentheses instead, whichever reads most naturally in the sentence.
-
+${isMonthEndPrep ? `\n10. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field in your JSON response with a personalised list of the physical ritual items they need to source before next month begins. Ground each item specifically in their active dasha lords (Maha, Antar, Pratyantara) for next month. Include 4 to 7 items with categories, quantities, and practical sourcing notes. No em dashes in any text.\n` : ''}
 JSON structure:
 {
   "greeting": "Personal opening line using their name",
@@ -132,7 +142,16 @@ JSON structure:
   },
   "no_remedy_message": "If has_remedy is false, a loving message about why today is a day of rest or grace. Null if remedy exists.",
   "tomorrow_preview": "One gentle sentence hinting at tomorrow's Vara lord energy and what to expect",
-  "gemstone": { "stone": "name of stone", "planet": "planet it serves", "wear": "brief guidance on how/when/which finger to wear it", "why": "1 sentence on why this stone supports them specifically now" } or null if no gemstone is appropriate today
+  "gemstone": { "stone": "name of stone", "planet": "planet it serves", "wear": "brief guidance on how/when/which finger to wear it", "why": "1 sentence on why this stone supports them specifically now" } or null if no gemstone is appropriate today${isMonthEndPrep ? `,
+  "month_end_prep": {
+    "title": "Short header naming next month, e.g. 'July Practice Supplies'",
+    "intro": "1-2 sentences on how these items serve this person's specific dasha energy for next month",
+    "items_needed": [
+      "Category: Item name, quantity and practical sourcing note",
+      "...4 to 7 items total..."
+    ],
+    "timing_note": "One practical sentence on when and where to acquire these items before the month begins"
+  }` : ''}
 }`;
 
   const userMessage = isNakshatra
