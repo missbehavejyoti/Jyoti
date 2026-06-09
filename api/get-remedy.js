@@ -121,6 +121,7 @@ CORE RULES — NEVER VIOLATE:
 7. LANGUAGE: ${langInstruction}
 8. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
 9. PUNCTUATION: NEVER use an em dash (—) or en dash (–) anywhere in your written text. This is a strict rule with no exceptions. Use a comma, period, semicolon, colon, or parentheses instead, whichever reads most naturally in the sentence.
+10. PRACTICES LENGTH: Each practice bullet must be ONE SHORT SENTENCE — strict maximum 15 words. Format: action verb + what + when/how many. No explanation, no context, no theory. Examples of correct length: "Light a ghee lamp at sunrise and offer water to the Sun." / "Chant Om Namah Shivaya 108 times before noon." / "Place fresh white flowers at your altar this morning." If you cannot say it in 15 words, cut it shorter, not longer.
 ${isMonthEndPrep ? `\n10. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field in your JSON response with a personalised list of the physical ritual items they need to source before next month begins. Ground each item specifically in their active dasha lords (Maha, Antar, Pratyantara) for next month. Include 4 to 7 items with categories, quantities, and practical sourcing notes. No em dashes in any text.\n` : ''}
 JSON structure:
 {
@@ -130,9 +131,9 @@ JSON structure:
   "remedy": {
     "title": "Brief title of today's practice",
     "practices": [
-      "First practice — one concrete action with exactly what to do, when, and how many times if mantra. No theory. Pure action.",
-      "Second practice — one concrete action. Different in nature from the first (e.g. body/offering/mantra/journaling/attention). Specific.",
-      "Third practice — one concrete action. Keep it simple and doable today."
+      "One short sentence, max 15 words. Action + what + when. No theory.",
+      "One short sentence, max 15 words. Different type from first (mantra/offering/body/attention).",
+      "One short sentence, max 15 words. Simple, doable today."
     ],
     "mantra": "The exact Sanskrit mantra if applicable, or null if not needed today",
     "mantra_phonetic": "Syllable-by-syllable pronunciation guide in Roman script, e.g. 'Om (ohm) · Na·ma·shi·va·ya (nah·mah·shih·vah·yah)'. Use · between syllables within a word, spaces between words. Always provide when mantra exists, null otherwise.",
