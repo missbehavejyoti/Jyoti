@@ -1829,7 +1829,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_daily6_'+todayStr()+'_'+capturedLang)||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_daily7_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''))||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=2)||r.no_remedy_message);
     if(cached&&hasContent){
@@ -1947,7 +1947,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_daily6_'+todayStr()+'_'+capturedLang,JSON.stringify({reading:dailyData}));}catch(e){}
+    try{localStorage.setItem('jyoti_daily7_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''),JSON.stringify({reading:dailyData}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
