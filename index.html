@@ -777,7 +777,7 @@ select option{background:var(--s2);color:var(--text)}
       <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-es="Términos de Servicio">Terms of Service</a>
       <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-es="Política de Privacidad">Privacy Policy</a>
       <a href="#" onclick="openModal('disclaimer')" data-en="Disclaimer" data-hi="अस्वीकरण" data-es="Aviso Legal">Disclaimer</a>
-      <a href="mailto:hellojyoti@proton.me" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
+      <a href="#" onclick="(function(el){navigator.clipboard&&navigator.clipboard.writeText('hellojyoti@proton.me').then(()=>{const t=el.textContent;el.textContent='hellojyoti@proton.me — copied!';setTimeout(()=>el.textContent=t,2200);});return false;})(this);return false" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
     </div>
   </div>
 <!-- Glossary Popup -->
