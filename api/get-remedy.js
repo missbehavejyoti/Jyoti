@@ -178,14 +178,14 @@ JSON structure:
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
           max_tokens: (()=>{
-            // Hindi (Devanagari) needs more tokens than English but high limits cause 504s
-            const hi = lang === 'hi';
-            if (isSoul)                        return hi ? 2200 : 2000;
-            if (isPlanet)                      return hi ? 2000 : 1800;
-            if (isPlanetD)                     return hi ?  350 :  250;
-            if (isPlanetC)                     return hi ?  600 :  450;
-            if (isPlanetA || isPlanetB)        return hi ?  900 :  650;
-            return                                    hi ? 2000 : 1100; // daily remedy
+            // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
+            const hi = lang === 'hi', es = lang === 'es';
+            if (isSoul)                        return hi ? 2600 : es ? 2400 : 2000;
+            if (isPlanet)                      return hi ? 2400 : es ? 2200 : 1800;
+            if (isPlanetD)                     return hi ?  400 : es ?  320 :  250;
+            if (isPlanetC)                     return hi ?  700 : es ?  560 :  450;
+            if (isPlanetA || isPlanetB)        return hi ? 1050 : es ?  820 :  650;
+            return                                    hi ? 2200 : es ? 1400 : 1100; // daily remedy
           })(),
           system: LANG_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
