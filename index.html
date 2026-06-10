@@ -601,6 +601,9 @@ select option{background:var(--s2);color:var(--text)}
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
             🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
           </button>
+          <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="margin-top:.5rem;font-size:.68rem;display:none" id="notif-test-btn">
+            🔔 <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
+          </button>
           <p id="notif-status" style="font-size:.75rem;color:var(--teal);margin-top:.4rem;font-style:italic;display:none"></p>
         </div>
       </div>
@@ -1793,7 +1796,20 @@ function renderShareBtn(){
   btn.style.display='inline-flex';
 }
 
-// ── NOTIFY ON LOAD ──
+// ── NOTIFICATIONS ──
+// Use SW registration.showNotification when available — required for iOS PWA
+// and more reliable on Android. Falls back to new Notification() in browser tabs.
+async function _swNotif(title, body, tag){
+  try{
+    if('serviceWorker' in navigator){
+      const reg=await navigator.serviceWorker.ready;
+      reg.showNotification(title,{body,icon:'/icons/icon-192.png',tag:tag||'jyoti',badge:'/icons/icon-192.png'});
+    } else {
+      new Notification(title,{body,icon:'/icons/icon-192.png',tag:tag||'jyoti'});
+    }
+  }catch(e){}
+}
+
 function checkNotifOnLoad(){
   try{
     const pref=localStorage.getItem('jyoti_notif');
@@ -1805,12 +1821,10 @@ function checkNotifOnLoad(){
     if(!hit)return;
     localStorage.setItem('jyoti_notif_shown_'+todayStr(),'1');
     const name=userData?.name||'';
-    const day=new Date().toLocaleDateString('en-AU',{weekday:'long'});
-    new Notification('Jyoti ✦ Your daily practice',{
-      body:currentLang==='hi'?`${name?name+', आपका':''} ${day} पवित्र अभ्यास तैयार है।`:currentLang==='es'?`${name?'Tu práctica sagrada de '+day+', '+name:('Tu práctica sagrada de '+day)} está lista.`:`${name?name+', your':''} ${day} sacred practice is ready.`,
-      icon:'/icons/icon-192.png',
-      tag:'jyoti-daily'
-    });
+    const _loc=currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU';
+    const day=new Date().toLocaleDateString(_loc,{weekday:'long'});
+    const _body=currentLang==='hi'?`${name?name+', आपका':''} ${day} पवित्र अभ्यास तैयार है।`:currentLang==='es'?`${name?'Tu práctica sagrada de '+day+', '+name:'Tu práctica sagrada de '+day} está lista.`:`${name?name+', your':''} ${day} sacred practice is ready.`;
+    _swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),_body,'jyoti-daily');
   }catch(e){}
 }
 
@@ -2008,7 +2022,7 @@ function renderDailyReading(r,dayName){
     </div>`;
   }
   // Push notification — fires once per calendar month when monthly prep list is present
-  if(r.month_end_prep){try{const _nd=new Date();const _pk='jyoti_prep_notif_'+_nd.getFullYear()+'_'+(_nd.getMonth()+1);if(!localStorage.getItem(_pk)){localStorage.setItem(_pk,'1');if('Notification' in window){const _loc=currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU';const _nm=new Date(_nd.getFullYear(),_nd.getMonth()+1,1).toLocaleString(_loc,{month:'long'});const _ntitle=currentLang==='hi'?'ज्योति: आपकी '+_nm+' साधना सामग्री':currentLang==='es'?'Jyoti: Tus Suministros de '+_nm:'Jyoti: Your '+_nm+' Practice Supplies';const _nbody=r.month_end_prep.intro||r.month_end_prep.title||(currentLang==='hi'?'अगले महीने की आपकी आध्यात्मिक सामग्री सूची तैयार है।':currentLang==='es'?'Tu lista de suministros espirituales para el próximo mes está lista.':'Your spiritual supplies list for next month is ready.');const _fire=()=>{try{new Notification(_ntitle,{body:_nbody,icon:'/icons/icon-192.png'});}catch(_){}};if(Notification.permission==='granted'){_fire();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')_fire();});}}}}catch(_){}}
+  if(r.month_end_prep){try{const _nd=new Date();const _pk='jyoti_prep_notif_'+_nd.getFullYear()+'_'+(_nd.getMonth()+1);if(!localStorage.getItem(_pk)){localStorage.setItem(_pk,'1');if('Notification' in window){const _loc=currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU';const _nm=new Date(_nd.getFullYear(),_nd.getMonth()+1,1).toLocaleString(_loc,{month:'long'});const _ntitle=currentLang==='hi'?'ज्योति: आपकी '+_nm+' साधना सामग्री':currentLang==='es'?'Jyoti: Tus Suministros de '+_nm:'Jyoti: Your '+_nm+' Practice Supplies';const _nbody=r.month_end_prep.intro||r.month_end_prep.title||(currentLang==='hi'?'अगले महीने की आपकी आध्यात्मिक सामग्री सूची तैयार है।':currentLang==='es'?'Tu lista de suministros espirituales para el próximo mes está lista.':'Your spiritual supplies list for next month is ready.');const _fire=()=>{_swNotif(_ntitle,_nbody,'jyoti-monthly-prep');};if(Notification.permission==='granted'){_fire();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')_fire();});}}}}catch(_){}}
   if(!html){renderFallbackReading(dayName,new Date());return;}
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
 }
@@ -2884,6 +2898,9 @@ async function requestNotifications() {
       else if(morning) localStorage.setItem('jyoti_notif','morning');
       scheduleLocalNotifications(evening, morning);
       if(btn) btn.style.display = 'none';
+      // Show test button so beta testers can immediately verify
+      const testBtn=document.getElementById('notif-test-btn');
+      if(testBtn)testBtn.style.display='inline-flex';
       if(status){
         const parts = [];
         const _ev_lbl=currentLang==='hi'?'🌙 रात 8 बजे':currentLang==='es'?'🌙 8pm noches':'🌙 8pm evenings';
@@ -2914,23 +2931,20 @@ async function requestNotifications() {
 }
 
 function scheduleLocalNotifications(evening, morning) {
-  // Use setTimeout for same-session reminders
-  // In production, server-side push handles cross-session delivery
   const now = new Date();
+  const name = userData?.name || '';
 
   if (evening) {
     const target = new Date();
     target.setHours(20, 0, 0, 0);
     if (target <= now) target.setDate(target.getDate() + 1);
     const msUntil = target - now;
-    if (msUntil < 12 * 60 * 60 * 1000) { // within 12 hours
+    if (msUntil < 12 * 60 * 60 * 1000) {
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification("Jyoti ✨ Tomorrow's Practice", {
-            body: `${userData.name ? userData.name + ', your' : 'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`,
-            icon: '/icons/icon-192.png',
-            tag: 'evening-prep'
-          });
+          const title = currentLang==='hi'?'ज्योति ✦ कल का अभ्यास':currentLang==='es'?'Jyoti ✦ Práctica de Mañana':"Jyoti ✦ Tomorrow's Practice";
+          const body = currentLang==='hi'?`${name?name+', आपका':'आपका'} कल का पवित्र उपाय तैयार है। श्रद्धापूर्वक तैयारी करें।`:currentLang==='es'?`${name?'Tu remedio sagrado de mañana, '+name:'Tu remedio sagrado de mañana'} está listo. Prepárate con intención.`:`${name?name+', your':'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`;
+          _swNotif(title, body, 'evening-prep');
         }
       }, msUntil);
     }
@@ -2944,11 +2958,9 @@ function scheduleLocalNotifications(evening, morning) {
     if (msUntil < 12 * 60 * 60 * 1000) {
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification('Jyoti ✨: Begin Your Practice', {
-            body: `Good morning${userData.name ? ', ' + userData.name : ''}. Your sacred practice for today is waiting.`,
-            icon: '/icons/icon-192.png',
-            tag: 'morning-reminder'
-          });
+          const title = currentLang==='hi'?'ज्योति ✦ अभ्यास शुरू करें':currentLang==='es'?'Jyoti ✦ Comienza Tu Práctica':'Jyoti ✦ Begin Your Practice';
+          const body = currentLang==='hi'?`शुभ प्रभात${name?', '+name:''}। आज का पवित्र अभ्यास आपकी प्रतीक्षा कर रहा है।`:currentLang==='es'?`Buenos días${name?', '+name:''}. Tu práctica sagrada de hoy te espera.`:`Good morning${name?', '+name:''}. Your sacred practice for today is waiting.`;
+          _swNotif(title, body, 'morning-reminder');
         }
       }, msUntil);
     }
@@ -3141,6 +3153,16 @@ function resetChart(){
     }
     // Otherwise stay on panel 1 — user needs to enter chart details first
   }catch(e){}
+})();
+
+// Show test notification button if permission already granted from previous session
+(function initNotifUI(){
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    const btn=document.getElementById('notif-btn');
+    const testBtn=document.getElementById('notif-test-btn');
+    if(btn)btn.style.display='none';
+    if(testBtn)testBtn.style.display='inline-flex';
+  }
 })();
 
 // ── SYNASTRY ──
