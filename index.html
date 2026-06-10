@@ -1433,6 +1433,8 @@ async function buildChartAsync(){
 }
 
 function goToPanel(n){
+  // Paid users with saved chart are locked to panel 5 — details cannot be re-entered
+  if(n===1&&localStorage.getItem('jyoti_tier')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -3048,7 +3050,7 @@ function resetChart(){
   window.location.reload();
 }
 
-// Auto-restore saved chart — preload data but stay on homepage so new users/testers see sign-up
+// Auto-restore saved chart — paid users go straight to panel 5, unpaid see continue button
 (function initAutoRestore(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
@@ -3056,7 +3058,24 @@ function resetChart(){
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
-    // Show returning-user banner on panel 1 instead of jumping to panel 5
+    const tier=localStorage.getItem('jyoti_tier');
+    if(tier){
+      // Paid subscriber — skip panels 1-4 entirely, go straight to daily practice
+      showChart();
+      _activatePanel(5);
+      // Hide edit/back buttons so details can't be changed mid-subscription
+      document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
+        const btn=el.closest('button');if(btn)btn.style.display='none';
+      });
+      if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
+      else{
+        setTimeout(()=>showFullChart(),100);
+        setTimeout(()=>loadNakshatraReading(),200);
+        setTimeout(()=>showDailyReading(),200);
+      }
+      return;
+    }
+    // Has chart but hasn't paid — show continue button so they can proceed to payment
     const btn=document.createElement('button');
     btn.className='btn btn-gold btn-full';
     btn.style.cssText='margin-top:.8rem;font-size:.85rem';
@@ -3064,8 +3083,8 @@ function resetChart(){
     btn.onclick=function(){
       showChart();
       _activatePanel(5);
-      const tier=localStorage.getItem('jyoti_tier')||'full';
-      if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
+      const t=localStorage.getItem('jyoti_tier')||'full';
+      if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
       else{
         setTimeout(()=>showFullChart(),100);
         setTimeout(()=>loadNakshatraReading(),200);
@@ -3095,6 +3114,9 @@ function resetChart(){
       if(userData.lang)setLang(userData.lang);
       showChart();
       _activatePanel(5);
+      document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
+        const btn=el.closest('button');if(btn)btn.style.display='none';
+      });
       if(tier==='compat'){setTimeout(()=>applyCompatMode(),300);}
       else{
         setTimeout(()=>showFullChart(),100);
