@@ -383,7 +383,7 @@ select option{background:var(--s2);color:var(--text)}
       <div class="g2">
         <div class="field">
           <label data-en="Email Address" data-hi="ईमेल पता" data-es="Correo Electrónico">Email Address</label>
-          <input type="email" id="email" placeholder="your@email.com">
+          <input type="email" id="email" placeholder="your@email.com" data-en="your@email.com" data-hi="your@email.com" data-es="tu@email.com">
         </div>
         <div class="field">
           <label data-en="Gender" data-hi="लिंग" data-es="Género">Gender</label>
@@ -777,7 +777,7 @@ select option{background:var(--s2);color:var(--text)}
       <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-es="Términos de Servicio">Terms of Service</a>
       <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-es="Política de Privacidad">Privacy Policy</a>
       <a href="#" onclick="openModal('disclaimer')" data-en="Disclaimer" data-hi="अस्वीकरण" data-es="Aviso Legal">Disclaimer</a>
-      <a href="#" onclick="(function(el){navigator.clipboard&&navigator.clipboard.writeText('hellojyoti@proton.me').then(()=>{const t=el.textContent;el.textContent='hellojyoti@proton.me — copied!';setTimeout(()=>el.textContent=t,2200);});return false;})(this);return false" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
+      <a href="#" onclick="(function(el){navigator.clipboard&&navigator.clipboard.writeText('hellojyoti@proton.me').then(()=>{const t=el.textContent;const m=document.documentElement.lang==='hi'?'hellojyoti@proton.me — कॉपी हो गया!':document.documentElement.lang==='es'?'hellojyoti@proton.me — ¡copiado!':'hellojyoti@proton.me — copied!';el.textContent=m;setTimeout(()=>el.textContent=t,2200);});return false;})(this);return false" data-en="Contact" data-hi="संपर्क" data-es="Contacto">Contact</a>
     </div>
   </div>
 <!-- Glossary Popup -->
@@ -881,7 +881,7 @@ function loadDemo(){
 
   // Show a quick toast
   const toast = document.createElement('div');
-  toast.textContent = '◈ Demo mode, exploring as Priya Sharma';
+  toast.textContent = currentLang==='hi'?'◈ डेमो मोड, प्रिया शर्मा के रूप में':currentLang==='es'?'◈ Modo demo, explorando como Priya Sharma':'◈ Demo mode, exploring as Priya Sharma';
   toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:rgba(200,169,74,.15);border:1px solid rgba(200,169,74,.3);color:var(--gold);font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1.4rem;border-radius:20px;z-index:999;white-space:nowrap';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
@@ -2001,14 +2001,14 @@ function renderDailyReading(r,dayName){
   if(r.month_end_prep){
     const prep=r.month_end_prep;
     html+=`<div style="background:rgba(26,148,144,.06);border:1px solid rgba(26,148,144,.25);border-radius:12px;padding:1.2rem 1.5rem;margin-top:1rem">
-      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--teal);margin-bottom:.5rem">📋 ${prep.title||'Preparing for Next Month'}</div>
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--teal);margin-bottom:.5rem">📋 ${prep.title||(currentLang==='hi'?'अगले महीने की तैयारी':currentLang==='es'?'Preparando para el Próximo Mes':'Preparing for Next Month')}</div>
       <p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:.8rem">${prep.intro||''}</p>
       <ul style="list-style:none;padding:0;margin:0">${(prep.items_needed||[]).map(item=>`<li style="padding:.35rem 0;border-bottom:1px solid rgba(26,148,144,.1);font-size:.87rem;color:var(--text)">✓ ${item}</li>`).join('')}</ul>
       ${prep.timing_note?`<p style="font-size:.8rem;color:var(--dim);font-style:italic;margin-top:.7rem">${prep.timing_note}</p>`:''}
     </div>`;
   }
   // Push notification — fires once per calendar month when monthly prep list is present
-  if(r.month_end_prep){try{const _nd=new Date();const _pk='jyoti_prep_notif_'+_nd.getFullYear()+'_'+(_nd.getMonth()+1);if(!localStorage.getItem(_pk)){localStorage.setItem(_pk,'1');if('Notification' in window){const _nm=new Date(_nd.getFullYear(),_nd.getMonth()+1,1).toLocaleString('en-AU',{month:'long'});const _fire=()=>{try{new Notification('Jyoti: Your '+_nm+' Practice Supplies',{body:r.month_end_prep.intro||r.month_end_prep.title||'Your spiritual supplies list for next month is ready.',icon:'/icons/icon-192.png'});}catch(_){}};if(Notification.permission==='granted'){_fire();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')_fire();});}}}}catch(_){}}
+  if(r.month_end_prep){try{const _nd=new Date();const _pk='jyoti_prep_notif_'+_nd.getFullYear()+'_'+(_nd.getMonth()+1);if(!localStorage.getItem(_pk)){localStorage.setItem(_pk,'1');if('Notification' in window){const _loc=currentLang==='hi'?'hi-IN':currentLang==='es'?'es-ES':'en-AU';const _nm=new Date(_nd.getFullYear(),_nd.getMonth()+1,1).toLocaleString(_loc,{month:'long'});const _ntitle=currentLang==='hi'?'ज्योति: आपकी '+_nm+' साधना सामग्री':currentLang==='es'?'Jyoti: Tus Suministros de '+_nm:'Jyoti: Your '+_nm+' Practice Supplies';const _nbody=r.month_end_prep.intro||r.month_end_prep.title||(currentLang==='hi'?'अगले महीने की आपकी आध्यात्मिक सामग्री सूची तैयार है।':currentLang==='es'?'Tu lista de suministros espirituales para el próximo mes está lista.':'Your spiritual supplies list for next month is ready.');const _fire=()=>{try{new Notification(_ntitle,{body:_nbody,icon:'/icons/icon-192.png'});}catch(_){}};if(Notification.permission==='granted'){_fire();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')_fire();});}}}}catch(_){}}
   if(!html){renderFallbackReading(dayName,new Date());return;}
   document.getElementById('main-remedy').outerHTML=`<div id="main-remedy">${html}</div>`;
 }
@@ -2764,7 +2764,7 @@ function openChant(mantra,meaning,target,phonetic){
   document.getElementById('cm-mantra').textContent=mantra;
   document.getElementById('cm-meaning').textContent=meaning||'';
   document.getElementById('cm-count').textContent='0';
-  document.getElementById('cm-target').textContent=`of ${chantTarget}`;
+  document.getElementById('cm-target').textContent=currentLang==='hi'?`में से ${chantTarget}`:currentLang==='es'?`de ${chantTarget}`:`of ${chantTarget}`;
   document.getElementById('cm-bar').style.width='0%';
   // Phonetic guide — use passed value or fall back to static lookup
   const ph=phonetic||MANTRA_PHONETICS[mantra]||'';
@@ -2857,7 +2857,7 @@ async function requestNotifications() {
   const morning = document.getElementById('nb-morning')?.classList.contains('agreed') || false;
 
   if (!evening && !morning) {
-    if(status){ status.style.color='var(--dim)'; status.textContent = 'Please select at least one reminder time.'; status.style.display='block'; }
+    if(status){ status.style.color='var(--dim)'; status.textContent = currentLang==='hi'?'कृपया कम से कम एक अनुस्मारक समय चुनें।':currentLang==='es'?'Por favor selecciona al menos un horario de recordatorio.':'Please select at least one reminder time.'; status.style.display='block'; }
     return;
   }
 
@@ -2869,7 +2869,7 @@ async function requestNotifications() {
     if(btn) btn.style.display='none';
     if(status){
       status.style.color='var(--teal)';
-      status.textContent = '✦ Preferences saved. Add Jyoti to your Home Screen to receive reminders.';
+      status.textContent = currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं। अनुस्मारक पाने के लिए ज्योति को होम स्क्रीन में जोड़ें।':currentLang==='es'?'✦ Preferencias guardadas. Agrega Jyoti a tu pantalla de inicio para recibir recordatorios.':'✦ Preferences saved. Add Jyoti to your Home Screen to receive reminders.';
       status.style.display='block';
     }
     return;
@@ -2886,17 +2886,20 @@ async function requestNotifications() {
       if(btn) btn.style.display = 'none';
       if(status){
         const parts = [];
-        if(evening) parts.push('🌙 8pm evenings');
-        if(morning) parts.push('🌅 6am mornings');
+        const _ev_lbl=currentLang==='hi'?'🌙 रात 8 बजे':currentLang==='es'?'🌙 8pm noches':'🌙 8pm evenings';
+        const _mo_lbl=currentLang==='hi'?'🌅 सुबह 6 बजे':currentLang==='es'?'🌅 6am mañanas':'🌅 6am mornings';
+        const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
+        if(evening) parts.push(_ev_lbl);
+        if(morning) parts.push(_mo_lbl);
         status.style.color='var(--teal)';
-        status.textContent = `✦ Reminders set for ${parts.join(' and ')}`;
+        status.textContent = currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;
         status.style.display = 'block';
       }
     } else {
       if(btn) btn.style.display='none';
       if(status){
         status.style.color='var(--teal)';
-        status.textContent = '✦ Preferences saved. Enable notifications in your browser settings to receive reminders.';
+        status.textContent = currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं। अनुस्मारक पाने के लिए ब्राउज़र सेटिंग में सूचनाएं चालू करें।':currentLang==='es'?'✦ Preferencias guardadas. Activa las notificaciones en la configuración del navegador.':'✦ Preferences saved. Enable notifications in your browser settings to receive reminders.';
         status.style.display = 'block';
       }
     }
@@ -2904,7 +2907,7 @@ async function requestNotifications() {
     if(btn) btn.style.display='none';
     if(status){
       status.style.color='var(--teal)';
-      status.textContent = '✦ Preferences saved.';
+      status.textContent = currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं।':currentLang==='es'?'✦ Preferencias guardadas.':'✦ Preferences saved.';
       status.style.display='block';
     }
   }
@@ -3419,7 +3422,7 @@ function prefillSynPersonA(){
   if(tobEl)tobEl.value=userData.tob||'12:00';
   if(pobEl)pobEl.value=userData.pob||'';
   const preEl=document.getElementById('syn-a-prefilled');
-  if(preEl)preEl.innerHTML=`<strong style="color:var(--text)">${userData.name||'You'}</strong> &nbsp;·&nbsp; ${userData.dob||''} &nbsp;·&nbsp; ${userData.tob||''} &nbsp;·&nbsp; ${userData.pob||''}`;
+  if(preEl)preEl.innerHTML=`<strong style="color:var(--text)">${userData.name||(currentLang==='hi'?'आप':currentLang==='es'?'Tú':'You')}</strong> &nbsp;·&nbsp; ${userData.dob||''} &nbsp;·&nbsp; ${userData.tob||''} &nbsp;·&nbsp; ${userData.pob||''}`;
   const fieldsEl=document.getElementById('syn-a-fields');
   if(fieldsEl)fieldsEl.style.display='none';
 }
@@ -3516,7 +3519,7 @@ function _renderTier1(d){
     <div style="text-align:center;margin-bottom:1.4rem">
       <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">${sl.compatHdr}</div>
       <div style="font-family:'Cinzel',serif;font-size:.82rem;color:var(--muted);margin-bottom:.8rem">${nA} · ${nB}</div>
-      <div class="resonance-pill">${d.resonance_label||'Deep Connection'}</div>
+      <div class="resonance-pill">${d.resonance_label||(currentLang==='hi'?'गहरा संबंध':currentLang==='es'?'Conexión Profunda':'Deep Connection')}</div>
     </div>
     <div class="syn-section">
       <div class="syn-label">${sl.bondNature}</div>
@@ -3549,7 +3552,7 @@ function _renderTier1(d){
 
 function _renderSynSection(type,d){
   const el=_getOrCreateSection(type);
-  const nA=synUserA?.name||'Person A',nB=synUserB?.name||'Person B';
+  const nA=synUserA?.name||(currentLang==='hi'?'व्यक्ति A':currentLang==='es'?'Persona A':'Person A'),nB=synUserB?.name||(currentLang==='hi'?'व्यक्ति B':currentLang==='es'?'Persona B':'Person B');
   const sl=_sl();
   const inConn=currentLang==='hi'?'इस संबंध में':currentLang==='es'?'EN ESTA CONEXIÓN':'IN THIS CONNECTION';
   const carriesFor=(x,y)=>currentLang==='hi'?`${x} ${y} के लिए`:currentLang==='es'?`LO QUE ${x} LLEVA PARA ${y}`:`WHAT ${x} CARRIES FOR ${y}`;
@@ -3751,8 +3754,8 @@ function openDeepReadingByType(type){
   const sl=_sl();
   const titles={karmic:sl.dt_karmic,duration:sl.dt_duration,gifts:sl.dt_gifts,higher_road:sl.dt_higher_road,soul_debt:sl.dt_soul_debt,work_life:sl.dt_work_life,timing:sl.dt_timing};
   let title=titles[type];
-  if(type==='other_a')title=sl.dt_other_pre+(synUserA?.name||'Person A')+sl.dt_other_suf;
-  else if(type==='other_b')title=sl.dt_other_pre+(synUserB?.name||'Person B')+sl.dt_other_suf;
+  if(type==='other_a')title=sl.dt_other_pre+(synUserA?.name||(currentLang==='hi'?'व्यक्ति A':currentLang==='es'?'Persona A':'Person A'))+sl.dt_other_suf;
+  else if(type==='other_b')title=sl.dt_other_pre+(synUserB?.name||(currentLang==='hi'?'व्यक्ति B':currentLang==='es'?'Persona B':'Person B'))+sl.dt_other_suf;
   if(!title)title=sl.fullAnalysis;
   openDeepReading(type,title);
 }
