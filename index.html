@@ -655,6 +655,27 @@ select option{background:var(--s2);color:var(--text)}
         <div id="daily-content" style="display:none">
           <div class="remedy-card" id="main-remedy"></div>
           <div id="extra-remedies"></div>
+          <!-- Notification preferences — accessible from panel 5 so beta testers don't miss it -->
+          <div id="p5-notif-box" style="margin-top:1.4rem;background:var(--s2);border:1px solid var(--s4);border-radius:12px;padding:1rem 1.2rem">
+            <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;color:var(--gold-d);margin-bottom:.7rem">🔔 <span data-en="PRACTICE REMINDERS" data-hi="अभ्यास अनुस्मारक" data-es="RECORDATORIOS DE PRÁCTICA">PRACTICE REMINDERS</span></div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.7rem">
+              <button type="button" class="consent-btn agreed" id="p5-nb-evening" onclick="toggleNotif('evening');document.getElementById('nb-evening')?.classList.toggle('agreed',this.classList.contains('agreed'))">
+                <div class="cbx"></div>
+                <span style="font-size:.85rem">🌙 <span data-en="8pm — evening preparation" data-hi="रात 8 बजे — संध्या तैयारी" data-es="8pm — preparación vespertina">8pm — evening preparation</span></span>
+              </button>
+              <button type="button" class="consent-btn agreed" id="p5-nb-morning" onclick="toggleNotif('morning');document.getElementById('nb-morning')?.classList.toggle('agreed',this.classList.contains('agreed'))">
+                <div class="cbx"></div>
+                <span style="font-size:.85rem">🌅 <span data-en="6am — sunrise reminder" data-hi="सुबह 6 बजे — सूर्योदय अनुस्मारक" data-es="6am — recordatorio al amanecer">6am — sunrise reminder</span></span>
+              </button>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="requestNotificationsP5()" style="font-size:.68rem" id="p5-notif-btn">
+              🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="font-size:.68rem;display:none" id="p5-notif-test-btn">
+              ✓ <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
+            </button>
+            <p id="p5-notif-status" style="font-size:.75rem;color:var(--teal);margin-top:.4rem;font-style:italic;display:none"></p>
+          </div>
         </div>
       </div>
 
@@ -3157,13 +3178,58 @@ function resetChart(){
 
 // Show test notification button if permission already granted from previous session
 (function initNotifUI(){
-  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
-    const btn=document.getElementById('notif-btn');
-    const testBtn=document.getElementById('notif-test-btn');
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
+  ['','p5-'].forEach(pfx=>{
+    const btn=document.getElementById(pfx+'notif-btn');
+    const testBtn=document.getElementById(pfx+'notif-test-btn');
     if(btn)btn.style.display='none';
     if(testBtn)testBtn.style.display='inline-flex';
-  }
+  });
 })();
+
+// Mirror of requestNotifications() for the panel-5 notification box
+async function requestNotificationsP5(){
+  const btn=document.getElementById('p5-notif-btn');
+  const testBtn=document.getElementById('p5-notif-test-btn');
+  const status=document.getElementById('p5-notif-status');
+  const evening=document.getElementById('p5-nb-evening')?.classList.contains('agreed')||false;
+  const morning=document.getElementById('p5-nb-morning')?.classList.contains('agreed')||false;
+  if(!evening&&!morning){
+    if(status){status.style.color='var(--dim)';status.textContent=currentLang==='hi'?'कृपया कम से कम एक अनुस्मारक समय चुनें।':currentLang==='es'?'Por favor selecciona al menos un horario de recordatorio.':'Please select at least one reminder time.';status.style.display='block';}
+    return;
+  }
+  // Sync toggles with panel-4 counterparts
+  document.getElementById('nb-evening')?.classList.toggle('agreed',evening);
+  document.getElementById('nb-morning')?.classList.toggle('agreed',morning);
+  if(!('Notification' in window)){
+    if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं। ज्योति को होम स्क्रीन में जोड़ें।':currentLang==='es'?'✦ Preferencias guardadas. Agrega Jyoti a tu pantalla de inicio.':'✦ Preferences saved. Add Jyoti to your Home Screen.';status.style.display='block';}
+    return;
+  }
+  await saveNotifPrefs(evening,morning);
+  try{
+    const permission=await Notification.requestPermission();
+    if(permission==='granted'){
+      if(evening&&morning)localStorage.setItem('jyoti_notif','both');
+      else if(evening)localStorage.setItem('jyoti_notif','evening');
+      else if(morning)localStorage.setItem('jyoti_notif','morning');
+      scheduleLocalNotifications(evening,morning);
+      if(btn)btn.style.display='none';
+      if(testBtn)testBtn.style.display='inline-flex';
+      // Also update panel-4 buttons
+      document.getElementById('notif-btn')?.style.setProperty('display','none');
+      document.getElementById('notif-test-btn')?.style.setProperty('display','inline-flex');
+      const _ev=currentLang==='hi'?'🌙 रात 8 बजे':currentLang==='es'?'🌙 8pm noches':'🌙 8pm evenings';
+      const _mo=currentLang==='hi'?'🌅 सुबह 6 बजे':currentLang==='es'?'🌅 6am mañanas':'🌅 6am mornings';
+      const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
+      const parts=[];if(evening)parts.push(_ev);if(morning)parts.push(_mo);
+      if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;status.style.display='block';}
+    }else{
+      if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?'✦ ब्राउज़र सेटिंग में सूचनाएं चालू करें।':currentLang==='es'?'✦ Activa las notificaciones en ajustes del navegador.':'✦ Enable notifications in your browser settings.';status.style.display='block';}
+    }
+  }catch(e){
+    if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं।':currentLang==='es'?'✦ Preferencias guardadas.':'✦ Preferences saved.';status.style.display='block';}
+  }
+}
 
 // ── SYNASTRY ──
 // Bump this whenever synastry prompts or chart computation change — invalidates
