@@ -2948,15 +2948,36 @@ function scheduleLocalNotifications(evening, morning) {
 
 // PWA install prompt
 let deferredPrompt;
+const _isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+const _isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const _isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
+
+// Android / Chrome — native install prompt
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  // Show install banner after user has seen the chart
-  setTimeout(() => showInstallBanner(), 8000);
+  if (!_isStandalone()) setTimeout(() => _showInstallBanner(), 9000);
 });
 
-function showInstallBanner() {
-  if (!deferredPrompt) return;
+// Dismiss banner once installed
+window.addEventListener('appinstalled', () => {
+  const b = document.getElementById('install-banner');
+  if (b) b.remove();
+  deferredPrompt = null;
+});
+
+// iOS Safari — manual install instructions (no beforeinstallprompt available)
+if (_isIOS && _isSafari && !_isStandalone()) {
+  setTimeout(() => _showIOSInstallBanner(), 9000);
+}
+
+function _installDismissed() {
+  try { return Date.now() - parseInt(localStorage.getItem('jyoti_install_dim')||'0') < 3*86400000; } catch(e) { return false; }
+}
+function _markDismissed() { try { localStorage.setItem('jyoti_install_dim', Date.now()); } catch(e) {} }
+
+function _showInstallBanner() {
+  if (!deferredPrompt || _isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
   banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
@@ -2968,11 +2989,32 @@ function showInstallBanner() {
     </div>
     <div style="display:flex;flex-direction:column;gap:.4rem">
       <button onclick="installPWA()" style="background:linear-gradient(135deg,#7A6120,#C8A94A);border:none;border-radius:6px;color:#080510;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;padding:.4rem .8rem;cursor:pointer;font-weight:600">Install</button>
-      <button onclick="document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:.7rem;cursor:pointer;font-family:'Cinzel',serif">Later</button>
+      <button onclick="_markDismissed();document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:.7rem;cursor:pointer;font-family:'Cinzel',serif">Later</button>
     </div>
   `;
   document.body.appendChild(banner);
 }
+
+function _showIOSInstallBanner() {
+  if (_isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
+  banner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem">
+      <div style="font-size:1.2rem">✨</div>
+      <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;color:var(--gold);flex:1">ADD JYOTI TO YOUR HOME SCREEN</div>
+      <button onclick="_markDismissed();document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;line-height:1;padding:0">✕</button>
+    </div>
+    <div style="font-size:.82rem;color:var(--muted);line-height:1.7">
+      Tap <strong style="color:var(--gold)">Share ⬆</strong> at the bottom of Safari,<br>then <strong style="color:var(--gold)">"Add to Home Screen"</strong>
+    </div>
+  `;
+  document.body.appendChild(banner);
+}
+
+// Keep old name working (called from existing install button)
+function showInstallBanner() { _showInstallBanner(); }
 
 async function installPWA() {
   if (!deferredPrompt) return;
