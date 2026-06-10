@@ -1,4 +1,4 @@
-const CACHE = 'jyoti-v77';
+const CACHE = 'jyoti-v78';
 const SHELL = [
   '/',
   '/index.html',
@@ -56,6 +56,18 @@ self.addEventListener('fetch', e => {
         }
         return resp;
       });
+    })
+  );
+});
+
+// Open the app when a notification is tapped
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({type: 'window', includeUncontrolled: true}).then(cs => {
+      const open = cs.find(c => c.url.includes(self.location.origin));
+      if (open) return open.focus();
+      return clients.openWindow('/');
     })
   );
 });
