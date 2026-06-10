@@ -1433,8 +1433,9 @@ async function buildChartAsync(){
 }
 
 function goToPanel(n){
-  // Paid users with saved chart are locked to panel 5 — details cannot be re-entered
-  if(n===1&&localStorage.getItem('jyoti_tier')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
+  // Paid subscribers locked to panel 5 — beta testers ('beta' tier) can still re-enter details
+  const _t=localStorage.getItem('jyoti_tier');
+  if(n===1&&(_t==='full'||_t==='compat')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -2600,7 +2601,10 @@ function showPlanetError(detail){
 // ── TABS ──
 function switchTab(tab,el){
   const tier=localStorage.getItem('jyoti_tier')||'full';
-  if(tier==='compat'&&(tab==='daily'||tab==='chart')){return;}
+  if(tier==='compat'&&(tab==='daily'||tab==='chart')){
+    const m=currentLang==='hi'?'दैनिक साधना और कुंडली के लिए पूर्ण एक्सेस में अपग्रेड करें।':currentLang==='es'?'Actualiza a acceso completo para práctica diaria y lectura de carta.':'Upgrade to full access for daily practice and chart reading.';
+    alert(m);return;
+  }
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   ['daily','chart','compat'].forEach(t=>{
@@ -3036,12 +3040,20 @@ const _BE=new Date('2026-06-21T00:00:00').getTime();
 function redeemBeta(){
   const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
   const msg=document.getElementById('beta-msg');
-  if(Date.now()>_BE){msg.style.color='var(--rose)';msg.textContent='This beta period has ended. Subscribe to continue.';return;}
+  if(Date.now()>_BE){
+    msg.style.color='var(--rose)';
+    msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'El período beta ha terminado. Suscríbete para continuar.':'This beta period has ended. Subscribe to continue.';
+    return;
+  }
   if(_BC[code]){
-    msg.style.color='var(--teal)';msg.textContent='✦ Welcome, enjoy your free beta access';
-    try{localStorage.setItem('jyoti_tier','full');}catch(e){}
+    msg.style.color='var(--teal)';
+    msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access';
+    try{localStorage.setItem('jyoti_tier','beta');}catch(e){}
     setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
-  }else{msg.style.color='var(--rose)';msg.textContent='Code not recognised. Check spelling and try again.';}
+  }else{
+    msg.style.color='var(--rose)';
+    msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
+  }
 }
 
 // ── INIT ──
@@ -3059,7 +3071,7 @@ function resetChart(){
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
     const tier=localStorage.getItem('jyoti_tier');
-    if(tier){
+    if(tier==='full'||tier==='compat'){
       // Paid subscriber — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
