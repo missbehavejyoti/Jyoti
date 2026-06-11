@@ -2907,6 +2907,25 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
   if(e.target===m)closeModal(m.id.replace('modal-',''));
 }));
 
+// ── APP VERSION CHECK ──
+// Clears stale caches and reloads once when a new build is deployed.
+// Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
+const JYOTI_BUILD = '83';
+(function enforceLatestBuild(){
+  try{
+    if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
+    localStorage.setItem('jyoti_build', JYOTI_BUILD);
+    // Clear all daily reading caches from all previous key formats
+    Object.keys(localStorage).forEach(k=>{
+      if(k.startsWith('jyoti_q_')||k.startsWith('jyoti_d_')||
+         k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')){
+        localStorage.removeItem(k);
+      }
+    });
+    window.location.reload();
+  }catch(e){}
+})();
+
 // ── PWA ──
 let swRegistration = null;
 if ('serviceWorker' in navigator) {
