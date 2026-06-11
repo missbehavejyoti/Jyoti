@@ -1867,7 +1867,7 @@ async function showDailyReading(){
   try{
     const cached=JSON.parse(localStorage.getItem('jyoti_daily7_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''))||'null');
     const r=cached?.reading;
-    const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=2)||r.no_remedy_message);
+    const hasContent=r&&((r.has_remedy&&r.remedy&&(r.remedy.morning_practice||r.remedy.body_practice||(Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=2)))||r.no_remedy_message);
     if(cached&&hasContent){
       renderDailyReading(r, dayName);
       return;
@@ -1992,32 +1992,69 @@ function renderDailyReading(r,dayName){
   document.getElementById('daily-loading').style.display='none';
   document.getElementById('daily-content').style.display='block';
   let html='';
-  if(r.has_remedy&&r.remedy&&(r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening)){
+  const _L=currentLang;
+  // section header helper
+  const _hdr=(en,hi,es,icon,col)=>`<div style="font-family:'Cinzel',serif;font-size:.57rem;letter-spacing:.15em;color:${col||'var(--gold-d)'};margin-bottom:.45rem">${icon} ${_L==='hi'?hi:_L==='es'?es:en}</div>`;
+  // mantra block shared by both formats
+  const _mantraBlock=(rem,_mc)=>rem.mantra?`
+    <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">MANTRA</div>
+      <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
+      <div style="font-size:.8rem;color:var(--muted)">${rem.mantra_meaning||''}</div>
+      ${rem.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(rem.mantra_why)}</div>`:''}
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
+    </div>
+    <div class="remedy-actions">
+      <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+    </div>`:'';
+  if(r.has_remedy&&r.remedy&&(r.remedy.morning_practice||r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening)){
     const rem=r.remedy;
     const _mc=rem.mantra_count||108;
-    // Normalise to array — new format uses practices[], old cached responses use practice string
-    const _rawP=rem.practices;
-    const _practices=Array.isArray(_rawP)&&_rawP.length?_rawP:rem.practice?[rem.practice]:typeof _rawP==='string'&&_rawP.trim()?_rawP.split(/\n+/).filter(s=>s.trim()):[];
-    const _practiceHtml=_practices.map(p=>`<li style="display:flex;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08);line-height:1.7;color:var(--text)"><span style="flex-shrink:0;color:var(--gold);font-size:1.05em;margin-top:.05em">✦</span><span>${glossify(p)}</span></li>`).join('');
-    html=`
-      <div class="remedy-card">
-        <div class="remedy-day">${rem.title||dayName}</div>
-        ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;line-height:1.6">${glossify(r.cosmic_weather)}</p>`:''}
-        <ul style="list-style:none;padding:0;margin:0 0 .8rem">${_practiceHtml}</ul>
-        ${rem.timing?`<p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
-        ${rem.mantra?`
-        <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">MANTRA</div>
-          <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
-          <div style="font-size:.8rem;color:var(--muted)">${rem.mantra_meaning||''}</div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
-        </div>
-        <div class="remedy-actions">
-          <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
-        </div>`:''}
-        ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--muted);font-style:italic;margin-top:.8rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${glossify(r.tomorrow_preview)}</p>`:''}
-      </div>
-    `;
+    if(rem.morning_practice){
+      // Rich format: full instructional sections
+      html=`
+        <div class="remedy-card">
+          <div class="remedy-day">${rem.title||dayName}</div>
+          ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:${r.karma_thread?'.55rem':'1rem'};line-height:1.7">${glossify(r.cosmic_weather)}</p>`:''}
+          ${r.karma_thread?`<div style="background:rgba(200,169,74,.05);border-left:2px solid rgba(200,169,74,.35);padding:.65rem 1rem;margin-bottom:1rem;border-radius:0 8px 8px 0"><p style="font-size:.84rem;color:var(--gold-pale);line-height:1.72;margin:0">${glossify(r.karma_thread)}</p></div>`:''}
+          <div style="margin-bottom:1.1rem">
+            ${_hdr('MORNING PRACTICE','सुबह का अभ्यास','PRÁCTICA MATUTINA','☀','')}
+            <p style="font-size:.9rem;color:var(--text);line-height:1.82;margin:0">${glossify(rem.morning_practice)}</p>
+          </div>
+          ${rem.timing?`<p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
+          ${_mantraBlock(rem,_mc)}
+          ${rem.body_practice?`
+          <div style="background:var(--s2);border-radius:10px;padding:.9rem 1rem;margin:.9rem 0">
+            ${_hdr('BODY & BREATH','शरीर और श्वास','CUERPO Y ALIENTO','◈','var(--teal)')}
+            <p style="font-size:.88rem;color:var(--text);line-height:1.82;margin:0">${glossify(rem.body_practice)}</p>
+          </div>`:''}
+          ${rem.evening_practice?`
+          <div style="margin:.9rem 0;padding:.8rem 0;border-top:1px solid rgba(200,169,74,.1)">
+            ${_hdr('EVENING PRACTICE','शाम का अभ्यास','PRÁCTICA VESPERTINA','🌙','var(--muted)')}
+            <p style="font-size:.88rem;color:var(--muted);line-height:1.82;margin:0">${glossify(rem.evening_practice)}</p>
+          </div>`:''}
+          ${rem.contemplation?`
+          <div style="background:rgba(138,90,198,.05);border:1px solid rgba(138,90,198,.15);border-radius:10px;padding:.9rem 1rem;margin:.9rem 0">
+            ${_hdr(_L==='hi'?'आज का चिंतन':_L==='es'?'CONTEMPLACIÓN DE HOY':'TODAY\'S CONTEMPLATION','आज का चिंतन','CONTEMPLACIÓN DE HOY','✧','rgba(138,90,198,.85)')}
+            <p style="font-size:.9rem;color:var(--text);line-height:1.72;font-style:italic;margin:0">${glossify(rem.contemplation)}</p>
+          </div>`:''}
+          ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--muted);font-style:italic;margin-top:.8rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${glossify(r.tomorrow_preview)}</p>`:''}
+        </div>`;
+    } else {
+      // Legacy format: practices[] bullet list (backward compat for old cached readings)
+      const _rawP=rem.practices;
+      const _practices=Array.isArray(_rawP)&&_rawP.length?_rawP:rem.practice?[rem.practice]:typeof _rawP==='string'&&_rawP.trim()?_rawP.split(/\n+/).filter(s=>s.trim()):[];
+      const _practiceHtml=_practices.map(p=>`<li style="display:flex;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08);line-height:1.7;color:var(--text)"><span style="flex-shrink:0;color:var(--gold);font-size:1.05em;margin-top:.05em">✦</span><span>${glossify(p)}</span></li>`).join('');
+      html=`
+        <div class="remedy-card">
+          <div class="remedy-day">${rem.title||dayName}</div>
+          ${r.cosmic_weather?`<p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;line-height:1.6">${glossify(r.cosmic_weather)}</p>`:''}
+          <ul style="list-style:none;padding:0;margin:0 0 .8rem">${_practiceHtml}</ul>
+          ${rem.timing?`<p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">⏰ ${rem.timing}</p>`:''}
+          ${_mantraBlock(rem,_mc)}
+          ${r.tomorrow_preview?`<p style="font-size:.78rem;color:var(--muted);font-style:italic;margin-top:.8rem;padding-top:.6rem;border-top:1px solid rgba(200,169,74,.08)">✦ ${glossify(r.tomorrow_preview)}</p>`:''}
+        </div>`;
+    }
   } else if(r.no_remedy_message){
     html=`<div class="remedy-card"><div class="remedy-day">${dayName}</div><p>${glossify(r.no_remedy_message)}</p></div>`;
   }
