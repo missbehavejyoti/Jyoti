@@ -192,15 +192,15 @@ JSON structure:
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
           max_tokens: (()=>{
             // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
             const hi = lang === 'hi', es = lang === 'es';
             if (isSoul)                        return hi ? 2600 : es ? 2400 : 2000;
             if (isPlanet)                      return hi ? 2400 : es ? 2200 : 1800;
-            if (isPlanetD)                     return hi ?  400 : es ?  320 :  250;
-            if (isPlanetC)                     return hi ?  700 : es ?  560 :  450;
-            if (isPlanetA || isPlanetB)        return hi ? 1050 : es ?  820 :  650;
+            if (isPlanetD)                     return hi ?  350 : es ?  280 :  220;
+            if (isPlanetC)                     return hi ?  600 : es ?  480 :  380;
+            if (isPlanetA || isPlanetB)        return hi ?  900 : es ?  700 :  560;
             if (isDailyDepth)  return hi ? 1200 : es ? 1050 :  900;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
