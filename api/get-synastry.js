@@ -70,7 +70,8 @@ ${CORE_RULES}
 Return JSON:
 {"resonance_label":"...","bond_nature":"...","asks_of_a":"...","asks_of_b":"...","asks_of_both":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the opening compatibility assessment.`,
-      maxTokens: lang === 'hi' ? 2400 : lang === 'es' ? 1900 : 1600
+      maxTokens: lang === 'hi' ? 1400 : lang === 'es' ? 1100 : 900,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     karmic: {
@@ -91,7 +92,8 @@ ${CORE_RULES}
 Return JSON:
 {"karmic_thread":"...","dharmic_possibility":"...","verdict":"...","verdict_type":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the karmic vs dharmic analysis.`,
-      maxTokens: lang === 'hi' ? 3000 : lang === 'es' ? 2400 : 2000
+      maxTokens: lang === 'hi' ? 2000 : lang === 'es' ? 1600 : 1300,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     duration: {
@@ -114,7 +116,8 @@ ${CORE_RULES}
 Return JSON:
 {"duration_signature":"...","verdict":"...","verdict_type":"...","season":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the duration and depth analysis.`,
-      maxTokens: lang === 'hi' ? 3000 : lang === 'es' ? 2400 : 2000
+      maxTokens: lang === 'hi' ? 2000 : lang === 'es' ? 1600 : 1300,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     gifts: {
@@ -132,7 +135,8 @@ ${CORE_RULES}
 Return JSON:
 {"gifts_a":"...","gifts_b":"...","shadow_dynamic":"...","healing_potential":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the gifts and shadows analysis.`,
-      maxTokens: lang === 'hi' ? 3200 : lang === 'es' ? 2600 : 2200
+      maxTokens: lang === 'hi' ? 2100 : lang === 'es' ? 1700 : 1400,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     higher_road: {
@@ -148,7 +152,8 @@ ${CORE_RULES}
 Return JSON:
 {"higher_road_a":"...","higher_road_b":"...","practice":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the higher road guidance.`,
-      maxTokens: lang === 'hi' ? 3000 : lang === 'es' ? 2400 : 2000
+      maxTokens: lang === 'hi' ? 1800 : lang === 'es' ? 1400 : 1200,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     soul_debt: {
@@ -162,7 +167,8 @@ ${CORE_RULES}
 Return JSON:
 {"owes_a_to_b":"...","owes_b_to_a":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the soul debt and soul gift analysis.`,
-      maxTokens: lang === 'hi' ? 2700 : lang === 'es' ? 2200 : 1800
+      maxTokens: lang === 'hi' ? 1700 : lang === 'es' ? 1400 : 1100,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     work_life: {
@@ -176,7 +182,8 @@ ${CORE_RULES}
 Return JSON:
 {"work_life":"...","geography":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the work, life, and geography analysis.`,
-      maxTokens: lang === 'hi' ? 2700 : lang === 'es' ? 2200 : 1800
+      maxTokens: lang === 'hi' ? 1700 : lang === 'es' ? 1400 : 1100,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     timing: {
@@ -190,7 +197,8 @@ ${CORE_RULES}
 Return JSON:
 {"timing":"...","pressure":"..."}`,
       user: `${CHART_CONTEXT}\n\nProvide the timing and dasha window analysis.`,
-      maxTokens: lang === 'hi' ? 2700 : lang === 'es' ? 2200 : 1800
+      maxTokens: lang === 'hi' ? 1700 : lang === 'es' ? 1400 : 1100,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     other_a: {
@@ -206,7 +214,8 @@ ${CORE_RULES}
 Return JSON:
 {"rahu_warning":"...","profile":"...","chart_types":"..."}`,
       user: `${CHART_CONTEXT}\n\nAnalyse what ${A}'s chart needs and where other compatible charts live.`,
-      maxTokens: lang === 'hi' ? 3000 : lang === 'es' ? 2400 : 2000
+      maxTokens: lang === 'hi' ? 1800 : lang === 'es' ? 1500 : 1200,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     other_b: {
@@ -222,7 +231,8 @@ ${CORE_RULES}
 Return JSON:
 {"rahu_warning":"...","profile":"...","chart_types":"..."}`,
       user: `${CHART_CONTEXT}\n\nAnalyse what ${B}'s chart needs and where other compatible charts live.`,
-      maxTokens: lang === 'hi' ? 3000 : lang === 'es' ? 2400 : 2000
+      maxTokens: lang === 'hi' ? 1800 : lang === 'es' ? 1500 : 1200,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_karmic: {
@@ -418,7 +428,7 @@ Return JSON:
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: config.model || 'claude-sonnet-4-6',
           max_tokens: config.maxTokens,
           system: LANG_PREFIX + config.system,
           messages: [{ role: 'user', content: config.user }]
