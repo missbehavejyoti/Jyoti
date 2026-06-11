@@ -34,6 +34,8 @@ module.exports = async (req, res) => {
   const isPlanetB   = type === 'planets_b';
   const isPlanetC   = type === 'planets_c';
   const isPlanetD   = type === 'planets_d';
+  const isDailyQuick = type === 'daily_quick';
+  const isDailyDepth = type === 'daily_depth';
 
   // Prepend strong language enforcement for daily remedy (plain prompts — not planets which have explicit key rules)
   const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD;
@@ -92,6 +94,22 @@ ${lang === 'hi'
   ? 'IMPORTANT: Write the reading text in Spanish. The JSON keys must remain in English exactly as shown. Only the reading values should be in Spanish.'
   : 'Write the readings in English.'}`
 
+    : isDailyDepth
+    ? `${langInstruction} Every single word must be in the requested language.
+
+You are Jyoti, a master Nadi Jyotish guide providing the expanded daily practice guidance. The user has already seen the three action bullets and mantra for today. Now give them the deeper layer.
+
+RULES: Warm, specific, grounded in this chart. No em dashes (—) or en dashes (–). No generic content. No medical/financial/legal advice. Valid JSON only.
+
+JSON structure:
+{
+  "karma_thread": "1-2 sentences. What deeper pattern is this person working through in this dasha period? Connect today honestly and warmly to their larger karmic arc.",
+  "morning_practice": "3-5 complete instructional sentences expanding on today's primary practice. Physical orientation (direction, posture, materials), repetitions or duration, quality of attention, what this awakens specifically in this chart. Write as a teacher.",
+  "body_practice": "2-3 sentences. Name the practice (asana, pranayama, mudra). Precise instruction on position, breath, duration. What quality in this chart it directly addresses.",
+  "evening_practice": "2-3 sentences. A specific practice for completion or integration, different in quality from morning. Timing and what to consciously release.",
+  "contemplation": "One searching question for journaling or meditation — specific to the karmic pattern in their current Pratyantara dasha. Not generic. The real growing edge of their work right now."
+}`
+
     : `${langInstruction} Every single word of your response must be in the requested language — do not switch to English at any point.
 
 You are Jyoti, a master Nadi Jyotish guide. Your daily practice readings are the antithesis of generic horoscope content: each word is specific to this exact person's chart on this exact day. You write as a wise teacher speaking directly to a student — complete, instructional guidance that tells them what to do, how to do it precisely, and why it serves their specific planetary conditions today. No bullet fragments. No filler. No content that could apply to anyone of any sign.
@@ -124,30 +142,24 @@ ABSOLUTE RULES:
 ${isMonthEndPrep ? `8. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field with physical ritual items grounded in their active dasha lords for next month. 4-7 items with categories, quantities, and practical sourcing notes.\n` : ''}
 JSON structure:
 {
-  "cosmic_weather": "2-3 sentences. Name today's Vara lord and its exact natal placement quality in this chart. Name the active Pratyantara dasha lord and what karma it is ripening. Name any transits within 5 degrees of natal planets right now. Nothing here could apply to a different birth chart.",
-  "karma_thread": "1-2 sentences. What deeper pattern is this person working through in this dasha period? Connect today honestly and warmly to their larger karmic arc.",
+  "cosmic_weather": "1-2 sentences. Name today's Vara lord and its exact natal placement quality. Name the Pratyantara dasha lord and what karma it is ripening. Name any transit within 5 degrees of a natal planet right now. Nothing here could apply to a different chart.",
   "has_remedy": true or false,
   "remedy": {
-    "title": "Name of today's main practice, specific to these chart conditions",
-    "timing": "Best time today for this practice with brief reasoning drawn from the chart",
+    "title": "Name of today's practice, specific to these chart conditions",
+    "timing": "Best time today with brief reasoning drawn from the chart",
     "practices": [
-      "BULLET 1 — 1-2 sentences. The primary morning action: what to do physically, how many times or how long, naming the specific planet or house this serves in this chart. Starts with a verb. Immediately actionable.",
-      "BULLET 2 — 1-2 sentences. A second distinct practice type (mantra, offering, or awareness act). Chart-specific — must name a planetary placement or dasha influence.",
-      "BULLET 3 — 1-2 sentences. A third practice for the body, a physical act, or an intentional quality to carry through the day. Grounded in this chart."
+      "BULLET 1 — 1-2 sentences. The primary morning action naming the specific planet or house this serves. Starts with a verb. Immediately actionable.",
+      "BULLET 2 — 1-2 sentences. A second distinct practice type. Must name a planetary placement or dasha influence.",
+      "BULLET 3 — 1-2 sentences. A body practice or intentional quality to carry through the day. Grounded in this chart."
     ],
-    "mantra": "Exact Sanskrit mantra, or null if no mantra is appropriate",
-    "mantra_phonetic": "Syllable-by-syllable Roman guide, e.g. 'Om (ohm) · Hraam (hraam) · Hreem (hreem)'. Middle dot between syllables within one word, space between words. Always include when mantra is given.",
+    "mantra": "Exact Sanskrit mantra, or null",
+    "mantra_phonetic": "Syllable guide e.g. 'Om (ohm) · Hraam (hraam)'. Middle dot within words, space between. Always include when mantra given.",
     "mantra_count": 108 or 27 or 21 or 9 or null,
-    "mantra_meaning": "Brief translation in the response language, or null",
-    "mantra_why": "One sentence: why this exact mantra serves this person's specific planetary condition today — name the planet and placement",
-    "morning_practice": "3-5 complete instructional sentences expanding on bullet 1. Physical orientation (direction, posture, materials), repetitions or duration, quality of attention, what this awakens in this chart. Write as a teacher giving the full instruction.",
-    "body_practice": "2-3 sentences. Name the practice (asana, pranayama, mudra). Precise physical instruction — position, breath pattern, duration. What quality in this chart it directly addresses.",
-    "evening_practice": "2-3 sentences. A specific evening practice for completion or integration — different in quality from morning. Timing guidance and what to consciously release or integrate.",
-    "contemplation": "One searching question for journaling or meditation — specific to the karmic pattern in their Pratyantara dasha. Not a generic prompt. Something that addresses the real growing edge of their work right now."
+    "mantra_meaning": "Brief translation, or null",
+    "mantra_why": "One sentence: why this mantra for this planet and placement today."
   },
-  "no_remedy_message": "If has_remedy is false, a warm truthful message about why today calls for rest or receptivity. Null if remedy exists.",
-  "tomorrow_preview": "One sentence on how tomorrow's Vara lord will feel in this specific chart.",
-  "gemstone": { "stone": "name", "planet": "planet it serves", "wear": "how, when, which finger", "why": "why this stone for this person now, naming the natal placement" } or null${isMonthEndPrep ? `,
+  "no_remedy_message": "If has_remedy is false, a warm message about why today calls for rest. Null if remedy exists.",
+  "gemstone": { "stone": "name", "planet": "planet it serves", "wear": "how, when, which finger", "why": "why this stone for this person now, naming the placement" } or null${isMonthEndPrep ? `,
   "month_end_prep": {
     "title": "e.g. 'July Practice Supplies'",
     "intro": "1-2 sentences on how these items serve this person's specific dasha energy for next month",
@@ -189,7 +201,9 @@ JSON structure:
             if (isPlanetD)                     return hi ?  400 : es ?  320 :  250;
             if (isPlanetC)                     return hi ?  700 : es ?  560 :  450;
             if (isPlanetA || isPlanetB)        return hi ? 1050 : es ?  820 :  650;
-            return                                    hi ? 3800 : es ? 3200 : 2800; // daily remedy
+            if (isDailyDepth)  return hi ? 1200 : es ? 1050 :  900;
+            if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
+            return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
           system: LANG_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
