@@ -124,23 +124,28 @@ ABSOLUTE RULES:
 ${isMonthEndPrep ? `8. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field with physical ritual items grounded in their active dasha lords for next month. 4-7 items with categories, quantities, and practical sourcing notes.\n` : ''}
 JSON structure:
 {
-  "cosmic_weather": "2-3 sentences. Name today's Vara lord and its exact natal placement quality in this chart. Name the active Pratyantara dasha lord and what karma it is ripening. Name any transits within 5 degrees of natal planets right now. Completely specific — nothing here could apply to a different birth chart.",
+  "cosmic_weather": "2-3 sentences. Name today's Vara lord and its exact natal placement quality in this chart. Name the active Pratyantara dasha lord and what karma it is ripening. Name any transits within 5 degrees of natal planets right now. Nothing here could apply to a different birth chart.",
   "karma_thread": "1-2 sentences. What deeper pattern is this person working through in this dasha period? Connect today honestly and warmly to their larger karmic arc.",
   "has_remedy": true or false,
   "remedy": {
     "title": "Name of today's main practice, specific to these chart conditions",
-    "timing": "Best time today for the main practice with brief reasoning drawn from the chart",
-    "morning_practice": "3-5 complete instructional sentences for a morning practice. State: the physical orientation (direction, posture, any materials), the number of repetitions or duration, what quality of attention to bring, and what this awakens in relation to today's chart conditions. Write as a teacher. Do not use bullet points or list formatting. Every sentence must reference something specific to this chart.",
+    "timing": "Best time today for this practice with brief reasoning drawn from the chart",
+    "practices": [
+      "BULLET 1 — 1-2 sentences. The primary morning action: what to do physically, how many times or how long, naming the specific planet or house this serves in this chart. Starts with a verb. Immediately actionable.",
+      "BULLET 2 — 1-2 sentences. A second distinct practice type (mantra, offering, or awareness act). Chart-specific — must name a planetary placement or dasha influence.",
+      "BULLET 3 — 1-2 sentences. A third practice for the body, a physical act, or an intentional quality to carry through the day. Grounded in this chart."
+    ],
     "mantra": "Exact Sanskrit mantra, or null if no mantra is appropriate",
     "mantra_phonetic": "Syllable-by-syllable Roman guide, e.g. 'Om (ohm) · Hraam (hraam) · Hreem (hreem)'. Middle dot between syllables within one word, space between words. Always include when mantra is given.",
     "mantra_count": 108 or 27 or 21 or 9 or null,
     "mantra_meaning": "Brief translation in the response language, or null",
     "mantra_why": "One sentence: why this exact mantra serves this person's specific planetary condition today — name the planet and placement",
-    "body_practice": "2-3 sentences of specific physical or breath practice. Name the practice (asana, pranayama, mudra, walk). Give precise instruction on body position, breath pattern, and duration. State what quality in this chart it addresses directly.",
-    "evening_practice": "2-3 sentences of a specific evening practice for completion, integration, or release. Different in quality from the morning practice. Include timing guidance and what to consciously let go of or integrate.",
-    "contemplation": "One honest, searching question for journaling or silent meditation — specific to the karmic pattern in their current Pratyantara dasha. Not a generic gratitude prompt. Something that addresses the real growing edge of their work right now."
+    "morning_practice": "3-5 complete instructional sentences expanding on bullet 1. Physical orientation (direction, posture, materials), repetitions or duration, quality of attention, what this awakens in this chart. Write as a teacher giving the full instruction.",
+    "body_practice": "2-3 sentences. Name the practice (asana, pranayama, mudra). Precise physical instruction — position, breath pattern, duration. What quality in this chart it directly addresses.",
+    "evening_practice": "2-3 sentences. A specific evening practice for completion or integration — different in quality from morning. Timing guidance and what to consciously release or integrate.",
+    "contemplation": "One searching question for journaling or meditation — specific to the karmic pattern in their Pratyantara dasha. Not a generic prompt. Something that addresses the real growing edge of their work right now."
   },
-  "no_remedy_message": "If has_remedy is false, a warm truthful message about why today calls for rest or natural receptivity. Null if remedy exists.",
+  "no_remedy_message": "If has_remedy is false, a warm truthful message about why today calls for rest or receptivity. Null if remedy exists.",
   "tomorrow_preview": "One sentence on how tomorrow's Vara lord will feel in this specific chart.",
   "gemstone": { "stone": "name", "planet": "planet it serves", "wear": "how, when, which finger", "why": "why this stone for this person now, naming the natal placement" } or null${isMonthEndPrep ? `,
   "month_end_prep": {
