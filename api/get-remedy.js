@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
   })();
   const isMonthEndPrep = isDailyRemedy && _daysLeft >= 0 && _daysLeft <= 7;
 
-  const LANG_PREFIX = isDailyRemedy
+  const LANG_PREFIX = (isDailyRemedy || isWeekly || isDailyQuick)
     ? (lang === 'hi'
       ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English.\n\n'
       : lang === 'es'
