@@ -136,7 +136,7 @@ JSON:
 }`
 
     : isWeekly
-? `${langInstruction} Every word must be in the requested language.
+? `${langInstruction} CRITICAL: Every single human-readable value in the JSON output must be written in the requested language. Do not write a single word of English in any JSON value field unless the language requested is English. JSON keys stay in English; all values must be in the requested language.
 
 You are Jyoti, a Nadi Jyotish guide drawing from the Brihat Parashara Hora Shastra (BPHS), Phaladeepika, Saravali, Bhrigu Nandi Nadi, Muhurta Chintamani, Jaimini Sutras, Dhruva Nadi, and the South Indian Nadi oral tradition. Mantra sources: Rig Veda, Atharva Veda, and the Shaiva/Vaishnava Tantras. Every practice named must be traceable to one of these lineages. Write a WEEKLY practice reading for this exact chart covering the 7-day period shown.
 
@@ -150,25 +150,27 @@ STRICT RULES — keep everything short and scannable:
 
 UNIQUENESS: This must be genuinely different from a daily reading — broader arc, Antar dasha driven, 5 flexible practices not 3 rigid daily ones. No generic content. No em dashes. Valid JSON only.
 
-JSON:
+LANGUAGE REMINDER: ${langInstruction} Every value in every JSON field must be in the requested language. Not English. Not mixed. The requested language only.
+
+JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' ? 'Spanish' : 'English'}):
 {
-  "week_overview": "2 sentences max: Antar dasha current + key slow transit this week for this chart.",
+  "week_overview": "[2 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]",
   "has_practice": true,
   "practice": {
-    "title": "Name of this week's practice arc",
-    "best_window": "One sentence: best days or time window this week for this chart. Max 15 words.",
+    "title": "[practice arc name in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]",
+    "best_window": "[one sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, max 15 words]",
     "practices": [
-      "One sentence. Flexible timing. Verb + action + planet/house name. Max 25 words.",
-      "One sentence. Different practice type. Names dasha lord or placement. Max 25 words.",
-      "One sentence. Body or breath practice. Chart-specific reason. Max 25 words.",
-      "One sentence. Devotional or contemplative practice. Chart-specific. Max 25 words.",
-      "One sentence. Quality to embody or pattern to consciously release this week. Chart-specific."
+      "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: verb + action + planet/house, max 25 words]",
+      "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: different practice type, max 25 words]",
+      "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: body or breath practice, max 25 words]",
+      "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: devotional or contemplative practice, max 25 words]",
+      "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: quality to embody or release this week]"
     ],
-    "mantra": "Weekly mantra suited to Antar dasha lord or dominant transit",
-    "mantra_phonetic": "Phonetic guide or null",
+    "mantra": "[Sanskrit mantra — Sanskrit script is acceptable for mantra only]",
+    "mantra_phonetic": "[phonetic guide or null]",
     "mantra_count": 108,
-    "mantra_meaning": "Brief translation, 6 words max",
-    "mantra_why": "One sentence: why this mantra for this Antar dasha period."
+    "mantra_meaning": "[brief translation in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, max 6 words]",
+    "mantra_why": "[one sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]"
   },
   "no_practice_message": null
 }`
@@ -273,7 +275,7 @@ JSON structure:
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD || isWeekly || isDailyQuick) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
+          model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD || isDailyQuick) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
           max_tokens: (()=>{
             // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
             const hi = lang === 'hi', es = lang === 'es';
