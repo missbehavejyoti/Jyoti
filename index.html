@@ -1871,6 +1871,7 @@ async function showDailyReading(){
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=1)||r.no_remedy_message);
     if(cached&&hasContent){
+      if(cached.chartCtx) _dailyChartCtx=cached.chartCtx; // restore so "More guidance" depth call works
       renderDailyReading(r, dayName);
       return;
     }
@@ -1986,7 +1987,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''),JSON.stringify({reading:dailyData}));}catch(e){}
+    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2078,6 +2079,11 @@ async function loadDailyDepth(el){
   }catch(e){}
   // Show inline spinner
   contentEl.innerHTML=`<p style="font-size:.84rem;color:var(--muted);text-align:center;padding:.6rem 0">✦ ${_L==='hi'?'गहन मार्गदर्शन लोड हो रहा है…':_L==='es'?'Cargando orientación…':'Loading deeper guidance…'}</p>`;
+  // Build a basic chart ctx if it was never set (e.g. reading was served from cache)
+  if(!_dailyChartCtx&&chartData&&userData){
+    const _p=chartData.planets,_L2=T['en'],_h=pl=>(pl.sign-chartData.ascSign+12)%12+1;
+    _dailyChartCtx=`Name: ${userData.name}\nDate of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}\nAscendant: ${_L2.signs[chartData.ascSign]} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°\n${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'].map((n,i)=>`${n}: ${_L2.signs[_p[i].sign]} ${_p[i].degree}°, House ${_h(_p[i])}`).join('\n')}`;
+  }
   try{
     const resp=await fetch('/api/get-remedy',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -2910,7 +2916,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '83';
+const JYOTI_BUILD = '84';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
