@@ -3060,7 +3060,8 @@ const JYOTI_BUILD = '85';
     // Clear all daily reading caches from all previous key formats
     Object.keys(localStorage).forEach(k=>{
       if(k.startsWith('jyoti_q_')||k.startsWith('jyoti_d_')||
-         k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')){
+         k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')||
+         k.startsWith('jyoti_w_')){
         localStorage.removeItem(k);
       }
     });
