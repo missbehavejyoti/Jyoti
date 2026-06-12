@@ -273,7 +273,7 @@ JSON structure:
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
+          model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD || isWeekly || isDailyQuick) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
           max_tokens: (()=>{
             // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
             const hi = lang === 'hi', es = lang === 'es';

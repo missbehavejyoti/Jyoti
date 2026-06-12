@@ -19,8 +19,6 @@ module.exports = async (req, res) => {
     ? 'Respond entirely in Hindi (Devanagari script).'
     : lang === 'es'
     ? 'Respond entirely in Spanish.'
-    : lang === 'ta'
-    ? 'Respond entirely in Tamil script.'
     : 'Respond in English.';
 
   const LANG_PREFIX = lang === 'hi'
