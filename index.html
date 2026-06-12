@@ -641,6 +641,7 @@ select option{background:var(--s2);color:var(--text)}
       <!-- Tab nav -->
       <div class="tabs">
         <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-es="Práctica de Hoy">Today's Practice</div>
+        <div class="tab" onclick="switchTab('weekly',this)" data-en="This Week" data-hi="इस सप्ताह" data-es="Esta Semana">This Week</div>
         <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-es="Carta Completa">Full Chart</div>
         <div class="tab" onclick="switchTab('compat',this)" data-en="Compatibility" data-hi="अनुकूलता" data-es="Compatibilidad">Compatibility</div>
       </div>
@@ -713,6 +714,17 @@ select option{background:var(--s2);color:var(--text)}
           </div>
         </div>
         <div id="full-reading"></div>
+      </div>
+
+      <!-- Weekly Tab -->
+      <div id="tab-weekly" style="display:none">
+        <div id="weekly-loading" class="loading" style="padding:2rem">
+          <div class="loading-flame">✨</div>
+          <div class="loading-text" data-en="Reading this week's stars..." data-hi="इस सप्ताह के तारे पढ़ रहे हैं..." data-es="Leyendo las estrellas de esta semana...">Reading this week's stars...</div>
+        </div>
+        <div id="weekly-content" style="display:none">
+          <div class="remedy-card" id="weekly-main"></div>
+        </div>
       </div>
 
       <!-- Archive Tab -->
@@ -981,6 +993,7 @@ function clearSoulArchive(){
   try{Object.keys(localStorage).filter(k=>k.startsWith('jyoti_soul_arc')).forEach(k=>localStorage.removeItem(k));}catch(e){}
 }
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function weekStartStr(){const d=new Date(),day=d.getDay(),mon=new Date(d);mon.setDate(d.getDate()+(day===0?-6:1-day));return`${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;}
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
 let soulReadingCache=(()=>{
   const arc=getSoulArchive();
@@ -1109,10 +1122,13 @@ function applyCompatMode(){
   // Hide daily and chart tabs — show only compatibility
   const dailyTab = document.querySelector('.tab[data-en="Today\'s Practice"]');
   const chartTab = document.querySelector('.tab[data-en="Full Chart"]');
+  const weeklyTab = document.querySelector('.tab[data-en="This Week"]');
   if(dailyTab) dailyTab.style.display='none';
   if(chartTab) chartTab.style.display='none';
+  if(weeklyTab) weeklyTab.style.display='none';
   document.getElementById('tab-daily').style.display='none';
   document.getElementById('tab-chart').style.display='none';
+  document.getElementById('tab-weekly').style.display='none';
   document.getElementById('tab-compat').style.display='block';
   const compatTab = document.querySelector('.tab[data-en="Compatibility"]');
   if(compatTab){compatTab.classList.add('active');compatTab.style.display='block';}
@@ -2694,21 +2710,141 @@ function showPlanetError(detail){
   if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar, toca para reintentar':'Could not load, tap to retry'}</p>${detail?`<p style="color:var(--dim);font-size:.65rem;opacity:.5;margin-bottom:.8rem">${detail}</p>`:''}<button onclick="retryPlanetReadings()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button>`;
 }
 
+// ── WEEKLY PRACTICE ──
+async function showWeeklyReading(){
+  if(!chartData||!userData)return;
+  const capturedLang=currentLang;
+  const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+(userData?.dob||'');
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached?.has_practice||cached?.no_practice_message){renderWeeklyReading(cached);return;}
+  }catch(e){}
+  document.getElementById('weekly-loading').style.display='block';
+  document.getElementById('weekly-content').style.display='none';
+  const L_en=T['en'];
+  const p=chartData.planets;
+  const dasha=chartData.dashaPeriod;
+  const antr=dasha?.antar;
+  const wStart=weekStartStr();
+  const wStartDate=new Date(wStart);
+  const wEndDate=new Date(wStartDate);wEndDate.setDate(wStartDate.getDate()+6);
+  const wEnd=`${wEndDate.getFullYear()}-${String(wEndDate.getMonth()+1).padStart(2,'0')}-${String(wEndDate.getDate()).padStart(2,'0')}`;
+  const _birthLat=chartData.lat||20.59,_birthLon=chartData.lon||78.96;
+  const _trW=calcChart(wStart,'12:00:00',{lat:_birthLat,lon:_birthLon},0);
+  const trW=_trW.planets;
+  const S=L_en.signs;
+  const trHW=i=>(trW[i].sign-chartData.ascSign+12)%12+1;
+  const _ex={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const _db={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const _ow={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const _pn=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const _dg=(i,s)=>i>=7?'':_ex[_pn[i]]===s?' (exalted)':_db[_pn[i]]===s?' (debilitated)':(_ow[_pn[i]]||[]).includes(s)?' (own sign)':'';
+  const _h=pl=>(pl.sign-chartData.ascSign+12)%12+1;
+  const _n=pl=>pl.nakshatraName||L_en.nakshatras[pl.nakshatra]||'';
+  const ascSn=chartData.asc?.signName||L_en.signs[chartData.ascSign]||'';
+  const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+  const _llName=_rulers[chartData.ascSign];
+  const _llIdx=_pn.indexOf(_llName);
+  const _ll=_llIdx>=0?`\nLagna Lord: ${_llName} in ${L_en.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${_h(p[_llIdx])}, Nakshatra: ${_n(p[_llIdx])}`:'';
+  const dashaCtx=dasha?`
+VIMSHOTTARI DASHA — PRIMARY LENS FOR WEEKLY READING:
+  ► ANTAR DASHA (weeks-to-months, primary): ${antr?.lord||dasha.lord}, ends ${antr?.endDate||'?'}
+  ► MAHA DASHA (years background): ${dasha.lord}, ${dasha.remaining} years remaining
+  NOTE: Base this weekly reading on the Antar dasha, NOT the Pratyantara which changes daily.`:'';
+  const chartSummary=`Name: ${userData.name}
+Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
+Week: ${wStart} to ${wEnd}
+NATAL CHART:
+Ascendant (Lagna): ${ascSn} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°${_ll}
+Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} | House ${_h(p[0])}
+Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} | House ${_h(p[1])}
+Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}° | Nakshatra: ${_n(p[2])} | House ${_h(p[2])}
+Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}° | Nakshatra: ${_n(p[3])} | House ${_h(p[3])}
+Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])} | House ${_h(p[4])}
+Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}° | Nakshatra: ${_n(p[5])} | House ${_h(p[5])}
+Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])} | House ${_h(p[6])}
+Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | House ${_h(p[7])}
+Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | House ${_h(p[8])}
+${dashaCtx}
+SLOW TRANSITS THIS WEEK (${wStart} noon, these hold for the whole week):
+Jupiter: ${S[trW[4].sign]} ${trW[4].degree}°, natal House ${trHW(4)}
+Saturn: ${S[trW[6].sign]} ${trW[6].degree}°, natal House ${trHW(6)}
+Rahu: ${S[trW[7].sign]} ${trW[7].degree}°, natal House ${trHW(7)}
+Ketu: ${S[trW[8].sign]} ${trW[8].degree}°, natal House ${trHW(8)}
+Sun: ${S[trW[0].sign]} ${trW[0].degree}°, natal House ${trHW(0)}
+Venus: ${S[trW[5].sign]} ${trW[5].degree}°, natal House ${trHW(5)}
+Mars: ${S[trW[2].sign]} ${trW[2].degree}°, natal House ${trHW(2)}
+Mercury: ${S[trW[3].sign]} ${trW[3].degree}°, natal House ${trHW(3)}
+Moon at week start: ${S[trW[1].sign]} ${trW[1].degree}° (travels ~3 signs this week)`;
+  try{
+    const resp=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary,lang:capturedLang,type:'weekly'})});
+    if(!resp.ok)throw new Error('api-error');
+    const data=await resp.json();
+    if(!data||data.error||(!data.has_practice&&!data.no_practice_message))throw new Error('bad-data');
+    try{localStorage.setItem(cacheKey,JSON.stringify(data));}catch(e){}
+    if(capturedLang===currentLang)renderWeeklyReading(data);
+  }catch(e){
+    const lEl=document.getElementById('weekly-loading');
+    if(lEl)lEl.innerHTML=`<p style="color:var(--dim);text-align:center;padding:1rem;font-size:.85rem">${capturedLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar. Toca para reintentar.':'Could not load. Tap to retry.'}</p><button onclick="showWeeklyReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer;display:block;margin:0 auto">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button>`;
+  }
+}
+
+function renderWeeklyReading(d){
+  document.getElementById('weekly-loading').style.display='none';
+  document.getElementById('weekly-content').style.display='block';
+  const _L=currentLang;
+  const pr=d.practice;
+  const wStart=weekStartStr();
+  const wStartDate=new Date(wStart);
+  const wEndDate=new Date(wStartDate);wEndDate.setDate(wStartDate.getDate()+6);
+  const _loc=_L==='hi'?'hi-IN':_L==='es'?'es-ES':'en-AU';
+  const wStartLabel=wStartDate.toLocaleDateString(_loc,{month:'short',day:'numeric'});
+  const wEndLabel=wEndDate.toLocaleDateString(_loc,{month:'short',day:'numeric',year:'numeric'});
+  const weekLabel=_L==='hi'?`${wStartLabel} – ${wEndLabel} सप्ताह`:_L==='es'?`Semana: ${wStartLabel} – ${wEndLabel}`:`Week of ${wStartLabel} – ${wEndLabel}`;
+  const chooseLabel=_L==='hi'?'इस सप्ताह 2–3 अभ्यास चुनें':_L==='es'?'Elige 2–3 prácticas esta semana':'Choose 2–3 practices this week';
+  const _mc=pr?.mantra_count||108;
+  const _practiceHtml=(pr?.practices||[]).map(px=>`<li style="display:flex;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08);line-height:1.72;color:var(--text)"><span style="flex-shrink:0;color:var(--gold);font-size:1.05em;margin-top:.1em">✦</span><span>${glossify(px)}</span></li>`).join('');
+  const _mantraBlock=pr?.mantra?`
+    <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_L==='hi'?'सप्ताह का मंत्र':_L==='es'?'MANTRA DE LA SEMANA':'WEEK\'S MANTRA'}</div>
+      <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${pr.mantra}</div>
+      <div style="font-size:.8rem;color:var(--muted)">${pr.mantra_meaning||''}</div>
+      ${pr.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(pr.mantra_why)}</div>`:''}
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
+    </div>
+    <div class="remedy-actions">
+      <button class="chant-btn" onclick="openChant('${pr.mantra}','${(pr.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(pr.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+    </div>`:'';
+  const html=d.has_practice&&pr?`
+    <div class="remedy-card">
+      <div class="remedy-day">${pr.title||weekLabel}</div>
+      <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:var(--dim);margin-bottom:.7rem">${weekLabel}</div>
+      ${d.week_overview?`<p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;line-height:1.7">${glossify(d.week_overview)}</p>`:''}
+      <div style="font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.12em;color:var(--gold-d);margin-bottom:.5rem">✦ ${chooseLabel.toUpperCase()}</div>
+      <ul style="list-style:none;padding:0;margin:0 0 .8rem">${_practiceHtml}</ul>
+      ${pr.best_window?`<p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem">⏰ ${pr.best_window}</p>`:''}
+      ${_mantraBlock}
+    </div>`:`<div class="remedy-card"><p>${glossify(d.no_practice_message||(_L==='hi'?'साप्ताहिक पाठ उपलब्ध नहीं।':_L==='es'?'Lectura semanal no disponible.':'Weekly reading unavailable.'))}</p></div>`;
+  document.getElementById('weekly-main').outerHTML=`<div id="weekly-main">${html}</div>`;
+}
+
 // ── ARCHIVE ──
 
 // ── TABS ──
 function switchTab(tab,el){
   const tier=localStorage.getItem('jyoti_tier')||'full';
-  if(tier==='compat'&&(tab==='daily'||tab==='chart')){
+  if(tier==='compat'&&(tab==='daily'||tab==='chart'||tab==='weekly')){
     const m=currentLang==='hi'?'दैनिक साधना और कुंडली के लिए पूर्ण एक्सेस में अपग्रेड करें।':currentLang==='es'?'Actualiza a acceso completo para práctica diaria y lectura de carta.':'Upgrade to full access for daily practice and chart reading.';
     alert(m);return;
   }
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  ['daily','chart','compat'].forEach(t=>{
+  ['daily','weekly','chart','compat'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
   if(tab==='compat')prefillSynPersonA();
+  if(tab==='weekly')showWeeklyReading();
   if(tab==='chart'){
     if(!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
     // Load planets every time chart tab is opened (guard inside prevents duplicate calls)
@@ -2916,7 +3052,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '84';
+const JYOTI_BUILD = '85';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
