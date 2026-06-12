@@ -246,8 +246,9 @@ Paragraph 4 — THE WISE WAY FORWARD: A classical Vedic prescription for how bot
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_duration: {
@@ -263,8 +264,9 @@ Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_gifts: {
@@ -280,8 +282,9 @@ Paragraph 4 — THE ALCHEMICAL POSSIBILITY: If both people engage consciously wi
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_higher_road: {
@@ -297,8 +300,9 @@ Paragraph 4 — WHAT LOVE ASKS: The higher road is not detachment — it is full
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_soul_debt: {
@@ -314,8 +318,9 @@ Paragraph 4 — HOW TO SETTLE WITH GRACE: The classical tradition offers wisdom 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_work_life: {
@@ -331,8 +336,9 @@ Paragraph 4 — THE SHARED LIFE: What would a shared life actually look like for
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_timing: {
@@ -348,8 +354,9 @@ Paragraph 4 — HOW TO WORK WITH TIME: Neither person can force this connection 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_other_a: {
@@ -365,8 +372,9 @@ Paragraph 4 — THE INVITATION TO ${A}: A loving, direct invitation to ${A} to s
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     deep_other_b: {
@@ -382,8 +390,9 @@ Paragraph 4 — THE INVITATION TO ${B}: A loving invitation to ${B} to see their
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
-      maxTokens: lang === 'hi' ? 4000 : lang === 'es' ? 3600 : 3000,
-      isText: true
+      maxTokens: lang === 'hi' ? 2800 : lang === 'es' ? 2200 : 1800,
+      isText: true,
+      model: 'claude-haiku-4-5-20251001'
     },
 
     soul_verdict: {
@@ -418,20 +427,30 @@ Return JSON:
   try {
     let response, data, text = '';
     for (let attempt = 0; attempt < 3; attempt++) {
-      response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: config.model || 'claude-sonnet-4-6',
-          max_tokens: config.maxTokens,
-          system: LANG_PREFIX + config.system,
-          messages: [{ role: 'user', content: config.user }]
-        })
-      });
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 52000);
+      try {
+        response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: config.model || 'claude-sonnet-4-6',
+            max_tokens: config.maxTokens,
+            system: LANG_PREFIX + config.system,
+            messages: [{ role: 'user', content: config.user }]
+          }),
+          signal: ctrl.signal
+        });
+      } catch (fetchErr) {
+        clearTimeout(timer);
+        if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Reading timed out — please retry' });
+        throw fetchErr;
+      }
+      clearTimeout(timer);
       if (!response.ok) {
         if (![429, 502, 503, 529].includes(response.status)) break;
         if (attempt < 2) await new Promise(r => setTimeout(r, 1500 * Math.pow(2, attempt)));
