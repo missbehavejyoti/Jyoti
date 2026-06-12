@@ -640,8 +640,8 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Tab nav -->
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('daily',this)" data-en="Today's Practice" data-hi="आज का अभ्यास" data-es="Práctica de Hoy">Today's Practice</div>
-        <div class="tab" onclick="switchTab('weekly',this)" data-en="This Week" data-hi="इस सप्ताह" data-es="Esta Semana">This Week</div>
+        <div class="tab active" onclick="switchTab('daily',this)" data-en="Daily Practice" data-hi="दैनिक अभ्यास" data-es="Práctica Diaria">Daily Practice</div>
+        <div class="tab" onclick="switchTab('weekly',this)" data-en="Weekly Practice" data-hi="साप्ताहिक अभ्यास" data-es="Práctica Semanal">Weekly Practice</div>
         <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-es="Carta Completa">Full Chart</div>
         <div class="tab" onclick="switchTab('compat',this)" data-en="Compatibility" data-hi="अनुकूलता" data-es="Compatibilidad">Compatibility</div>
       </div>
@@ -1120,9 +1120,9 @@ function goToPayment(plan='monthly'){
 // ── ACCESS TIER ──
 function applyCompatMode(){
   // Hide daily and chart tabs — show only compatibility
-  const dailyTab = document.querySelector('.tab[data-en="Today\'s Practice"]');
+  const dailyTab = document.querySelector('.tab[data-en="Daily Practice"]');
   const chartTab = document.querySelector('.tab[data-en="Full Chart"]');
-  const weeklyTab = document.querySelector('.tab[data-en="This Week"]');
+  const weeklyTab = document.querySelector('.tab[data-en="Weekly Practice"]');
   if(dailyTab) dailyTab.style.display='none';
   if(chartTab) chartTab.style.display='none';
   if(weeklyTab) weeklyTab.style.display='none';
