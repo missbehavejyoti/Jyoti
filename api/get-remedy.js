@@ -36,9 +36,10 @@ module.exports = async (req, res) => {
   const isPlanetD   = type === 'planets_d';
   const isDailyQuick = type === 'daily_quick';
   const isDailyDepth = type === 'daily_depth';
+  const isWeekly     = type === 'weekly';
 
   // Prepend strong language enforcement for daily remedy (plain prompts — not planets which have explicit key rules)
-  const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD;
+  const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD && !isWeekly;
 
   // Detect month-end prep window (last 7 days of month)
   const _daysLeft = (() => {
@@ -130,6 +131,44 @@ JSON:
   "gemstone": null
 }`
 
+    : isWeekly
+? `${langInstruction} Every word must be in the requested language.
+
+You are Jyoti, a Nadi Jyotish guide. Write a WEEKLY practice reading for this exact chart covering the 7-day period shown.
+
+PRIMARY LENS: The Antar Dasha lord operates at the weeks-to-months level — use this as your primary lens. Do NOT base the weekly reading on Pratyantara dasha which changes daily. The weekly must reflect the sustained karmic current of the Antar period meeting the week's slow transits.
+
+STRICT RULES — keep everything short and scannable:
+- week_overview: 2 sentences max. Antar dasha theme + most significant slow transit this week. Specific to this chart. Max 35 words total.
+- Each practice: ONE sentence. Max 25 words. Starts with a verb. Names a specific planet, house, or dasha lord from this chart. Flexible timing — can be done on any day this week.
+- best_window: ONE sentence. Best days or time window this week. Max 15 words.
+- mantra_why: ONE sentence only.
+
+UNIQUENESS: This must be genuinely different from a daily reading — broader arc, Antar dasha driven, 5 flexible practices not 3 rigid daily ones. No generic content. No em dashes. Valid JSON only.
+
+JSON:
+{
+  "week_overview": "2 sentences max: Antar dasha current + key slow transit this week for this chart.",
+  "has_practice": true,
+  "practice": {
+    "title": "Name of this week's practice arc",
+    "best_window": "One sentence: best days or time window this week for this chart. Max 15 words.",
+    "practices": [
+      "One sentence. Flexible timing. Verb + action + planet/house name. Max 25 words.",
+      "One sentence. Different practice type. Names dasha lord or placement. Max 25 words.",
+      "One sentence. Body or breath practice. Chart-specific reason. Max 25 words.",
+      "One sentence. Devotional or contemplative practice. Chart-specific. Max 25 words.",
+      "One sentence. Quality to embody or pattern to consciously release this week. Chart-specific."
+    ],
+    "mantra": "Weekly mantra suited to Antar dasha lord or dominant transit",
+    "mantra_phonetic": "Phonetic guide or null",
+    "mantra_count": 108,
+    "mantra_meaning": "Brief translation, 6 words max",
+    "mantra_why": "One sentence: why this mantra for this Antar dasha period."
+  },
+  "no_practice_message": null
+}`
+
     : isDailyDepth
     ? `${langInstruction} Every single word must be in the requested language.
 
@@ -213,6 +252,8 @@ JSON structure:
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the Soul Map & Karmic Blueprint.`
     : (isPlanet || isPlanetA || isPlanetB || isPlanetC || isPlanetD)
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the personalised planetary readings.`
+    : isWeekly
+    ? `Here is the birth chart and this week's information:\n${chartSummary}\n\nWrite this week's Vedic practice reading.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
 
   try {
@@ -237,6 +278,7 @@ JSON structure:
             if (isPlanetD)                     return hi ?  350 : es ?  280 :  220;
             if (isPlanetC)                     return hi ?  600 : es ?  480 :  380;
             if (isPlanetA || isPlanetB)        return hi ?  900 : es ?  700 :  560;
+            if (isWeekly)      return hi ? 1600 : es ? 1350 : 1100;
             if (isDailyDepth)  return hi ? 1200 : es ? 1050 :  900;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
