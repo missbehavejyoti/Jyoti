@@ -793,7 +793,7 @@ select option{background:var(--s2);color:var(--text)}
           <div id="syn-tier2-container"></div>
           <div id="syn-tier4" style="display:none"></div>
           <div style="text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--s4)">
-            <button class="btn btn-ghost" onclick="resetSynastry()" style="font-size:.68rem">✦ Read Another Pair</button>
+            <button class="btn btn-ghost" onclick="resetSynastry()" style="font-size:.68rem" data-en="✦ Read Another Pair" data-hi="✦ नया जोड़ी पाठ" data-es="✦ Nueva Lectura de Pareja">✦ Read Another Pair</button>
           </div>
         </div>
 
@@ -3625,6 +3625,7 @@ async function beginSynastry(){
     synChartB=await _calcSynChart(dobB,tobB,geoB);
     synTier2Count=0;synTier2Done=new Set();synCache={};synLoadingType=null;
     loadSynCacheFromStorage();
+    delete synCache['tier1']; // Always fetch fresh tier1 when user explicitly submits the form
     setT(currentLang==='hi'?'तारे पढ़ रहे हैं...':currentLang==='es'?'Leyendo las estrellas...':'Reading the stars...');
     await loadSynTier('tier1');
   }catch(e){
