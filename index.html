@@ -1061,6 +1061,12 @@ function setLang(lang){
     planetLoadingInProgress=false;
     const prEl=document.getElementById('planet-readings-wrap');
     if(prEl&&document.getElementById('tab-chart')?.style.display!=='none')loadPlanetReadings();
+    // Clear weekly reading so it re-fetches in new language
+    const weeklyMain=document.getElementById('weekly-main');
+    if(weeklyMain)weeklyMain.innerHTML='';
+    const weeklyContent=document.getElementById('weekly-content');
+    if(weeklyContent)weeklyContent.style.display='none';
+    if(document.getElementById('tab-weekly')?.style.display!=='none')showWeeklyReading();
     // Clear compat in-memory cache so next view re-fetches in new language
     if(typeof synCache!=='undefined'){
       synCache={};synLoadingType=null;
