@@ -2117,7 +2117,8 @@ async function loadDailyDepth(el){
     try{localStorage.setItem(cacheKey,JSON.stringify(depth));}catch(e){}
     renderDepthContent(contentEl,depth);
   }catch(e){
-    contentEl.innerHTML=`<p style="font-size:.84rem;color:var(--muted);text-align:center;padding:.6rem 0">${_L==='hi'?'अभी उपलब्ध नहीं — बाद में पुनः प्रयास करें।':_L==='es'?'No disponible ahora, intenta más tarde.':'Not available right now, try again later.'}</p>`;
+    el.dataset.loaded=''; // allow retry
+    contentEl.innerHTML=`<p style="font-size:.84rem;color:var(--muted);text-align:center;padding:.6rem 0">${_L==='hi'?'अभी उपलब्ध नहीं —':_L==='es'?'No disponible ahora —':'Not available right now —'} <a href="#" onclick="this.closest('details').dataset.loaded='';loadDailyDepth(this.closest('details'));return false" style="color:var(--gold)">${_L==='hi'?'पुनः प्रयास करें':_L==='es'?'reintentar':'tap to retry'}</a></p>`;
   }
 }
 

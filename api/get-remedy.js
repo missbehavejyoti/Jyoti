@@ -337,7 +337,7 @@ JSON structure:
     // Attempt 4: key-by-key extraction — works even when JSON is truncated with no closing }
     if (!parsed) {
       const pairs = {};
-      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\}|\[[\s\S]*?\])/g;
+      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview|karma_thread|morning_practice|body_practice|evening_practice|contemplation|week_overview|has_practice|practice|no_practice_message)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\}|\[[\s\S]*?\])/g;
       let hit;
       while ((hit = re.exec(text)) !== null) {
         try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_) {
