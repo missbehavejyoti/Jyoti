@@ -3601,11 +3601,6 @@ async function beginSynastry(){
   document.getElementById('syn-reading').style.display='none';
   const setT=t=>{const el=document.getElementById('syn-loading-text');if(el)el.textContent=t;};
   try{
-    setT(currentLang==='hi'?nameA+'का जन्मस्थान खोज रहे हैं...':currentLang==='es'?'Localizando el lugar de nacimiento de '+nameA+'...':'Locating '+nameA+'\'s birthplace...');
-    const geoA=await synGeocode(pobA,dobA);
-    setT(currentLang==='hi'?nameB+'का जन्मस्थान खोज रहे हैं...':currentLang==='es'?'Localizando el lugar de nacimiento de '+nameB+'...':'Locating '+nameB+'\'s birthplace...');
-    const geoB=await synGeocode(pobB,dobB);
-    setT(currentLang==='hi'?'दोनों कुंडलियां गणना हो रही हैं...':currentLang==='es'?'Calculando las dos cartas...':'Calculating the two charts...');
     synUserA={name:nameA,dob:dobA,tob:tobA,pob:pobA,gender:genderA};
     synUserB={name:nameB,dob:dobB,tob:tobB,pob:pobB,gender:genderB};
     const _calcSynChart=async(dob,tob,geo)=>{
@@ -3623,7 +3618,18 @@ async function beginSynastry(){
       }
       throw new Error(currentLang==='hi'?'कुंडली गणना विफल: '+lastErr:currentLang==='es'?'Error al calcular la carta: '+lastErr:'Chart calculation failed: '+lastErr);
     };
-    synChartA=await _calcSynChart(dobA,tobA,geoA);
+    // Person A is always the subscriber — reuse their already-calculated chartData
+    // so compat is truly linked to the same chart as daily/soul/weekly readings
+    if(chartData&&chartData.planets){
+      synChartA=chartData;
+    } else {
+      setT(currentLang==='hi'?nameA+'की कुंडली गणना हो रही है...':currentLang==='es'?'Calculando la carta de '+nameA+'...':'Calculating '+nameA+'\'s chart...');
+      const geoA=await synGeocode(pobA,dobA);
+      synChartA=await _calcSynChart(dobA,tobA,geoA);
+    }
+    setT(currentLang==='hi'?nameB+'का जन्मस्थान खोज रहे हैं...':currentLang==='es'?'Localizando a '+nameB+'...':'Locating '+nameB+'\'s birthplace...');
+    const geoB=await synGeocode(pobB,dobB);
+    setT(currentLang==='hi'?nameB+'की कुंडली गणना हो रही है...':currentLang==='es'?'Calculando la carta de '+nameB+'...':'Calculating '+nameB+'\'s chart...');
     synChartB=await _calcSynChart(dobB,tobB,geoB);
     synTier2Count=0;synTier2Done=new Set();synCache={};synLoadingType=null;
     loadSynCacheFromStorage();
