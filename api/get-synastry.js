@@ -10,7 +10,25 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { chartA, chartB, nameA, nameB, type, lang } = req.body || {};
-  if (!chartA || !chartB || !type) return res.status(400).json({ error: 'Missing chart data or type' });
+
+  // Input validation — reject bad requests before touching the AI
+  const VALID_LANGS = ['en', 'hi', 'es'];
+  const VALID_TYPES = ['tier1', 'karmic', 'duration', 'gifts', 'higher_road',
+                       'soul_debt', 'work_life', 'timing', 'other_a', 'other_b', 'soul_verdict',
+                       'deep_karmic', 'deep_duration', 'deep_gifts', 'deep_higher_road',
+                       'deep_soul_debt', 'deep_work_life', 'deep_timing', 'deep_other_a', 'deep_other_b'];
+  if (!chartA || typeof chartA !== 'string' || chartA.length > 8000) {
+    return res.status(400).json({ error: 'Invalid chart A data' });
+  }
+  if (!chartB || typeof chartB !== 'string' || chartB.length > 8000) {
+    return res.status(400).json({ error: 'Invalid chart B data' });
+  }
+  if (!VALID_LANGS.includes(lang)) {
+    return res.status(400).json({ error: 'Invalid language' });
+  }
+  if (!VALID_TYPES.includes(type)) {
+    return res.status(400).json({ error: 'Invalid type' });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API not configured' });

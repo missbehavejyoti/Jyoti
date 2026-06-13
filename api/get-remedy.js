@@ -11,8 +11,18 @@ module.exports = async (req, res) => {
 
   const { chartSummary, lang, type, daysUntilMonthEnd } = req.body || {};
 
-  if (!chartSummary) {
-    return res.status(400).json({ error: 'Missing chart data' });
+  // Input validation — reject bad requests before touching the AI
+  const VALID_LANGS = ['en', 'hi', 'es'];
+  const VALID_TYPES = ['daily_quick', 'daily_depth', 'weekly', 'nakshatra', 'soul',
+                       'planets', 'planets_a', 'planets_b', 'planets_c', 'planets_d'];
+  if (!chartSummary || typeof chartSummary !== 'string' || chartSummary.length > 8000) {
+    return res.status(400).json({ error: 'Invalid chart data' });
+  }
+  if (!VALID_LANGS.includes(lang)) {
+    return res.status(400).json({ error: 'Invalid language' });
+  }
+  if (!VALID_TYPES.includes(type)) {
+    return res.status(400).json({ error: 'Invalid type' });
   }
 
   // API key from Vercel environment variable (never in code)
