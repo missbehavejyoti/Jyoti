@@ -48,14 +48,17 @@ module.exports = async (req, res) => {
   const A = nameA || 'Person A';
   const B = nameB || 'Person B';
 
-  const CHART_CONTEXT = `Here are the two birth charts:\n\n${chartA}\n\n${chartB}`;
+  const CHART_CONTEXT = `Here are the two birth charts:\n\n${A}'s chart:\n${chartA}\n\n${B}'s chart:\n${chartB}`;
 
   const CORE_RULES = `
 CRITICAL RULES:
 - TRADITION: This is Vedic / Jyotish astrology ONLY — sidereal zodiac, nakshatras, Lagna (ascendant), planetary dignity, houses, and Vimshottari Dasha as given in the chart data below. NEVER use Western/tropical astrology concepts: no "sun sign" personality types, no fire/earth/air/water "elements", no cardinal/fixed/mutable "modalities", no tropical-zodiac dates or descriptions. Every sign, degree and nakshatra given is already sidereal (Lahiri ayanamsa) — use it exactly as stated, do not reinterpret or convert it.
-- Use each person's pronouns as stated in their chart header (she/her, he/him, they/them, or name only if prefer_not).
+- CHART ACCURACY: ${A}'s chart is labeled first in the data. ${B}'s chart is labeled second. Before writing, confirm you are attributing each planet, house, and dasha to the correct person.
+- Use each person's pronouns as stated in their chart data (she/her, he/him, they/them).
+- NAMES: Always use ${A} and ${B}'s actual names in all written text. NEVER write "Person A" or "Person B" — these are internal labels only.
+- CONNECTION FIRST, CHART AS EVIDENCE: Write about what this connection IS and how it genuinely feels for ${A} and ${B} as real people. The planetary positions are the WHY — they explain the quality of the connection, but they are never the opening subject of a sentence. Someone who has never studied astrology should feel every sentence is deeply true and relevant. GOOD: "${A} and ${B} are drawn together by something that bypasses logic — the Nadi tradition reads this as ${A}'s Rahu touching ${B}'s Moon, which creates exactly that feeling of instant, inexplicable recognition." BAD: "Rahu of Person A conjuncts Moon of Person B in the 3rd house creating past-life soul recognition via nodal axis synastry."
 - Every sentence must be specific to THESE exact charts — never generic.
-- Tone: spiritually precise, compassionate, warm. Never alarming. Challenges are growth invitations.
+- Tone: spiritually precise, compassionate, warm, and fully human. Never clinical, never alarming. Challenges are growth invitations. Write like a wise, trusted friend who knows both charts deeply.
 - For spiritual guidance only. Never give medical, psychiatric, financial or legal advice.
 - LANGUAGE: ${langInstruction} Every word of text content must be in this language. Do not mix languages.
 - PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings, never translate them.
@@ -78,9 +81,9 @@ The "resonance_label" must be one of exactly these six English strings — NEVER
 
 Choose the one that most precisely fits THESE two charts. Write it exactly as shown above in English.
 
-The "bond_nature" is one rich paragraph: what this connection fundamentally IS — drawn from Moon nakshatra compatibility, Rahu/Ketu axis contacts, Lagna relationship, and the most prominent cross-chart planetary contacts. Warm, poetic, classical, specific.
+The "bond_nature" is one rich paragraph describing what this connection fundamentally IS and how it genuinely feels — written directly to the people, using their names, as if a trusted guide who knows both charts is speaking to them. Lead with the felt quality of the connection; bring in the classical evidence (Moon nakshatra compatibility, Rahu/Ketu axis, Lagna contacts) as the reason WHY it feels that way. Warm, poetic, specific.
 
-The three "asks" are short, precise, personal lines — not generic.
+The three "asks" are short, personal, direct lines using their names — what this specific connection is asking of each person right now. Real and specific, never generic.
 ${CORE_RULES}
 
 Return JSON:

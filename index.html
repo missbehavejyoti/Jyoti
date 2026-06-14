@@ -3060,7 +3060,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '90';
+const JYOTI_BUILD = '91';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3562,7 +3562,7 @@ function buildSynChartSummary(user,chart,label){
   const _n=pl=>(pl.nakshatraName||L.nakshatras[pl.nakshatra]||'');
   const maleficsLine=chart.malefics&&chart.malefics.length?`\nMalefic influences (natal): ${chart.malefics.map(m=>m.name).join(', ')}`:'';
   const metaLine=`\nAyanamsa (Lahiri): ${chart.ayanamsa||''}°  |  Birth UT: ${chart.birthUT||''}`;
-  return `${label}: ${user.name}, born ${user.dob} at ${user.tob||'unknown'}, ${user.pob} [pronouns: ${pronounStr}]
+  return `${label}, born ${user.dob} at ${user.tob||'unknown'}, ${user.pob} [pronouns: ${pronounStr}]
 Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°${_ll}
 Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} pada ${p[0].pada} | House ${h(p[0])}
 Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} pada ${p[1].pada} | House ${h(p[1])}
@@ -3652,8 +3652,8 @@ async function loadSynTier(type){
   if(type!=='tier1')_showSynInlineLoading(type);
   let summaryA,summaryB;
   try{
-    summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
-    summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
+    summaryA=buildSynChartSummary(synUserA,synChartA,synUserA.name||'Person A');
+    summaryB=buildSynChartSummary(synUserB,synChartB,synUserB.name||'Person B');
   }catch(err){
     synLoadingType=null;
     if(type==='tier1'){document.getElementById('syn-form-wrap').style.display='block';document.getElementById('syn-loading').style.display='none';}
@@ -4095,8 +4095,8 @@ async function openDeepReading(type,title){
   // prompt/chart fixes both force a re-fetch instead of replaying stale text
   const cacheKey='deep_'+SYN_CACHE_VER+'_'+type+'_'+capturedLang;
   if(synCache[cacheKey]){_renderDeepContent(synCache[cacheKey]);return;}
-  const summaryA=buildSynChartSummary(synUserA,synChartA,'PERSON A');
-  const summaryB=buildSynChartSummary(synUserB,synChartB,'PERSON B');
+  const summaryA=buildSynChartSummary(synUserA,synChartA,synUserA.name||'Person A');
+  const summaryB=buildSynChartSummary(synUserB,synChartB,synUserB.name||'Person B');
   try{
     const ctrl=new AbortController();
     const tId=setTimeout(()=>ctrl.abort(),58000);
