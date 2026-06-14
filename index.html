@@ -2503,7 +2503,7 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}°, House ${houseOf(c
 Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
 Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const soulCtrl=new AbortController();
-    const soulTimer=setTimeout(()=>soulCtrl.abort(),56000);
+    const soulTimer=setTimeout(()=>soulCtrl.abort(),180000);
     const resp=await fetch('/api/get-remedy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -2627,7 +2627,7 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
   const doFetch=async(batchType)=>{
     for(let attempt=0;attempt<3;attempt++){
       const ctrl=new AbortController();
-      const tId=setTimeout(()=>ctrl.abort(),58000);
+      const tId=setTimeout(()=>ctrl.abort(),120000);
       try{
         const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({chartSummary:summary,lang:capturedLang,type:batchType}),signal:ctrl.signal});
@@ -3066,7 +3066,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '101';
+const JYOTI_BUILD = '102';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3671,7 +3671,7 @@ async function loadSynTier(type){
   const doSynFetch=async(apiType)=>{
     for(let attempt=0;attempt<3;attempt++){
       const ctrl=new AbortController();
-      const tId=setTimeout(()=>ctrl.abort(),58000);
+      const tId=setTimeout(()=>ctrl.abort(),180000);
       try{
         const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang,relationshipContext:synRelContext}),
@@ -4108,7 +4108,7 @@ async function openDeepReading(type,title){
   const summaryB=buildSynChartSummary(synUserB,synChartB,synUserB.name||'Person B');
   try{
     const ctrl=new AbortController();
-    const tId=setTimeout(()=>ctrl.abort(),58000);
+    const tId=setTimeout(()=>ctrl.abort(),270000);
     // API type is 'deep_karmic' etc (without language suffix)
     const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang,relationshipContext:synRelContext}),
