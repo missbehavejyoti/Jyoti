@@ -446,6 +446,19 @@ Return JSON:
   const config = prompts[type];
   if (!config) return res.status(400).json({ error: 'Unknown reading type: ' + type });
 
+  const isDeep = type.startsWith('deep_');
+
+  const DEPTH_RULES = isDeep ? `
+
+CLASSICAL DEPTH LEVEL: The person has deliberately chosen to go deeper — now reveal the full classical mechanism behind what they feel at the surface. At this level you MUST name the tradition explicitly and precisely:
+- Specific nakshatra padas for key planets in both charts, with their presiding deities and shaktis (primal powers)
+- Exact dasha period dates and remaining years for both people exactly as given in the chart data — name the actual ruling planets, never speak vaguely about "current periods"
+- Classical yoga names when present (Gaja Kesari, Neecha Bhanga, Viparita Raja, Kemadruma, etc.) — name them, explain what they mean for THIS connection
+- Precise house-lord interactions by house number, sign, and dignity — which lord activates which house in the other's chart
+- Cross-chart planetary contacts with approximate orb — within 3 degrees is powerful, within 5 is active
+- Textual references where the tradition is specific: what BPHS, Phaladeepika, or the Nadi tradition says about this exact combination
+The human experience still leads every paragraph. The classical precision is now fully visible — not as terminology for its own sake, but as the exact mechanism behind what these two people feel. A Vedic practitioner reading this should see the complete classical picture. A complete newcomer should understand every element through the human meaning you anchor it in.` : '';
+
   try {
     let response, data, text = '';
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -462,7 +475,7 @@ Return JSON:
           body: JSON.stringify({
             model: config.model || 'claude-sonnet-4-6',
             max_tokens: config.maxTokens,
-            system: LANG_PREFIX + config.system,
+            system: LANG_PREFIX + config.system + DEPTH_RULES,
             messages: [{ role: 'user', content: config.user }]
           }),
           signal: ctrl.signal
