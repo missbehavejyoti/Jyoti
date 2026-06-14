@@ -470,7 +470,7 @@ The human experience still leads every paragraph. The classical precision is now
     let response, data, text = '';
     for (let attempt = 0; attempt < 3; attempt++) {
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 52000);
+      const timer = setTimeout(() => ctrl.abort(), 240000);
       try {
         response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',

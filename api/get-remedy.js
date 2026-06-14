@@ -309,7 +309,7 @@ JSON structure:
 
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 55000);
+    const timer = setTimeout(() => ctrl.abort(), 240000);
     let response, data, text = '';
     try {
       response = await fetch('https://api.anthropic.com/v1/messages', {

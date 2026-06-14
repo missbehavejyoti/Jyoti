@@ -3,8 +3,8 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "functions": {
-    "api/get-remedy.js": { "maxDuration": 60 },
-    "api/get-synastry.js": { "maxDuration": 60 }
+    "api/get-remedy.js": { "maxDuration": 300 },
+    "api/get-synastry.js": { "maxDuration": 300 }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
