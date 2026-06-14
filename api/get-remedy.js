@@ -62,9 +62,9 @@ module.exports = async (req, res) => {
 
   const LANG_PREFIX = (isDailyRemedy || isWeekly || isDailyQuick)
     ? (lang === 'hi'
-      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English.\n\n'
+      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n'
       : lang === 'es'
-      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés.\n\n'
+      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n'
       : '')
     : '';
 
