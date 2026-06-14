@@ -772,6 +772,12 @@ select option{background:var(--s2);color:var(--text)}
             </div>
           </div>
 
+          <div class="field" style="margin-top:.8rem">
+            <label data-en="About this connection (optional)" data-hi="इस संबंध के बारे में (वैकल्पिक)" data-es="Sobre esta conexión (opcional)">About this connection (optional)</label>
+            <input type="text" id="syn-context" placeholder="e.g. married 30 years, just started dating, old friends..." data-hi="जैसे: 30 साल से विवाहित, अभी मिले, पुराने दोस्त..." data-es="ej. casados 30 años, recién conocidos, amigos de infancia...">
+            <p class="hint" data-en="Helps us read where you actually are, not guess" data-hi="अनुमान नहीं, वास्तविकता से पढ़ने में मदद करता है" data-es="Nos ayuda a leer dónde están realmente, sin suponer">Helps us read where you actually are, not guess</p>
+          </div>
+
           <div id="syn-form-error" style="display:none;color:var(--rose);font-size:.85rem;text-align:center;margin-bottom:.8rem;line-height:1.5"></div>
 
           <button class="btn btn-gold btn-full" onclick="beginSynastry()" data-en="Begin Compatibility Reading ✦" data-hi="संगतता पाठ शुरू करें ✦" data-es="Iniciar Lectura de Compatibilidad ✦">Begin Compatibility Reading ✦</button>
@@ -3060,7 +3066,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '97';
+const JYOTI_BUILD = '98';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3465,6 +3471,7 @@ async function requestNotificationsP5(){
 const SYN_CACHE_VER='v4';
 let synChartA=null,synChartB=null;
 let synUserA={},synUserB={};
+let synRelContext='';
 let synTier2Count=0;
 let synTier2Done=new Set();
 let synLoadingType=null;
@@ -3586,6 +3593,7 @@ async function beginSynastry(){
   const tobB=document.getElementById('syn-b-tob').value||'12:00';
   const pobB=document.getElementById('syn-b-pob').value.trim();
   const genderB=document.getElementById('syn-b-gender').value;
+  synRelContext=document.getElementById('syn-context').value.trim();
   const errEl=document.getElementById('syn-form-error');
   if(!nameA||!dobA||!pobA||!nameB||!dobB||!pobB){
     errEl.textContent=currentLang==='hi'?'पहले अपनी कुंडली भरें, फिर दूसरे व्यक्ति के लिए नाम, तिथि और स्थान जोड़ें।':currentLang==='es'?'Completa tu carta primero, luego agrega Nombre, Fecha y Lugar para la segunda persona.':'Please fill in your chart first, then add Name, Date, and Place for the second person.';
@@ -3666,7 +3674,7 @@ async function loadSynTier(type){
       const tId=setTimeout(()=>ctrl.abort(),58000);
       try{
         const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang}),
+          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang,relationshipContext:synRelContext}),
           signal:ctrl.signal});
         clearTimeout(tId);
         if(!r.ok){
@@ -4066,9 +4074,10 @@ function resetSynastry(){
   document.getElementById('syn-tier4').style.display='none';
   document.getElementById('syn-form-error').style.display='none';
   // Clear Person B's fields so user enters fresh data for new pair
-  ['syn-b-name','syn-b-dob','syn-b-tob','syn-b-pob'].forEach(id=>{
+  ['syn-b-name','syn-b-dob','syn-b-tob','syn-b-pob','syn-context'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
+  synRelContext='';
   prefillSynPersonA();
 }
 
@@ -4102,7 +4111,7 @@ async function openDeepReading(type,title){
     const tId=setTimeout(()=>ctrl.abort(),58000);
     // API type is 'deep_karmic' etc (without language suffix)
     const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang}),
+      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang,relationshipContext:synRelContext}),
       signal:ctrl.signal});
     clearTimeout(tId);
     if(!r.ok){

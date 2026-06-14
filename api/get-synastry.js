@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { chartA, chartB, nameA, nameB, type, lang } = req.body || {};
+  const { chartA, chartB, nameA, nameB, type, lang, relationshipContext } = req.body || {};
 
   // Input validation — reject bad requests before touching the AI
   const VALID_LANGS = ['en', 'hi', 'es'];
@@ -49,7 +49,10 @@ module.exports = async (req, res) => {
   const B = nameB || 'Person B';
 
   const today = new Date().toISOString().split('T')[0];
-  const CHART_CONTEXT = `Today's date: ${today}\n\nHere are the two birth charts:\n\n${A}'s chart:\n${chartA}\n\n${B}'s chart:\n${chartB}`;
+  const relLine = relationshipContext
+    ? `Relationship context: ${relationshipContext}`
+    : `Relationship context: not specified — do not assume they have just met or are at the beginning of this connection. This could be any stage, from a first meeting to decades together.`;
+  const CHART_CONTEXT = `Today's date: ${today}\n${relLine}\n\nHere are the two birth charts:\n\n${A}'s chart:\n${chartA}\n\n${B}'s chart:\n${chartB}`;
 
   const CORE_RULES = `
 CRITICAL RULES:
@@ -63,6 +66,7 @@ CRITICAL RULES:
 - Tone: the voice of a great teacher: precise, warm, honest, alive. Never clinical. Never alarming. Never explaining astrology to the reader — speaking through it.
 - For spiritual guidance only. Never give medical, psychiatric, financial or legal advice.
 - LANGUAGE: ${langInstruction} Every word of text content must be in this language. Do not mix languages.
+- RELATIONSHIP STAGE: Honour the relationship context exactly. If they have been married 30 years, write for 30 years of marriage — not a new meeting. If the context is unspecified, never assume they have just met; write in a way that is true for any stage of connection.
 - LOCATION: The birth place listed for each person is their place of birth only — not their current residence. People frequently move. Do not assume either person currently lives where they were born. When discussing geography or distance, base observations on chart patterns (4th/9th/12th house indicators, Rahu), not on the natal city.
 - PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings, never translate them.
 - NEVER place a literal double-quote character (") inside any text value, it breaks JSON parsing and truncates your sentence. If you want to set off a word or phrase, use single quotation marks (' ') instead, never " ".
