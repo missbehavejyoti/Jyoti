@@ -277,7 +277,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_duration: {
@@ -295,7 +295,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_gifts: {
@@ -313,7 +313,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_higher_road: {
@@ -331,7 +331,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_soul_debt: {
@@ -349,7 +349,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_work_life: {
@@ -367,7 +367,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_timing: {
@@ -385,7 +385,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_other_a: {
@@ -403,7 +403,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     deep_other_b: {
@@ -421,7 +421,7 @@ ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
       maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
       isText: true,
-      model: 'claude-haiku-4-5-20251001'
+      model: 'claude-sonnet-4-6'
     },
 
     soul_verdict: {
