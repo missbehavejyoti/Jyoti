@@ -330,7 +330,7 @@ JSON structure:
             if (isPlanetC)                     return hi ?  600 : es ?  480 :  380;
             if (isPlanetA || isPlanetB)        return hi ?  900 : es ?  700 :  560;
             if (isWeekly)      return hi ? 1600 : es ? 1350 : 1100;
-            if (isDailyDepth)  return hi ? 1900 : es ? 1600 : 1400;
+            if (isDailyDepth)  return hi ? 2800 : es ? 2300 : 1900;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
