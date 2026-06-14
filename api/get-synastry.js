@@ -66,7 +66,8 @@ CRITICAL RULES:
 - LOCATION: The birth place listed for each person is their place of birth only — not their current residence. People frequently move. Do not assume either person currently lives where they were born. When discussing geography or distance, base observations on chart patterns (4th/9th/12th house indicators, Rahu), not on the natal city.
 - PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings, never translate them.
 - NEVER place a literal double-quote character (") inside any text value, it breaks JSON parsing and truncates your sentence. If you want to set off a word or phrase, use single quotation marks (' ') instead, never " ".
-- PUNCTUATION: NEVER use an em dash (—) or en dash (–) anywhere in your written text. This is a strict rule. Use a comma, period, semicolon, colon, or parentheses instead, whichever reads most naturally in the sentence.
+- NO DASHES: NEVER use an em dash (—) or en dash (–) anywhere in your written text. This is absolute. A hyphen between two words in a date range (July-September) is also forbidden — write "July to September" instead. Use commas, colons, semicolons, periods, or parentheses.
+- NO ASTERISKS: NEVER use asterisks (*) for any purpose — not for emphasis, not for bullets, not for anything. Plain prose only. No Markdown formatting of any kind inside text values.
 - Return valid JSON only, no markdown, no backticks, no preamble. Every string value must be properly closed with a matching double-quote before the next key or closing brace.`;
 
   const prompts = {
