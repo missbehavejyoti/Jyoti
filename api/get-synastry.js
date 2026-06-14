@@ -48,7 +48,8 @@ module.exports = async (req, res) => {
   const A = nameA || 'Person A';
   const B = nameB || 'Person B';
 
-  const CHART_CONTEXT = `Here are the two birth charts:\n\n${A}'s chart:\n${chartA}\n\n${B}'s chart:\n${chartB}`;
+  const today = new Date().toISOString().split('T')[0];
+  const CHART_CONTEXT = `Today's date: ${today}\n\nHere are the two birth charts:\n\n${A}'s chart:\n${chartA}\n\n${B}'s chart:\n${chartB}`;
 
   const CORE_RULES = `
 CRITICAL RULES:
