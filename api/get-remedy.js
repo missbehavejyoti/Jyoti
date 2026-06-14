@@ -139,6 +139,8 @@ EXAMPLES of the right tone:
 
 CONTENT RULES: Each practice must be grounded in this specific chart but feel like a real human instruction. No generic content. No em dashes. Valid JSON only.
 
+MANTRA RULE: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of the response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
+
 JSON:
 {
   "cosmic_weather": "One sentence. A felt quality for the day — what energy is present and why from this chart. Max 20 words.",
@@ -151,8 +153,8 @@ JSON:
       "One sentence. Different practice type. Warm and specific. Max 20 words.",
       "One sentence. Body or quality practice. Grounded in this chart. Max 20 words."
     ],
-    "mantra": "Exact Sanskrit mantra or null",
-    "mantra_phonetic": "Phonetic guide or null",
+    "mantra": "Sanskrit Devanagari script only — NEVER translate regardless of language",
+    "mantra_phonetic": "Pronunciation guide in the response language, or null",
     "mantra_count": 108,
     "mantra_meaning": "Brief translation, 6 words max",
     "mantra_why": "One sentence why this mantra for this placement today."
@@ -185,6 +187,7 @@ STRICT RULES — keep everything short and scannable:
 UNIQUENESS: This must be genuinely different from a daily reading — broader arc, Antar dasha driven, 5 flexible practices not 3 rigid daily ones. No generic content. No em dashes. Valid JSON only.
 
 LANGUAGE REMINDER: ${langInstruction} Every value in every JSON field must be in the requested language. Not English. Not mixed. The requested language only.
+MANTRA EXCEPTION: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 
 JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' ? 'Spanish' : 'English'}):
 {
@@ -200,8 +203,8 @@ JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' 
       "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: devotional or contemplative practice, max 25 words]",
       "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: quality to embody or release this week]"
     ],
-    "mantra": "[Sanskrit mantra — Sanskrit script is acceptable for mantra only]",
-    "mantra_phonetic": "[phonetic guide or null]",
+    "mantra": "[Sanskrit Devanagari script ONLY — never translate into Hindi/Spanish/English, regardless of language]",
+    "mantra_phonetic": "[pronunciation guide in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, or null]",
     "mantra_count": 108,
     "mantra_meaning": "[brief translation in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, max 6 words]",
     "mantra_why": "[one sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]"
@@ -260,7 +263,7 @@ ABSOLUTE RULES:
 5. NEVER give medical, psychiatric, financial, or legal advice. Never claim specific outcomes. Frame everything as spiritual practice.
 6. NEVER use an em dash (—) or en dash (–) anywhere. Use commas, colons, semicolons, or periods instead.
 7. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
-8. LANGUAGE: ${langInstruction}
+8. LANGUAGE: ${langInstruction} MANTRA EXCEPTION: the "mantra" JSON field is always Sanskrit Devanagari script regardless of response language — never translate a mantra. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 ${isMonthEndPrep ? `9. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field with physical ritual items grounded in their active dasha lords for next month. 4-7 items with categories, quantities, and practical sourcing notes.\n` : ''}
 JSON structure:
 {
@@ -326,7 +329,7 @@ JSON structure:
             if (isPlanetC)                     return hi ?  600 : es ?  480 :  380;
             if (isPlanetA || isPlanetB)        return hi ?  900 : es ?  700 :  560;
             if (isWeekly)      return hi ? 1600 : es ? 1350 : 1100;
-            if (isDailyDepth)  return hi ? 1200 : es ? 1050 :  900;
+            if (isDailyDepth)  return hi ? 1900 : es ? 1600 : 1400;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
