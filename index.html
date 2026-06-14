@@ -3066,7 +3066,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '99';
+const JYOTI_BUILD = '100';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3075,7 +3075,7 @@ const JYOTI_BUILD = '99';
     Object.keys(localStorage).forEach(k=>{
       if(k.startsWith('jyoti_q_')||k.startsWith('jyoti_d_')||
          k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')||
-         k.startsWith('jyoti_w_')){
+         k.startsWith('jyoti_w_')||k.startsWith('jyoti_syn_')){
         localStorage.removeItem(k);
       }
     });
@@ -3468,7 +3468,7 @@ async function requestNotificationsP5(){
 // Bump this whenever synastry prompts or chart computation change — invalidates
 // every previously cached compatibility reading so stale (e.g. pre-fix, truncated,
 // or non-sidereal) text is never served again from localStorage.
-const SYN_CACHE_VER='v4';
+const SYN_CACHE_VER='v5';
 let synChartA=null,synChartB=null;
 let synUserA={},synUserB={};
 let synRelContext='';
