@@ -3060,7 +3060,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '95';
+const JYOTI_BUILD = '96';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3562,7 +3562,7 @@ function buildSynChartSummary(user,chart,label){
   const _n=pl=>(pl.nakshatraName||L.nakshatras[pl.nakshatra]||'');
   const maleficsLine=chart.malefics&&chart.malefics.length?`\nMalefic influences (natal): ${chart.malefics.map(m=>m.name).join(', ')}`:'';
   const metaLine=`\nAyanamsa (Lahiri): ${chart.ayanamsa||''}°  |  Birth UT: ${chart.birthUT||''}`;
-  return `${label}, born ${user.dob} at ${user.tob||'unknown'}, ${user.pob} [pronouns: ${pronounStr}]
+  return `${label}, born ${user.dob} at ${user.tob||'unknown'}, birth place: ${user.pob} (current location may differ) [pronouns: ${pronounStr}]
 Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°${_ll}
 Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} pada ${p[0].pada} | House ${h(p[0])}
 Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} pada ${p[1].pada} | House ${h(p[1])}
