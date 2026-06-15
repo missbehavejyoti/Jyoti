@@ -14,7 +14,7 @@ async function sendWelcomeEmail(email, name) {
     body: JSON.stringify({
       from: 'Jyoti <hello@jyotiapp.com>',
       to: email,
-      subject: '✦ Welcome to Jyoti — your sacred practice begins',
+      subject: '✦ Welcome to Jyoti · your sacred practice begins',
       html: `
 <!DOCTYPE html>
 <html>
