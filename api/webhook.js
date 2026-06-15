@@ -32,10 +32,10 @@ async function sendWelcomeEmail(email, name) {
         <tr><td style="padding-bottom:20px">
           <p style="font-size:17px;color:#C8A94A;margin:0 0 16px">Namaste, ${firstName}.</p>
           <p style="font-size:15px;line-height:1.8;color:#b8a898;margin:0 0 14px">
-            Your Vedic birth chart is now open to you — the planets have been waiting.
+            Your Vedic birth chart is now open to you, the planets have been waiting.
           </p>
           <p style="font-size:15px;line-height:1.8;color:#b8a898;margin:0 0 14px">
-            Each day Jyoti will draw from your Nadi chart to give you a precise remedy, mantra, and practice — calibrated to the exact planetary hour and your Vimshottari dasha cycle.
+            Each day Jyoti will draw from your Nadi chart to give you a precise remedy, mantra, and practice, calibrated to the exact planetary hour and your Vimshottari dasha cycle.
           </p>
           <p style="font-size:15px;line-height:1.8;color:#b8a898;margin:0">
             Return every morning. The cosmos is most potent at sunrise.
