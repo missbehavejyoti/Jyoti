@@ -4,6 +4,7 @@
   "description": "Jyoti — Vedic Nadi Astrology PWA",
   "engines": { "node": ">=18" },
   "dependencies": {
-    "astronomy-engine": "^2.1.19"
+    "astronomy-engine": "^2.1.19",
+    "stripe": "^16.0.0"
   }
 }

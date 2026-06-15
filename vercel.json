@@ -3,8 +3,12 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "functions": {
-    "api/get-remedy.js": { "maxDuration": 300 },
-    "api/get-synastry.js": { "maxDuration": 300 }
+    "api/get-remedy.js":        { "maxDuration": 300 },
+    "api/get-synastry.js":      { "maxDuration": 300 },
+    "api/create-checkout.js":   { "maxDuration": 30 },
+    "api/verify-session.js":    { "maxDuration": 30 },
+    "api/check-subscriber.js":  { "maxDuration": 30 },
+    "api/webhook.js":           { "maxDuration": 30 }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
