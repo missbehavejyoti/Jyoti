@@ -557,18 +557,6 @@ select option{background:var(--s2);color:var(--text)}
             <li style="color:var(--gold)" data-en="✦ Compatibility reading included" data-hi="✦ संगतता पाठ शामिल" data-es="✦ Lectura de compatibilidad incluida">✦ Compatibility reading included</li>
           </ul>
         </div>
-        <div style="text-align:center;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--dim)" data-en="· OR ·" data-hi="· या ·" data-es="· O ·">· OR ·</div>
-        <div class="plan" id="plan-compat" style="background:rgba(26,148,144,.04);border:1px solid rgba(26,148,144,.3)">
-          <div class="plan-name" style="color:#5DCAC6" data-en="COMPATIBILITY" data-hi="अनुकूलता" data-es="COMPATIBILIDAD">COMPATIBILITY</div>
-          <div class="plan-price" style="color:#5DCAC6">$9.99<span class="plan-period" style="font-size:1rem"> AUD</span></div>
-          <div class="plan-period" data-en="one time · no subscription" data-hi="एक बार · कोई सदस्यता नहीं" data-es="único · sin suscripción">one time · no subscription</div>
-          <ul class="plan-features" style="color:var(--muted)">
-            <li data-en="Classical Vedic compatibility reading" data-hi="शास्त्रीय वैदिक संगतता पाठ" data-es="Lectura de compatibilidad védica clásica">Classical Vedic compatibility reading</li>
-            <li data-en="Karmic thread · Soul debt · Gifts & Shadows" data-hi="कार्मिक धागा · आत्मा ऋण · उपहार और छाया" data-es="Hilo kármico · Deuda del alma · Dones y Sombras">Karmic thread · Soul debt · Gifts & Shadows</li>
-            <li data-en="In-depth progressive analysis" data-hi="गहन प्रगतिशील विश्लेषण" data-es="Análisis progresivo en profundidad">In-depth progressive analysis</li>
-            <li data-en="No daily chart or remedies" data-hi="कोई दैनिक कुंडली या उपाय नहीं" data-es="Sin carta diaria ni remedios">No daily chart or remedies</li>
-          </ul>
-        </div>
       </div>
 
       <!-- Beta access -->
@@ -619,9 +607,6 @@ select option{background:var(--s2);color:var(--text)}
           <span data-en="Begin My Jyoti Journey" data-hi="मेरी ज्योति यात्रा शुरू करें" data-es="Comenzar Mi Viaje Jyoti">Begin My Jyoti Journey</span> ✦
         </button>
       </div>
-      <button class="btn btn-ghost btn-full" onclick="goToPayment('compatibility')" style="margin-top:.6rem;color:#5DCAC6;border-color:rgba(26,148,144,.35)">
-        <span data-en="✦ Compatibility Reading Only, $9.99" data-hi="✦ केवल अनुकूलता पाठ, $9.99" data-es="✦ Solo Lectura de Compatibilidad, $9.99">✦ Compatibility Reading Only, $9.99</span>
-      </button>
     </div>
   </div>
 
@@ -3108,7 +3093,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '102';
+const JYOTI_BUILD = '103';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
