@@ -3006,6 +3006,46 @@ const MANTRA_PHONETICS = {
   'Om Sraam Sreem Sraum Sah Ketave Namah':
     'Om (ohm) · Sraam (srahm) · Sreem (sreem) · Sraum (srowm) · Sah (suh) · Ke·ta·ve (kay·tuh·vay) · Na·mah (nah·mah)'
 };
+const MANTRA_PHONETICS_HI = {
+  'Om Hraam Hreem Hraum Sah Suryaya Namah':
+    'ॐ · ह्रां · ह्रीं · ह्रौं · सः · सूर्-या-य · नमः',
+  'Om Shraam Shreem Shraum Sah Chandraya Namah':
+    'ॐ · श्रां · श्रीं · श्रौं · सः · चन्-द्रा-य · नमः',
+  'Om Kraam Kreem Kraum Sah Bhaumaya Namah':
+    'ॐ · क्रां · क्रीं · क्रौं · सः · भौ-मा-य · नमः',
+  'Om Braam Breem Braum Sah Budhaya Namah':
+    'ॐ · ब्रां · ब्रीं · ब्रौं · सः · बु-धा-य · नमः',
+  'Om Graam Greem Graum Sah Gurave Namah':
+    'ॐ · ग्रां · ग्रीं · ग्रौं · सः · गु-र-वे · नमः',
+  'Om Draam Dreem Draum Sah Shukraya Namah':
+    'ॐ · द्रां · द्रीं · द्रौं · सः · शुक्-रा-य · नमः',
+  'Om Praam Preem Praum Sah Shanaischaraya Namah':
+    'ॐ · प्रां · प्रीं · प्रौं · सः · श-नैश्-च-रा-य · नमः',
+  'Om Bhraam Bhreem Bhraum Sah Rahave Namah':
+    'ॐ · भ्रां · भ्रीं · भ्रौं · सः · रा-ह-वे · नमः',
+  'Om Sraam Sreem Sraum Sah Ketave Namah':
+    'ॐ · स्रां · स्रीं · स्रौं · सः · के-त-वे · नमः'
+};
+const MANTRA_PHONETICS_ES = {
+  'Om Hraam Hreem Hraum Sah Suryaya Namah':
+    'Om (om) · Hraam (raam) · Hreem (rrim) · Hraum (rraum) · Sah (sa) · Sur·ya·ya (sur·ya·ya) · Na·mah (na·ma)',
+  'Om Shraam Shreem Shraum Sah Chandraya Namah':
+    'Om (om) · Shraam (shrraam) · Shreem (shrim) · Shraum (shrraum) · Sah (sa) · Chan·dra·ya (chan·dra·ya) · Na·mah (na·ma)',
+  'Om Kraam Kreem Kraum Sah Bhaumaya Namah':
+    'Om (om) · Kraam (kraam) · Kreem (krim) · Kraum (kraum) · Sah (sa) · Bhau·ma·ya (bhau·ma·ya) · Na·mah (na·ma)',
+  'Om Braam Breem Braum Sah Budhaya Namah':
+    'Om (om) · Braam (braam) · Breem (brim) · Braum (braum) · Sah (sa) · Bu·dha·ya (bu·dha·ya) · Na·mah (na·ma)',
+  'Om Graam Greem Graum Sah Gurave Namah':
+    'Om (om) · Graam (graam) · Greem (grim) · Graum (graum) · Sah (sa) · Gu·ra·ve (gu·ra·ve) · Na·mah (na·ma)',
+  'Om Draam Dreem Draum Sah Shukraya Namah':
+    'Om (om) · Draam (draam) · Dreem (drim) · Draum (draum) · Sah (sa) · Shuk·ra·ya (shuk·ra·ya) · Na·mah (na·ma)',
+  'Om Praam Preem Praum Sah Shanaischaraya Namah':
+    'Om (om) · Praam (praam) · Preem (prim) · Praum (praum) · Sah (sa) · Sha·nais·cha·ra·ya (sha·nais·cha·ra·ya) · Na·mah (na·ma)',
+  'Om Bhraam Bhreem Bhraum Sah Rahave Namah':
+    'Om (om) · Bhraam (braam) · Bhreem (brim) · Bhraum (braum) · Sah (sa) · Ra·ha·ve (ra·ha·ve) · Na·mah (na·ma)',
+  'Om Sraam Sreem Sraum Sah Ketave Namah':
+    'Om (om) · Sraam (sraam) · Sreem (srim) · Sraum (sraum) · Sah (sa) · Ke·ta·ve (ke·ta·ve) · Na·mah (na·ma)'
+};
 
 function openChant(mantra,meaning,target,phonetic){
   chantCurrent=0;chantTarget=target||108;
@@ -3014,8 +3054,10 @@ function openChant(mantra,meaning,target,phonetic){
   document.getElementById('cm-count').textContent='0';
   document.getElementById('cm-target').textContent=currentLang==='hi'?`में से ${chantTarget}`:currentLang==='es'?`de ${chantTarget}`:`of ${chantTarget}`;
   document.getElementById('cm-bar').style.width='0%';
-  // Phonetic guide — use passed value or fall back to static lookup
-  const ph=phonetic||MANTRA_PHONETICS[mantra]||'';
+  // Phonetic guide — use passed value (from API, already in the right language) or
+  // fall back to the language-appropriate static lookup table
+  const lookup = currentLang==='hi' ? MANTRA_PHONETICS_HI : currentLang==='es' ? MANTRA_PHONETICS_ES : MANTRA_PHONETICS;
+  const ph=phonetic||lookup[mantra]||MANTRA_PHONETICS[mantra]||'';
   const phSec=document.getElementById('cm-phonetic-section');
   const phEl=document.getElementById('cm-phonetic');
   if(phSec&&phEl){
