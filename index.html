@@ -3064,23 +3064,23 @@ const MANTRA_PHONETICS = {
 };
 const MANTRA_PHONETICS_HI = {
   'Om Hraam Hreem Hraum Sah Suryaya Namah':
-    'ॐ · ह्रां · ह्रीं · ह्रौं · सः · सूर्-या-य · नमः',
+    'ॐ (ओम) · ह्रां (हराम) · ह्रीं (हरीम) · ह्रौं (हरोम) · सः (सह) · सूर्याय (सूर्-या-य) · नमः (नमः)',
   'Om Shraam Shreem Shraum Sah Chandraya Namah':
-    'ॐ · श्रां · श्रीं · श्रौं · सः · चन्-द्रा-य · नमः',
+    'ॐ (ओम) · श्रां (श्राम) · श्रीं (श्रीम) · श्रौं (श्रोम) · सः (सह) · चन्द्राय (चन्-द्रा-य) · नमः (नमः)',
   'Om Kraam Kreem Kraum Sah Bhaumaya Namah':
-    'ॐ · क्रां · क्रीं · क्रौं · सः · भौ-मा-य · नमः',
+    'ॐ (ओम) · क्रां (क्राम) · क्रीं (क्रीम) · क्रौं (क्रोम) · सः (सह) · भौमाय (भौ-मा-य) · नमः (नमः)',
   'Om Braam Breem Braum Sah Budhaya Namah':
-    'ॐ · ब्रां · ब्रीं · ब्रौं · सः · बु-धा-य · नमः',
+    'ॐ (ओम) · ब्रां (ब्राम) · ब्रीं (ब्रीम) · ब्रौं (ब्रोम) · सः (सह) · बुधाय (बु-धा-य) · नमः (नमः)',
   'Om Graam Greem Graum Sah Gurave Namah':
-    'ॐ · ग्रां · ग्रीं · ग्रौं · सः · गु-र-वे · नमः',
+    'ॐ (ओम) · ग्रां (ग्राम) · ग्रीं (ग्रीम) · ग्रौं (ग्रोम) · सः (सह) · गुरवे (गु-र-वे) · नमः (नमः)',
   'Om Draam Dreem Draum Sah Shukraya Namah':
-    'ॐ · द्रां · द्रीं · द्रौं · सः · शुक्-रा-य · नमः',
+    'ॐ (ओम) · द्रां (द्राम) · द्रीं (द्रीम) · द्रौं (द्रोम) · सः (सह) · शुक्राय (शुक्-रा-य) · नमः (नमः)',
   'Om Praam Preem Praum Sah Shanaischaraya Namah':
-    'ॐ · प्रां · प्रीं · प्रौं · सः · श-नैश्-च-रा-य · नमः',
+    'ॐ (ओम) · प्रां (प्राम) · प्रीं (प्रीम) · प्रौं (प्रोम) · सः (सह) · शनैश्चराय (श-नैश्-च-रा-य) · नमः (नमः)',
   'Om Bhraam Bhreem Bhraum Sah Rahave Namah':
-    'ॐ · भ्रां · भ्रीं · भ्रौं · सः · रा-ह-वे · नमः',
+    'ॐ (ओम) · भ्रां (भ्राम) · भ्रीं (भ्रीम) · भ्रौं (भ्रोम) · सः (सह) · राहवे (रा-ह-वे) · नमः (नमः)',
   'Om Sraam Sreem Sraum Sah Ketave Namah':
-    'ॐ · स्रां · स्रीं · स्रौं · सः · के-त-वे · नमः'
+    'ॐ (ओम) · स्रां (स्राम) · स्रीं (स्रीम) · स्रौं (स्रोम) · सः (सह) · केतवे (के-त-वे) · नमः (नमः)'
 };
 const MANTRA_PHONETICS_ES = {
   'Om Hraam Hreem Hraum Sah Suryaya Namah':
@@ -3117,8 +3117,22 @@ function openChant(mantra,meaning,target,phonetic){
   const phSec=document.getElementById('cm-phonetic-section');
   const phEl=document.getElementById('cm-phonetic');
   if(phSec&&phEl){
-    if(ph){phEl.textContent=ph;phSec.style.display='';}
-    else{phSec.style.display='none';}
+    if(ph){
+      // Render word-by-word — split on · and display each word + pronunciation on its own row
+      const parts=ph.split(' · ');
+      phEl.innerHTML=parts.map(p=>{
+        const m=p.match(/^(.+?)\s*\((.+?)\)$/);
+        if(m){
+          return `<div style="display:flex;align-items:baseline;gap:.6rem;padding:.18rem 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="color:var(--gold);font-size:.88rem;font-weight:500;min-width:5.5rem">${m[1]}</span>
+            <span style="color:var(--muted);font-size:.82rem;font-style:italic">${m[2]}</span>
+          </div>`;
+        }
+        // Hindi / no-bracket format — show each syllable clearly
+        return `<span style="color:var(--gold);font-size:1rem;margin-right:.5rem">${p}</span>`;
+      }).join('');
+      phSec.style.display='';
+    }else{phSec.style.display='none';}
   }
   // Update phonetic label language
   const phLabel=phSec&&phSec.querySelector('.phonetic-label');
