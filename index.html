@@ -558,17 +558,6 @@ select option{background:var(--s2);color:var(--text)}
         </div>
       </div>
 
-      <!-- Beta access -->
-      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.3);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.4rem;text-align:center">
-        <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem" data-en="✦ BETA TESTER ACCESS ✦" data-hi="✦ बीटा परीक्षक एक्सेस ✦" data-es="✦ ACCESO BETA ✦">✦ BETA TESTER ACCESS ✦</div>
-        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem" data-en="Have an access code? Enter it below to use Jyoti free during the beta." data-hi="क्या आपके पास एक्सेस कोड है? बीटा के दौरान मुफ्त उपयोग करने के लिए नीचे दर्ज करें।" data-es="¿Tienes un código de acceso? Ingrésalo para usar Jyoti gratis durante la beta.">Have an access code? Enter it below to use Jyoti free during the beta.</p>
-        <div style="display:flex;gap:.5rem;max-width:320px;margin:0 auto">
-          <input type="text" id="beta-input" placeholder="Your access code" data-en="Your access code" data-hi="आपका एक्सेस कोड" data-es="Tu código de acceso" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem">
-          <button class="btn btn-gold" onclick="redeemBeta()" style="font-size:.72rem;padding:.6rem 1.2rem;white-space:nowrap" data-en="Enter ✦" data-hi="दर्ज करें ✦" data-es="Ingresar ✦">Enter ✦</button>
-        </div>
-        <p id="beta-msg" style="font-size:.82rem;margin-top:.6rem;min-height:1.2em"></p>
-      </div>
-
       <div class="notif-box">
         <div class="notif-icon">🔔</div>
         <div class="notif-text" style="flex:1">
@@ -626,6 +615,20 @@ select option{background:var(--s2);color:var(--text)}
             <button class="btn btn-gold" onclick="restoreAccess()" style="font-size:.72rem;padding:.6rem 1rem;white-space:nowrap" data-en="Restore ✦" data-hi="पुनः प्राप्त करें ✦" data-es="Restaurar ✦">Restore ✦</button>
           </div>
           <p id="restore-msg" style="font-size:.8rem;margin-top:.4rem;min-height:1.1em"></p>
+        </div>
+      </div>
+
+      <!-- Beta access — discreet, for invited testers only -->
+      <div style="text-align:center;margin-top:.6rem">
+        <button type="button" onclick="toggleBetaBox()" style="font-size:.68rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px">
+          <span data-en="Have an access code?" data-hi="एक्सेस कोड है?" data-es="¿Tienes un código de acceso?">Have an access code?</span>
+        </button>
+        <div id="beta-box" style="display:none;margin-top:.6rem">
+          <div style="display:flex;gap:.5rem;max-width:300px;margin:0 auto">
+            <input type="text" id="beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem">
+            <button class="btn btn-ghost btn-sm" onclick="redeemBeta()" style="font-size:.72rem;white-space:nowrap" data-en="Enter" data-hi="दर्ज करें" data-es="Ingresar">Enter</button>
+          </div>
+          <p id="beta-msg" style="font-size:.78rem;margin-top:.4rem;min-height:1.1em"></p>
         </div>
       </div>
     </div>
@@ -1145,6 +1148,11 @@ async function goToPayment(plan='monthly'){
 
 function toggleRestoreBox(){
   const box=document.getElementById('restore-box');
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+
+function toggleBetaBox(){
+  const box=document.getElementById('beta-box');
   if(box)box.style.display=box.style.display==='none'?'block':'none';
 }
 
