@@ -600,11 +600,33 @@ select option{background:var(--s2);color:var(--text)}
         <span data-en="By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only, not medical advice. Jyoti Pty Ltd © 2025. All rights reserved." data-hi="सदस्यता लेकर आप पुष्टि करते हैं कि आपने सेवा की शर्तें और गोपनीयता नीति पढ़ी और सहमति दी है। केवल आध्यात्मिक मार्गदर्शन के लिए।" data-es="Al suscribirte confirmas que has leído y aceptado los Términos de Servicio y la Política de Privacidad. Solo para orientación espiritual.">By subscribing you confirm you have read and agreed to the Terms of Service and Privacy Policy. Subscription renews automatically. Cancel anytime. Billed in AUD. Remedies are for spiritual guidance only, not medical advice. Jyoti Pty Ltd © 2025. All rights reserved.</span>
       </div>
 
+      <!-- Stripe checkout email -->
+      <div style="margin-bottom:.8rem">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:.35rem" data-en="Email for your subscription" data-hi="सदस्यता के लिए ईमेल" data-es="Email para tu suscripción">Email for your subscription</div>
+        <input type="email" id="checkout-email" placeholder="your@email.com" style="width:100%;box-sizing:border-box">
+        <p id="checkout-msg" style="font-size:.8rem;margin-top:.35rem;min-height:1.1em"></p>
+      </div>
+
       <div style="display:flex;gap:1rem;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="goToPanel(3)">← <span data-en="View Chart" data-hi="कुंडली देखें" data-es="Ver Carta">View Chart</span></button>
-        <button class="btn btn-gold" style="flex:1" onclick="goToPayment('monthly')">
+        <button class="btn btn-gold" style="flex:1" id="checkout-btn" onclick="goToPayment('monthly')">
           <span data-en="Begin My Jyoti Journey" data-hi="मेरी ज्योति यात्रा शुरू करें" data-es="Comenzar Mi Viaje Jyoti">Begin My Jyoti Journey</span> ✦
         </button>
+      </div>
+
+      <!-- Returning subscriber restore -->
+      <div style="text-align:center;margin-top:.9rem">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="toggleRestoreBox()" style="font-size:.72rem;border:none;background:none;color:var(--dim);text-decoration:underline;text-underline-offset:3px;cursor:pointer">
+          <span data-en="Already subscribed? Restore access" data-hi="पहले से सदस्य हैं? पहुंच पुनः प्राप्त करें" data-es="¿Ya suscrito? Restaurar acceso">Already subscribed? Restore access</span>
+        </button>
+        <div id="restore-box" style="display:none;margin-top:.7rem;background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:10px;padding:.9rem 1rem;text-align:left">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.45rem" data-en="Enter your subscription email to restore access" data-hi="पहुंच पुनः प्राप्त करने के लिए सदस्यता ईमेल दर्ज करें" data-es="Ingresa tu email de suscripción para restaurar el acceso">Enter your subscription email to restore access</div>
+          <div style="display:flex;gap:.5rem">
+            <input type="email" id="restore-email" placeholder="your@email.com" style="flex:1">
+            <button class="btn btn-gold" onclick="restoreAccess()" style="font-size:.72rem;padding:.6rem 1rem;white-space:nowrap" data-en="Restore ✦" data-hi="पुनः प्राप्त करें ✦" data-es="Restaurar ✦">Restore ✦</button>
+          </div>
+          <p id="restore-msg" style="font-size:.8rem;margin-top:.4rem;min-height:1.1em"></p>
+        </div>
       </div>
     </div>
   </div>
@@ -1095,23 +1117,67 @@ function checkConsent(){
 }
 
 // ── PAYMENT ──
-const SQUARE_LINKS = {
-  monthly: 'https://square.link/u/APfv6wgq',
-  compatibility: '' // set when Square compatibility link is ready
-};
-
-function goToPayment(plan='monthly'){
-  const link = SQUARE_LINKS[plan] || SQUARE_LINKS.monthly;
-  if(!link){
-    alert(currentLang==='hi'?'पेमेंट लिंक जल्द आ रहा है। खरीदने के लिए hellojyoti@proton.me पर संपर्क करें।':currentLang==='es'?'Enlace de pago próximamente. Escríbenos a hellojyoti@proton.me para comprar.':'Payment link coming soon. Contact hellojyoti@proton.me to purchase.');
+async function goToPayment(plan='monthly'){
+  const emailEl=document.getElementById('checkout-email');
+  const msgEl=document.getElementById('checkout-msg');
+  const btnEl=document.getElementById('checkout-btn');
+  const email=((emailEl&&emailEl.value)||userData.email||'').trim();
+  if(!email||!email.includes('@')){
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'कृपया एक वैध ईमेल दर्ज करें':currentLang==='es'?'Por favor ingresa un email válido':'Please enter a valid email address';}
+    if(emailEl)emailEl.focus();
     return;
   }
-  try {
-    sessionStorage.setItem('jyoti_pending_name', userData.name || '');
-    sessionStorage.setItem('jyoti_pending_plan', plan);
-  } catch(e){}
-  // Navigate in same tab so Square return URL lands back here with ?jyoti_plan=...
-  window.location.href = link;
+  if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'चेकआउट की तैयारी हो रही है…':currentLang==='es'?'Preparando el pago…':'Preparing checkout…';}
+  if(btnEl){btnEl.disabled=true;btnEl.style.opacity='.6';}
+  try{
+    const resp=await fetch('/api/create-checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email})
+    });
+    const data=await resp.json();
+    if(!resp.ok||!data.url)throw new Error(data.error||'Checkout unavailable');
+    window.location.href=data.url;
+  }catch(e){
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=e.message||(currentLang==='hi'?'चेकआउट विफल। पुनः प्रयास करें।':currentLang==='es'?'Error al iniciar el pago. Intenta de nuevo.':'Checkout failed. Please try again.');}
+    if(btnEl){btnEl.disabled=false;btnEl.style.opacity='';}
+  }
+}
+
+function toggleRestoreBox(){
+  const box=document.getElementById('restore-box');
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+
+async function restoreAccess(){
+  const emailEl=document.getElementById('restore-email');
+  const msgEl=document.getElementById('restore-msg');
+  const email=((emailEl&&emailEl.value)||'').trim();
+  if(!email||!email.includes('@')){
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'कृपया एक वैध ईमेल दर्ज करें':currentLang==='es'?'Por favor ingresa un email válido':'Please enter a valid email';}
+    return;
+  }
+  if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'जाँच हो रही है…':currentLang==='es'?'Verificando…':'Checking…';}
+  try{
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await resp.json();
+    if(data.subscribed){
+      try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_sub_email',email);}catch(e){}
+      if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'✦ सदस्यता की पुष्टि हुई! एप्लिकेशन खोल रहे हैं…':currentLang==='es'?'✦ ¡Suscripción confirmada! Abriendo la app…':'✦ Subscription confirmed! Opening the app…';}
+      const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
+      if(saved?.chartData?.planets&&saved?.userData?.name){
+        userData=saved.userData;chartData=saved.chartData;
+        if(userData.lang)setLang(userData.lang);
+        showChart();
+        setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1200);
+      } else {
+        setTimeout(()=>_activatePanel(1),1200);
+      }
+    }else{
+      if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'इस ईमेल पर कोई सक्रिय सदस्यता नहीं मिली।':currentLang==='es'?'No se encontró suscripción activa para este email.':'No active subscription found for this email.';}
+    }
+  }catch(e){
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'जाँच विफल। पुनः प्रयास करें।':currentLang==='es'?'Error al verificar. Intenta de nuevo.':'Verification failed. Please try again.';}
+  }
 }
 
 // ── ACCESS TIER ──
@@ -1489,6 +1555,12 @@ function goToPanel(n){
     // Keep manual UTC override if user has typed one; otherwise let auto-detect handle it
     _activatePanel(3);
     buildChartAsync();
+    return;
+  }
+  if(n===4){
+    _activatePanel(4);
+    const el=document.getElementById('checkout-email');
+    if(el&&userData.email&&!el.value)el.value=userData.email;
     return;
   }
   if(n===5){
@@ -3092,7 +3164,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '103';
+const JYOTI_BUILD = '104';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3388,14 +3460,18 @@ function resetChart(){
     btn.style.cssText='margin-top:.8rem;font-size:.85rem';
     {const n0=userData.name?userData.name.split(' ')[0]:'';btn.innerHTML=currentLang==='hi'?`✦ ${n0?n0+'का ':''}अभ्यास जारी रखें`:currentLang==='es'?`✦ Continuar${n0?' práctica de '+n0:' mi práctica'}`:(`✦ Continue ${n0?n0+"'s":'my'} practice`);}
     btn.onclick=function(){
-      showChart();
-      _activatePanel(5);
-      const t=localStorage.getItem('jyoti_tier')||'full';
-      if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
-      else{
-        setTimeout(()=>showFullChart(),100);
-        setTimeout(()=>loadNakshatraReading(),200);
-        setTimeout(()=>showDailyReading(),200);
+      const t=localStorage.getItem('jyoti_tier');
+      if(t==='full'||t==='compat'||t==='beta'){
+        showChart();
+        _activatePanel(5);
+        if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
+        else{setTimeout(()=>showFullChart(),100);setTimeout(()=>loadNakshatraReading(),200);setTimeout(()=>showDailyReading(),200);}
+      }else{
+        // Not subscribed — show chart preview then prompt to subscribe
+        showChart();
+        _activatePanel(4);
+        const el=document.getElementById('checkout-email');
+        if(el&&userData.email&&!el.value)el.value=userData.email;
       }
     };
     const card=document.querySelector('#panel1 .card');
@@ -3403,35 +3479,40 @@ function resetChart(){
   }catch(e){}
 })();
 
-// Detect return from Square payment — URL will contain ?jyoti_plan=full or ?jyoti_plan=compat
+// Detect return from Stripe Checkout — URL contains ?subscribed=1&session_id=cs_...
 (function detectPaymentReturn(){
   try{
     const params=new URLSearchParams(window.location.search);
-    const plan=params.get('jyoti_plan');
-    if(!plan)return;
-    // Clean URL without reload
-    const clean=window.location.pathname+(window.location.hash||'');
-    window.history.replaceState({},'',clean);
-    const tier=(plan==='compat')?'compat':'full';
-    localStorage.setItem('jyoti_tier',tier);
-    // If chart data already saved, go straight to the app
-    const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
-    if(saved?.chartData?.planets&&saved?.userData?.name){
-      userData=saved.userData;chartData=saved.chartData;
-      if(userData.lang)setLang(userData.lang);
-      showChart();
-      _activatePanel(5);
-      document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
-        const btn=el.closest('button');if(btn)btn.style.display='none';
-      });
-      if(tier==='compat'){setTimeout(()=>applyCompatMode(),300);}
-      else{
+    if(params.get('subscribed')!=='1')return;
+    const sessionId=params.get('session_id')||'';
+    // Clean URL immediately so refresh doesn't re-trigger
+    window.history.replaceState({},'',window.location.pathname+(window.location.hash||''));
+    function _applySubscriber(email){
+      try{localStorage.setItem('jyoti_tier','full');if(email)localStorage.setItem('jyoti_sub_email',email);}catch(e){}
+      const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
+      if(saved?.chartData?.planets&&saved?.userData?.name){
+        userData=saved.userData;chartData=saved.chartData;
+        if(userData.lang)setLang(userData.lang);
+        showChart();
+        _activatePanel(5);
+        document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
+          const btn=el.closest('button');if(btn)btn.style.display='none';
+        });
         setTimeout(()=>showFullChart(),100);
         setTimeout(()=>loadNakshatraReading(),200);
         setTimeout(()=>showDailyReading(),200);
       }
+      // Otherwise stay on panel 1 — user enters chart details then auto-goes to panel 5
     }
-    // Otherwise stay on panel 1 — user needs to enter chart details first
+    if(sessionId.startsWith('cs_')){
+      fetch('/api/verify-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId})})
+        .then(r=>r.json())
+        .then(data=>{if(data.subscribed)_applySubscriber(data.email||'');})
+        .catch(()=>{});
+    } else {
+      // No session id to verify — trust the redirect param
+      _applySubscriber('');
+    }
   }catch(e){}
 })();
 
