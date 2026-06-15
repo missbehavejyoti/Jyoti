@@ -2999,9 +2999,15 @@ const _GLOSS_REGEX = (() => {
 })();
 
 function glossify(html){
+  // Strip any markdown that leaked through from AI responses
+  let clean=(html||'')
+    .replace(/\*\*([^*]+)\*\*/g,'$1')
+    .replace(/\*([^*\n]+)\*/g,'$1')
+    .replace(/^[-*]\s+/gm,'')
+    .replace(/^#{1,3}\s+/gm,'');
   // Replace in text nodes only — don't touch HTML tags or attributes
   // We parse the string and skip anything inside < >
-  return html.replace(/(<[^>]+>)|([^<]+)/g,(match,tag,text)=>{
+  return clean.replace(/(<[^>]+>)|([^<]+)/g,(match,tag,text)=>{
     if(tag) return tag;
     if(!text) return text;
     // Track if we're inside a word boundary-sensitive spot
