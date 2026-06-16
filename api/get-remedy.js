@@ -22,6 +22,10 @@ module.exports = async (req, res) => {
   if (!chartSummary || typeof chartSummary !== 'string' || chartSummary.length > 8000) {
     return res.status(400).json({ error: 'Invalid chart data' });
   }
+  // Reject requests where the chart summary lacks actual planetary positions — prevents generic readings
+  if (!chartSummary.includes('°') || chartSummary.length < 200) {
+    return res.status(400).json({ error: 'Chart data incomplete — planetary positions missing' });
+  }
   if (!VALID_LANGS.includes(lang)) {
     return res.status(400).json({ error: 'Invalid language' });
   }

@@ -1010,6 +1010,7 @@ function clearSoulArchive(){
 }
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function weekStartStr(){const d=new Date(),day=d.getDay(),mon=new Date(d);mon.setDate(d.getDate()+(day===0?-6:1-day));return`${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;}
+function _chartKey(){const d=(userData?.dob||'').replace(/\//g,'-');const t=(userData?.tob||'').replace(/:/g,'').slice(0,4);const p=(userData?.pob||'').replace(/\s+/g,'').slice(0,6).toLowerCase();return d+'_'+t+'_'+p;}
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
 let soulReadingCache=(()=>{
   const arc=getSoulArchive();
@@ -1960,7 +1961,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''))||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey())||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=1)||r.no_remedy_message);
     if(cached&&hasContent){
@@ -2080,7 +2081,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
+    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey(),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2164,7 +2165,7 @@ async function loadDailyDepth(el){
   const contentEl=el.querySelector('.daily-depth-content');
   if(!contentEl) return;
   const _L=currentLang;
-  const cacheKey='jyoti_d_'+todayStr()+'_'+_L+'_'+(userData?.dob||'');
+  const cacheKey='jyoti_d_'+todayStr()+'_'+_L+'_'+_chartKey();
   // Serve from cache if available
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
@@ -2792,7 +2793,7 @@ function showPlanetError(detail){
 async function showWeeklyReading(){
   if(!chartData||!userData)return;
   const capturedLang=currentLang;
-  const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+(userData?.dob||'');
+  const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+_chartKey();
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
     if(cached?.has_practice||cached?.no_practice_message){renderWeeklyReading(cached);return;}
@@ -3193,7 +3194,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '105';
+const JYOTI_BUILD = '106';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
