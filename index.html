@@ -3127,7 +3127,8 @@ function openChant(mantra,meaning,target,phonetic){
   // Phonetic guide — use passed value (from API, already in the right language) or
   // fall back to the language-appropriate static lookup table
   const lookup = currentLang==='hi' ? MANTRA_PHONETICS_HI : currentLang==='es' ? MANTRA_PHONETICS_ES : MANTRA_PHONETICS;
-  const ph=phonetic||lookup[mantra]||MANTRA_PHONETICS[mantra]||'';
+  // Lookup table takes priority — AI phonetic only used for mantras not in the table
+  const ph=lookup[mantra]||MANTRA_PHONETICS[mantra]||phonetic||'';
   const phSec=document.getElementById('cm-phonetic-section');
   const phEl=document.getElementById('cm-phonetic');
   if(phSec&&phEl){
