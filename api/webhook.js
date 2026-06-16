@@ -54,6 +54,9 @@ async function sendWelcomeEmail(email, name) {
             Questions? Write to <a href="mailto:hellojyoti@proton.me" style="color:#8a7a5a">hellojyoti@proton.me</a><br><br>
             Jyoti Pty Ltd · Queensland, Australia
           </p>
+          <p style="font-size:11px;color:#3a3045;line-height:1.6;margin:12px 0 0;text-align:center">
+            Jyoti is a living platform, growing with each passing moon. If something feels off or isn't working as expected, we'd love to hear from you at hellojyoti@proton.me. We're listening and will respond promptly.
+          </p>
         </td></tr>
 
       </table>
