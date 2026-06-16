@@ -2,40 +2,62 @@
 // Requires env vars: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
 // If either is missing the check is skipped (allow-by-default)
 
-async function rateLimit(req, res, { max = 20, windowSecs = 3600, prefix = 'rl' } = {}) {
+async function _redisIncr(key, windowSecs) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return true; // not configured — skip
+  if (!url || !token) return null;
 
-  const ip =
-    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
-    req.socket?.remoteAddress ||
-    'unknown';
+  const resp = await fetch(`${url}/pipeline`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify([['INCR', key], ['EXPIRE', key, windowSecs]]),
+  });
+  if (!resp.ok) return null;
+  const [[, count]] = await resp.json();
+  return count;
+}
 
-  const window = Math.floor(Date.now() / (windowSecs * 1000));
-  const key = `${prefix}:${ip}:${window}`;
+function _getIp(req) {
+  return (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+    req.socket?.remoteAddress || 'unknown';
+}
 
+async function rateLimit(req, res, { max = 20, windowSecs = 3600, prefix = 'rl' } = {}) {
   try {
-    // INCR then EXPIRE in a pipeline (two commands, one round-trip)
-    const resp = await fetch(`${url}/pipeline`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify([['INCR', key], ['EXPIRE', key, windowSecs]]),
-    });
-    if (!resp.ok) return true; // Redis error — allow through
+    const window = Math.floor(Date.now() / (windowSecs * 1000));
+    const key = `${prefix}:${_getIp(req)}:${window}`;
+    const count = await _redisIncr(key, windowSecs);
+    if (count === null) return true; // Redis unavailable — allow through
 
-    const [[, count]] = await resp.json();
     res.setHeader('X-RateLimit-Limit', max);
     res.setHeader('X-RateLimit-Remaining', Math.max(0, max - count));
 
     if (count > max) {
-      res.status(429).json({ error: 'Too many requests. Please try again in an hour.' });
+      res.status(429).json({ error: 'Too many requests. Please try again later.' });
       return false;
     }
     return true;
   } catch {
-    return true; // network error — allow through
+    return true;
   }
 }
 
-module.exports = { rateLimit };
+// Daily cap — resets at UTC midnight
+async function dailyLimit(req, res, { max = 80, prefix = 'day' } = {}) {
+  try {
+    const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const key = `${prefix}:${_getIp(req)}:${day}`;
+    const count = await _redisIncr(key, 86400);
+    if (count === null) return true;
+
+    if (count > max) {
+      res.status(429).json({ error: 'Daily limit reached. Your practice resets at midnight UTC.' });
+      return false;
+    }
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+module.exports = { rateLimit, dailyLimit };

@@ -1,7 +1,7 @@
 // Jyoti Synastry API — Progressive Compatibility Reading
 // Handles all reading types: tier1, karmic, duration, gifts, higher_road,
 // soul_debt, work_life, timing, other_a, other_b, soul_verdict
-const { rateLimit } = require('./_rateLimit');
+const { rateLimit, dailyLimit } = require('./_rateLimit');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'syn' })) return;
+  if (!await dailyLimit(req, res, { max: 40, prefix: 'syn-day' })) return;
 
   const { chartA, chartB, nameA, nameB, type, lang, relationshipContext } = req.body || {};
 

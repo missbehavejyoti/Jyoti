@@ -1,6 +1,6 @@
 // Vercel Serverless Function — Jyoti Daily Remedy / Nakshatra / Soul Map
 // Keeps API key secure server-side, never exposed to browser
-const { rateLimit } = require('./_rateLimit');
+const { rateLimit, dailyLimit } = require('./_rateLimit');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (!await rateLimit(req, res, { max: 30, windowSecs: 3600, prefix: 'remedy' })) return;
+  if (!await dailyLimit(req, res, { max: 80, prefix: 'remedy-day' })) return;
 
   const { chartSummary, lang, type, daysUntilMonthEnd } = req.body || {};
 
