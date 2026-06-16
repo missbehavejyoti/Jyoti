@@ -12,7 +12,7 @@ async function sendWelcomeEmail(email, name) {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'Jyoti <hello@jyotiapp.com>',
+      from: 'Jyoti <onboarding@resend.dev>',
       to: email,
       subject: '✦ Welcome to Jyoti. Your sacred practice begins',
       html: `
