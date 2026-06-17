@@ -1925,6 +1925,50 @@ async function _swNotif(title, body, tag){
   }catch(e){}
 }
 
+function _urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const rawData=atob(base64);
+  const outputArray=new Uint8Array(rawData.length);
+  for(let i=0;i<rawData.length;i++)outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+
+// Subscribes to real server-sent Web Push (delivers even when the app is fully closed)
+// and registers the subscription + the user's IANA timezone with the backend.
+async function subscribeWebPush(evening, morning){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window))return false;
+    const reg=await navigator.serviceWorker.ready;
+    const keyResp=await fetch('/api/vapid-public-key');
+    const {publicKey}=await keyResp.json();
+    if(!publicKey)return false;
+
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      sub=await reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:_urlBase64ToUint8Array(publicKey),
+      });
+    }
+
+    const subJson=sub.toJSON();
+    const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+    await fetch('/api/save-push-subscription',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        endpoint:subJson.endpoint,
+        keys:subJson.keys,
+        tz, evening, morning,
+        name:userData?.name||'',
+        lang:currentLang,
+      }),
+    });
+    return true;
+  }catch(e){ return false; }
+}
+
 function checkNotifOnLoad(){
   try{
     const pref=localStorage.getItem('jyoti_notif');
@@ -3194,7 +3238,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '107';
+const JYOTI_BUILD = '108';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3278,7 +3322,7 @@ async function requestNotifications() {
       if(evening&&morning) localStorage.setItem('jyoti_notif','both');
       else if(evening) localStorage.setItem('jyoti_notif','evening');
       else if(morning) localStorage.setItem('jyoti_notif','morning');
-      scheduleLocalNotifications(evening, morning);
+      await subscribeWebPush(evening, morning);
       if(btn) btn.style.display = 'none';
       // Show test button so beta testers can immediately verify
       const testBtn=document.getElementById('notif-test-btn');
@@ -3308,43 +3352,6 @@ async function requestNotifications() {
       status.style.color='var(--teal)';
       status.textContent = currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं।':currentLang==='es'?'✦ Preferencias guardadas.':'✦ Preferences saved.';
       status.style.display='block';
-    }
-  }
-}
-
-function scheduleLocalNotifications(evening, morning) {
-  const now = new Date();
-  const name = userData?.name || '';
-
-  if (evening) {
-    const target = new Date();
-    target.setHours(20, 0, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const msUntil = target - now;
-    if (msUntil < 12 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          const title = currentLang==='hi'?'ज्योति ✦ कल का अभ्यास':currentLang==='es'?'Jyoti ✦ Práctica de Mañana':"Jyoti ✦ Tomorrow's Practice";
-          const body = currentLang==='hi'?`${name?name+', आपका':'आपका'} कल का पवित्र उपाय तैयार है। श्रद्धापूर्वक तैयारी करें।`:currentLang==='es'?`${name?'Tu remedio sagrado de mañana, '+name:'Tu remedio sagrado de mañana'} está listo. Prepárate con intención.`:`${name?name+', your':'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`;
-          _swNotif(title, body, 'evening-prep');
-        }
-      }, msUntil);
-    }
-  }
-
-  if (morning) {
-    const target = new Date();
-    target.setHours(6, 0, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const msUntil = target - now;
-    if (msUntil < 12 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          const title = currentLang==='hi'?'ज्योति ✦ अभ्यास शुरू करें':currentLang==='es'?'Jyoti ✦ Comienza Tu Práctica':'Jyoti ✦ Begin Your Practice';
-          const body = currentLang==='hi'?`शुभ प्रभात${name?', '+name:''}। आज का पवित्र अभ्यास आपकी प्रतीक्षा कर रहा है।`:currentLang==='es'?`Buenos días${name?', '+name:''}. Tu práctica sagrada de hoy te espera.`:`Good morning${name?', '+name:''}. Your sacred practice for today is waiting.`;
-          _swNotif(title, body, 'morning-reminder');
-        }
-      }, msUntil);
     }
   }
 }
@@ -3565,6 +3572,12 @@ function resetChart(){
     if(btn)btn.style.display='none';
     if(testBtn)testBtn.style.display='inline-flex';
   });
+  // Migrate testers who granted permission under the old local-only scheme —
+  // re-subscribing is a no-op if a push subscription already exists.
+  const pref=localStorage.getItem('jyoti_notif');
+  if(pref){
+    subscribeWebPush(pref==='evening'||pref==='both', pref==='morning'||pref==='both');
+  }
 })();
 
 // Mirror of requestNotifications() for the panel-5 notification box
@@ -3592,7 +3605,7 @@ async function requestNotificationsP5(){
       if(evening&&morning)localStorage.setItem('jyoti_notif','both');
       else if(evening)localStorage.setItem('jyoti_notif','evening');
       else if(morning)localStorage.setItem('jyoti_notif','morning');
-      scheduleLocalNotifications(evening,morning);
+      await subscribeWebPush(evening,morning);
       if(btn)btn.style.display='none';
       if(testBtn)testBtn.style.display='inline-flex';
       // Also update panel-4 buttons

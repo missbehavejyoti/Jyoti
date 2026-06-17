@@ -5,6 +5,7 @@
   "engines": { "node": ">=18" },
   "dependencies": {
     "astronomy-engine": "^2.1.19",
-    "stripe": "^16.0.0"
+    "stripe": "^16.0.0",
+    "web-push": "^3.6.7"
   }
 }
