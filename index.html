@@ -1938,13 +1938,21 @@ function _urlBase64ToUint8Array(base64String){
 
 // Subscribes to real server-sent Web Push (delivers even when the app is fully closed)
 // and registers the subscription + the user's IANA timezone with the backend.
+// window._jyotiPushDebug holds the reason for the last failure so it can be
+// surfaced on-screen — these errors are invisible otherwise on a phone with no devtools.
 async function subscribeWebPush(evening, morning){
   try{
-    if(!('serviceWorker' in navigator)||!('PushManager' in window))return false;
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)){
+      window._jyotiPushDebug='Push not supported in this browser context';
+      return false;
+    }
     const reg=await navigator.serviceWorker.ready;
     const keyResp=await fetch('/api/vapid-public-key');
     const {publicKey}=await keyResp.json();
-    if(!publicKey)return false;
+    if(!publicKey){
+      window._jyotiPushDebug='Server has no VAPID public key configured';
+      return false;
+    }
 
     let sub=await reg.pushManager.getSubscription();
     if(!sub){
@@ -1956,7 +1964,7 @@ async function subscribeWebPush(evening, morning){
 
     const subJson=sub.toJSON();
     const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
-    await fetch('/api/save-push-subscription',{
+    const saveResp=await fetch('/api/save-push-subscription',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -1967,8 +1975,18 @@ async function subscribeWebPush(evening, morning){
         lang:currentLang,
       }),
     });
+    if(!saveResp.ok){
+      let detail='';
+      try{ detail=(await saveResp.json()).error||''; }catch(e2){}
+      window._jyotiPushDebug='Save failed ('+saveResp.status+') '+detail;
+      return false;
+    }
+    window._jyotiPushDebug='';
     return true;
-  }catch(e){ return false; }
+  }catch(e){
+    window._jyotiPushDebug=(e&&e.message)||String(e);
+    return false;
+  }
 }
 
 function checkNotifOnLoad(){
@@ -3240,7 +3258,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '109';
+const JYOTI_BUILD = '110';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3324,7 +3342,7 @@ async function requestNotifications() {
       if(evening&&morning) localStorage.setItem('jyoti_notif','both');
       else if(evening) localStorage.setItem('jyoti_notif','evening');
       else if(morning) localStorage.setItem('jyoti_notif','morning');
-      await subscribeWebPush(evening, morning);
+      const pushOk = await subscribeWebPush(evening, morning);
       if(btn) btn.style.display = 'none';
       // Show test button so beta testers can immediately verify
       const testBtn=document.getElementById('notif-test-btn');
@@ -3336,8 +3354,10 @@ async function requestNotifications() {
         const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
         if(evening) parts.push(_ev_lbl);
         if(morning) parts.push(_mo_lbl);
-        status.style.color='var(--teal)';
-        status.textContent = currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;
+        status.style.color=pushOk?'var(--teal)':'#d88';
+        status.textContent = pushOk
+          ? (currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
+          : 'Debug: '+(window._jyotiPushDebug||'unknown error');
         status.style.display = 'block';
       }
     } else {
@@ -3578,7 +3598,17 @@ function resetChart(){
   // re-subscribing is a no-op if a push subscription already exists.
   const pref=localStorage.getItem('jyoti_notif');
   if(pref){
-    subscribeWebPush(pref==='evening'||pref==='both', pref==='morning'||pref==='both');
+    subscribeWebPush(pref==='evening'||pref==='both', pref==='morning'||pref==='both').then(ok=>{
+      if(ok)return;
+      ['notif-status','p5-notif-status'].forEach(id=>{
+        const status=document.getElementById(id);
+        if(status){
+          status.style.color='#d88';
+          status.textContent='Debug: '+(window._jyotiPushDebug||'unknown error');
+          status.style.display='block';
+        }
+      });
+    });
   }
 })();
 
@@ -3607,7 +3637,7 @@ async function requestNotificationsP5(){
       if(evening&&morning)localStorage.setItem('jyoti_notif','both');
       else if(evening)localStorage.setItem('jyoti_notif','evening');
       else if(morning)localStorage.setItem('jyoti_notif','morning');
-      await subscribeWebPush(evening,morning);
+      const pushOk=await subscribeWebPush(evening,morning);
       if(btn)btn.style.display='none';
       if(testBtn)testBtn.style.display='inline-flex';
       // Also update panel-4 buttons
@@ -3617,7 +3647,13 @@ async function requestNotificationsP5(){
       const _mo=currentLang==='hi'?'🌅 सुबह 6 बजे':currentLang==='es'?'🌅 6am mañanas':'🌅 6am mornings';
       const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
       const parts=[];if(evening)parts.push(_ev);if(morning)parts.push(_mo);
-      if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;status.style.display='block';}
+      if(status){
+        status.style.color=pushOk?'var(--teal)':'#d88';
+        status.textContent=pushOk
+          ?(currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
+          :'Debug: '+(window._jyotiPushDebug||'unknown error');
+        status.style.display='block';
+      }
     }else{
       if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?'✦ ब्राउज़र सेटिंग में सूचनाएं चालू करें।':currentLang==='es'?'✦ Activa las notificaciones en ajustes del navegador.':'✦ Enable notifications in your browser settings.';status.style.display='block';}
     }
