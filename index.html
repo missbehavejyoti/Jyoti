@@ -648,7 +648,7 @@ select option{background:var(--s2);color:var(--text)}
           <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> <span id="share-chart-label">Share my chart</span></button>
         </div>
         <div style="margin-top:.5rem">
-          <a href="#" onclick="editDetails();return false;" style="font-size:.68rem;color:var(--dim);opacity:.75;text-decoration:underline" data-en="Made a mistake? Edit my details" data-hi="कोई गलती हुई? अपना विवरण संपादित करें" data-es="¿Cometiste un error? Editar mis detalles">Made a mistake? Edit my details</a>
+          <span style="font-size:.68rem;color:var(--dim);opacity:.75" data-en="Made a mistake in your details? Email hellojyoti@proton.me to have it corrected." data-hi="अपने विवरण में कोई गलती हुई? सुधार के लिए hellojyoti@proton.me पर ईमेल करें।" data-es="¿Cometiste un error en tus datos? Envía un correo a hellojyoti@proton.me para corregirlo.">Made a mistake in your details? Email hellojyoti@proton.me to have it corrected.</span>
         </div>
       </div>
 
@@ -1545,39 +1545,14 @@ async function buildChartAsync(){
     return;
   }
   showChart();
-  const _correctingTier=localStorage.getItem('jyoti_tier');
-  if(_correctingTier==='full'||_correctingTier==='compat'||_correctingTier==='beta'){
-    // Already subscribed — this is a details correction, not a new signup. Skip preview/payment.
-    _activatePanel(5);
-    if(_correctingTier==='compat'){setTimeout(()=>applyCompatMode(),100);}
-    else{
-      setTimeout(()=>showFullChart(),100);
-      setTimeout(()=>loadNakshatraReading(),200);
-      setTimeout(()=>showDailyReading(),200);
-    }
-    return;
-  }
   setTimeout(()=>loadNakshatraReading(),600);
   setTimeout(()=>showFullChart(),800);
 }
 
-// Lets an already-subscribed user fix a typo in their birth details without
-// losing their subscription or being routed back through payment.
-function editDetails(){
-  const f=document.getElementById('fname');if(f)f.value=userData?.name||'';
-  const d=document.getElementById('dob');if(d)d.value=userData?.dob||'';
-  const t=document.getElementById('tob');if(t)t.value=userData?.tob||'12:00:00';
-  const p=document.getElementById('pob');if(p)p.value=userData?.pob||'';
-  const e=document.getElementById('email');if(e)e.value=userData?.email||'';
-  const g=document.getElementById('gender');if(g)g.value=userData?.gender||'';
-  const l=document.getElementById('pref-lang');if(l)l.value=userData?.lang||currentLang;
-  _activatePanel(1);
-}
-
 function goToPanel(n){
-  // Paid subscribers locked to panel 5 — beta testers ('beta' tier) can still re-enter details
+  // Subscribed users (any tier) are locked to panel 5 — corrections go through email, not self-service
   const _t=localStorage.getItem('jyoti_tier');
-  if(n===1&&(_t==='full'||_t==='compat')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
+  if(n===1&&(_t==='full'||_t==='compat'||_t==='beta')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -3286,7 +3261,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '111';
+const JYOTI_BUILD = '112';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
