@@ -6,14 +6,20 @@ const SET_KEY = 'push:subs';
 async function _redis(commands) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
+  if (!url || !token) {
+    console.error('Upstash env vars missing:', { hasUrl: !!url, hasToken: !!token });
+    return null;
+  }
 
   const resp = await fetch(`${url}/pipeline`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(commands),
   });
-  if (!resp.ok) return null;
+  if (!resp.ok) {
+    console.error('Upstash request failed:', resp.status, await resp.text().catch(() => ''));
+    return null;
+  }
   return resp.json();
 }
 
