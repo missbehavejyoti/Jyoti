@@ -37,59 +37,68 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'VAPID keys not configured' });
   }
 
-  webpush.setVapidDetails('mailto:hellojyoti@proton.me', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
+  try {
+    webpush.setVapidDetails('mailto:hellojyoti@proton.me', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
-  const subs = await getAllSubscriptions();
-  let sent = 0, removed = 0, skipped = 0;
+    const subs = await getAllSubscriptions();
+    let sent = 0, removed = 0, skipped = 0;
 
-  // Manual one-off test push — bypasses the time window and skips markSentOnce so it
-  // never interferes with that subscriber's real morning/evening delivery for today.
-  if (req.query?.test === '1') {
+    // Manual one-off test push — bypasses the time window and skips markSentOnce so it
+    // never interferes with that subscriber's real morning/evening delivery for today.
+    if (req.query?.test === '1') {
+      for (const sub of subs) {
+        try {
+          await webpush.sendNotification(
+            { endpoint: sub.endpoint, keys: sub.keys },
+            JSON.stringify({ title: 'Jyoti ✦ Test Push', body: 'If you see this, real push notifications are working.', tag: 'jyoti-test-push', url: '/' })
+          );
+          sent++;
+        } catch (e) {
+          if (e.statusCode === 404 || e.statusCode === 410) {
+            await removeSubscription(sub.id);
+            removed++;
+          } else {
+            console.error('Test push send failed:', e.statusCode, e.message);
+          }
+        }
+      }
+      return res.status(200).json({ test: true, checked: subs.length, sent, removed });
+    }
+
     for (const sub of subs) {
+      const local = _localParts(sub.tz);
+      if (!local) continue;
+
+      let slot = null;
+      if (sub.morning && local.h === 6 && local.m < 15) slot = 'morning';
+      else if (sub.evening && local.h === 20 && local.m < 15) slot = 'evening';
+      if (!slot) continue;
+
+      const canSend = await markSentOnce(sub.id, slot, local.dateStr);
+      if (!canSend) { skipped++; continue; }
+
+      const lang = COPY[slot][sub.lang] ? sub.lang : 'en';
+      const { title, body } = COPY[slot][lang](sub.name);
+
       try {
         await webpush.sendNotification(
           { endpoint: sub.endpoint, keys: sub.keys },
-          JSON.stringify({ title: 'Jyoti ✦ Test Push', body: 'If you see this, real push notifications are working.', tag: 'jyoti-test-push', url: '/' })
+          JSON.stringify({ title, body, tag: slot === 'morning' ? 'morning-reminder' : 'evening-prep', url: '/' })
         );
         sent++;
       } catch (e) {
         if (e.statusCode === 404 || e.statusCode === 410) {
           await removeSubscription(sub.id);
           removed++;
+        } else {
+          console.error('Push send failed:', e.statusCode, e.message);
         }
       }
     }
-    return res.status(200).json({ test: true, checked: subs.length, sent, removed });
+
+    return res.status(200).json({ checked: subs.length, sent, skipped, removed });
+  } catch (e) {
+    console.error('send-push crashed:', e);
+    return res.status(500).json({ error: e.message || String(e) });
   }
-
-  for (const sub of subs) {
-    const local = _localParts(sub.tz);
-    if (!local) continue;
-
-    let slot = null;
-    if (sub.morning && local.h === 6 && local.m < 15) slot = 'morning';
-    else if (sub.evening && local.h === 20 && local.m < 15) slot = 'evening';
-    if (!slot) continue;
-
-    const canSend = await markSentOnce(sub.id, slot, local.dateStr);
-    if (!canSend) { skipped++; continue; }
-
-    const lang = COPY[slot][sub.lang] ? sub.lang : 'en';
-    const { title, body } = COPY[slot][lang](sub.name);
-
-    try {
-      await webpush.sendNotification(
-        { endpoint: sub.endpoint, keys: sub.keys },
-        JSON.stringify({ title, body, tag: slot === 'morning' ? 'morning-reminder' : 'evening-prep', url: '/' })
-      );
-      sent++;
-    } catch (e) {
-      if (e.statusCode === 404 || e.statusCode === 410) {
-        await removeSubscription(sub.id);
-        removed++;
-      }
-    }
-  }
-
-  return res.status(200).json({ checked: subs.length, sent, skipped, removed });
 };
