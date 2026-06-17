@@ -71,9 +71,9 @@ module.exports = async (req, res) => {
 
   const LANG_PREFIX = (isDailyRemedy || isWeekly || isDailyQuick)
     ? (lang === 'hi'
-      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n'
+      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), never Hindi. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n'
       : lang === 'es'
-      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n'
+      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. El campo "mantra_translit" es siempre una transliteración simple en letras romanas (por ejemplo "Om Namah Shivaya"), nunca en español. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n'
       : '')
     : '';
 
@@ -148,7 +148,7 @@ EXAMPLES of the right tone:
 
 CONTENT RULES: Each practice must be grounded in this specific chart but feel like a real human instruction. No generic content. No em dashes (—), en dashes (–), or asterisks (*). No Markdown formatting. Valid JSON only.
 
-MANTRA RULE: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of the response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
+MANTRA RULE: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of the response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. "mantra_translit" is ALWAYS a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), regardless of response language. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 
 JSON:
 {
@@ -163,7 +163,8 @@ JSON:
       "One sentence. Body or quality practice. Grounded in this chart. Max 20 words."
     ],
     "mantra": "Sanskrit Devanagari script only — NEVER translate regardless of language",
-    "mantra_phonetic": "Pronunciation guide in the response language, or null",
+    "mantra_translit": "Plain Roman-letter transliteration of the mantra, e.g. 'Om Namah Shivaya'. Always Latin script, regardless of response language. No pronunciation respelling, just the transliteration.",
+    "mantra_phonetic": "Syllable-by-syllable pronunciation respelling in the response language, e.g. 'Ohm · Nah-mah · Shee-vah-yah'. Always include when mantra given.",
     "mantra_count": 108,
     "mantra_meaning": "Brief translation, 6 words max",
     "mantra_why": "One sentence why this mantra for this placement today."
@@ -196,7 +197,7 @@ STRICT RULES — keep everything short and scannable:
 UNIQUENESS: This must be genuinely different from a daily reading — broader arc, Antar dasha driven, 5 flexible practices not 3 rigid daily ones. No generic content. No em dashes (—), en dashes (–), or asterisks (*). No Markdown formatting. Valid JSON only.
 
 LANGUAGE REMINDER: ${langInstruction} Every value in every JSON field must be in the requested language. Not English. Not mixed. The requested language only.
-MANTRA EXCEPTION: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
+MANTRA EXCEPTION: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. "mantra_translit" is ALWAYS a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), regardless of response language. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 
 JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' ? 'Spanish' : 'English'}):
 {
@@ -213,7 +214,8 @@ JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' 
       "[sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}: quality to embody or release this week]"
     ],
     "mantra": "[Sanskrit Devanagari script ONLY — never translate into Hindi/Spanish/English, regardless of language]",
-    "mantra_phonetic": "[pronunciation guide in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, or null]",
+    "mantra_translit": "[plain Roman-letter transliteration, e.g. 'Om Namah Shivaya' — always Latin script regardless of language, no pronunciation respelling]",
+    "mantra_phonetic": "[syllable-by-syllable pronunciation respelling in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, or null]",
     "mantra_count": 108,
     "mantra_meaning": "[brief translation in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, max 6 words]",
     "mantra_why": "[one sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]"
@@ -273,7 +275,7 @@ ABSOLUTE RULES:
 6. NO DASHES: NEVER use an em dash (—) or en dash (–) anywhere. A hyphen between two words in a date range is also forbidden — write "July to September" not "July-September". Use commas, colons, semicolons, or periods.
 7. NO ASTERISKS: NEVER use asterisks (*) for any purpose — not for emphasis, not for bullets. No Markdown formatting of any kind inside text values. Plain prose only.
 8. FORMAT: Return valid JSON only. No markdown, no backticks, no preamble.
-9. LANGUAGE: ${langInstruction} MANTRA EXCEPTION: the "mantra" JSON field is always Sanskrit Devanagari script regardless of response language — never translate a mantra. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
+9. LANGUAGE: ${langInstruction} MANTRA EXCEPTION: the "mantra" JSON field is always Sanskrit Devanagari script regardless of response language — never translate a mantra. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), regardless of response language. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 ${isMonthEndPrep ? `10. MONTH-END SUPPLY LIST: The subscriber has ${_daysLeft} day${_daysLeft===1?'':'s'} remaining in this month. Include a "month_end_prep" field with physical ritual items grounded in their active dasha lords for next month. 4-7 items with categories, quantities, and practical sourcing notes.\n` : ''}
 JSON structure:
 {
@@ -288,7 +290,8 @@ JSON structure:
       "BULLET 3 — 1-2 sentences. A body practice or intentional quality to carry through the day. Grounded in this chart."
     ],
     "mantra": "Exact Sanskrit mantra, or null",
-    "mantra_phonetic": "Syllable guide e.g. 'Om (ohm) · Hraam (hraam)'. Middle dot within words, space between. Always include when mantra given.",
+    "mantra_translit": "Plain Roman-letter transliteration of the mantra, e.g. 'Om Namah Shivaya'. Always Latin script regardless of response language. No pronunciation respelling, just the transliteration. Null if mantra is null.",
+    "mantra_phonetic": "Syllable-by-syllable pronunciation respelling e.g. 'Ohm · Nah-mah · Shee-vah-yah'. Always include when mantra given.",
     "mantra_count": 108 or 27 or 21 or 9 or null,
     "mantra_meaning": "Brief translation, or null",
     "mantra_why": "One sentence: why this mantra for this planet and placement today."

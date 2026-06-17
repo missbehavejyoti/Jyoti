@@ -142,6 +142,7 @@ select option{background:var(--s2);color:var(--text)}
 .chant-inner{background:var(--s2);border:1px solid var(--s4);border-radius:20px;padding:2.5rem;text-align:center;max-width:360px;width:90%;position:relative}
 .chant-inner::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
 .chant-mantra{font-style:italic;font-size:1.3rem;color:var(--gold);margin-bottom:.4rem;line-height:1.5}
+.chant-translit{font-size:.92rem;color:var(--text);opacity:.82;margin-bottom:.6rem;letter-spacing:.02em}
 .chant-meaning{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
 .chant-counter{font-family:'Cinzel',serif;font-size:3.5rem;color:var(--text);margin:1rem 0;line-height:1}
 .chant-target{font-size:.8rem;color:var(--dim);font-family:'Cinzel',serif;letter-spacing:.1em}
@@ -850,6 +851,7 @@ select option{background:var(--s2);color:var(--text)}
 <div class="chant-modal" id="chant-modal">
   <div class="chant-inner">
     <div class="chant-mantra" id="cm-mantra"></div>
+    <div class="chant-translit" id="cm-translit" style="display:none"></div>
     <div id="cm-phonetic-section" class="phonetic-section" style="display:none">
       <div class="phonetic-label" data-en="PRONUNCIATION GUIDE" data-hi="उच्चारण गाइड" data-es="Guía de Pronunciación">PRONUNCIATION GUIDE</div>
       <div id="cm-phonetic" class="phonetic-text"></div>
@@ -2170,12 +2172,13 @@ function renderDailyReading(r,dayName){
     <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">MANTRA</div>
       <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
+      ${rem.mantra_translit&&rem.mantra_translit.trim()!==rem.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${rem.mantra_translit}</div>`:''}
       <div style="font-size:.8rem;color:var(--muted)">${rem.mantra_meaning||''}</div>
       ${rem.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(rem.mantra_why)}</div>`:''}
       <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
     </div>
     <div class="remedy-actions">
-      <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+      <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}','${(rem.mantra_translit||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
     </div>`:'';
   if(r.has_remedy&&r.remedy&&(r.remedy.morning_practice||r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening)){
     const rem=r.remedy;
@@ -2960,12 +2963,13 @@ function renderWeeklyReading(d){
     <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_L==='hi'?'सप्ताह का मंत्र':_L==='es'?'MANTRA DE LA SEMANA':'WEEK\'S MANTRA'}</div>
       <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${pr.mantra}</div>
+      ${pr.mantra_translit&&pr.mantra_translit.trim()!==pr.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${pr.mantra_translit}</div>`:''}
       <div style="font-size:.8rem;color:var(--muted)">${pr.mantra_meaning||''}</div>
       ${pr.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(pr.mantra_why)}</div>`:''}
       <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
     </div>
     <div class="remedy-actions">
-      <button class="chant-btn" onclick="openChant('${pr.mantra}','${(pr.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(pr.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+      <button class="chant-btn" onclick="openChant('${pr.mantra}','${(pr.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(pr.mantra_phonetic||'').replace(/'/g,"\\'")}','${(pr.mantra_translit||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
     </div>`:'';
   const html=d.has_practice&&pr?`
     <div class="remedy-card">
@@ -3190,13 +3194,23 @@ const MANTRA_PHONETICS_ES = {
     'Om (om) · Sraam (sraam) · Sreem (srim) · Sraum (sraum) · Sah (sa) · Ke·ta·ve (ke·ta·ve) · Na·mah (na·ma)'
 };
 
-function openChant(mantra,meaning,target,phonetic){
+function openChant(mantra,meaning,target,phonetic,translit){
   chantCurrent=0;chantTarget=target||108;
   document.getElementById('cm-mantra').textContent=mantra;
   document.getElementById('cm-meaning').textContent=meaning||'';
   document.getElementById('cm-count').textContent='0';
   document.getElementById('cm-target').textContent=currentLang==='hi'?`में से ${chantTarget}`:currentLang==='es'?`de ${chantTarget}`:`of ${chantTarget}`;
   document.getElementById('cm-bar').style.width='0%';
+  // English transliteration — shown under the Sanskrit script, above the pronunciation guide
+  const translitEl=document.getElementById('cm-translit');
+  if(translitEl){
+    if(translit&&translit.trim()&&translit.trim()!==mantra.trim()){
+      translitEl.textContent=translit.trim();
+      translitEl.style.display='';
+    }else{
+      translitEl.style.display='none';
+    }
+  }
   // Phonetic guide — use passed value (from API, already in the right language) or
   // fall back to the language-appropriate static lookup table
   const lookup = currentLang==='hi' ? MANTRA_PHONETICS_HI : currentLang==='es' ? MANTRA_PHONETICS_ES : MANTRA_PHONETICS;
@@ -3266,7 +3280,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '113';
+const JYOTI_BUILD = '114';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
