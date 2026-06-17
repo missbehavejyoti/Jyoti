@@ -2,6 +2,7 @@
 // Handles all reading types: tier1, karmic, duration, gifts, higher_road,
 // soul_debt, work_life, timing, other_a, other_b, soul_verdict
 const { rateLimit, dailyLimit } = require('./_rateLimit');
+const { stripDashes, stripDashesDeep } = require('./_sanitize');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -517,7 +518,7 @@ The human experience still leads every paragraph. The classical precision is now
 
     // Plain-text types (deep readings) return text directly
     if (config.isText) {
-      return res.status(200).json({ text: text.trim() });
+      return res.status(200).json({ text: stripDashes(text.trim()) });
     }
 
     let parsed;
@@ -560,7 +561,7 @@ The human experience still leads every paragraph. The classical precision is now
       return res.status(502).json({ error: 'JSON parse error', detail: text.slice(0, 300) });
     }
 
-    return res.status(200).json(parsed);
+    return res.status(200).json(stripDashesDeep(parsed));
 
   } catch (e) {
     return res.status(500).json({ error: 'Internal error', detail: e.message });

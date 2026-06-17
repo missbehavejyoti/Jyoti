@@ -1,6 +1,7 @@
 // Vercel Serverless Function — Jyoti Daily Remedy / Nakshatra / Soul Map
 // Keeps API key secure server-side, never exposed to browser
 const { rateLimit, dailyLimit } = require('./_rateLimit');
+const { stripDashes, stripDashesDeep } = require('./_sanitize');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -366,7 +367,7 @@ JSON structure:
     if (!text) return res.status(502).json({ error: 'Empty response from API' });
 
     if (isNakshatra || isSoul) {
-      return res.status(200).json({ text: text.trim() });
+      return res.status(200).json({ text: stripDashes(text.trim()) });
     }
 
     // Parse JSON response for remedy/planets — handles truncation (no closing }) and literal newlines
@@ -403,7 +404,7 @@ JSON structure:
       console.error('All JSON parse attempts failed. text[:500]:', text.slice(0, 500));
       return res.status(502).json({ error: 'JSON parse error', detail: text ? text.slice(0, 400) : '(empty)' });
     }
-    return res.status(200).json(parsed);
+    return res.status(200).json(stripDashesDeep(parsed));
 
   } catch(e) {
     console.error('Function error:', e);
