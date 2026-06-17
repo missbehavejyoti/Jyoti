@@ -650,6 +650,9 @@ select option{background:var(--s2);color:var(--text)}
         <div style="margin-top:.5rem">
           <span style="font-size:.68rem;color:var(--dim);opacity:.75" data-en="Made a mistake in your details? Email hellojyoti@proton.me to have it corrected." data-hi="अपने विवरण में कोई गलती हुई? सुधार के लिए hellojyoti@proton.me पर ईमेल करें।" data-es="¿Cometiste un error en tus datos? Envía un correo a hellojyoti@proton.me para corregirlo.">Made a mistake in your details? Email hellojyoti@proton.me to have it corrected.</span>
         </div>
+        <div id="manage-sub-box" style="margin-top:.4rem;display:none">
+          <a href="#" onclick="openBillingPortal();return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline" data-en="Manage Subscription" data-hi="सदस्यता प्रबंधित करें" data-es="Gestionar Suscripción">Manage Subscription</a>
+        </div>
       </div>
 
       <!-- Tab nav -->
@@ -1580,6 +1583,8 @@ function goToPanel(n){
   if(n===5){
     _activatePanel(5);
     const tier=localStorage.getItem('jyoti_tier')||'full';
+    _syncManageSubLink();
+    _reverifySubscription();
     if(tier==='compat'){applyCompatMode();}
     else{setTimeout(()=>showDailyReading(),800);}
     return;
@@ -3261,7 +3266,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '112';
+const JYOTI_BUILD = '113';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3501,6 +3506,56 @@ function resetChart(){
   window.location.reload();
 }
 
+// "Manage Subscription" only applies to real Stripe subscribers (jyoti_sub_email is only
+// ever set by the checkout/restore flows) — never shown for the owner bypass or beta codes.
+function _syncManageSubLink(){
+  const box=document.getElementById('manage-sub-box');
+  if(!box)return;
+  const tier=localStorage.getItem('jyoti_tier');
+  const email=localStorage.getItem('jyoti_sub_email');
+  box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
+}
+
+async function openBillingPortal(){
+  const email=localStorage.getItem('jyoti_sub_email')||userData?.email;
+  if(!email){
+    alert(currentLang==='hi'?'ईमेल नहीं मिला। कृपया hellojyoti@proton.me पर संपर्क करें।':currentLang==='es'?'No se encontró el correo. Contacta a hellojyoti@proton.me.':'No email on file. Please contact hellojyoti@proton.me.');
+    return;
+  }
+  try{
+    const resp=await fetch('/api/create-portal-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await resp.json();
+    if(!resp.ok||!data.url)throw new Error(data.error||'Portal unavailable');
+    window.location.href=data.url;
+  }catch(e){
+    alert(currentLang==='hi'?'सदस्यता पोर्टल नहीं खोल सका। पुनः प्रयास करें या hellojyoti@proton.me पर संपर्क करें।':currentLang==='es'?'No se pudo abrir el portal de suscripción. Intenta de nuevo o contacta a hellojyoti@proton.me.':'Could not open the subscription portal. Try again or contact hellojyoti@proton.me.');
+  }
+}
+
+// Re-checks Stripe at most once a day for real subscribers (jyoti_sub_email present).
+// Stripe keeps a cancelled subscription "active" until the paid period actually ends,
+// so this naturally gives cancelled users their full remaining days before being cut off.
+async function _reverifySubscription(){
+  try{
+    const tier=localStorage.getItem('jyoti_tier');
+    if(tier!=='full'&&tier!=='compat')return;
+    const email=localStorage.getItem('jyoti_sub_email');
+    if(!email)return; // owner bypass / beta codes never set this — leave them alone
+    const last=parseInt(localStorage.getItem('jyoti_sub_checked')||'0',10);
+    if(Date.now()-last<86400000)return;
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await resp.json();
+    localStorage.setItem('jyoti_sub_checked',String(Date.now()));
+    if(data.subscribed)return;
+    localStorage.removeItem('jyoti_tier');
+    _activatePanel(4);
+    const msgEl=document.getElementById('checkout-msg');
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी सदस्यता समाप्त हो गई है। जारी रखने के लिए पुनः सदस्यता लें।':currentLang==='es'?'Tu suscripción ha finalizado. Suscríbete de nuevo para continuar.':'Your subscription has ended. Subscribe again to continue your practice.';}
+    const emailEl=document.getElementById('checkout-email');
+    if(emailEl&&!emailEl.value)emailEl.value=email;
+  }catch(e){} // network failure — don't punish the user for connectivity issues
+}
+
 // Auto-restore saved chart — subscribed users (paid or beta) go straight to panel 5, unpaid see continue button
 (function initAutoRestore(){
   try{
@@ -3518,6 +3573,8 @@ function resetChart(){
       document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
         const btn=el.closest('button');if(btn)btn.style.display='none';
       });
+      _syncManageSubLink();
+      _reverifySubscription();
       if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
       else{
         setTimeout(()=>showFullChart(),100);
@@ -3570,6 +3627,7 @@ function resetChart(){
         document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
           const btn=el.closest('button');if(btn)btn.style.display='none';
         });
+        _syncManageSubLink();
         setTimeout(()=>showFullChart(),100);
         setTimeout(()=>loadNakshatraReading(),200);
         setTimeout(()=>showDailyReading(),200);
