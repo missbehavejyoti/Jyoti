@@ -42,6 +42,26 @@ module.exports = async (req, res) => {
   const subs = await getAllSubscriptions();
   let sent = 0, removed = 0, skipped = 0;
 
+  // Manual one-off test push — bypasses the time window and skips markSentOnce so it
+  // never interferes with that subscriber's real morning/evening delivery for today.
+  if (req.query?.test === '1') {
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: sub.keys },
+          JSON.stringify({ title: 'Jyoti ✦ Test Push', body: 'If you see this, real push notifications are working.', tag: 'jyoti-test-push', url: '/' })
+        );
+        sent++;
+      } catch (e) {
+        if (e.statusCode === 404 || e.statusCode === 410) {
+          await removeSubscription(sub.id);
+          removed++;
+        }
+      }
+    }
+    return res.status(200).json({ test: true, checked: subs.length, sent, removed });
+  }
+
   for (const sub of subs) {
     const local = _localParts(sub.tz);
     if (!local) continue;
