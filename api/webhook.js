@@ -68,6 +68,24 @@ async function sendWelcomeEmail(email, name) {
   });
 }
 
+async function sendOwnerNotification(subject, lines) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return; // not configured — skip silently
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'Jyoti <onboarding@resend.dev>',
+      to: 'hellojyoti@proton.me',
+      subject,
+      html: `<div style="font-family:Georgia,serif;font-size:15px;color:#222;line-height:1.6">
+        ${lines.map(l => `<p style="margin:0 0 8px">${l}</p>`).join('')}
+      </div>`,
+    }),
+  });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -88,17 +106,30 @@ module.exports = async (req, res) => {
     console.log('New subscriber:', email, '| session:', session.id, '| customer:', session.customer);
     if (email) {
       sendWelcomeEmail(email, name).catch(e => console.error('Welcome email failed:', e.message));
+      sendOwnerNotification('New Jyoti subscriber', [
+        `<strong>New subscriber:</strong> ${email}`,
+        name ? `Name: ${name}` : '',
+      ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
     }
   }
 
   if (event.type === 'customer.subscription.deleted') {
     const sub = event.data.object;
     console.log('Subscription cancelled:', sub.id, '| customer:', sub.customer);
+    sendOwnerNotification('Jyoti subscription cancelled', [
+      `<strong>Subscription cancelled.</strong>`,
+      `Customer ID: ${sub.customer}`,
+    ]).catch(e => console.error('Owner notification failed:', e.message));
   }
 
   if (event.type === 'invoice.payment_failed') {
     const invoice = event.data.object;
     console.log('Payment failed for customer:', invoice.customer, '| email:', invoice.customer_email);
+    sendOwnerNotification('Jyoti payment failed', [
+      `<strong>Payment failed.</strong>`,
+      invoice.customer_email ? `Email: ${invoice.customer_email}` : '',
+      `Customer ID: ${invoice.customer}`,
+    ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
   }
 
   return res.status(200).json({ received: true });
