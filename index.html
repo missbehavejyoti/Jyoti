@@ -654,6 +654,9 @@ select option{background:var(--s2);color:var(--text)}
         <div id="manage-sub-box" style="margin-top:.4rem;display:none">
           <a href="#" onclick="openBillingPortal();return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline" data-en="Manage Subscription" data-hi="सदस्यता प्रबंधित करें" data-es="Gestionar Suscripción">Manage Subscription</a>
         </div>
+        <div id="owner-nav-box" style="margin-top:.4rem;display:none">
+          <a href="#" onclick="goToPanel(1);return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline">◈ Tester access: view Panels 1–4</a>
+        </div>
       </div>
 
       <!-- Tab nav -->
@@ -732,6 +735,19 @@ select option{background:var(--s2);color:var(--text)}
             </svg>
           </div>
         </div>
+
+        <!-- Nakshatra reading (mirrors the free preview on panel 3, kept reachable after subscribing) -->
+        <div id="nakshatra-reading-p5" style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:14px;padding:1.4rem 1.6rem;margin:0 0 1.2rem;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.4),transparent)"></div>
+          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label-p5">✦ Your Nakshatra</div>
+          <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name-p5"></div>
+          <div style="font-size:.95rem;color:var(--muted);line-height:1.75;font-style:italic" id="nak-reading-p5">Loading your nakshatra reading...</div>
+          <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+            <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint-p5" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
+            <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
+          </div>
+        </div>
+
         <div id="full-reading"></div>
       </div>
 
@@ -917,6 +933,7 @@ select option{background:var(--s2);color:var(--text)}
 <script>
 // ── DEMO MODE ──
 function loadDemo(){
+  isDemoMode=true;
   // Pre-fill form with sample data
   document.getElementById('fname').value = 'Priya Sharma';
   document.getElementById('dob').value = '1990-03-14';
@@ -984,6 +1001,7 @@ function loadDemo(){
 let currentLang=(()=>{try{return localStorage.getItem('jyoti_lang')||'en';}catch(e){return'en';}})();
 let userData={};
 let chartData={};
+let isDemoMode=false;
 let chantCurrent=0,chantTarget=108;
 
 // ── SOUL ORACLE ARCHIVE ──
@@ -1533,7 +1551,7 @@ async function buildChartAsync(){
       if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
-      try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr()}));}catch(e){}
+      try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr(),isDemo:isDemoMode}));}catch(e){}
       try{localStorage.setItem('jyoti_user',JSON.stringify(userData));}catch(e){}
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
       planetReadingsCache=null;
@@ -1552,12 +1570,23 @@ async function buildChartAsync(){
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);
   setTimeout(()=>showFullChart(),800);
+  // Already a real subscriber (e.g. paid while only demo data existed, now entering their real details) —
+  // skip the preview/paywall and go straight to the subscriber dashboard with this freshly-built real chart.
+  if(!isDemoMode&&localStorage.getItem('jyoti_sub_email')){
+    const tier=localStorage.getItem('jyoti_tier')||'full';
+    setTimeout(()=>{
+      _activatePanel(5);
+      _syncManageSubLink();
+      if(tier==='compat'){applyCompatMode();}
+      else{showDailyReading();}
+    },1000);
+  }
 }
 
 function goToPanel(n){
-  // Subscribed users (any tier) are locked to panel 5 — corrections go through email, not self-service
-  const _t=localStorage.getItem('jyoti_tier');
-  if(n===1&&(_t==='full'||_t==='compat'||_t==='beta')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
+  // Real paying subscribers (jyoti_sub_email set by Stripe flow) are locked to panel 5 — corrections go through email, not self-service.
+  // Owner bypass / beta codes never set jyoti_sub_email, so they retain full navigation for testing.
+  if(n===1&&localStorage.getItem('jyoti_sub_email')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -1568,6 +1597,7 @@ function goToPanel(n){
       alert(currentLang==='hi'?'कृपया सभी आवश्यक फ़ील्ड भरें':currentLang==='es'?'Por favor completa todos los campos requeridos.':'Please fill in all required fields.');
       return;
     }
+    isDemoMode=false;
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
@@ -1771,8 +1801,8 @@ async function loadNakshatraReading(){
   const nak = chartData.moonNak;
   const L = T[currentLang];
   const nakData = NAKSHATRA_DATA[currentLang]?.[nak] || NAKSHATRA_DATA['en'][nak];
-  document.getElementById('nak-name').textContent = nakData.name;
-  document.getElementById('nak-reading').textContent = nakData.desc;
+  ['nak-name','nak-name-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.name;});
+  ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.desc;});
   // Try to enhance with Claude for a more personalised touch
   try {
     const nakResp = await fetch('/api/get-remedy', {
@@ -1786,7 +1816,7 @@ async function loadNakshatraReading(){
     });
     const data = await nakResp.json();
     const text = (data.text || data.content?.[0]?.text || '').trim();
-    if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
+    if(text && text.length > 20) ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=text;});
   } catch(e){ /* use static fallback already shown */ }
 }
 
@@ -3280,7 +3310,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '114';
+const JYOTI_BUILD = '115';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3495,7 +3525,7 @@ function redeemBeta(){
     msg.style.color='var(--teal)';
     msg.textContent='✦ Welcome back, Jyoti';
     try{localStorage.setItem('jyoti_tier','full');}catch(e){}
-    setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
+    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
     return;
   }
   if(Date.now()>_BE){
@@ -3507,7 +3537,7 @@ function redeemBeta(){
     msg.style.color='var(--teal)';
     msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access';
     try{localStorage.setItem('jyoti_tier','beta');}catch(e){}
-    setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
+    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
   }else{
     msg.style.color='var(--rose)';
     msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
@@ -3523,11 +3553,13 @@ function resetChart(){
 // "Manage Subscription" only applies to real Stripe subscribers (jyoti_sub_email is only
 // ever set by the checkout/restore flows) — never shown for the owner bypass or beta codes.
 function _syncManageSubLink(){
-  const box=document.getElementById('manage-sub-box');
-  if(!box)return;
   const tier=localStorage.getItem('jyoti_tier');
   const email=localStorage.getItem('jyoti_sub_email');
-  box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
+  const box=document.getElementById('manage-sub-box');
+  if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
+  // Owner bypass / beta codes never set jyoti_sub_email — give them a way back to panels 1-4 for testing
+  const ownerBox=document.getElementById('owner-nav-box');
+  if(ownerBox)ownerBox.style.display=((tier==='full'||tier==='compat'||tier==='beta')&&!email)?'block':'none';
 }
 
 async function openBillingPortal(){
@@ -3575,6 +3607,9 @@ async function _reverifySubscription(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
     if(!saved?.chartData?.planets||!saved?.userData?.name)return;
+    // Real subscriber whose only saved chart is demo data — never lock them into Priya Sharma's chart.
+    // Owner bypass / beta codes never set jyoti_sub_email, so testers exploring demo data are unaffected.
+    if(saved.isDemo&&localStorage.getItem('jyoti_sub_email'))return;
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
@@ -3583,10 +3618,12 @@ async function _reverifySubscription(){
       // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
-      // Hide edit/back buttons so details can't be changed mid-subscription
-      document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
-        const btn=el.closest('button');if(btn)btn.style.display='none';
-      });
+      // Hide edit/back buttons for real paying subscribers only — owner bypass / beta testers keep full navigation
+      if(localStorage.getItem('jyoti_sub_email')){
+        document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
+          const btn=el.closest('button');if(btn)btn.style.display='none';
+        });
+      }
       _syncManageSubLink();
       _reverifySubscription();
       if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
@@ -3633,7 +3670,8 @@ async function _reverifySubscription(){
     function _applySubscriber(email){
       try{localStorage.setItem('jyoti_tier','full');if(email)localStorage.setItem('jyoti_sub_email',email);}catch(e){}
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
-      if(saved?.chartData?.planets&&saved?.userData?.name){
+      // Never lock a real subscriber into demo (Priya Sharma) data — only restore a saved chart that's real.
+      if(saved?.chartData?.planets&&saved?.userData?.name&&!saved.isDemo){
         userData=saved.userData;chartData=saved.chartData;
         if(userData.lang)setLang(userData.lang);
         showChart();
@@ -3646,7 +3684,7 @@ async function _reverifySubscription(){
         setTimeout(()=>loadNakshatraReading(),200);
         setTimeout(()=>showDailyReading(),200);
       }
-      // Otherwise stay on panel 1 — user enters chart details then auto-goes to panel 5
+      // Otherwise stay on panel 1 — user enters their real chart details then auto-goes to panel 5
     }
     if(sessionId.startsWith('cs_')){
       fetch('/api/verify-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId})})
