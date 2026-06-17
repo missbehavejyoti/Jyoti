@@ -647,6 +647,9 @@ select option{background:var(--s2);color:var(--text)}
           <span id="moon-pill" class="moon-pill" style="display:none"></span>
           <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> <span id="share-chart-label">Share my chart</span></button>
         </div>
+        <div style="margin-top:.5rem">
+          <a href="#" onclick="editDetails();return false;" style="font-size:.68rem;color:var(--dim);opacity:.75;text-decoration:underline" data-en="Made a mistake? Edit my details" data-hi="कोई गलती हुई? अपना विवरण संपादित करें" data-es="¿Cometiste un error? Editar mis detalles">Made a mistake? Edit my details</a>
+        </div>
       </div>
 
       <!-- Tab nav -->
@@ -1542,8 +1545,33 @@ async function buildChartAsync(){
     return;
   }
   showChart();
+  const _correctingTier=localStorage.getItem('jyoti_tier');
+  if(_correctingTier==='full'||_correctingTier==='compat'||_correctingTier==='beta'){
+    // Already subscribed — this is a details correction, not a new signup. Skip preview/payment.
+    _activatePanel(5);
+    if(_correctingTier==='compat'){setTimeout(()=>applyCompatMode(),100);}
+    else{
+      setTimeout(()=>showFullChart(),100);
+      setTimeout(()=>loadNakshatraReading(),200);
+      setTimeout(()=>showDailyReading(),200);
+    }
+    return;
+  }
   setTimeout(()=>loadNakshatraReading(),600);
   setTimeout(()=>showFullChart(),800);
+}
+
+// Lets an already-subscribed user fix a typo in their birth details without
+// losing their subscription or being routed back through payment.
+function editDetails(){
+  const f=document.getElementById('fname');if(f)f.value=userData?.name||'';
+  const d=document.getElementById('dob');if(d)d.value=userData?.dob||'';
+  const t=document.getElementById('tob');if(t)t.value=userData?.tob||'12:00:00';
+  const p=document.getElementById('pob');if(p)p.value=userData?.pob||'';
+  const e=document.getElementById('email');if(e)e.value=userData?.email||'';
+  const g=document.getElementById('gender');if(g)g.value=userData?.gender||'';
+  const l=document.getElementById('pref-lang');if(l)l.value=userData?.lang||currentLang;
+  _activatePanel(1);
 }
 
 function goToPanel(n){
@@ -3258,7 +3286,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '110';
+const JYOTI_BUILD = '111';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3498,7 +3526,7 @@ function resetChart(){
   window.location.reload();
 }
 
-// Auto-restore saved chart — paid users go straight to panel 5, unpaid see continue button
+// Auto-restore saved chart — subscribed users (paid or beta) go straight to panel 5, unpaid see continue button
 (function initAutoRestore(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
@@ -3507,8 +3535,8 @@ function resetChart(){
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
     const tier=localStorage.getItem('jyoti_tier');
-    if(tier==='full'||tier==='compat'){
-      // Paid subscriber — skip panels 1-4 entirely, go straight to daily practice
+    if(tier==='full'||tier==='compat'||tier==='beta'){
+      // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
       // Hide edit/back buttons so details can't be changed mid-subscription
