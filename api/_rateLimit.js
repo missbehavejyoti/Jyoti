@@ -13,8 +13,8 @@ async function _redisIncr(key, windowSecs) {
     body: JSON.stringify([['INCR', key], ['EXPIRE', key, windowSecs]]),
   });
   if (!resp.ok) return null;
-  const [[, count]] = await resp.json();
-  return count;
+  const result = await resp.json();
+  return result[0]?.result ?? null;
 }
 
 function _getIp(req) {

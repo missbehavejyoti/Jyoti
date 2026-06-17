@@ -49,14 +49,14 @@ async function removeSubscription(id) {
 async function getAllSubscriptions() {
   const idsResult = await _redis([['SMEMBERS', SET_KEY]]);
   if (!idsResult) return [];
-  const [[, ids]] = idsResult;
+  const ids = idsResult[0]?.result;
   if (!ids || !ids.length) return [];
 
   const valsResult = await _redis(ids.map(id => ['GET', `push:sub:${id}`]));
   if (!valsResult) return [];
 
   return ids.map((id, i) => {
-    const [, raw] = valsResult[i] || [];
+    const raw = valsResult[i]?.result;
     if (!raw) return null;
     try { return { id, ...JSON.parse(raw) }; } catch { return null; }
   }).filter(Boolean);
@@ -68,8 +68,7 @@ async function markSentOnce(id, slot, dateStr) {
   const key = `push:sent:${id}:${slot}:${dateStr}`;
   const result = await _redis([['SET', key, '1', 'NX', 'EX', 90000]]);
   if (!result) return true; // Redis unavailable — don't block sending
-  const [[, val]] = result;
-  return val === 'OK';
+  return result[0]?.result === 'OK';
 }
 
 module.exports = { saveSubscription, removeSubscription, getAllSubscriptions, markSentOnce, idFor };
