@@ -578,6 +578,7 @@ select option{background:var(--s2);color:var(--text)}
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
             🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
           </button>
+          <p style="font-size:.68rem;color:var(--dim);font-style:italic;margin-top:.35rem" data-en="Must be installed on your Home Screen for notifications to work." data-hi="सूचनाएं काम करने के लिए ऐप को होम स्क्रीन पर इंस्टॉल होना चाहिए।" data-es="Debe estar instalada en tu pantalla de inicio para que las notificaciones funcionen.">Must be installed on your Home Screen for notifications to work.</p>
           <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="margin-top:.5rem;font-size:.68rem;display:none" id="notif-test-btn">
             🔔 <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
           </button>
@@ -682,6 +683,7 @@ select option{background:var(--s2);color:var(--text)}
             <button class="btn btn-ghost btn-sm" onclick="requestNotificationsP5()" style="font-size:.68rem" id="p5-notif-btn">
               🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
             </button>
+            <p style="font-size:.68rem;color:var(--dim);font-style:italic;margin-top:.35rem" data-en="Must be installed on your Home Screen for notifications to work." data-hi="सूचनाएं काम करने के लिए ऐप को होम स्क्रीन पर इंस्टॉल होना चाहिए।" data-es="Debe estar instalada en tu pantalla de inicio para que las notificaciones funcionen.">Must be installed on your Home Screen for notifications to work.</p>
             <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="font-size:.68rem;display:none" id="p5-notif-test-btn">
               ✓ <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
             </button>
@@ -3238,7 +3240,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '108';
+const JYOTI_BUILD = '109';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
