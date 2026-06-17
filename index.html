@@ -3194,7 +3194,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '106';
+const JYOTI_BUILD = '107';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3496,8 +3496,8 @@ function resetChart(){
     }
     // Has chart but hasn't paid — show continue button so they can proceed to payment
     const btn=document.createElement('button');
-    btn.className='btn btn-gold btn-full';
-    btn.style.cssText='margin-top:.8rem;font-size:.85rem';
+    btn.className='btn btn-ghost btn-full';
+    btn.style.cssText='margin-top:.6rem;font-size:.78rem;opacity:.85';
     {const n0=userData.name?userData.name.split(' ')[0]:'';btn.innerHTML=currentLang==='hi'?`✦ ${n0?n0+'का ':''}अभ्यास जारी रखें`:currentLang==='es'?`✦ Continuar${n0?' práctica de '+n0:' mi práctica'}`:(`✦ Continue ${n0?n0+"'s":'my'} practice`);}
     btn.onclick=function(){
       const t=localStorage.getItem('jyoti_tier');
