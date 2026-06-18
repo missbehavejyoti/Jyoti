@@ -43,7 +43,7 @@ async function sendWelcomeEmail(email, name) {
         </td></tr>
 
         <tr><td align="center" style="padding:28px 0">
-          <a href="https://jyotiapp.app" style="display:inline-block;background:linear-gradient(135deg,#C8A94A,#a8893a);color:#0c0918;text-decoration:none;font-size:14px;letter-spacing:2px;font-family:Georgia,serif;padding:14px 36px;border-radius:8px;font-weight:bold">
+          <a href="https://www.jyotiapp.app" style="display:inline-block;background:linear-gradient(135deg,#C8A94A,#a8893a);color:#0c0918;text-decoration:none;font-size:14px;letter-spacing:2px;font-family:Georgia,serif;padding:14px 36px;border-radius:8px;font-weight:bold">
             OPEN MY PRACTICE ✦
           </a>
         </td></tr>
