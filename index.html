@@ -657,6 +657,17 @@ select option{background:var(--s2);color:var(--text)}
         <div id="owner-nav-box" style="margin-top:.4rem;display:none">
           <a href="#" onclick="goToPanel(1);return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline">◈ Tester access: view Panels 1–4</a>
         </div>
+        <!-- Always reachable from page 5, regardless of subscription state — no one should ever get stranded here -->
+        <div style="text-align:center;margin-top:.5rem">
+          <button type="button" onclick="toggleBetaBox('p5-')" style="font-size:.68rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Have an access code?</button>
+          <div id="p5-beta-box" style="display:none;margin-top:.5rem">
+            <div style="display:flex;gap:.5rem;max-width:300px;margin:0 auto">
+              <input type="text" id="p5-beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem">
+              <button class="btn btn-ghost btn-sm" onclick="redeemBeta('p5-')" style="font-size:.72rem;white-space:nowrap">Enter</button>
+            </div>
+            <p id="p5-beta-msg" style="font-size:.78rem;margin-top:.4rem;min-height:1.1em"></p>
+          </div>
+        </div>
       </div>
 
       <!-- Tab nav -->
@@ -1180,8 +1191,8 @@ function toggleRestoreBox(){
   if(box)box.style.display=box.style.display==='none'?'block':'none';
 }
 
-function toggleBetaBox(){
-  const box=document.getElementById('beta-box');
+function toggleBetaBox(pfx){
+  const box=document.getElementById((pfx||'')+'beta-box');
   if(box)box.style.display=box.style.display==='none'?'block':'none';
 }
 
@@ -3310,7 +3321,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '115';
+const JYOTI_BUILD = '116';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3517,9 +3528,10 @@ const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F
 const _BE=new Date('2026-06-21T00:00:00').getTime();
 // Owner code — never expires, sets full tier
 const _OC='JYOTI2026SACRED';
-function redeemBeta(){
-  const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
-  const msg=document.getElementById('beta-msg');
+function redeemBeta(pfx){
+  pfx=pfx||'';
+  const code=(document.getElementById(pfx+'beta-input').value||'').trim().toUpperCase();
+  const msg=document.getElementById(pfx+'beta-msg');
   // Owner bypass — permanent, no expiry
   if(code===_OC){
     msg.style.color='var(--teal)';
