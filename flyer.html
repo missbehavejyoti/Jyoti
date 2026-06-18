@@ -19,7 +19,8 @@
     background:radial-gradient(ellipse at top left,#1C1830,#05030C 75%);
     display:flex;
     align-items:center;
-    justify-content:space-evenly;
+    justify-content:center;
+    gap:30mm;
     padding:0 16mm;
     color:#F2EBD8;
     position:relative;
@@ -27,18 +28,6 @@
   .cutline{
     width:100%;
     border-top:1px dashed rgba(200,169,74,.5);
-    position:relative;
-  }
-  .cutline span{
-    position:absolute;
-    left:6mm;
-    top:-2.2mm;
-    background:#05030C;
-    color:#7A6120;
-    font-size:8px;
-    letter-spacing:.15em;
-    padding:0 4px;
-    text-transform:uppercase;
   }
 
   .left-col{
@@ -118,9 +107,6 @@
     letter-spacing:.04em;
   }
 
-  @media print{
-    .cutline span{display:none}
-  }
 </style>
 </head>
 <body>
@@ -160,7 +146,7 @@
     </div>
   </div>
 
-  <div class="cutline"><span>&#9986; cut here</span></div>
+  <div class="cutline"></div>
 
   <!-- FLYER 2 (identical, for the second half of the page) -->
   <div class="flyer">
