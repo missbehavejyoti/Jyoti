@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jyoti Flyer (4-up)</title>
+<style>
+  @page { size: A4; margin: 0; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:210mm;height:297mm}
+  body{
+    background:#05030C;
+    font-family:Georgia,serif;
+    display:grid;
+    grid-template-columns:105mm 105mm;
+    grid-template-rows:148.5mm 148.5mm;
+  }
+  .flyer{
+    width:105mm;
+    height:148.5mm;
+    background:radial-gradient(ellipse at top,#1C1830,#05030C 75%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:8mm 7mm;
+    color:#F2EBD8;
+    border-right:1px dashed rgba(200,169,74,.5);
+    border-bottom:1px dashed rgba(200,169,74,.5);
+  }
+  .flyer:nth-child(2){border-right:none}
+  .flyer:nth-child(3),.flyer:nth-child(4){border-bottom:none}
+
+  .flame{width:34px;height:39px;margin-bottom:8px}
+  .brand-name{
+    font-family:Georgia,'Cinzel Decorative',serif;
+    font-size:24px;
+    letter-spacing:.08em;
+    color:#C8A94A;
+    margin-bottom:5px;
+  }
+  .brand-sub{
+    font-family:Georgia,'Cinzel',serif;
+    font-size:7.5px;
+    letter-spacing:.2em;
+    color:#A89880;
+    text-transform:uppercase;
+    margin-bottom:9px;
+  }
+  .divider{
+    width:60px;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#7A6120,transparent);
+    margin-bottom:9px;
+  }
+  .tagline{
+    font-size:11px;
+    line-height:1.4;
+    color:#F0E0A0;
+    font-style:italic;
+    margin-bottom:10px;
+  }
+  .qr-box{
+    background:#fff;
+    padding:8px;
+    border-radius:8px;
+    box-shadow:0 0 0 1px rgba(200,169,74,.4);
+    margin-bottom:8px;
+  }
+  .qr-box svg{width:88px;height:88px;display:block}
+  .scan-line{
+    font-family:Georgia,'Cinzel',serif;
+    font-size:9px;
+    letter-spacing:.14em;
+    color:#C8A94A;
+    text-transform:uppercase;
+    margin-bottom:3px;
+  }
+  .url-line{
+    font-size:11px;
+    color:#A89880;
+    letter-spacing:.03em;
+    margin-bottom:10px;
+  }
+  .free-line{
+    font-size:9.5px;
+    color:#C8A94A;
+    line-height:1.4;
+    margin-bottom:5px;
+  }
+  .price-line{
+    font-size:9.5px;
+    color:#A89880;
+    line-height:1.4;
+  }
+  .price-line b{color:#F0E0A0}
+  .cancel-note{
+    font-size:8px;
+    color:#6A5F58;
+    margin-top:3px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- 4 identical flyers, repeated as plain markup since this is a static print asset -->
+  <div class="flyer">
+    <svg class="flame" viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fgA)" opacity=".9"/>
+      <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fgA2)" opacity=".7"/>
+      <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+      <defs>
+        <linearGradient id="fgA" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E8D070"/><stop offset="60%" stop-color="#C8A94A"/><stop offset="100%" stop-color="#7A4020"/>
+        </linearGradient>
+        <linearGradient id="fgA2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/><stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="brand-name">Jyoti</div>
+    <div class="brand-sub">Nadi Astrology &middot; Ancient Wisdom &middot; Daily Light</div>
+    <div class="divider"></div>
+    <div class="tagline">Your precise birth chart.<br>Your daily sacred practice.</div>
+    <div class="qr-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 27 27" shape-rendering="crispEdges"><path fill="#ffffff" d="M0 0h27v27H0z"/><path stroke="#1a1530" d="M1 1.5h7m1 0h1m4 0h2m3 0h7M1 2.5h1m5 0h1m1 0h1m1 0h5m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m2 0h5m1 0h2m1 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h1m1 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m3 0h1m1 0h1m3 0h1m1 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 8.5h1m1 0h4m1 0h1M1 9.5h1m2 0h6m1 0h3m1 0h2m1 0h1m2 0h1m1 0h3M3 10.5h1m1 0h2m1 0h2m1 0h2m3 0h1m1 0h1m1 0h5M1 11.5h1m2 0h2m1 0h1m2 0h1m4 0h3m1 0h2m1 0h1m2 0h1M2 12.5h3m1 0h1m3 0h1m2 0h1m2 0h1m3 0h1m1 0h4M1 13.5h3m2 0h2m3 0h2m2 0h1m1 0h1m1 0h1m5 0h1M1 14.5h3m2 0h1m1 0h1m1 0h2m1 0h1m1 0h4m2 0h1m2 0h1M1 15.5h2m4 0h1m1 0h2m4 0h2m1 0h2m1 0h5M1 16.5h1m2 0h3m3 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h1M1 17.5h1m1 0h1m2 0h3m1 0h5m2 0h5m1 0h2M9 18.5h1m2 0h1m3 0h2m3 0h1m1 0h2M1 19.5h7m1 0h3m1 0h3m1 0h1m1 0h1m1 0h1m3 0h1M1 20.5h1m5 0h1m1 0h4m1 0h1m1 0h2m3 0h1m3 0h1M1 21.5h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h7M1 22.5h1m1 0h3m1 0h1m1 0h1m3 0h1m5 0h1m4 0h2M1 23.5h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h4m2 0h5M1 24.5h1m5 0h1m3 0h3m6 0h2m1 0h3M1 25.5h7m1 0h2m1 0h1m4 0h2m3 0h1m2 0h1"/></svg>
+    </div>
+    <div class="scan-line">Scan to begin</div>
+    <div class="url-line">jyotiapp.app</div>
+    <div class="free-line">&#10038; Start free: chart &amp; nakshatra reading</div>
+    <div class="price-line"><b>$14.99 AUD/month</b> for daily remedies, weekly readings, full chart &amp; compatibility.</div>
+    <div class="cancel-note">Cancel anytime</div>
+  </div>
+
+  <div class="flyer">
+    <svg class="flame" viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fgB)" opacity=".9"/>
+      <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fgB2)" opacity=".7"/>
+      <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+      <defs>
+        <linearGradient id="fgB" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E8D070"/><stop offset="60%" stop-color="#C8A94A"/><stop offset="100%" stop-color="#7A4020"/>
+        </linearGradient>
+        <linearGradient id="fgB2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/><stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="brand-name">Jyoti</div>
+    <div class="brand-sub">Nadi Astrology &middot; Ancient Wisdom &middot; Daily Light</div>
+    <div class="divider"></div>
+    <div class="tagline">Your precise birth chart.<br>Your daily sacred practice.</div>
+    <div class="qr-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 27 27" shape-rendering="crispEdges"><path fill="#ffffff" d="M0 0h27v27H0z"/><path stroke="#1a1530" d="M1 1.5h7m1 0h1m4 0h2m3 0h7M1 2.5h1m5 0h1m1 0h1m1 0h5m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m2 0h5m1 0h2m1 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h1m1 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m3 0h1m1 0h1m3 0h1m1 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 8.5h1m1 0h4m1 0h1M1 9.5h1m2 0h6m1 0h3m1 0h2m1 0h1m2 0h1m1 0h3M3 10.5h1m1 0h2m1 0h2m1 0h2m3 0h1m1 0h1m1 0h5M1 11.5h1m2 0h2m1 0h1m2 0h1m4 0h3m1 0h2m1 0h1m2 0h1M2 12.5h3m1 0h1m3 0h1m2 0h1m2 0h1m3 0h1m1 0h4M1 13.5h3m2 0h2m3 0h2m2 0h1m1 0h1m1 0h1m5 0h1M1 14.5h3m2 0h1m1 0h1m1 0h2m1 0h1m1 0h4m2 0h1m2 0h1M1 15.5h2m4 0h1m1 0h2m4 0h2m1 0h2m1 0h5M1 16.5h1m2 0h3m3 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h1M1 17.5h1m1 0h1m2 0h3m1 0h5m2 0h5m1 0h2M9 18.5h1m2 0h1m3 0h2m3 0h1m1 0h2M1 19.5h7m1 0h3m1 0h3m1 0h1m1 0h1m1 0h1m3 0h1M1 20.5h1m5 0h1m1 0h4m1 0h1m1 0h2m3 0h1m3 0h1M1 21.5h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h7M1 22.5h1m1 0h3m1 0h1m1 0h1m3 0h1m5 0h1m4 0h2M1 23.5h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h4m2 0h5M1 24.5h1m5 0h1m3 0h3m6 0h2m1 0h3M1 25.5h7m1 0h2m1 0h1m4 0h2m3 0h1m2 0h1"/></svg>
+    </div>
+    <div class="scan-line">Scan to begin</div>
+    <div class="url-line">jyotiapp.app</div>
+    <div class="free-line">&#10038; Start free: chart &amp; nakshatra reading</div>
+    <div class="price-line"><b>$14.99 AUD/month</b> for daily remedies, weekly readings, full chart &amp; compatibility.</div>
+    <div class="cancel-note">Cancel anytime</div>
+  </div>
+
+  <div class="flyer">
+    <svg class="flame" viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fgC)" opacity=".9"/>
+      <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fgC2)" opacity=".7"/>
+      <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+      <defs>
+        <linearGradient id="fgC" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E8D070"/><stop offset="60%" stop-color="#C8A94A"/><stop offset="100%" stop-color="#7A4020"/>
+        </linearGradient>
+        <linearGradient id="fgC2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/><stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="brand-name">Jyoti</div>
+    <div class="brand-sub">Nadi Astrology &middot; Ancient Wisdom &middot; Daily Light</div>
+    <div class="divider"></div>
+    <div class="tagline">Your precise birth chart.<br>Your daily sacred practice.</div>
+    <div class="qr-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 27 27" shape-rendering="crispEdges"><path fill="#ffffff" d="M0 0h27v27H0z"/><path stroke="#1a1530" d="M1 1.5h7m1 0h1m4 0h2m3 0h7M1 2.5h1m5 0h1m1 0h1m1 0h5m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m2 0h5m1 0h2m1 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h1m1 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m3 0h1m1 0h1m3 0h1m1 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 8.5h1m1 0h4m1 0h1M1 9.5h1m2 0h6m1 0h3m1 0h2m1 0h1m2 0h1m1 0h3M3 10.5h1m1 0h2m1 0h2m1 0h2m3 0h1m1 0h1m1 0h5M1 11.5h1m2 0h2m1 0h1m2 0h1m4 0h3m1 0h2m1 0h1m2 0h1M2 12.5h3m1 0h1m3 0h1m2 0h1m2 0h1m3 0h1m1 0h4M1 13.5h3m2 0h2m3 0h2m2 0h1m1 0h1m1 0h1m5 0h1M1 14.5h3m2 0h1m1 0h1m1 0h2m1 0h1m1 0h4m2 0h1m2 0h1M1 15.5h2m4 0h1m1 0h2m4 0h2m1 0h2m1 0h5M1 16.5h1m2 0h3m3 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h1M1 17.5h1m1 0h1m2 0h3m1 0h5m2 0h5m1 0h2M9 18.5h1m2 0h1m3 0h2m3 0h1m1 0h2M1 19.5h7m1 0h3m1 0h3m1 0h1m1 0h1m1 0h1m3 0h1M1 20.5h1m5 0h1m1 0h4m1 0h1m1 0h2m3 0h1m3 0h1M1 21.5h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h7M1 22.5h1m1 0h3m1 0h1m1 0h1m3 0h1m5 0h1m4 0h2M1 23.5h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h4m2 0h5M1 24.5h1m5 0h1m3 0h3m6 0h2m1 0h3M1 25.5h7m1 0h2m1 0h1m4 0h2m3 0h1m2 0h1"/></svg>
+    </div>
+    <div class="scan-line">Scan to begin</div>
+    <div class="url-line">jyotiapp.app</div>
+    <div class="free-line">&#10038; Start free: chart &amp; nakshatra reading</div>
+    <div class="price-line"><b>$14.99 AUD/month</b> for daily remedies, weekly readings, full chart &amp; compatibility.</div>
+    <div class="cancel-note">Cancel anytime</div>
+  </div>
+
+  <div class="flyer">
+    <svg class="flame" viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fgD)" opacity=".9"/>
+      <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fgD2)" opacity=".7"/>
+      <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+      <defs>
+        <linearGradient id="fgD" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E8D070"/><stop offset="60%" stop-color="#C8A94A"/><stop offset="100%" stop-color="#7A4020"/>
+        </linearGradient>
+        <linearGradient id="fgD2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/><stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="brand-name">Jyoti</div>
+    <div class="brand-sub">Nadi Astrology &middot; Ancient Wisdom &middot; Daily Light</div>
+    <div class="divider"></div>
+    <div class="tagline">Your precise birth chart.<br>Your daily sacred practice.</div>
+    <div class="qr-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 27 27" shape-rendering="crispEdges"><path fill="#ffffff" d="M0 0h27v27H0z"/><path stroke="#1a1530" d="M1 1.5h7m1 0h1m4 0h2m3 0h7M1 2.5h1m5 0h1m1 0h1m1 0h5m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m2 0h5m1 0h2m1 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h1m1 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m3 0h1m1 0h1m3 0h1m1 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 8.5h1m1 0h4m1 0h1M1 9.5h1m2 0h6m1 0h3m1 0h2m1 0h1m2 0h1m1 0h3M3 10.5h1m1 0h2m1 0h2m1 0h2m3 0h1m1 0h1m1 0h5M1 11.5h1m2 0h2m1 0h1m2 0h1m4 0h3m1 0h2m1 0h1m2 0h1M2 12.5h3m1 0h1m3 0h1m2 0h1m2 0h1m3 0h1m1 0h4M1 13.5h3m2 0h2m3 0h2m2 0h1m1 0h1m1 0h1m5 0h1M1 14.5h3m2 0h1m1 0h1m1 0h2m1 0h1m1 0h4m2 0h1m2 0h1M1 15.5h2m4 0h1m1 0h2m4 0h2m1 0h2m1 0h5M1 16.5h1m2 0h3m3 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h1M1 17.5h1m1 0h1m2 0h3m1 0h5m2 0h5m1 0h2M9 18.5h1m2 0h1m3 0h2m3 0h1m1 0h2M1 19.5h7m1 0h3m1 0h3m1 0h1m1 0h1m1 0h1m3 0h1M1 20.5h1m5 0h1m1 0h4m1 0h1m1 0h2m3 0h1m3 0h1M1 21.5h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h7M1 22.5h1m1 0h3m1 0h1m1 0h1m3 0h1m5 0h1m4 0h2M1 23.5h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h4m2 0h5M1 24.5h1m5 0h1m3 0h3m6 0h2m1 0h3M1 25.5h7m1 0h2m1 0h1m4 0h2m3 0h1m2 0h1"/></svg>
+    </div>
+    <div class="scan-line">Scan to begin</div>
+    <div class="url-line">jyotiapp.app</div>
+    <div class="free-line">&#10038; Start free: chart &amp; nakshatra reading</div>
+    <div class="price-line"><b>$14.99 AUD/month</b> for daily remedies, weekly readings, full chart &amp; compatibility.</div>
+    <div class="cancel-note">Cancel anytime</div>
+  </div>
+
+</body>
+</html>
