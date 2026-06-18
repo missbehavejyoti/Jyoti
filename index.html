@@ -654,20 +654,6 @@ select option{background:var(--s2);color:var(--text)}
         <div id="manage-sub-box" style="margin-top:.4rem;display:none">
           <a href="#" onclick="openBillingPortal();return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline" data-en="Manage Subscription" data-hi="सदस्यता प्रबंधित करें" data-es="Gestionar Suscripción">Manage Subscription</a>
         </div>
-        <div id="owner-nav-box" style="margin-top:.4rem;display:none">
-          <a href="#" onclick="goToPanel(1);return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline">◈ Tester access: view Panels 1–4</a>
-        </div>
-        <!-- Always reachable from page 5, regardless of subscription state — no one should ever get stranded here -->
-        <div style="text-align:center;margin-top:.5rem">
-          <button type="button" onclick="toggleBetaBox('p5-')" style="font-size:.68rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px">Have an access code?</button>
-          <div id="p5-beta-box" style="display:none;margin-top:.5rem">
-            <div style="display:flex;gap:.5rem;max-width:300px;margin:0 auto">
-              <input type="text" id="p5-beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem">
-              <button class="btn btn-ghost btn-sm" onclick="redeemBeta('p5-')" style="font-size:.72rem;white-space:nowrap">Enter</button>
-            </div>
-            <p id="p5-beta-msg" style="font-size:.78rem;margin-top:.4rem;min-height:1.1em"></p>
-          </div>
-        </div>
       </div>
 
       <!-- Tab nav -->
@@ -849,6 +835,22 @@ select option{background:var(--s2);color:var(--text)}
           </div>
         </div>
 
+      </div>
+
+      <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state -->
+      <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--s4)">
+        <span id="owner-nav-box" style="display:none;font-size:.6rem">
+          <a href="#" onclick="goToPanel(1);return false;" style="color:var(--dim);opacity:.6;text-decoration:underline">Tester: Panels 1–4</a>
+          <span style="color:var(--dim);opacity:.4"> · </span>
+        </span>
+        <button type="button" onclick="toggleBetaBox('p5-')" style="font-size:.6rem;color:var(--dim);opacity:.6;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">Have an access code?</button>
+        <div id="p5-beta-box" style="display:none;margin-top:.5rem">
+          <div style="display:flex;gap:.5rem;max-width:260px;margin:0 auto">
+            <input type="text" id="p5-beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem">
+            <button class="btn btn-ghost btn-sm" onclick="redeemBeta('p5-')" style="font-size:.66rem;white-space:nowrap">Enter</button>
+          </div>
+          <p id="p5-beta-msg" style="font-size:.7rem;margin-top:.4rem;min-height:1.1em"></p>
+        </div>
       </div>
     </div>
   </div>
@@ -3321,7 +3323,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '116';
+const JYOTI_BUILD = '117';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3571,7 +3573,7 @@ function _syncManageSubLink(){
   if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
   // Owner bypass / beta codes never set jyoti_sub_email — give them a way back to panels 1-4 for testing
   const ownerBox=document.getElementById('owner-nav-box');
-  if(ownerBox)ownerBox.style.display=((tier==='full'||tier==='compat'||tier==='beta')&&!email)?'block':'none';
+  if(ownerBox)ownerBox.style.display=((tier==='full'||tier==='compat'||tier==='beta')&&!email)?'inline':'none';
 }
 
 async function openBillingPortal(){
