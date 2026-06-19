@@ -15,20 +15,33 @@
   --bg:#FFFCF6;--p1:#FFFFFF;--p2:#FFF8EA;--p3:#FBF0D9;
   --text:#1C1410;--muted:#6B5A4A;--dim:#9C8B78;
   --rose:#C45870;--rose-d:#8E3A50;
+  /* iridescent accent pair — electric blue/purple, used only inside the
+     gold↔rose gradients below so it reads as light catching a facet,
+     never as flat fills or as text color */
+  --iris-blue:#3FC6FF;--iris-purple:#A06CFF;
+  --iris-sweep:linear-gradient(100deg,var(--gold) 0%,var(--rose) 28%,var(--iris-blue) 52%,var(--iris-purple) 75%,var(--gold) 100%);
+}
+@keyframes irisShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes irisHalo{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.22;transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){
+  .divider::before,.divider::after,.card::before,.remedy-card::before,.flame::after{animation:none!important}
 }
 body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.75;min-height:100vh}
 .wrap{max-width:640px;margin:0 auto;padding:0 1.5rem 3rem}
 .note{background:#1C1410;color:#FFFCF6;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;text-align:center;padding:.6rem 1rem}
 
 header{text-align:center;padding:2.5rem 1.5rem 1rem}
-.flame svg{width:56px;height:64px}
+.flame{position:relative;display:inline-block}
+.flame::after{content:'';position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,var(--iris-blue) 0%,var(--iris-purple) 45%,transparent 75%);filter:blur(10px);opacity:.15;z-index:-1;animation:irisHalo 5s ease-in-out infinite}
+.flame svg{width:56px;height:64px;position:relative}
 .brand-name{font-family:'Cinzel Decorative',serif;font-size:2.6rem;letter-spacing:.15em;color:var(--gold-d);display:block;margin:1rem 0 .2rem}
 .brand-sub{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
 
 .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--gold)}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.divider::before,.divider::after{content:'';flex:1;height:1.5px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 10s ease-in-out infinite;opacity:.55}
 
-.card{background:var(--p1);border:1px solid var(--p3);border-radius:18px;padding:1.8rem;margin-bottom:1.5rem;box-shadow:0 4px 24px rgba(120,90,40,.08)}
+.card{position:relative;background:var(--p1);border:1px solid var(--p3);border-radius:18px;padding:1.8rem;margin-bottom:1.5rem;box-shadow:0 4px 24px rgba(120,90,40,.08);overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 12s ease-in-out infinite;opacity:.5}
 .card-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold-d);text-align:center;margin-bottom:1.4rem}
 
 .planet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
@@ -37,21 +50,26 @@ header{text-align:center;padding:2.5rem 1.5rem 1rem}
 .p-name{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.2rem}
 .p-pos{font-size:.92rem;color:var(--text);font-style:italic}
 
-/* rose accent — used sparingly: this card's left border + its pill tag */
-.remedy-card{position:relative;background:var(--p2);border:1px solid var(--p3);border-radius:14px;padding:1.4rem 1.5rem;padding-left:1.8rem;margin-top:1.3rem}
-.remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--gold))}
+/* rose accent — used sparingly: this card's left border + its pill tag.
+   the left bar now sweeps gold→rose→iris on a slow vertical drift, like
+   light moving across the edge of a cut stone */
+.remedy-card{position:relative;background:var(--p2);border:1px solid var(--p3);border-radius:14px;padding:1.4rem 1.5rem;padding-left:1.8rem;margin-top:1.3rem;overflow:hidden}
+.remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
 .remedy-day{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--rose-d);text-transform:uppercase;margin-bottom:.4rem}
 .remedy-text{font-size:1.05rem;color:var(--text);margin-bottom:.9rem}
-.tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.1);border:1px solid rgba(196,88,112,.35);color:var(--rose-d);font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
+.tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.1);border:1px solid rgba(196,88,112,.35);box-shadow:0 0 0 1px rgba(63,198,255,.08),0 0 10px rgba(160,108,255,.12);color:var(--rose-d);font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
 
 .btn-row{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.6rem;border-radius:10px;font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none}
-.btn-gold{background:linear-gradient(135deg,#6A5218,#C8A94A,#E8D070,#C8A94A,#6A5218);color:#1C1410;font-weight:600}
+/* shine sweep on hover — a thin diamond-facet highlight passing across the button */
+.btn-gold{position:relative;overflow:hidden;background:linear-gradient(135deg,#6A5218,#C8A94A,#E8D070,#C8A94A,#6A5218);color:#1C1410;font-weight:600}
+.btn-gold::after{content:'';position:absolute;top:-60%;left:-40%;width:30%;height:220%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.65),var(--iris-blue),var(--iris-purple),transparent);transform:rotate(15deg);transition:left .7s ease;opacity:.8}
+.btn-gold:hover::after{left:130%}
 .btn-rose{background:transparent;border:1.5px solid var(--rose);color:var(--rose-d)}
 
 .tabs{display:flex;gap:.5rem;margin-top:1.6rem}
 .tab{flex:1;text-align:center;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem .4rem;border-radius:8px;border:1px solid var(--p3);color:var(--muted);background:var(--p2)}
-.tab.active{color:var(--gold-d);border-color:var(--gold);background:rgba(200,169,74,.12)}
+.tab.active{color:var(--gold-d);border-color:var(--gold);background:rgba(200,169,74,.12);box-shadow:inset 0 -2px 0 0 var(--iris-blue)}
 
 .legend{font-size:.85rem;color:var(--muted);text-align:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--p3)}
 </style>
@@ -113,7 +131,10 @@ header{text-align:center;padding:2.5rem 1.5rem 1rem}
   <div class="legend">
     Gold stays exactly the same gold, reserved for icons, borders and the logo (it loses<br>
     contrast as text on white, so headings use a deeper gold instead). Rose pink is a new accent<br>
-    used sparingly — a card border, a tag, a secondary button.
+    used sparingly — a card border, a tag, a secondary button. A thin electric blue/violet<br>
+    sweep lives only inside those same gold/rose accent lines — dividers, card edges, the<br>
+    remedy bar, a button's hover shine — so it catches the eye like light off a cut stone,<br>
+    never as a flat fill or as body text.
   </div>
 
 </div>
