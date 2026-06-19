@@ -93,8 +93,12 @@ module.exports = async (req, res) => {
     const n  = jd - 2451545.0;
 
     // Lahiri ayanamsa — Swiss Ephemeris Chitrapaksha definition
-    // J2000.0 value 23.8563° + IAU precession 50.29"/yr; quadratic term for century-scale accuracy
-    const ayanamsa = 23.8563 + T * 1.39691 - 0.000030 * T * T;
+    // J2000.0 value 23.853222° (23°51'11"), the standard SE reference constant —
+    // + IAU precession 50.29"/yr; quadratic term for century-scale accuracy.
+    // A small constant-term error here gets hugely amplified at the Pratyantara
+    // dasha tier: 120 Vimshottari years map to one 13°20' nakshatra width, so
+    // each 1" of ayanamsa error shifts every dasha boundary by ~22 hours, for life.
+    const ayanamsa = 23.853222 + T * 1.39691 - 0.000030 * T * T;
     const sid = trop => ((trop - ayanamsa) % 360 + 360) % 360;
 
     // ── Planetary positions (geocentric tropical ecliptic) via astronomy-engine ──
