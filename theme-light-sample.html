@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jyoti — Light Theme Sample</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* gold kept exactly as the dark theme — used only for icons/decoration here,
+     since pale gold text has poor contrast on a light background */
+  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
+  /* new light surfaces, warm paper tones rather than stark white */
+  --bg:#FFFCF6;--p1:#FFFFFF;--p2:#FFF8EA;--p3:#FBF0D9;
+  --text:#1C1410;--muted:#6B5A4A;--dim:#9C8B78;
+  --rose:#C45870;--rose-d:#8E3A50;
+}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.75;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:0 1.5rem 3rem}
+.note{background:#1C1410;color:#FFFCF6;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;text-align:center;padding:.6rem 1rem}
+
+header{text-align:center;padding:2.5rem 1.5rem 1rem}
+.flame svg{width:56px;height:64px}
+.brand-name{font-family:'Cinzel Decorative',serif;font-size:2.6rem;letter-spacing:.15em;color:var(--gold-d);display:block;margin:1rem 0 .2rem}
+.brand-sub{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
+
+.divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--gold)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+.card{background:var(--p1);border:1px solid var(--p3);border-radius:18px;padding:1.8rem;margin-bottom:1.5rem;box-shadow:0 4px 24px rgba(120,90,40,.08)}
+.card-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold-d);text-align:center;margin-bottom:1.4rem}
+
+.planet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.planet-card{background:var(--p2);border:1px solid var(--p3);border-radius:10px;padding:.85rem;text-align:center}
+.p-symbol{font-size:1.4rem;margin-bottom:.25rem}
+.p-name{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.2rem}
+.p-pos{font-size:.92rem;color:var(--text);font-style:italic}
+
+/* rose accent — used sparingly: this card's left border + its pill tag */
+.remedy-card{position:relative;background:var(--p2);border:1px solid var(--p3);border-radius:14px;padding:1.4rem 1.5rem;padding-left:1.8rem;margin-top:1.3rem}
+.remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--gold))}
+.remedy-day{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--rose-d);text-transform:uppercase;margin-bottom:.4rem}
+.remedy-text{font-size:1.05rem;color:var(--text);margin-bottom:.9rem}
+.tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.1);border:1px solid rgba(196,88,112,.35);color:var(--rose-d);font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
+
+.btn-row{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.6rem;border-radius:10px;font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none}
+.btn-gold{background:linear-gradient(135deg,#6A5218,#C8A94A,#E8D070,#C8A94A,#6A5218);color:#1C1410;font-weight:600}
+.btn-rose{background:transparent;border:1.5px solid var(--rose);color:var(--rose-d)}
+
+.tabs{display:flex;gap:.5rem;margin-top:1.6rem}
+.tab{flex:1;text-align:center;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem .4rem;border-radius:8px;border:1px solid var(--p3);color:var(--muted);background:var(--p2)}
+.tab.active{color:var(--gold-d);border-color:var(--gold);background:rgba(200,169,74,.12)}
+
+.legend{font-size:.85rem;color:var(--muted);text-align:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--p3)}
+</style>
+</head>
+<body>
+<div class="note">PREVIEW ONLY — sample for review, not wired into the live app</div>
+<div class="wrap">
+
+  <header>
+    <div class="flame">
+      <svg viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M28 60C28 60 8 46 8 30C8 18 18 10 28 6C28 6 22 16 28 22C28 22 24 14 34 10C34 10 44 18 44 30C44 46 28 60 28 60Z" fill="url(#fg)" opacity=".9"/>
+        <path d="M28 55C28 55 16 44 16 33C16 25 22 20 28 18C28 18 25 24 28 28C28 28 26 22 32 19C32 19 38 24 38 33C38 44 28 55 28 55Z" fill="url(#fg2)" opacity=".7"/>
+        <circle cx="28" cy="32" r="4" fill="rgba(255,255,255,.3)"/>
+        <defs>
+          <linearGradient id="fg" x1="28" y1="6" x2="28" y2="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#E8D070"/>
+            <stop offset="60%" stop-color="#C8A94A"/>
+            <stop offset="100%" stop-color="#7A4020"/>
+          </linearGradient>
+          <linearGradient id="fg2" x1="28" y1="18" x2="28" y2="55" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFF5D0" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#C8A94A" stop-opacity=".3"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <span class="brand-name">Jyoti</span>
+    <div class="brand-sub">Nadi Astrology · Ancient Wisdom · Daily Light</div>
+    <div class="divider"><span style="color:var(--gold);font-size:1.1rem">✦</span></div>
+  </header>
+
+  <div class="card">
+    <div class="card-title">Your Birth Chart</div>
+    <div class="planet-grid">
+      <div class="planet-card"><div class="p-symbol">☉</div><div class="p-name">Sun</div><div class="p-pos">Libra 16.4°</div></div>
+      <div class="planet-card"><div class="p-symbol">☽</div><div class="p-name">Moon</div><div class="p-pos">Libra 9.5°</div></div>
+      <div class="planet-card"><div class="p-symbol">⬆</div><div class="p-name">Ascendant</div><div class="p-pos">Capricorn 23.7°</div></div>
+    </div>
+
+    <div class="remedy-card">
+      <div class="remedy-day">Today's Remedy</div>
+      <div class="remedy-text">Light a small flame at sunrise and offer water to the Sun while facing east. This strengthens clarity and steady purpose for the day ahead.</div>
+      <span class="tag">✦ Premium Reading</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">Daily</div>
+      <div class="tab">Chart</div>
+      <div class="tab">Remedies</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-gold">Reveal My Chart ✦</button>
+      <button class="btn btn-rose">Compatibility ✦</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    Gold stays exactly the same gold, reserved for icons, borders and the logo (it loses<br>
+    contrast as text on white, so headings use a deeper gold instead). Rose pink is a new accent<br>
+    used sparingly — a card border, a tag, a secondary button.
+  </div>
+
+</div>
+</body>
+</html>
