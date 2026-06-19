@@ -4267,6 +4267,9 @@ function _renderTier1(d){
   document.getElementById('syn-reading').style.display='block';
   const nA=synUserA.name,nB=synUserB.name;
   const sl=_sl();
+  const otherMatchTitle=(n)=>currentLang==='hi'?`✦ ${n} के अन्य साथी`:currentLang==='es'?`✦ Otras Coincidencias para ${n}`:`✦ Other Matches for ${n}`;
+  const otherSub1=(n)=>currentLang==='hi'?`${n} की कुंडली को वास्तव में क्या चाहिए, और वह अनुनाद दुनिया में कहाँ और रहता है।`:currentLang==='es'?`La carta de ${n} verdaderamente necesita, y dónde más vive esa resonancia en el mundo.`:`What ${n}'s chart truly needs, and where else that resonance lives in the world.`;
+  const otherSub2=(n)=>currentLang==='hi'?`क्या यह ${n} के लिए एक दुर्लभ संयोग है, या कुंडली आसानी से अनुनाद पाती है?`:currentLang==='es'?`¿Es esta una combinación rara para ${n}, o la carta encuentra resonancia fácilmente?`:`Is this a rare match for ${n}, or does the chart find resonance easily?`;
   document.getElementById('syn-tier1').innerHTML=`
     <div style="text-align:center;margin-bottom:1.4rem">
       <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">${sl.compatHdr}</div>
@@ -4299,23 +4302,44 @@ function _renderTier1(d){
         <div class="doorway-title">${sl.d_gifts[0]}</div>
         <div class="doorway-sub">${sl.d_gifts[1]}</div>
       </div>
+      <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
+        <div class="doorway-title">${sl.d_higher_road[0]}</div>
+        <div class="doorway-sub">${sl.d_higher_road[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-soul_debt" onclick="exploreSyn('soul_debt')">
+        <div class="doorway-title">${sl.d_soul_debt[0]}</div>
+        <div class="doorway-sub">${sl.d_soul_debt[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
+        <div class="doorway-title">${sl.d_work_life[0]}</div>
+        <div class="doorway-sub">${sl.d_work_life[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-timing" onclick="exploreSyn('timing')">
+        <div class="doorway-title">${sl.d_timing[0]}</div>
+        <div class="doorway-sub">${sl.d_timing[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
+        <div class="doorway-title">${otherMatchTitle(nA)}</div>
+        <div class="doorway-sub">${otherSub1(nA)}</div>
+      </div>
+      <div class="doorway-card" id="door-other_b" onclick="exploreSyn('other_b')">
+        <div class="doorway-title">${otherMatchTitle(nB)}</div>
+        <div class="doorway-sub">${otherSub2(nB)}</div>
+      </div>
     </div>`;
 }
 
 function _renderSynSection(type,d){
   const el=_getOrCreateSection(type);
+  if(!synTier2Done.has(type)){synTier2Done.add(type);synTier2Count++;}
   const nA=synUserA?.name||(currentLang==='hi'?'व्यक्ति A':currentLang==='es'?'Persona A':'Person A'),nB=synUserB?.name||(currentLang==='hi'?'व्यक्ति B':currentLang==='es'?'Persona B':'Person B');
   const sl=_sl();
   const inConn=currentLang==='hi'?'इस संबंध में':currentLang==='es'?'EN ESTA CONEXIÓN':'IN THIS CONNECTION';
   const carriesFor=(x,y)=>currentLang==='hi'?`${x} ${y} के लिए`:currentLang==='es'?`LO QUE ${x} LLEVA PARA ${y}`:`WHAT ${x} CARRIES FOR ${y}`;
-  const otherMatchTitle=(n)=>currentLang==='hi'?`✦ ${n} के अन्य साथी`:currentLang==='es'?`✦ Otras Coincidencias para ${n}`:`✦ Other Matches for ${n}`;
   const otherMatchLabel=(n)=>currentLang==='hi'?`✦ ${n.toUpperCase()} के अन्य साथी`:currentLang==='es'?`✦ OTRAS COINCIDENCIAS PARA ${n.toUpperCase()}`:`✦ OTHER MATCHES FOR ${n.toUpperCase()}`;
-  const otherSub1=(n)=>currentLang==='hi'?`${n} की कुंडली को वास्तव में क्या चाहिए, और वह अनुनाद दुनिया में कहाँ और रहता है।`:currentLang==='es'?`La carta de ${n} verdaderamente necesita, y dónde más vive esa resonancia en el mundo.`:`What ${n}'s chart truly needs, and where else that resonance lives in the world.`;
-  const otherSub2=(n)=>currentLang==='hi'?`क्या यह ${n} के लिए एक दुर्लभ संयोग है, या कुंडली आसानी से अनुनाद पाती है?`:currentLang==='es'?`¿Es esta una combinación rara para ${n}, o la carta encuentra resonancia fácilmente?`:`Is this a rare match for ${n}, or does the chart find resonance easily?`;
   const whatNeeds=(n)=>currentLang==='hi'?`${n.toUpperCase()} को क्या चाहिए`:currentLang==='es'?`LO QUE ${n.toUpperCase()} NECESITA`:`WHAT ${n.toUpperCase()} NEEDS`;
   let html='';
   if(type==='karmic'){
-    if(!synTier2Done.has('karmic')){synTier2Done.add('karmic');synTier2Count++;}
     // Normalise verdict_type — model may translate to Hindi/Spanish despite instructions
     const _kvt=(d.verdict_type||'').toLowerCase();
     const _ktype=_kvt.includes('complet')||_kvt.includes('पूर्णत')||_kvt.includes('समापन')||_kvt.includes('finaliz')||_kvt.includes('conclus')?'completion':_kvt.includes('continu')||_kvt.includes('निरंतर')||_kvt.includes('जारी')?'continuation':'both';
@@ -4329,20 +4353,8 @@ function _renderSynSection(type,d){
         <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_verdict}</div>
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict||''}</div>
       </div>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
-        <div class="doorway-title">${sl.d_higher_road[0]}</div>
-        <div class="doorway-sub">${sl.d_higher_road[1]}</div>
-      </div>
-      <div class="doorway-card" id="door-soul_debt" onclick="exploreSyn('soul_debt')">
-        <div class="doorway-title">${sl.d_soul_debt[0]}</div>
-        <div class="doorway-sub">${sl.d_soul_debt[1]}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='duration'){
-    if(!synTier2Done.has('duration')){synTier2Done.add('duration');synTier2Count++;}
     // Normalise verdict_type — model may translate to Hindi/Spanish despite instructions
     const _dvt=(d.verdict_type||'').toLowerCase();
     const _dtype=_dvt.includes('lifetimes')||_dvt.includes('जन्मों')||_dvt.includes('vidas')||_dvt.includes('múltiples')?'lifetimes':_dvt.includes('lifetime')||_dvt.includes('जीवन')||_dvt.includes('vida entera')?'lifetime':_dvt.includes('season')||_dvt.includes('मौसम')||_dvt.includes('ऋतु')||_dvt.includes('temporada')?'season':_dvt.includes('chapter')||_dvt.includes('अध्याय')||_dvt.includes('capítulo')?'chapter':_dvt.includes('moment')||_dvt.includes('क्षण')||_dvt.includes('momento')?'moment':'lifetime';
@@ -4356,20 +4368,8 @@ function _renderSynSection(type,d){
       </div>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_season}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season||''}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
-        <div class="doorway-title">${sl.d_work_life[0]}</div>
-        <div class="doorway-sub">${sl.d_work_life[1]}</div>
-      </div>
-      <div class="doorway-card" id="door-timing" onclick="exploreSyn('timing')">
-        <div class="doorway-title">${sl.d_timing[0]}</div>
-        <div class="doorway-sub">${sl.d_timing[1]}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='gifts'){
-    if(!synTier2Done.has('gifts')){synTier2Done.add('gifts');synTier2Count++;}
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_gifts}</div>
       <div class="syn-sub-label">${nA.toUpperCase()} ${inConn}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_a||''}</p>
@@ -4379,18 +4379,7 @@ function _renderSynSection(type,d){
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_healing}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential||''}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
-        <div class="doorway-title">${otherMatchTitle(nA)}</div>
-        <div class="doorway-sub">${otherSub1(nA)}</div>
-      </div>
-      <div class="doorway-card" id="door-other_b" onclick="exploreSyn('other_b')">
-        <div class="doorway-title">${otherMatchTitle(nB)}</div>
-        <div class="doorway-sub">${otherSub2(nB)}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='higher_road'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_higher}</div>
       <div class="syn-sub-label">${nA.toUpperCase()}</div>
