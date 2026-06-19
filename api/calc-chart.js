@@ -12,17 +12,26 @@ function utcOffsetForTZ(ianaZone, localDateStr) {
       if (!m) return null;
       return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) + parseInt(m[3] || 0) / 60);
     };
-    // Jyotish uses Local Standard Time (LST) — no DST adjustment.
-    // All major Vedic software (KundliSoft, Parashara, Jagannatha Hora) follows this convention.
-    // DST always adds +1 hour, so standard time = numerically smaller of Jan 1 vs Jul 1 offsets.
-    // Verified: NZ (+13 DST → +12 std ✓), London (+1 DST → 0 std ✓), NY (−4 DST → −5 std ✓)
-    const yr = parseInt((localDateStr || '').split('-')[0]) || new Date().getFullYear();
-    const janOff = getOff(new Date(Date.UTC(yr, 0, 1)));
-    const julOff = getOff(new Date(Date.UTC(yr, 6, 1)));
-    if (janOff == null && julOff == null) return null;
-    if (janOff == null) return julOff;
-    if (julOff == null) return janOff;
-    return Math.min(janOff, julOff);  // standard time = smaller offset (DST always adds +1)
+    // Use the actual historical offset in effect at the real birth instant — including
+    // DST when it genuinely applied. A recorded birth time is whatever the clock on the
+    // wall said at that moment, DST or not, so that's what must be converted to UTC
+    // (this is also how Jagannatha Hora and other accurate astrology software resolve it).
+    // Two-step fixed-point lookup: guess the UTC instant from the local components,
+    // read the zone's offset there, then re-check against the refined instant so
+    // DST transition boundaries resolve correctly.
+    const m = (localDateStr || '').match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+    if (!m) return null;
+    const [y, mo, d, h, mi, s] = m.slice(1).map(Number);
+    const guessUTC = new Date(Date.UTC(y, mo - 1, d, h, mi, s));
+    let off = getOff(guessUTC);
+    if (off == null) return null;
+    for (let i = 0; i < 2; i++) {
+      const refinedUTC = new Date(guessUTC.getTime() - off * 3600000);
+      const off2 = getOff(refinedUTC);
+      if (off2 == null || off2 === off) break;
+      off = off2;
+    }
+    return off;
   } catch(e) {}
   return null;
 }
