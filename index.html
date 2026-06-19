@@ -3528,7 +3528,7 @@ function redeemBeta(){
   if(code===_OC){
     msg.style.color='var(--teal)';
     msg.textContent='✦ Welcome back, Jyoti';
-    try{localStorage.setItem('jyoti_tier','full');}catch(e){}
+    try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
     setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
     return;
   }
@@ -3540,7 +3540,7 @@ function redeemBeta(){
   if(_BC[code]){
     msg.style.color='var(--teal)';
     msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access';
-    try{localStorage.setItem('jyoti_tier','beta');}catch(e){}
+    try{localStorage.setItem('jyoti_tier','beta');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
     setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
   }else{
     msg.style.color='var(--rose)';
@@ -3561,9 +3561,11 @@ function _syncManageSubLink(){
   const email=localStorage.getItem('jyoti_sub_email');
   const box=document.getElementById('manage-sub-box');
   if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
-  // Owner bypass / beta codes never set jyoti_sub_email — give them a way back to panels 1-4 for testing
+  // Only show the dev nav-back link to people who actually redeemed an owner/beta code —
+  // never infer "tester" just from a missing email, since real subscribers can legitimately
+  // end up without one on file too.
   const ownerBox=document.getElementById('owner-nav-box');
-  if(ownerBox)ownerBox.style.display=((tier==='full'||tier==='compat'||tier==='beta')&&!email)?'inline':'none';
+  if(ownerBox)ownerBox.style.display=(localStorage.getItem('jyoti_is_tester')==='1')?'inline':'none';
 }
 
 async function openBillingPortal(){
@@ -3690,14 +3692,14 @@ async function _reverifySubscription(){
       }
       // Otherwise stay on panel 1 — user enters their real chart details then auto-goes to panel 5
     }
+    // Only grant access once Stripe has actually verified the session server-side.
+    // A bare ?subscribed=1 with no session_id proves nothing — never trust it on its own,
+    // since that query string is publicly visible and anyone could craft it.
     if(sessionId.startsWith('cs_')){
       fetch('/api/verify-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId})})
         .then(r=>r.json())
         .then(data=>{if(data.subscribed)_applySubscriber(data.email||'');})
         .catch(()=>{});
-    } else {
-      // No session id to verify — trust the redirect param
-      _applySubscriber('');
     }
   }catch(e){}
 })();
