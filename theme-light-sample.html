@@ -10,11 +10,11 @@
 :root{
   /* gold kept exactly as the dark theme — used only for icons/decoration here,
      since pale gold text has poor contrast on a light background */
-  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
+  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#8B6609;
   /* new light surfaces, warm paper tones rather than stark white */
   --bg:#FFFCF6;--p1:#FFFFFF;--p2:#FFF8EA;--p3:#FBF0D9;
   --text:#1C1410;--muted:#6B5A4A;--dim:#9C8B78;
-  --rose:#C45870;--rose-d:#8E3A50;
+  --rose:#C45870;--rose-d:#A32949;
   /* iridescent accent pair — electric blue/purple, used only inside the
      gold↔rose gradients below so it reads as light catching a facet,
      never as flat fills or as text color */
@@ -34,30 +34,30 @@ header{text-align:center;padding:2.5rem 1.5rem 1rem}
 .flame{position:relative;display:inline-block}
 .flame::after{content:'';position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,var(--iris-blue) 0%,var(--iris-purple) 45%,transparent 75%);filter:blur(10px);opacity:.15;z-index:-1;animation:irisHalo 5s ease-in-out infinite}
 .flame svg{width:56px;height:64px;position:relative}
-.brand-name{font-family:'Cinzel Decorative',serif;font-size:2.6rem;letter-spacing:.15em;color:var(--gold-d);display:block;margin:1rem 0 .2rem}
-.brand-sub{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
+.brand-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:2.6rem;letter-spacing:.15em;color:var(--gold-d);display:block;margin:1rem 0 .2rem}
+.brand-sub{font-family:'Cinzel',serif;font-weight:600;font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
 
 .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--gold)}
-.divider::before,.divider::after{content:'';flex:1;height:1.5px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 10s ease-in-out infinite;opacity:.55}
+.divider::before,.divider::after{content:'';flex:1;height:2px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 10s ease-in-out infinite;opacity:.75}
 
 .card{position:relative;background:var(--p1);border:1px solid var(--p3);border-radius:18px;padding:1.8rem;margin-bottom:1.5rem;box-shadow:0 4px 24px rgba(120,90,40,.08);overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 12s ease-in-out infinite;opacity:.5}
-.card-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold-d);text-align:center;margin-bottom:1.4rem}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2.5px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 12s ease-in-out infinite;opacity:.7}
+.card-title{font-family:'Cinzel',serif;font-weight:600;font-size:.95rem;letter-spacing:.12em;color:var(--gold-d);text-align:center;margin-bottom:1.4rem}
 
 .planet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
 .planet-card{background:var(--p2);border:1px solid var(--p3);border-radius:10px;padding:.85rem;text-align:center}
 .p-symbol{font-size:1.4rem;margin-bottom:.25rem}
-.p-name{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.2rem}
-.p-pos{font-size:.92rem;color:var(--text);font-style:italic}
+.p-name{font-family:'Cinzel',serif;font-weight:600;font-size:.62rem;letter-spacing:.1em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.2rem}
+.p-pos{font-size:.92rem;color:var(--text);font-weight:500;font-style:italic}
 
 /* rose accent — used sparingly: this card's left border + its pill tag.
    the left bar now sweeps gold→rose→iris on a slow vertical drift, like
    light moving across the edge of a cut stone */
 .remedy-card{position:relative;background:var(--p2);border:1px solid var(--p3);border-radius:14px;padding:1.4rem 1.5rem;padding-left:1.8rem;margin-top:1.3rem;overflow:hidden}
 .remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
-.remedy-day{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--rose-d);text-transform:uppercase;margin-bottom:.4rem}
+.remedy-day{font-family:'Cinzel',serif;font-weight:600;font-size:.62rem;letter-spacing:.15em;color:var(--rose-d);text-transform:uppercase;margin-bottom:.4rem}
 .remedy-text{font-size:1.05rem;color:var(--text);margin-bottom:.9rem}
-.tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.1);border:1px solid rgba(196,88,112,.35);box-shadow:0 0 0 1px rgba(63,198,255,.08),0 0 10px rgba(160,108,255,.12);color:var(--rose-d);font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
+.tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.12);border:1px solid rgba(196,88,112,.45);box-shadow:0 0 0 1px rgba(63,198,255,.12),0 0 12px rgba(160,108,255,.18);color:var(--rose-d);font-family:'Cinzel',serif;font-weight:600;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
 
 .btn-row{display:flex;gap:.8rem;margin-top:1.6rem;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.6rem;border-radius:10px;font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none}
@@ -68,8 +68,8 @@ header{text-align:center;padding:2.5rem 1.5rem 1rem}
 .btn-rose{background:transparent;border:1.5px solid var(--rose);color:var(--rose-d)}
 
 .tabs{display:flex;gap:.5rem;margin-top:1.6rem}
-.tab{flex:1;text-align:center;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem .4rem;border-radius:8px;border:1px solid var(--p3);color:var(--muted);background:var(--p2)}
-.tab.active{color:var(--gold-d);border-color:var(--gold);background:rgba(200,169,74,.12);box-shadow:inset 0 -2px 0 0 var(--iris-blue)}
+.tab{flex:1;text-align:center;font-family:'Cinzel',serif;font-weight:600;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem .4rem;border-radius:8px;border:1px solid var(--p3);color:var(--muted);background:var(--p2)}
+.tab.active{color:var(--gold-d);border-color:var(--gold);background:rgba(200,169,74,.14);box-shadow:inset 0 -2px 0 0 var(--iris-blue)}
 
 .legend{font-size:.85rem;color:var(--muted);text-align:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--p3)}
 </style>
