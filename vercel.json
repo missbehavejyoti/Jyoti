@@ -8,6 +8,7 @@
     "api/create-checkout.js":   { "maxDuration": 30 },
     "api/verify-session.js":    { "maxDuration": 30 },
     "api/check-subscriber.js":  { "maxDuration": 30 },
+    "api/redeem-code.js":       { "maxDuration": 15 },
     "api/create-portal-session.js": { "maxDuration": 30 },
     "api/webhook.js":           { "maxDuration": 30 },
     "api/save-push-subscription.js": { "maxDuration": 15 },

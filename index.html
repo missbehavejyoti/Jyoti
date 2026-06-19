@@ -3532,6 +3532,23 @@ function redeemBeta(){
     setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
     return;
   }
+  // One-time gift codes — server-verified single use (Redis), 30-day access,
+  // independent of the public beta window. Falls back to the local beta-pool
+  // check below if the server says no (wrong code, already redeemed, or offline).
+  fetch('/api/redeem-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
+    .then(r=>r.json()).then(data=>{
+      if(data.ok){
+        msg.style.color='var(--teal)';
+        msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso gratuito':'✦ Welcome, enjoy your free access';
+        try{localStorage.setItem('jyoti_tier','gift');localStorage.setItem('jyoti_gift_expires',String(data.expiresAt));}catch(e){}
+        setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
+      }else{
+        _redeemLocalBeta(code,msg);
+      }
+    }).catch(()=>_redeemLocalBeta(code,msg));
+}
+
+function _redeemLocalBeta(code,msg){
   if(Date.now()>_BE){
     msg.style.color='var(--rose)';
     msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'El período beta ha terminado. Suscríbete para continuar.':'This beta period has ended. Subscribe to continue.';
@@ -3546,6 +3563,16 @@ function redeemBeta(){
     msg.style.color='var(--rose)';
     msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
   }
+}
+
+// True (and clears state) if a gifted trial has passed its 30-day window
+function _giftExpired(){
+  if(localStorage.getItem('jyoti_tier')!=='gift')return false;
+  const exp=parseInt(localStorage.getItem('jyoti_gift_expires')||'0',10);
+  if(!exp||Date.now()<=exp)return false;
+  localStorage.removeItem('jyoti_tier');
+  localStorage.removeItem('jyoti_gift_expires');
+  return true;
 }
 
 // ── INIT ──
@@ -3589,6 +3616,12 @@ async function openBillingPortal(){
 // so this naturally gives cancelled users their full remaining days before being cut off.
 async function _reverifySubscription(){
   try{
+    if(_giftExpired()){
+      _activatePanel(4);
+      const msgEl=document.getElementById('checkout-msg');
+      if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी मुफ्त ट्रायल समाप्त हो गई है। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'Tu prueba gratuita ha finalizado. Suscríbete para continuar.':'Your free trial has ended. Subscribe to continue your practice.';}
+      return;
+    }
     const tier=localStorage.getItem('jyoti_tier');
     if(tier!=='full'&&tier!=='compat')return;
     const email=localStorage.getItem('jyoti_sub_email');
@@ -3619,8 +3652,9 @@ async function _reverifySubscription(){
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
+    _giftExpired();
     const tier=localStorage.getItem('jyoti_tier');
-    if(tier==='full'||tier==='compat'||tier==='beta'){
+    if(tier==='full'||tier==='compat'||tier==='beta'||tier==='gift'){
       // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
@@ -3646,8 +3680,9 @@ async function _reverifySubscription(){
     btn.style.cssText='margin-top:.6rem;font-size:.78rem;opacity:.85';
     {const n0=userData.name?userData.name.split(' ')[0]:'';btn.innerHTML=currentLang==='hi'?`✦ ${n0?n0+'का ':''}अभ्यास जारी रखें`:currentLang==='es'?`✦ Continuar${n0?' práctica de '+n0:' mi práctica'}`:(`✦ Continue ${n0?n0+"'s":'my'} practice`);}
     btn.onclick=function(){
+      _giftExpired();
       const t=localStorage.getItem('jyoti_tier');
-      if(t==='full'||t==='compat'||t==='beta'){
+      if(t==='full'||t==='compat'||t==='beta'||t==='gift'){
         showChart();
         _activatePanel(5);
         if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
