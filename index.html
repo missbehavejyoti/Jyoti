@@ -63,12 +63,6 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 .panel.active{display:block}
 @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* Entry Gate — closed beta: panels 1-4 stay hidden until a valid access code unlocks them */
-#entry-gate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:1.5rem;background:var(--deep)}
-#entry-gate .card{max-width:420px;width:100%;text-align:center}
-body.gate-locked header,body.gate-locked #main-app{display:none}
-body.gate-locked #entry-gate{display:flex}
-
 /* Cards */
 .card{background:rgba(12,9,24,.9);border:1px solid var(--s4);border-radius:18px;padding:2rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;margin-bottom:1.5rem}
 .card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.5),transparent)}
@@ -294,7 +288,7 @@ select option{background:var(--s2);color:var(--text)}
 .btn-full-read:hover{background:rgba(200,169,74,.12);border-color:rgba(200,169,74,.4);color:var(--gold)}
 </style>
 </head>
-<body class="gate-locked">
+<body>
 
 <canvas id="stars"></canvas>
 
@@ -313,19 +307,6 @@ select option{background:var(--s2);color:var(--text)}
   <button class="lbtn active" onclick="setLang('en')">EN</button>
   <button class="lbtn" onclick="setLang('hi')">हिं</button>
   <button class="lbtn" onclick="setLang('es')">ES</button>
-</div>
-
-<!-- Entry Gate — closed beta access, shown before panels 1-4 are reachable -->
-<div id="entry-gate">
-  <div class="card">
-    <div class="card-title" data-en="Private Beta" data-hi="निजी बीटा" data-es="Beta Privada">Private Beta</div>
-    <p style="color:var(--muted);font-size:.92rem;line-height:1.7;margin-bottom:1.2rem" data-en="Jyoti is in closed beta. Enter your access code to begin." data-hi="ज्योति निजी बीटा में है। शुरू करने के लिए अपना एक्सेस कोड दर्ज करें।" data-es="Jyoti está en beta cerrada. Ingresa tu código de acceso para comenzar.">Jyoti is in closed beta. Enter your access code to begin.</p>
-    <div style="display:flex;gap:.5rem;max-width:320px;margin:0 auto">
-      <input type="text" id="gate-input" placeholder="Your access code" data-en="Your access code" data-hi="आपका एक्सेस कोड" data-es="Tu código de acceso" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem" onkeydown="if(event.key==='Enter')redeemGateCode()">
-      <button class="btn btn-gold" onclick="redeemGateCode()" style="font-size:.72rem;padding:.6rem 1.2rem;white-space:nowrap" data-en="Enter ✦" data-hi="दर्ज करें ✦" data-es="Ingresar ✦">Enter ✦</button>
-    </div>
-    <p id="gate-msg" style="font-size:.82rem;margin-top:.6rem;min-height:1.2em"></p>
-  </div>
 </div>
 
 <!-- Header -->
@@ -357,7 +338,7 @@ select option{background:var(--s2);color:var(--text)}
 </header>
 
 <!-- Steps -->
-<div class="wrap" id="main-app">
+<div class="wrap">
   <div class="steps" id="steps">
     <div class="step-item active" id="s1"><div class="sdot">1</div><span data-en="Birth Details" data-hi="जन्म विवरण" data-es="Detalles de Nacimiento">Birth Details</span></div>
     <div class="sline"></div>
@@ -3441,33 +3422,6 @@ function redeemBeta(){
     msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
   }
 }
-
-// ── ENTRY GATE — panels 1-4 stay hidden until a valid beta code unlocks them ──
-function unlockGate(){
-  document.body.classList.remove('gate-locked');
-}
-function redeemGateCode(){
-  const code=(document.getElementById('gate-input').value||'').trim().toUpperCase();
-  const msg=document.getElementById('gate-msg');
-  if(Date.now()>_BE){
-    msg.style.color='var(--rose)';
-    msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई।':currentLang==='es'?'El período beta ha terminado.':'This beta period has ended.';
-    return;
-  }
-  if(_BC[code]){
-    try{localStorage.setItem('jyoti_gate_passed','1');}catch(e){}
-    unlockGate();
-  }else{
-    msg.style.color='var(--rose)';
-    msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
-  }
-}
-(function checkGate(){
-  let tier=null,passed=null;
-  try{tier=localStorage.getItem('jyoti_tier');}catch(e){}
-  try{passed=localStorage.getItem('jyoti_gate_passed');}catch(e){}
-  if(passed==='1'||tier==='full'||tier==='beta')unlockGate();
-})();
 
 // ── INIT ──
 function resetChart(){
