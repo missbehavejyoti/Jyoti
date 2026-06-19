@@ -23,6 +23,31 @@
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
   --text:#F2EBD8;--muted:#A89880;--dim:#9A8B78;
   --ruby:#B02348;--teal:#1A9490;--rose:#CA697E;
+  /* surfaces previously hardcoded — kept identical to their old literal values here,
+     overridden only under [data-theme="light"] below */
+  --card-bg:rgba(12,9,24,.9);--input-bg:rgba(28,24,48,.9);--input-focus-bg:rgba(37,32,60,.95);
+  --soft-bg:rgba(28,24,48,.6);--banner-bg:rgba(12,9,24,.97);--overlay-bg:rgba(5,3,12,.94);
+  --teal-bright:#5DCAC6;--crisis-pink:#E07090;--purple-soft:#C080E0;--err-red:#dd8888;--lavender:#E8D0FF;
+}
+:root[data-theme="light"]{
+  --gold:#8B6609;--gold-l:#856710;--gold-pale:#7A5A12;--gold-d:#6E4F0C;
+  --deep:#FFFCF6;--bg:#FFFCF6;--s1:#FFF8EA;--s2:#FFF8EA;--s3:#FBF0D9;--s4:#E4D4A8;--s5:#7A6C5B;
+  --text:#1C1410;--muted:#6B5A4A;--dim:#7A6C5B;
+  --ruby:#A32949;--teal:#136F6B;--rose:#A32949;
+  --card-bg:rgba(255,255,255,.92);--input-bg:rgba(255,255,255,.9);--input-focus-bg:rgba(255,255,255,.97);
+  --soft-bg:rgba(255,255,255,.65);--banner-bg:rgba(255,255,255,.97);--overlay-bg:rgba(255,252,246,.96);
+  --teal-bright:#0C7A75;--crisis-pink:#A32949;--purple-soft:#8A3FC4;--err-red:#B33C3C;--lavender:#7A4FA8;
+  /* iridescent diamond-facet accents — light theme only, confined to decorative sweeps/halos, never flat fills or body text */
+  --iris-pink:#FF6FB5;--iris-blue:#22D3FF;--iris-purple:#B347FF;--rose-gold:#F0A275;
+  --iris-sweep:linear-gradient(100deg,var(--gold) 0%,var(--rose-gold) 16%,var(--rose) 34%,var(--iris-pink) 50%,var(--iris-blue) 66%,var(--iris-purple) 84%,var(--gold) 100%);
+}
+@keyframes irisShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes irisHaloBlue{0%,100%{opacity:.32;transform:scale(1) translate(2px,-2px) rotate(0deg)}50%{opacity:.48;transform:scale(1.14) translate(-2px,2px) rotate(6deg)}}
+@keyframes irisHaloPink{0%,100%{opacity:.26;transform:scale(1.05) translate(-3px,3px)}50%{opacity:.4;transform:scale(0.95) translate(3px,-3px)}}
+@media (prefers-reduced-motion:reduce){
+  [data-theme="light"] .divider::before,[data-theme="light"] .divider::after,
+  [data-theme="light"] .card::before,[data-theme="light"] .remedy-card::before,
+  [data-theme="light"] .flame::before,[data-theme="light"] .flame::after{animation:none!important}
 }
 html{scroll-behavior:smooth}
 body{background:var(--deep);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.75;min-height:100vh;overflow-x:hidden}
@@ -64,22 +89,22 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Cards */
-.card{background:rgba(12,9,24,.9);border:1px solid var(--s4);border-radius:18px;padding:2rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;margin-bottom:1.5rem}
+.card{background:var(--card-bg);border:1px solid var(--s4);border-radius:18px;padding:2rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;margin-bottom:1.5rem}
 .card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.5),transparent)}
 .card-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold);text-align:center;margin-bottom:1.5rem}
 
 /* Form */
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
-input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+input,select{width:100%;background:var(--input-bg);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
 .consent-btn{width:100%;text-align:left;background:rgba(200,169,74,.04);border:1.5px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;cursor:pointer;transition:.2s;font-family:'EB Garamond',Georgia,serif;font-size:1rem;color:var(--muted);line-height:1.65;text-transform:none;letter-spacing:0;margin-bottom:.75rem}
 .consent-btn:active{opacity:.8}
 .consent-btn.agreed{background:rgba(200,169,74,.1);border-color:var(--gold)}
-.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:rgba(28,24,48,.9);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
-.consent-btn.agreed .cbx{background:var(--gold);border-color:var(--gold)}
+.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:var(--input-bg);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
+.consent-btn.agreed .cbx{background:#C8A94A;border-color:#C8A94A}
 .consent-btn.agreed .cbx::after{content:'';position:absolute;left:5px;top:2px;width:8px;height:12px;border:2.5px solid #080510;border-top:none;border-left:none;transform:rotate(45deg)}
 input::placeholder{color:var(--dim)}
-input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
+input:focus,select:focus{border-color:var(--gold-d);background:var(--input-focus-bg);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
@@ -123,7 +148,7 @@ select option{background:var(--s2);color:var(--text)}
 /* Tags */
 .tag{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .75rem;border-radius:20px;font-size:.78rem;font-family:'Cinzel',serif;letter-spacing:.05em;margin:.2rem}
 .tag-karmic{background:rgba(200,169,74,.08);border:1px solid rgba(200,169,74,.3);color:var(--gold)}
-.tag-ok{background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.3);color:#5DCAC6}
+.tag-ok{background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.3);color:var(--teal-bright)}
 
 /* Remedy card */
 .remedy-card{background:var(--s2);border:1px solid var(--s4);border-radius:14px;padding:1.2rem 1.5rem;margin:1rem 0;position:relative;overflow:hidden}
@@ -133,11 +158,11 @@ select option{background:var(--s2);color:var(--text)}
 .remedy-actions{display:flex;gap:.6rem;flex-wrap:wrap}
 .audio-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid var(--gold-d);color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
 .audio-btn:hover{background:rgba(200,169,74,.2)}
-.chant-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.35);color:#5DCAC6;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
+.chant-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.35);color:var(--teal-bright);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
 .chant-btn:hover{background:rgba(26,148,144,.2)}
 
 /* Chant counter */
-.chant-modal{display:none;position:fixed;inset:0;background:rgba(5,3,12,.92);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.chant-modal{display:none;position:fixed;inset:0;background:var(--overlay-bg);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .chant-modal.open{display:flex}
 .chant-inner{background:var(--s2);border:1px solid var(--s4);border-radius:20px;padding:2.5rem;text-align:center;max-width:360px;width:90%;position:relative}
 .chant-inner::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
@@ -196,7 +221,7 @@ select option{background:var(--s2);color:var(--text)}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
 /* Modal overlay */
-.modal{display:none;position:fixed;inset:0;background:rgba(5,3,12,.95);z-index:200;overflow-y:auto;backdrop-filter:blur(6px)}
+.modal{display:none;position:fixed;inset:0;background:var(--overlay-bg);z-index:200;overflow-y:auto;backdrop-filter:blur(6px)}
 .modal.open{display:block}
 .modal-inner{max-width:700px;margin:2rem auto;padding:0 1.5rem 3rem}
 .modal-close{display:flex;justify-content:flex-end;padding:1rem 0}
@@ -211,7 +236,7 @@ select option{background:var(--s2);color:var(--text)}
 
 /* Crisis banner */
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
-.crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
+.crisis-banner strong{color:var(--crisis-pink);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
 
 /* Moon phase pill */
@@ -278,7 +303,7 @@ select option{background:var(--s2);color:var(--text)}
   .planet-card .p-name{font-size:.8rem}
   input,select{font-size:16px}
 }
-.deep-modal-overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(8,6,18,.95);padding:1.5rem 1rem 3rem}
+.deep-modal-overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--overlay-bg);padding:1.5rem 1rem 3rem}
 .deep-modal-box{max-width:660px;margin:0 auto;background:var(--bg);border:1px solid rgba(200,169,74,.28);border-radius:16px;padding:2rem 1.5rem;position:relative}
 .deep-modal-header{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:1.4rem;padding-right:2rem;line-height:1.5}
 .deep-modal-close{position:absolute;top:.9rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;line-height:1;padding:.1rem .4rem;opacity:.6;transition:.15s}
@@ -287,6 +312,35 @@ select option{background:var(--s2);color:var(--text)}
 .deep-modal-body p:last-child{margin-bottom:0}
 .btn-full-read{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-d);background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:20px;padding:.38rem 1.2rem;cursor:pointer;transition:.2s;display:inline-block;margin-top:1rem}
 .btn-full-read:hover{background:rgba(200,169,74,.12);border-color:rgba(200,169,74,.4);color:var(--gold)}
+
+/* Birth chart wheel — classed so [data-theme="light"] can repaint it; dark values match the old literal attributes exactly */
+.wheel-border{stroke:rgba(200,169,74,.3)}
+.wheel-side{fill:rgba(30,26,48,.8);stroke:rgba(200,169,74,.2)}
+.wheel-center{fill:rgba(20,16,38,.9);stroke:rgba(200,169,74,.3)}
+.wheel-diag{stroke:rgba(200,169,74,.15)}
+.wheel-num{fill:var(--gold)}
+
+/* Theme toggle */
+#theme-toggle{margin-right:auto;font-size:.85rem}
+
+[data-theme="light"] canvas#stars{display:none}
+
+[data-theme="light"] .wheel-border{stroke:rgba(139,102,9,.35)}
+[data-theme="light"] .wheel-side{fill:rgba(255,252,240,.8);stroke:rgba(139,102,9,.22)}
+[data-theme="light"] .wheel-center{fill:rgba(255,248,225,.95);stroke:rgba(139,102,9,.32)}
+[data-theme="light"] .wheel-diag{stroke:rgba(139,102,9,.16)}
+
+/* Iridescent diamond-facet accents, light theme only — confined to dividers, card edges,
+   the remedy bar, a button's hover shine, and the flame's halo; never a flat fill or body text */
+[data-theme="light"] .divider::before,[data-theme="light"] .divider::after{background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 10s ease-in-out infinite;opacity:.9}
+[data-theme="light"] .card::before{height:2.5px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 12s ease-in-out infinite;opacity:.85}
+[data-theme="light"] .remedy-card::before{width:4px;background:linear-gradient(180deg,var(--rose),var(--rose-gold),var(--iris-pink),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
+[data-theme="light"] .btn-gold{position:relative;overflow:hidden}
+[data-theme="light"] .btn-gold::after{content:'';position:absolute;top:-60%;left:-40%;width:30%;height:220%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.65),var(--iris-pink),var(--iris-blue),var(--iris-purple),transparent);transform:rotate(15deg);transition:left .7s ease;opacity:.85}
+[data-theme="light"] .btn-gold:hover::after{left:130%}
+[data-theme="light"] .flame::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,var(--rose-gold) 0%,var(--iris-pink) 45%,transparent 74%);filter:blur(17px);opacity:.3;z-index:-2;animation:irisHaloPink 5s ease-in-out infinite}
+[data-theme="light"] .flame::after{content:'';position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle at 30% 70%,var(--rose-gold) 0%,transparent 56%),radial-gradient(circle at 68% 32%,var(--iris-purple) 0%,transparent 60%),radial-gradient(circle at 50% 55%,var(--iris-blue) 0%,transparent 65%);filter:blur(11px);opacity:.55;z-index:-1;animation:irisHaloBlue 6s ease-in-out infinite}
+[data-theme="light"] .tab.active{box-shadow:inset 0 -2px 0 0 var(--iris-blue)}
 </style>
 </head>
 <body>
@@ -305,6 +359,7 @@ select option{background:var(--s2);color:var(--text)}
 
 <!-- Language Bar -->
 <div class="lang-bar">
+  <button id="theme-toggle" class="lbtn" onclick="toggleTheme()" aria-label="Toggle light/dark theme">☀</button>
   <button class="lbtn active" onclick="setLang('en')">EN</button>
   <button class="lbtn" onclick="setLang('hi')">हिं</button>
   <button class="lbtn" onclick="setLang('es')">ES</button>
@@ -462,33 +517,33 @@ select option{background:var(--s2);color:var(--text)}
       <div class="chart-container">
         <div class="chart-wheel">
           <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-            <rect width="280" height="280" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-            <rect x="70" y="0" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="70" y="210" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="70" y="70" width="140" height="140" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-            <line x1="70" y1="70" x2="210" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
-            <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+            <rect width="280" height="280" class="wheel-border" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+            <rect x="70" y="0" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="70" y="210" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="70" y="70" width="140" height="140" class="wheel-center" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+            <line x1="70" y1="70" x2="210" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+            <line x1="210" y1="70" x2="70" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
             <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.6)" font-size="9" font-family="serif" letter-spacing="2">JYOTI</text>
             <text x="140" y="152" text-anchor="middle" fill="rgba(200,169,74,.3)" font-size="7" font-family="serif" letter-spacing="1">NADI CHART</text>
             <!-- Planet positions (dynamic) — outer ring houses 1-8, center triangles 9-12 -->
-            <text id="h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h1"  x="140" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h2"  x="245" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h3"  x="255" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h4"  x="245" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h5"  x="140" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h6"  x="35"  y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h7"  x="25"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h8"  x="35"  y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h9"  x="140" y="97"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h10" x="183" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h11" x="140" y="183" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h12" x="97"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
           </svg>
         </div>
       </div>
@@ -704,31 +759,31 @@ select option{background:var(--s2);color:var(--text)}
         <div class="chart-container" style="margin-bottom:1.2rem">
           <div class="chart-wheel">
             <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-              <rect width="280" height="280" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-              <rect x="70" y="0" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="70" y="210" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="70" y="70" width="140" height="140" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-              <line x1="70" y1="70" x2="210" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
-              <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+              <rect width="280" height="280" class="wheel-border" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+              <rect x="70" y="0" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="70" y="210" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="70" y="70" width="140" height="140" class="wheel-center" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+              <line x1="70" y1="70" x2="210" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+              <line x1="210" y1="70" x2="70" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
               <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.5)" font-size="8" font-family="serif" letter-spacing="2">NADI</text>
-              <text id="fc-h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h1"  x="140" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h2"  x="245" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h3"  x="255" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h4"  x="245" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h5"  x="140" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h6"  x="35"  y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h7"  x="25"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h8"  x="35"  y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h9"  x="140" y="97"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h10" x="183" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h11" x="140" y="183" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h12" x="97"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
             </svg>
           </div>
         </div>
@@ -768,7 +823,7 @@ select option{background:var(--s2);color:var(--text)}
         <div id="syn-form-wrap">
           <p style="text-align:center;font-style:italic;color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:1.4rem" data-en="Enter two birth charts to receive a progressive compatibility reading rooted in classical Vedic Jyotish. The reading unfolds in layers; you choose how deep to go." data-hi="दो जन्म कुंडलियां दर्ज करें और शास्त्रीय वैदिक ज्योतिष में निहित प्रगतिशील संगतता पाठ प्राप्त करें। पाठ परतों में सामने आता है; आप चुनें कितना गहरा जाना है।" data-es="Ingresa dos cartas natales para recibir una lectura de compatibilidad progresiva basada en el Jyotish védico clásico. La lectura se despliega en capas; tú eliges qué tan profundo ir.">Enter two birth charts to receive a progressive compatibility reading rooted in classical Vedic Jyotish. The reading unfolds in layers; you choose how deep to go.</p>
 
-          <div style="border:1px solid rgba(200,169,74,.35);border-radius:12px;padding:1.2rem;margin-bottom:1rem;background:rgba(28,24,48,.6)">
+          <div style="border:1px solid rgba(200,169,74,.35);border-radius:12px;padding:1.2rem;margin-bottom:1rem;background:var(--soft-bg)">
             <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.9rem" data-en="✦ YOUR CHART" data-hi="✦ आपकी कुंडली" data-es="✦ TU CARTA">✦ YOUR CHART</div>
             <div id="syn-a-prefilled" style="font-size:.85rem;color:var(--muted);line-height:1.8;padding:.3rem 0"></div>
             <div class="field" style="margin-top:.6rem">
@@ -782,7 +837,7 @@ select option{background:var(--s2);color:var(--text)}
             </div>
           </div>
 
-          <div style="border:1px solid var(--s4);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;background:rgba(28,24,48,.6)">
+          <div style="border:1px solid var(--s4);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;background:var(--soft-bg)">
             <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.9rem" data-en="✦ SECOND PERSON" data-hi="✦ दूसरा व्यक्ति" data-es="✦ SEGUNDA PERSONA">✦ SECOND PERSON</div>
             <div class="g2">
               <div class="field"><label data-en="Name or Initials" data-hi="नाम या आद्याक्षर" data-es="Nombre o Iniciales">Name or Initials</label><input type="text" id="syn-b-name" placeholder="e.g. Arjun"></div>
@@ -926,7 +981,7 @@ select option{background:var(--s2);color:var(--text)}
     <div class="modal-close"><button onclick="closeModal('disclaimer')">✕ Close</button></div>
     <div class="modal-title">Disclaimer</div>
     <div class="modal-section"><h3>Spiritual Guidance Only</h3><p>All content provided by Jyoti, including birth chart analyses, astrological readings, karmic intensity assessments, daily remedies, mantras, and guidance, is provided for spiritual enrichment and personal reflection purposes only.</p></div>
-    <div class="modal-section"><h3>Not Medical or Psychiatric Advice</h3><p>Nothing within Jyoti constitutes or replaces medical, psychiatric, or psychological advice, diagnosis, or treatment. If you are experiencing a mental health condition, emotional crisis, or any physical health concern, please seek help from a qualified healthcare professional immediately.</p><p style="margin-top:.5rem"><strong style="color:#E07090">Crisis support:</strong> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info · iCall (India): 9152987821</p></div>
+    <div class="modal-section"><h3>Not Medical or Psychiatric Advice</h3><p>Nothing within Jyoti constitutes or replaces medical, psychiatric, or psychological advice, diagnosis, or treatment. If you are experiencing a mental health condition, emotional crisis, or any physical health concern, please seek help from a qualified healthcare professional immediately.</p><p style="margin-top:.5rem"><strong style="color:var(--crisis-pink)">Crisis support:</strong> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info · iCall (India): 9152987821</p></div>
     <div class="modal-section"><h3>Not Financial or Legal Advice</h3><p>Jyoti does not provide financial investment advice, legal advice, or any other professional regulated advice. Do not make significant financial or legal decisions based solely on astrological readings.</p></div>
     <div class="modal-section"><h3>No Guaranteed Outcomes</h3><p>Astrological interpretation is a traditional spiritual practice. Jyoti makes no representation or warranty that readings, remedies, or guidance will produce any specific outcome in your life. Individual results vary. Jyoti accepts no liability for decisions made in reliance on content provided.</p></div>
     <div class="modal-section"><h3>Remedy Safety</h3><p>Daily remedies are traditional Vedic spiritual practices including mantra, offering, and ritual. They are not medical treatments. Some remedies involve physical activity such as fasting, bathing, or movement. If you have any medical condition, please consult your doctor before adopting any physical practice.</p></div>
@@ -1003,6 +1058,17 @@ function loadDemo(){
 
 // ── STATE ──
 let currentLang=(()=>{try{return localStorage.getItem('jyoti_lang')||'en';}catch(e){return'en';}})();
+let currentTheme=(()=>{try{return localStorage.getItem('jyoti_theme')||'dark';}catch(e){return'dark';}})();
+function setTheme(theme){
+  currentTheme=theme;
+  try{localStorage.setItem('jyoti_theme',theme);}catch(e){}
+  if(theme==='light')document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  const btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=theme==='light'?'☾':'☀';
+}
+function toggleTheme(){setTheme(currentTheme==='light'?'dark':'light');}
+setTheme(currentTheme);
 let userData={};
 let chartData={};
 let isDemoMode=false;
@@ -2538,7 +2604,7 @@ function showFullChart(){
     if(prat.lord){
       dashaRows+=`
       <div style="background:rgba(180,100,200,.05);border:1px solid rgba(180,100,200,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:1.6rem">
-        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">${DL.prat}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--purple-soft);margin-bottom:.5rem">${DL.prat}</div>
         <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} ${DL.pratName}</div>
         <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} → ${prat.endDate} · ${DL.next}: ${prat.next}</div>
       </div>`;
@@ -3410,7 +3476,7 @@ async function requestNotifications() {
         const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
         if(evening) parts.push(_ev_lbl);
         if(morning) parts.push(_mo_lbl);
-        status.style.color=pushOk?'var(--teal)':'#d88';
+        status.style.color=pushOk?'var(--teal)':'var(--err-red)';
         status.textContent = pushOk
           ? (currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
           : 'Debug: '+(window._jyotiPushDebug||'unknown error');
@@ -3468,7 +3534,7 @@ function _showInstallBanner() {
   if (!deferredPrompt || _isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
+  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
   banner.innerHTML = `
     <div style="font-size:1.4rem">✨</div>
     <div style="flex:1">
@@ -3487,7 +3553,7 @@ function _showIOSInstallBanner() {
   if (_isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
+  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
   banner.innerHTML = `
     <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem">
       <div style="font-size:1.2rem">✨</div>
@@ -3757,7 +3823,7 @@ async function _reverifySubscription(){
       ['notif-status','p5-notif-status'].forEach(id=>{
         const status=document.getElementById(id);
         if(status){
-          status.style.color='#d88';
+          status.style.color='var(--err-red)';
           status.textContent='Debug: '+(window._jyotiPushDebug||'unknown error');
           status.style.display='block';
         }
@@ -3802,7 +3868,7 @@ async function requestNotificationsP5(){
       const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
       const parts=[];if(evening)parts.push(_ev);if(morning)parts.push(_mo);
       if(status){
-        status.style.color=pushOk?'var(--teal)':'#d88';
+        status.style.color=pushOk?'var(--teal)':'var(--err-red)';
         status.textContent=pushOk
           ?(currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
           :'Debug: '+(window._jyotiPushDebug||'unknown error');
@@ -4276,7 +4342,7 @@ function _renderSynSection(type,d){
     // Normalise verdict_type — model may translate to Hindi/Spanish despite instructions
     const _dvt=(d.verdict_type||'').toLowerCase();
     const _dtype=_dvt.includes('lifetimes')||_dvt.includes('जन्मों')||_dvt.includes('vidas')||_dvt.includes('múltiples')?'lifetimes':_dvt.includes('lifetime')||_dvt.includes('जीवन')||_dvt.includes('vida entera')?'lifetime':_dvt.includes('season')||_dvt.includes('मौसम')||_dvt.includes('ऋतु')||_dvt.includes('temporada')?'season':_dvt.includes('chapter')||_dvt.includes('अध्याय')||_dvt.includes('capítulo')?'chapter':_dvt.includes('moment')||_dvt.includes('क्षण')||_dvt.includes('momento')?'moment':'lifetime';
-    const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'#E8D0FF'};
+    const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'var(--lavender)'};
     const vCol=vColMap[_dtype]||'var(--gold)';
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_duration}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.duration_signature||''}</p>
