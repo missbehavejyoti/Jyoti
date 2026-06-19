@@ -18,12 +18,12 @@
   /* iridescent accent trio — electric pink/blue/purple, used only inside the
      gold↔rose gradients below so it reads as light catching a facet,
      never as flat fills or as text color */
-  --iris-pink:#FF6FB5;--iris-blue:#22D3FF;--iris-purple:#B347FF;
-  --iris-sweep:linear-gradient(100deg,var(--gold) 0%,var(--rose) 22%,var(--iris-pink) 42%,var(--iris-blue) 62%,var(--iris-purple) 82%,var(--gold) 100%);
+  --iris-pink:#FF6FB5;--iris-blue:#22D3FF;--iris-purple:#B347FF;--rose-gold:#F0A275;
+  --iris-sweep:linear-gradient(100deg,var(--gold) 0%,var(--rose-gold) 16%,var(--rose) 34%,var(--iris-pink) 50%,var(--iris-blue) 66%,var(--iris-purple) 84%,var(--gold) 100%);
 }
 @keyframes irisShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-@keyframes irisHaloBlue{0%,100%{opacity:.22;transform:scale(1) translate(2px,-2px)}50%{opacity:.38;transform:scale(1.12) translate(-2px,2px)}}
-@keyframes irisHaloPink{0%,100%{opacity:.2;transform:scale(1.05) translate(-3px,3px)}50%{opacity:.34;transform:scale(0.95) translate(3px,-3px)}}
+@keyframes irisHaloBlue{0%,100%{opacity:.32;transform:scale(1) translate(2px,-2px) rotate(0deg)}50%{opacity:.48;transform:scale(1.14) translate(-2px,2px) rotate(6deg)}}
+@keyframes irisHaloPink{0%,100%{opacity:.26;transform:scale(1.05) translate(-3px,3px)}50%{opacity:.4;transform:scale(0.95) translate(3px,-3px)}}
 @media (prefers-reduced-motion:reduce){
   .divider::before,.divider::after,.card::before,.remedy-card::before,.flame::before,.flame::after{animation:none!important}
 }
@@ -33,8 +33,15 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 
 header{text-align:center;padding:2.5rem 1.5rem 1rem}
 .flame{position:relative;display:inline-block}
-.flame::before{content:'';position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,var(--iris-pink) 0%,var(--rose) 40%,transparent 72%);filter:blur(12px);opacity:.26;z-index:-1;animation:irisHaloPink 4.5s ease-in-out infinite}
-.flame::after{content:'';position:absolute;inset:-18px;border-radius:50%;background:radial-gradient(circle,var(--iris-blue) 0%,var(--iris-purple) 48%,transparent 75%);filter:blur(12px);opacity:.3;z-index:-1;animation:irisHaloBlue 5.5s ease-in-out infinite}
+/* depth layer 1 — wide, soft, furthest back: rose-gold ambient bloom */
+.flame::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,var(--rose-gold) 0%,var(--iris-pink) 45%,transparent 74%);filter:blur(17px);opacity:.3;z-index:-2;animation:irisHaloPink 5s ease-in-out infinite}
+/* depth layer 2 — tighter, three distinct facets offset from each other: rose-gold, purple, electric blue */
+.flame::after{content:'';position:absolute;inset:-20px;border-radius:50%;
+  background:
+    radial-gradient(circle at 30% 70%,var(--rose-gold) 0%,transparent 56%),
+    radial-gradient(circle at 68% 32%,var(--iris-purple) 0%,transparent 60%),
+    radial-gradient(circle at 50% 55%,var(--iris-blue) 0%,transparent 65%);
+  filter:blur(11px);opacity:.55;z-index:-1;animation:irisHaloBlue 6s ease-in-out infinite}
 .flame svg{width:56px;height:64px;position:relative}
 .brand-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:2.6rem;letter-spacing:.15em;color:var(--gold-d);display:block;margin:1rem 0 .2rem}
 .brand-sub{font-family:'Cinzel',serif;font-weight:600;font-size:.72rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
@@ -56,7 +63,7 @@ header{text-align:center;padding:2.5rem 1.5rem 1rem}
    the left bar now sweeps gold→rose→iris on a slow vertical drift, like
    light moving across the edge of a cut stone */
 .remedy-card{position:relative;background:var(--p2);border:1px solid var(--p3);border-radius:14px;padding:1.4rem 1.5rem;padding-left:1.8rem;margin-top:1.3rem;overflow:hidden}
-.remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--iris-pink),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
+.remedy-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,var(--rose),var(--rose-gold),var(--iris-pink),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
 .remedy-day{font-family:'Cinzel',serif;font-weight:600;font-size:.62rem;letter-spacing:.15em;color:var(--rose-d);text-transform:uppercase;margin-bottom:.4rem}
 .remedy-text{font-size:1.05rem;color:var(--text);margin-bottom:.9rem}
 .tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(196,88,112,.12);border:1px solid rgba(196,88,112,.45);box-shadow:0 0 0 1px rgba(34,211,255,.18),0 0 14px rgba(179,71,255,.28);color:var(--rose-d);font-family:'Cinzel',serif;font-weight:600;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:20px}
