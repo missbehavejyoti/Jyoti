@@ -11,8 +11,8 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'syn' })) return;
-  if (!await dailyLimit(req, res, { max: 40, prefix: 'syn-day' })) return;
+  if (!await rateLimit(req, res, { max: 60, windowSecs: 3600, prefix: 'syn' })) return;
+  if (!await dailyLimit(req, res, { max: 150, prefix: 'syn-day' })) return;
 
   const { chartA, chartB, nameA, nameB, type, lang, relationshipContext } = req.body || {};
 

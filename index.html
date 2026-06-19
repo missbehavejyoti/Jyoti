@@ -4098,8 +4098,10 @@ async function loadSynTier(type){
         if(!r.ok){
           // 504/520 = timeout or gateway error — fail immediately, no retry
           if(r.status===504||r.status===408||r.status===520)throw new Error(currentLang==='hi'?'समय सीमा समाप्त, पुनः प्रयास करें':currentLang==='es'?'Tiempo agotado, toca para reintentar':'Loading timed out, tap to retry');
+          // 429 = rate limited — fail immediately, retrying won't help
+          if(r.status===429)throw new Error(currentLang==='hi'?'आपने सीमा पार कर ली है, कृपया कुछ समय बाद पुनः प्रयास करें':currentLang==='es'?'Has alcanzado el límite, inténtalo de nuevo más tarde':"You've reached the limit, please try again in a bit");
           if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
-          throw new Error('api '+r.status);
+          throw new Error(currentLang==='hi'?'पठन उपलब्ध नहीं, पुनः प्रयास करें':currentLang==='es'?'Lectura no disponible, reintenta':'Reading unavailable, tap to retry');
         }
         const d=await r.json();
         if(d.error)throw new Error(d.error);
@@ -4108,8 +4110,9 @@ async function loadSynTier(type){
         clearTimeout(tId);
         if(e.name==='AbortError'||e.message.includes('fetch')){
           if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+          throw new Error(currentLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':currentLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry');
         }
-        throw new Error(e.name==='AbortError'?(currentLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':currentLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry'):e.message);
+        throw e;
       }
     }
   };
@@ -4129,7 +4132,7 @@ async function loadSynTier(type){
       document.getElementById('syn-form-wrap').style.display='block';
       document.getElementById('syn-loading').style.display='none';
       const err=document.getElementById('syn-form-error');
-      err.textContent=(currentLang==='hi'?'पठन तैयार नहीं हो सका। कृपया पुनः प्रयास करें।':currentLang==='es'?'No se pudo generar la lectura. Por favor inténtalo de nuevo.':'Could not generate the reading. Please try again.');err.style.display='block';
+      err.textContent=e.message||(currentLang==='hi'?'पठन तैयार नहीं हो सका। कृपया पुनः प्रयास करें।':currentLang==='es'?'No se pudo generar la lectura. Por favor inténtalo de nuevo.':'Could not generate the reading. Please try again.');err.style.display='block';
     }else{_showSynSectionError(type,e.message);}
   }
 }
@@ -4156,7 +4159,8 @@ function _showSynInlineLoading(type){
 }
 function _showSynSectionError(type,detail){
   const el=document.getElementById('syn-sec-'+type);if(!el)return;
-  el.innerHTML=`<div style="text-align:center;padding:1.5rem"><p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar, toca para reintentar':'Could not load, tap to retry'}</p><button onclick="delete synCache['${type}'];exploreSyn('${type}')" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button></div>`;
+  const msg=detail||(currentLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar, toca para reintentar':'Could not load, tap to retry');
+  el.innerHTML=`<div style="text-align:center;padding:1.5rem"><p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${msg}</p><button onclick="delete synCache['${type}'];exploreSyn('${type}')" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button></div>`;
 }
 
 function prefillSynPersonA(){
@@ -4534,7 +4538,8 @@ async function openDeepReading(type,title){
     clearTimeout(tId);
     if(!r.ok){
       if(r.status===504||r.status===408||r.status===520)throw new Error(capturedLang==='hi'?'समय सीमा समाप्त, पुनः प्रयास करें':capturedLang==='es'?'Tiempo agotado, toca para reintentar':'Loading timed out, tap to retry');
-      throw new Error('api '+r.status);
+      if(r.status===429)throw new Error(capturedLang==='hi'?'आपने सीमा पार कर ली है, कृपया कुछ समय बाद पुनः प्रयास करें':capturedLang==='es'?'Has alcanzado el límite, inténtalo de nuevo más tarde':"You've reached the limit, please try again in a bit");
+      throw new Error(capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.');
     }
     const d=await r.json();
     if(d.error)throw new Error(d.error);
@@ -4544,7 +4549,8 @@ async function openDeepReading(type,title){
   }catch(e){
     if(capturedLang!==currentLang){return;} // language changed — discard error too
     const safeType=type.replace(/'/g,"\\'");const safeTitle=title.replace(/'/g,"\\'");
-    contentEl.innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--dim);margin-bottom:1rem">${capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.'}</p><button onclick="openDeepReading('${safeType}','${safeTitle}')" class="btn-full-read">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button></div>`;
+    const msg=e.name==='AbortError'?(capturedLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':capturedLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry'):(e.message||(capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.'));
+    contentEl.innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--dim);margin-bottom:1rem">${msg}</p><button onclick="openDeepReading('${safeType}','${safeTitle}')" class="btn-full-read">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button></div>`;
   }
 }
 
