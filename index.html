@@ -895,7 +895,7 @@ select option{background:var(--s2);color:var(--text)}
       <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state -->
       <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--s4)">
         <span id="owner-nav-box" style="display:none;font-size:.6rem">
-          <a href="#" onclick="goToPanel(1);return false;" style="color:var(--dim);opacity:.6;text-decoration:underline">Tester: Panels 1–4</a>
+          <a href="#" onclick="testerBackToPanels();return false;" style="color:var(--dim);opacity:.6;text-decoration:underline">Tester: Panels 1–4</a>
         </span>
       </div>
     </div>
@@ -1683,6 +1683,7 @@ function goToPanel(n){
     return;
   }
   if(n===5){
+    try{sessionStorage.removeItem('jyoti_tester_view');}catch(e){}
     _activatePanel(5);
     const tier=localStorage.getItem('jyoti_tier')||'full';
     _syncManageSubLink();
@@ -1692,6 +1693,20 @@ function goToPanel(n){
     return;
   }
   _activatePanel(n);
+}
+
+// Code-gated escape hatch from panel 5 back to panels 1-4, for testers only.
+// Re-checks the owner code at click time (not just the persisted tester flag) so the
+// link itself can't be used to reach panels 1-4 by anyone who doesn't have the code.
+function testerBackToPanels(){
+  const code=(prompt(currentLang==='hi'?'एक्सेस कोड दर्ज करें':currentLang==='es'?'Ingresa el código de acceso':'Enter access code')||'').trim().toUpperCase();
+  if(!code)return;
+  if(code!==_OC){
+    alert(currentLang==='hi'?'कोड पहचाना नहीं गया।':currentLang==='es'?'Código no reconocido.':'Code not recognised.');
+    return;
+  }
+  try{sessionStorage.setItem('jyoti_tester_view','1');}catch(e){}
+  goToPanel(1);
 }
 
 function showChart(){
@@ -3720,6 +3735,9 @@ async function _reverifySubscription(){
     if(userData.lang)setLang(userData.lang);
     _giftExpired();
     const tier=localStorage.getItem('jyoti_tier');
+    // Tester deliberately navigated back to panels 1-4 via the code-gated link — let them stay there
+    // through a reload instead of bouncing straight back to panel 5.
+    if(sessionStorage.getItem('jyoti_tester_view')==='1')return;
     if(tier==='full'||tier==='compat'||tier==='beta'||tier==='gift'){
       // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
