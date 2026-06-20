@@ -407,6 +407,11 @@ select option{background:var(--s2);color:var(--text)}
     <div class="step-item" id="s5"><div class="sdot">5</div><span data-en="Daily Jyoti" data-hi="दैनिक ज्योति" data-es="Jyoti Diario">Daily Jyoti</span></div>
   </div>
 
+  <!-- Tester escape hatch — visible on panels 1-4 only while testing, so the real app stays one tap away -->
+  <div id="tester-return-box" style="display:none;text-align:center;margin-bottom:1rem">
+    <a href="#" onclick="goToPanel(5);return false;" style="color:var(--dim);opacity:.6;font-size:.65rem;letter-spacing:.05em;text-decoration:underline" data-en="✦ Back to Full App" data-hi="✦ पूर्ण ऐप पर वापस जाएं" data-es="✦ Volver a la App Completa">✦ Back to Full App</a>
+  </div>
+
   <!-- PANEL 1: Birth Details -->
   <div class="panel active" id="panel1">
     <div style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:14px;padding:1rem 1.4rem;text-align:center;margin-bottom:1.2rem">
@@ -1684,6 +1689,7 @@ function goToPanel(n){
   }
   if(n===5){
     try{sessionStorage.removeItem('jyoti_tester_view');}catch(e){}
+    _syncTesterReturnBox();
     _activatePanel(5);
     const tier=localStorage.getItem('jyoti_tier')||'full';
     _syncManageSubLink();
@@ -1695,9 +1701,16 @@ function goToPanel(n){
   _activatePanel(n);
 }
 
+function _syncTesterReturnBox(){
+  const box=document.getElementById('tester-return-box');
+  if(box)box.style.display=(sessionStorage.getItem('jyoti_tester_view')==='1')?'block':'none';
+}
+
 // Code-gated escape hatch from panel 5 back to panels 1-4, for testers only.
 // Re-checks the owner code at click time (not just the persisted tester flag) so the
 // link itself can't be used to reach panels 1-4 by anyone who doesn't have the code.
+// While in this mode, a "Back to Full App" link stays visible on panels 1-4 (see
+// tester-return-box) so testing the onboarding flow never strands them away from the real app.
 function testerBackToPanels(){
   const code=(prompt(currentLang==='hi'?'एक्सेस कोड दर्ज करें':currentLang==='es'?'Ingresa el código de acceso':'Enter access code')||'').trim().toUpperCase();
   if(!code)return;
@@ -1706,6 +1719,7 @@ function testerBackToPanels(){
     return;
   }
   try{sessionStorage.setItem('jyoti_tester_view','1');}catch(e){}
+  _syncTesterReturnBox();
   goToPanel(1);
 }
 
@@ -3737,7 +3751,7 @@ async function _reverifySubscription(){
     const tier=localStorage.getItem('jyoti_tier');
     // Tester deliberately navigated back to panels 1-4 via the code-gated link — let them stay there
     // through a reload instead of bouncing straight back to panel 5.
-    if(sessionStorage.getItem('jyoti_tester_view')==='1')return;
+    if(sessionStorage.getItem('jyoti_tester_view')==='1'){_syncTesterReturnBox();return;}
     if(tier==='full'||tier==='compat'||tier==='beta'||tier==='gift'){
       // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
