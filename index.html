@@ -897,9 +897,11 @@ select option{background:var(--s2);color:var(--text)}
 
       </div>
 
-      <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state -->
+      <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state.
+           Not gated by jyoti_is_tester: the code prompt inside testerBackToPanels() is the real
+           gate, so hiding the link too just risks locking testers out if that flag ever gets wiped. -->
       <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--s4)">
-        <span id="owner-nav-box" style="display:none;font-size:.6rem">
+        <span id="owner-nav-box" style="font-size:.6rem">
           <a href="#" onclick="testerBackToPanels();return false;" style="color:var(--dim);opacity:.6;text-decoration:underline">Tester: Panels 1–4</a>
         </span>
       </div>
@@ -3683,11 +3685,6 @@ function _syncManageSubLink(){
   const email=localStorage.getItem('jyoti_sub_email');
   const box=document.getElementById('manage-sub-box');
   if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
-  // Only show the dev nav-back link to people who actually redeemed an owner/beta code —
-  // never infer "tester" just from a missing email, since real subscribers can legitimately
-  // end up without one on file too.
-  const ownerBox=document.getElementById('owner-nav-box');
-  if(ownerBox)ownerBox.style.display=(localStorage.getItem('jyoti_is_tester')==='1')?'inline':'none';
 }
 
 async function openBillingPortal(){
