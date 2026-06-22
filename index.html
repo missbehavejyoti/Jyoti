@@ -19,10 +19,35 @@
 /* Non-Latin script support — override Cinzel/EB Garamond which lack these glyphs */
 :lang(hi) *{font-family:'Noto Sans Devanagari',Georgia,sans-serif!important;letter-spacing:0!important}
 :root{
-  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#7A6120;
+  --gold:#C8A94A;--gold-l:#E8D070;--gold-pale:#F0E0A0;--gold-d:#A18535;
   --deep:#05030C;--s1:#0C0918;--s2:#131024;--s3:#1C1830;--s4:#25203C;--s5:#302B4A;
-  --text:#F2EBD8;--muted:#A89880;--dim:#6A5F58;
-  --ruby:#B02348;--teal:#1A9490;--rose:#C45870;
+  --text:#F2EBD8;--muted:#A89880;--dim:#9A8B78;
+  --ruby:#B02348;--teal:#1A9490;--rose:#CA697E;
+  /* surfaces previously hardcoded — kept identical to their old literal values here,
+     overridden only under [data-theme="light"] below */
+  --card-bg:rgba(12,9,24,.9);--input-bg:rgba(28,24,48,.9);--input-focus-bg:rgba(37,32,60,.95);
+  --soft-bg:rgba(28,24,48,.6);--banner-bg:rgba(12,9,24,.97);--overlay-bg:rgba(5,3,12,.94);
+  --teal-bright:#5DCAC6;--crisis-pink:#E07090;--purple-soft:#C080E0;--err-red:#dd8888;--lavender:#E8D0FF;
+}
+:root[data-theme="light"]{
+  --gold:#8B6609;--gold-l:#856710;--gold-pale:#7A5A12;--gold-d:#6E4F0C;
+  --deep:#FFFCF6;--bg:#FFFCF6;--s1:#FFF8EA;--s2:#FFF8EA;--s3:#FBF0D9;--s4:#E4D4A8;--s5:#5C5042;
+  --text:#1C1410;--muted:#4A3D30;--dim:#5C5042;
+  --ruby:#A32949;--teal:#136F6B;--rose:#A32949;
+  --card-bg:rgba(255,255,255,.92);--input-bg:rgba(255,255,255,.9);--input-focus-bg:rgba(255,255,255,.97);
+  --soft-bg:rgba(255,255,255,.65);--banner-bg:rgba(255,255,255,.97);--overlay-bg:rgba(255,252,246,.96);
+  --teal-bright:#0C7A75;--crisis-pink:#A32949;--purple-soft:#8A3FC4;--err-red:#B33C3C;--lavender:#7A4FA8;
+  /* iridescent diamond-facet accents — light theme only, confined to decorative sweeps/halos, never flat fills or body text */
+  --iris-pink:#FF6FB5;--iris-blue:#22D3FF;--iris-purple:#B347FF;--rose-gold:#F0A275;
+  --iris-sweep:linear-gradient(100deg,var(--gold) 0%,var(--rose-gold) 16%,var(--rose) 34%,var(--iris-pink) 50%,var(--iris-blue) 66%,var(--iris-purple) 84%,var(--gold) 100%);
+}
+@keyframes irisShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes irisHaloBlue{0%,100%{opacity:.32;transform:scale(1) translate(2px,-2px) rotate(0deg)}50%{opacity:.48;transform:scale(1.14) translate(-2px,2px) rotate(6deg)}}
+@keyframes irisHaloPink{0%,100%{opacity:.26;transform:scale(1.05) translate(-3px,3px)}50%{opacity:.4;transform:scale(0.95) translate(3px,-3px)}}
+@media (prefers-reduced-motion:reduce){
+  [data-theme="light"] .divider::before,[data-theme="light"] .divider::after,
+  [data-theme="light"] .card::before,[data-theme="light"] .remedy-card::before,
+  [data-theme="light"] .flame::before,[data-theme="light"] .flame::after{animation:none!important}
 }
 html{scroll-behavior:smooth}
 body{background:var(--deep);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.75;min-height:100vh;overflow-x:hidden}
@@ -64,22 +89,22 @@ header{text-align:center;padding:2rem 1.5rem 1rem;position:relative}
 @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Cards */
-.card{background:rgba(12,9,24,.9);border:1px solid var(--s4);border-radius:18px;padding:2rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;margin-bottom:1.5rem}
+.card{background:var(--card-bg);border:1px solid var(--s4);border-radius:18px;padding:2rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;margin-bottom:1.5rem}
 .card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.5),transparent)}
 .card-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold);text-align:center;margin-bottom:1.5rem}
 
 /* Form */
 .field{margin-bottom:1.2rem}
 label{display:block;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
-input,select{width:100%;background:rgba(28,24,48,.9);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+input,select{width:100%;background:var(--input-bg);border:1px solid var(--s5);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
 .consent-btn{width:100%;text-align:left;background:rgba(200,169,74,.04);border:1.5px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;cursor:pointer;transition:.2s;font-family:'EB Garamond',Georgia,serif;font-size:1rem;color:var(--muted);line-height:1.65;text-transform:none;letter-spacing:0;margin-bottom:.75rem}
 .consent-btn:active{opacity:.8}
 .consent-btn.agreed{background:rgba(200,169,74,.1);border-color:var(--gold)}
-.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:rgba(28,24,48,.9);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
-.consent-btn.agreed .cbx{background:var(--gold);border-color:var(--gold)}
+.cbx{width:22px;min-width:22px;height:22px;border:2px solid var(--gold-d);border-radius:4px;background:var(--input-bg);flex-shrink:0;margin-top:1px;position:relative;transition:.15s}
+.consent-btn.agreed .cbx{background:#C8A94A;border-color:#C8A94A}
 .consent-btn.agreed .cbx::after{content:'';position:absolute;left:5px;top:2px;width:8px;height:12px;border:2.5px solid #080510;border-top:none;border-left:none;transform:rotate(45deg)}
 input::placeholder{color:var(--dim)}
-input:focus,select:focus{border-color:var(--gold-d);background:rgba(37,32,60,.95);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
+input:focus,select:focus{border-color:var(--gold-d);background:var(--input-focus-bg);box-shadow:0 0 0 3px rgba(200,169,74,.08)}
 select option{background:var(--s2);color:var(--text)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
@@ -123,7 +148,7 @@ select option{background:var(--s2);color:var(--text)}
 /* Tags */
 .tag{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .75rem;border-radius:20px;font-size:.78rem;font-family:'Cinzel',serif;letter-spacing:.05em;margin:.2rem}
 .tag-karmic{background:rgba(200,169,74,.08);border:1px solid rgba(200,169,74,.3);color:var(--gold)}
-.tag-ok{background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.3);color:#5DCAC6}
+.tag-ok{background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.3);color:var(--teal-bright)}
 
 /* Remedy card */
 .remedy-card{background:var(--s2);border:1px solid var(--s4);border-radius:14px;padding:1.2rem 1.5rem;margin:1rem 0;position:relative;overflow:hidden}
@@ -133,15 +158,16 @@ select option{background:var(--s2);color:var(--text)}
 .remedy-actions{display:flex;gap:.6rem;flex-wrap:wrap}
 .audio-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid var(--gold-d);color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
 .audio-btn:hover{background:rgba(200,169,74,.2)}
-.chant-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.35);color:#5DCAC6;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
+.chant-btn{display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:20px;background:rgba(26,148,144,.1);border:1px solid rgba(26,148,144,.35);color:var(--teal-bright);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;cursor:pointer;transition:.2s}
 .chant-btn:hover{background:rgba(26,148,144,.2)}
 
 /* Chant counter */
-.chant-modal{display:none;position:fixed;inset:0;background:rgba(5,3,12,.92);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.chant-modal{display:none;position:fixed;inset:0;background:var(--overlay-bg);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .chant-modal.open{display:flex}
 .chant-inner{background:var(--s2);border:1px solid var(--s4);border-radius:20px;padding:2.5rem;text-align:center;max-width:360px;width:90%;position:relative}
 .chant-inner::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
 .chant-mantra{font-style:italic;font-size:1.3rem;color:var(--gold);margin-bottom:.4rem;line-height:1.5}
+.chant-translit{font-size:.92rem;color:var(--text);opacity:.82;margin-bottom:.6rem;letter-spacing:.02em}
 .chant-meaning{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
 .chant-counter{font-family:'Cinzel',serif;font-size:3.5rem;color:var(--text);margin:1rem 0;line-height:1}
 .chant-target{font-size:.8rem;color:var(--dim);font-family:'Cinzel',serif;letter-spacing:.1em}
@@ -195,7 +221,7 @@ select option{background:var(--s2);color:var(--text)}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
 /* Modal overlay */
-.modal{display:none;position:fixed;inset:0;background:rgba(5,3,12,.95);z-index:200;overflow-y:auto;backdrop-filter:blur(6px)}
+.modal{display:none;position:fixed;inset:0;background:var(--overlay-bg);z-index:200;overflow-y:auto;backdrop-filter:blur(6px)}
 .modal.open{display:block}
 .modal-inner{max-width:700px;margin:2rem auto;padding:0 1.5rem 3rem}
 .modal-close{display:flex;justify-content:flex-end;padding:1rem 0}
@@ -210,7 +236,7 @@ select option{background:var(--s2);color:var(--text)}
 
 /* Crisis banner */
 .crisis-banner{background:rgba(176,35,72,.08);border:1px solid rgba(176,35,72,.25);border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:var(--muted)}
-.crisis-banner strong{color:#E07090;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
+.crisis-banner strong{color:var(--crisis-pink);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.06em}
 
 
 /* Moon phase pill */
@@ -277,7 +303,7 @@ select option{background:var(--s2);color:var(--text)}
   .planet-card .p-name{font-size:.8rem}
   input,select{font-size:16px}
 }
-.deep-modal-overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(8,6,18,.95);padding:1.5rem 1rem 3rem}
+.deep-modal-overlay{position:fixed;inset:0;z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--overlay-bg);padding:1.5rem 1rem 3rem}
 .deep-modal-box{max-width:660px;margin:0 auto;background:var(--bg);border:1px solid rgba(200,169,74,.28);border-radius:16px;padding:2rem 1.5rem;position:relative}
 .deep-modal-header{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:1.4rem;padding-right:2rem;line-height:1.5}
 .deep-modal-close{position:absolute;top:.9rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;line-height:1;padding:.1rem .4rem;opacity:.6;transition:.15s}
@@ -286,6 +312,35 @@ select option{background:var(--s2);color:var(--text)}
 .deep-modal-body p:last-child{margin-bottom:0}
 .btn-full-read{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-d);background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:20px;padding:.38rem 1.2rem;cursor:pointer;transition:.2s;display:inline-block;margin-top:1rem}
 .btn-full-read:hover{background:rgba(200,169,74,.12);border-color:rgba(200,169,74,.4);color:var(--gold)}
+
+/* Birth chart wheel — classed so [data-theme="light"] can repaint it; dark values match the old literal attributes exactly */
+.wheel-border{stroke:rgba(200,169,74,.3)}
+.wheel-side{fill:rgba(30,26,48,.8);stroke:rgba(200,169,74,.2)}
+.wheel-center{fill:rgba(20,16,38,.9);stroke:rgba(200,169,74,.3)}
+.wheel-diag{stroke:rgba(200,169,74,.15)}
+.wheel-num{fill:var(--gold)}
+
+/* Theme toggle */
+#theme-toggle{margin-right:auto;font-size:.85rem}
+
+[data-theme="light"] canvas#stars{display:none}
+
+[data-theme="light"] .wheel-border{stroke:rgba(139,102,9,.35)}
+[data-theme="light"] .wheel-side{fill:rgba(255,252,240,.8);stroke:rgba(139,102,9,.22)}
+[data-theme="light"] .wheel-center{fill:rgba(255,248,225,.95);stroke:rgba(139,102,9,.32)}
+[data-theme="light"] .wheel-diag{stroke:rgba(139,102,9,.16)}
+
+/* Iridescent diamond-facet accents, light theme only — confined to dividers, card edges,
+   the remedy bar, a button's hover shine, and the flame's halo; never a flat fill or body text */
+[data-theme="light"] .divider::before,[data-theme="light"] .divider::after{background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 10s ease-in-out infinite;opacity:.9}
+[data-theme="light"] .card::before{height:2.5px;background:var(--iris-sweep);background-size:250% 100%;animation:irisShift 12s ease-in-out infinite;opacity:.85}
+[data-theme="light"] .remedy-card::before{width:4px;background:linear-gradient(180deg,var(--rose),var(--rose-gold),var(--iris-pink),var(--iris-purple),var(--iris-blue),var(--gold));background-size:100% 250%;animation:irisShift 8s ease-in-out infinite}
+[data-theme="light"] .btn-gold{position:relative;overflow:hidden}
+[data-theme="light"] .btn-gold::after{content:'';position:absolute;top:-60%;left:-40%;width:30%;height:220%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.65),var(--iris-pink),var(--iris-blue),var(--iris-purple),transparent);transform:rotate(15deg);transition:left .7s ease;opacity:.85}
+[data-theme="light"] .btn-gold:hover::after{left:130%}
+[data-theme="light"] .flame::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,var(--rose-gold) 0%,var(--iris-pink) 45%,transparent 74%);filter:blur(17px);opacity:.3;z-index:-2;animation:irisHaloPink 5s ease-in-out infinite}
+[data-theme="light"] .flame::after{content:'';position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle at 30% 70%,var(--rose-gold) 0%,transparent 56%),radial-gradient(circle at 68% 32%,var(--iris-purple) 0%,transparent 60%),radial-gradient(circle at 50% 55%,var(--iris-blue) 0%,transparent 65%);filter:blur(11px);opacity:.55;z-index:-1;animation:irisHaloBlue 6s ease-in-out infinite}
+[data-theme="light"] .tab.active{box-shadow:inset 0 -2px 0 0 var(--iris-blue)}
 </style>
 </head>
 <body>
@@ -304,6 +359,7 @@ select option{background:var(--s2);color:var(--text)}
 
 <!-- Language Bar -->
 <div class="lang-bar">
+  <button id="theme-toggle" class="lbtn" onclick="toggleTheme()" aria-label="Toggle light/dark theme">☀</button>
   <button class="lbtn active" onclick="setLang('en')">EN</button>
   <button class="lbtn" onclick="setLang('hi')">हिं</button>
   <button class="lbtn" onclick="setLang('es')">ES</button>
@@ -349,6 +405,11 @@ select option{background:var(--s2);color:var(--text)}
     <div class="step-item" id="s4"><div class="sdot">4</div><span data-en="Subscribe" data-hi="सदस्यता" data-es="Suscribirse">Subscribe</span></div>
     <div class="sline"></div>
     <div class="step-item" id="s5"><div class="sdot">5</div><span data-en="Daily Jyoti" data-hi="दैनिक ज्योति" data-es="Jyoti Diario">Daily Jyoti</span></div>
+  </div>
+
+  <!-- Tester escape hatch — visible on panels 1-4 only while testing, so the real app stays one tap away -->
+  <div id="tester-return-box" style="display:none;text-align:center;margin-bottom:1rem">
+    <a href="#" onclick="goToPanel(5);return false;" style="color:var(--dim);opacity:.6;font-size:.65rem;letter-spacing:.05em;text-decoration:underline" data-en="✦ Back to Full App" data-hi="✦ पूर्ण ऐप पर वापस जाएं" data-es="✦ Volver a la App Completa">✦ Back to Full App</a>
   </div>
 
   <!-- PANEL 1: Birth Details -->
@@ -461,33 +522,33 @@ select option{background:var(--s2);color:var(--text)}
       <div class="chart-container">
         <div class="chart-wheel">
           <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-            <rect width="280" height="280" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-            <rect x="70" y="0" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="210" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="70" y="210" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="0" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-            <rect x="70" y="70" width="140" height="140" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-            <line x1="70" y1="70" x2="210" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
-            <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+            <rect width="280" height="280" class="wheel-border" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+            <rect x="70" y="0" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="210" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="70" y="210" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="0" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+            <rect x="70" y="70" width="140" height="140" class="wheel-center" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+            <line x1="70" y1="70" x2="210" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+            <line x1="210" y1="70" x2="70" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
             <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.6)" font-size="9" font-family="serif" letter-spacing="2">JYOTI</text>
             <text x="140" y="152" text-anchor="middle" fill="rgba(200,169,74,.3)" font-size="7" font-family="serif" letter-spacing="1">NADI CHART</text>
             <!-- Planet positions (dynamic) — outer ring houses 1-8, center triangles 9-12 -->
-            <text id="h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="9" font-family="serif"></text>
-            <text id="h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-            <text id="h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h1"  x="140" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h2"  x="245" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h3"  x="255" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h4"  x="245" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h5"  x="140" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h6"  x="35"  y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h7"  x="25"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h8"  x="35"  y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="9" font-family="serif"></text>
+            <text id="h9"  x="140" y="97"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h10" x="183" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h11" x="140" y="183" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+            <text id="h12" x="97"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
           </svg>
         </div>
       </div>
@@ -502,7 +563,7 @@ select option{background:var(--s2);color:var(--text)}
         <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.4),transparent)"></div>
         <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label">✦ Your Nakshatra</div>
         <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name"></div>
-        <div style="font-size:.95rem;color:var(--muted);line-height:1.75;font-style:italic" id="nak-reading">Loading your nakshatra reading...</div>
+        <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading">Loading your nakshatra reading...</div>
         <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
           <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
           <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
@@ -558,17 +619,6 @@ select option{background:var(--s2);color:var(--text)}
         </div>
       </div>
 
-      <!-- Beta access -->
-      <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.3);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.4rem;text-align:center">
-        <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem" data-en="✦ BETA TESTER ACCESS ✦" data-hi="✦ बीटा परीक्षक एक्सेस ✦" data-es="✦ ACCESO BETA ✦">✦ BETA TESTER ACCESS ✦</div>
-        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem" data-en="Have an access code? Enter it below to use Jyoti free during the beta." data-hi="क्या आपके पास एक्सेस कोड है? बीटा के दौरान मुफ्त उपयोग करने के लिए नीचे दर्ज करें।" data-es="¿Tienes un código de acceso? Ingrésalo para usar Jyoti gratis durante la beta.">Have an access code? Enter it below to use Jyoti free during the beta.</p>
-        <div style="display:flex;gap:.5rem;max-width:320px;margin:0 auto">
-          <input type="text" id="beta-input" placeholder="Your access code" data-en="Your access code" data-hi="आपका एक्सेस कोड" data-es="Tu código de acceso" style="flex:1;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem">
-          <button class="btn btn-gold" onclick="redeemBeta()" style="font-size:.72rem;padding:.6rem 1.2rem;white-space:nowrap" data-en="Enter ✦" data-hi="दर्ज करें ✦" data-es="Ingresar ✦">Enter ✦</button>
-        </div>
-        <p id="beta-msg" style="font-size:.82rem;margin-top:.6rem;min-height:1.2em"></p>
-      </div>
-
       <div class="notif-box">
         <div class="notif-icon">🔔</div>
         <div class="notif-text" style="flex:1">
@@ -589,6 +639,7 @@ select option{background:var(--s2);color:var(--text)}
           <button class="btn btn-ghost btn-sm" onclick="requestNotifications()" style="margin-top:.8rem;font-size:.68rem" id="notif-btn">
             🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
           </button>
+          <p style="font-size:.68rem;color:var(--dim);font-style:italic;margin-top:.35rem" data-en="Must be installed on your Home Screen for notifications to work." data-hi="सूचनाएं काम करने के लिए ऐप को होम स्क्रीन पर इंस्टॉल होना चाहिए।" data-es="Debe estar instalada en tu pantalla de inicio para que las notificaciones funcionen.">Must be installed on your Home Screen for notifications to work.</p>
           <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="margin-top:.5rem;font-size:.68rem;display:none" id="notif-test-btn">
             🔔 <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
           </button>
@@ -628,6 +679,20 @@ select option{background:var(--s2);color:var(--text)}
           <p id="restore-msg" style="font-size:.8rem;margin-top:.4rem;min-height:1.1em"></p>
         </div>
       </div>
+
+      <!-- Beta access — discreet, for invited testers only -->
+      <div style="text-align:center;margin-top:.6rem">
+        <button type="button" onclick="toggleBetaBox()" style="font-size:.68rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px">
+          <span data-en="Have an access code?" data-hi="एक्सेस कोड है?" data-es="¿Tienes un código de acceso?">Have an access code?</span>
+        </button>
+        <div id="beta-box" style="display:none;margin-top:.6rem">
+          <div style="display:flex;gap:.5rem;max-width:300px;margin:0 auto">
+            <input type="text" id="beta-input" placeholder="Access code" style="flex:1;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem">
+            <button class="btn btn-ghost btn-sm" onclick="redeemBeta()" style="font-size:.72rem;white-space:nowrap" data-en="Enter" data-hi="दर्ज करें" data-es="Ingresar">Enter</button>
+          </div>
+          <p id="beta-msg" style="font-size:.78rem;margin-top:.4rem;min-height:1.1em"></p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -642,6 +707,12 @@ select option{background:var(--s2);color:var(--text)}
         <div style="margin-top:.5rem;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.4rem">
           <span id="moon-pill" class="moon-pill" style="display:none"></span>
           <button class="share-chart-btn" id="share-chart-btn" onclick="shareChart()" style="display:none"><svg class="star8" width="10" height="10"><use href="#star8"/></svg> <span id="share-chart-label">Share my chart</span></button>
+        </div>
+        <div style="margin-top:.5rem">
+          <span style="font-size:.68rem;color:var(--dim);opacity:.75" data-en="Made a mistake in your details? Email hellojyoti@proton.me to have it corrected." data-hi="अपने विवरण में कोई गलती हुई? सुधार के लिए hellojyoti@proton.me पर ईमेल करें।" data-es="¿Cometiste un error en tus datos? Envía un correo a hellojyoti@proton.me para corregirlo.">Made a mistake in your details? Email hellojyoti@proton.me to have it corrected.</span>
+        </div>
+        <div id="manage-sub-box" style="margin-top:.4rem;display:none">
+          <a href="#" onclick="openBillingPortal();return false;" style="font-size:.7rem;color:var(--dim);text-decoration:underline" data-en="Manage Subscription" data-hi="सदस्यता प्रबंधित करें" data-es="Gestionar Suscripción">Manage Subscription</a>
         </div>
       </div>
 
@@ -679,6 +750,7 @@ select option{background:var(--s2);color:var(--text)}
             <button class="btn btn-ghost btn-sm" onclick="requestNotificationsP5()" style="font-size:.68rem" id="p5-notif-btn">
               🔔 <span data-en="Enable Notifications" data-hi="सूचनाएं चालू करें" data-es="Activar Notificaciones">Enable Notifications</span>
             </button>
+            <p style="font-size:.68rem;color:var(--dim);font-style:italic;margin-top:.35rem" data-en="Must be installed on your Home Screen for notifications to work." data-hi="सूचनाएं काम करने के लिए ऐप को होम स्क्रीन पर इंस्टॉल होना चाहिए।" data-es="Debe estar instalada en tu pantalla de inicio para que las notificaciones funcionen.">Must be installed on your Home Screen for notifications to work.</p>
             <button class="btn btn-ghost btn-sm" onclick="_swNotif('Jyoti ✦ '+(currentLang==='hi'?'आपका दैनिक अभ्यास':currentLang==='es'?'Tu práctica diaria':'Your daily practice'),currentLang==='hi'?'यह एक परीक्षण सूचना है।':currentLang==='es'?'Esta es una notificación de prueba.':'This is a test notification.','jyoti-test')" style="font-size:.68rem;display:none" id="p5-notif-test-btn">
               ✓ <span data-en="Send Test Notification" data-hi="परीक्षण सूचना भेजें" data-es="Enviar Notificación de Prueba">Send Test Notification</span>
             </button>
@@ -692,34 +764,47 @@ select option{background:var(--s2);color:var(--text)}
         <div class="chart-container" style="margin-bottom:1.2rem">
           <div class="chart-wheel">
             <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-              <rect width="280" height="280" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-              <rect x="70" y="0" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="210" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="70" y="210" width="140" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="210" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="70" width="70" height="140" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="0" y="0" width="70" height="70" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
-              <rect x="70" y="70" width="140" height="140" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
-              <line x1="70" y1="70" x2="210" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
-              <line x1="210" y1="70" x2="70" y2="210" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+              <rect width="280" height="280" class="wheel-border" fill="none" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+              <rect x="70" y="0" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="210" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="70" y="210" width="140" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="210" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="70" width="70" height="140" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="0" y="0" width="70" height="70" class="wheel-side" fill="rgba(30,26,48,.8)" stroke="rgba(200,169,74,.2)" stroke-width="1"/>
+              <rect x="70" y="70" width="140" height="140" class="wheel-center" fill="rgba(20,16,38,.9)" stroke="rgba(200,169,74,.3)" stroke-width="1"/>
+              <line x1="70" y1="70" x2="210" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
+              <line x1="210" y1="70" x2="70" y2="210" class="wheel-diag" stroke="rgba(200,169,74,.15)" stroke-width="1"/>
               <text x="140" y="135" text-anchor="middle" fill="rgba(200,169,74,.5)" font-size="8" font-family="serif" letter-spacing="2">NADI</text>
-              <text id="fc-h1"  x="140" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h2"  x="245" y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h3"  x="255" y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h4"  x="245" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h5"  x="140" y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h6"  x="35"  y="252" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h7"  x="25"  y="140" text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h8"  x="35"  y="30"  text-anchor="middle" fill="#C8A94A" font-size="8" font-family="serif"></text>
-              <text id="fc-h9"  x="140" y="97"  text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h10" x="183" y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h11" x="140" y="183" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
-              <text id="fc-h12" x="97"  y="140" text-anchor="middle" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h1"  x="140" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h2"  x="245" y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h3"  x="255" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h4"  x="245" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h5"  x="140" y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h6"  x="35"  y="252" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h7"  x="25"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h8"  x="35"  y="30"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="8" font-family="serif"></text>
+              <text id="fc-h9"  x="140" y="97"  text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h10" x="183" y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h11" x="140" y="183" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
+              <text id="fc-h12" x="97"  y="140" text-anchor="middle" class="wheel-num" fill="#C8A94A" font-size="7" font-family="serif"></text>
             </svg>
           </div>
         </div>
+
+        <!-- Nakshatra reading (mirrors the free preview on panel 3, kept reachable after subscribing) -->
+        <div id="nakshatra-reading-p5" style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:14px;padding:1.4rem 1.6rem;margin:0 0 1.2rem;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.4),transparent)"></div>
+          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label-p5">✦ Your Nakshatra</div>
+          <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name-p5"></div>
+          <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading-p5">Loading your nakshatra reading...</div>
+          <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+            <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint-p5" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
+            <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
+          </div>
+        </div>
+
         <div id="full-reading"></div>
       </div>
 
@@ -743,7 +828,7 @@ select option{background:var(--s2);color:var(--text)}
         <div id="syn-form-wrap">
           <p style="text-align:center;font-style:italic;color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:1.4rem" data-en="Enter two birth charts to receive a progressive compatibility reading rooted in classical Vedic Jyotish. The reading unfolds in layers; you choose how deep to go." data-hi="दो जन्म कुंडलियां दर्ज करें और शास्त्रीय वैदिक ज्योतिष में निहित प्रगतिशील संगतता पाठ प्राप्त करें। पाठ परतों में सामने आता है; आप चुनें कितना गहरा जाना है।" data-es="Ingresa dos cartas natales para recibir una lectura de compatibilidad progresiva basada en el Jyotish védico clásico. La lectura se despliega en capas; tú eliges qué tan profundo ir.">Enter two birth charts to receive a progressive compatibility reading rooted in classical Vedic Jyotish. The reading unfolds in layers; you choose how deep to go.</p>
 
-          <div style="border:1px solid rgba(200,169,74,.35);border-radius:12px;padding:1.2rem;margin-bottom:1rem;background:rgba(28,24,48,.6)">
+          <div style="border:1px solid rgba(200,169,74,.35);border-radius:12px;padding:1.2rem;margin-bottom:1rem;background:var(--soft-bg)">
             <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.9rem" data-en="✦ YOUR CHART" data-hi="✦ आपकी कुंडली" data-es="✦ TU CARTA">✦ YOUR CHART</div>
             <div id="syn-a-prefilled" style="font-size:.85rem;color:var(--muted);line-height:1.8;padding:.3rem 0"></div>
             <div class="field" style="margin-top:.6rem">
@@ -757,14 +842,14 @@ select option{background:var(--s2);color:var(--text)}
             </div>
           </div>
 
-          <div style="border:1px solid var(--s4);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;background:rgba(28,24,48,.6)">
+          <div style="border:1px solid var(--s4);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;background:var(--soft-bg)">
             <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.9rem" data-en="✦ SECOND PERSON" data-hi="✦ दूसरा व्यक्ति" data-es="✦ SEGUNDA PERSONA">✦ SECOND PERSON</div>
             <div class="g2">
               <div class="field"><label data-en="Name or Initials" data-hi="नाम या आद्याक्षर" data-es="Nombre o Iniciales">Name or Initials</label><input type="text" id="syn-b-name" placeholder="e.g. Arjun"></div>
               <div class="field"><label data-en="Date of Birth" data-hi="जन्म तिथि" data-es="Fecha de Nacimiento">Date of Birth</label><input type="date" id="syn-b-dob"></div>
             </div>
             <div class="g2">
-              <div class="field"><label data-en="Time of Birth" data-hi="जन्म समय" data-es="Hora de Nacimiento">Time of Birth</label><input type="time" id="syn-b-tob" value="12:00"><p class="hint" data-en="Approximate is fine" data-hi="अनुमानित ठीक है" data-es="Aproximado está bien">Approximate is fine</p></div>
+              <div class="field"><label data-en="Time of Birth" data-hi="जन्म समय" data-es="Hora de Nacimiento">Time of Birth</label><input type="time" id="syn-b-tob" value="12:00"><p class="hint" data-en="Don't know it? Use 12:00pm" data-hi="पता नहीं है? 12:00 बजे का उपयोग करें" data-es="¿No la sabes? Usa las 12:00 pm">Don't know it? Use 12:00pm</p></div>
               <div class="field"><label data-en="Place of Birth" data-hi="जन्म स्थान" data-es="Lugar de Nacimiento">Place of Birth</label><input type="text" id="syn-b-pob" placeholder="City, Country" data-hi="शहर, देश" data-es="Ciudad, País"></div>
             </div>
             <div class="field">
@@ -811,6 +896,15 @@ select option{background:var(--s2);color:var(--text)}
         </div>
 
       </div>
+
+      <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state.
+           Not gated by jyoti_is_tester: the code prompt inside testerBackToPanels() is the real
+           gate, so hiding the link too just risks locking testers out if that flag ever gets wiped. -->
+      <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--s4)">
+        <span id="owner-nav-box" style="font-size:.6rem">
+          <a href="#" onclick="testerBackToPanels();return false;" style="color:var(--dim);opacity:.6;text-decoration:underline">Tester: Panels 1–4</a>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -839,6 +933,7 @@ select option{background:var(--s2);color:var(--text)}
 <div class="chant-modal" id="chant-modal">
   <div class="chant-inner">
     <div class="chant-mantra" id="cm-mantra"></div>
+    <div class="chant-translit" id="cm-translit" style="display:none"></div>
     <div id="cm-phonetic-section" class="phonetic-section" style="display:none">
       <div class="phonetic-label" data-en="PRONUNCIATION GUIDE" data-hi="उच्चारण गाइड" data-es="Guía de Pronunciación">PRONUNCIATION GUIDE</div>
       <div id="cm-phonetic" class="phonetic-text"></div>
@@ -876,7 +971,7 @@ select option{background:var(--s2);color:var(--text)}
   <div class="modal-inner">
     <div class="modal-close"><button onclick="closeModal('privacy')">✕ Close</button></div>
     <div class="modal-title">Privacy Policy</div>
-    <div class="modal-section"><h3>What We Collect</h3><p>We collect your name, email address, date of birth, time of birth, place of birth, and preferred language. We also collect payment information (processed securely via Square) and app usage data.</p></div>
+    <div class="modal-section"><h3>What We Collect</h3><p>We collect your name, email address, date of birth, time of birth, place of birth, and preferred language. We also collect payment information (processed securely via Stripe) and app usage data.</p></div>
     <div class="modal-section"><h3>Why We Collect It</h3><p>Your birth data is used solely to calculate your Nadi astrological chart and generate personalised readings and daily remedies. Your email is used to deliver your subscription, send daily remedy notifications, and communicate service updates.</p></div>
     <div class="modal-section"><h3>How We Store It</h3><p>All personal data is stored securely with industry-standard encryption. Birth data and readings are stored on secure servers. We retain your data for the duration of your subscription plus 30 days following cancellation, after which it is permanently deleted upon request.</p></div>
     <div class="modal-section"><h3>We Never Sell Your Data</h3><p>Your personal data is never sold, rented, or shared with third parties for commercial purposes. Data may be shared with service providers (such as payment processors) only to the extent necessary to operate the service, under strict confidentiality agreements.</p></div>
@@ -893,7 +988,7 @@ select option{background:var(--s2);color:var(--text)}
     <div class="modal-close"><button onclick="closeModal('disclaimer')">✕ Close</button></div>
     <div class="modal-title">Disclaimer</div>
     <div class="modal-section"><h3>Spiritual Guidance Only</h3><p>All content provided by Jyoti, including birth chart analyses, astrological readings, karmic intensity assessments, daily remedies, mantras, and guidance, is provided for spiritual enrichment and personal reflection purposes only.</p></div>
-    <div class="modal-section"><h3>Not Medical or Psychiatric Advice</h3><p>Nothing within Jyoti constitutes or replaces medical, psychiatric, or psychological advice, diagnosis, or treatment. If you are experiencing a mental health condition, emotional crisis, or any physical health concern, please seek help from a qualified healthcare professional immediately.</p><p style="margin-top:.5rem"><strong style="color:#E07090">Crisis support:</strong> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info · iCall (India): 9152987821</p></div>
+    <div class="modal-section"><h3>Not Medical or Psychiatric Advice</h3><p>Nothing within Jyoti constitutes or replaces medical, psychiatric, or psychological advice, diagnosis, or treatment. If you are experiencing a mental health condition, emotional crisis, or any physical health concern, please seek help from a qualified healthcare professional immediately.</p><p style="margin-top:.5rem"><strong style="color:var(--crisis-pink)">Crisis support:</strong> Lifeline (AU): 13 11 14 · Beyond Blue: 1300 22 4636 · International: www.iasp.info · iCall (India): 9152987821</p></div>
     <div class="modal-section"><h3>Not Financial or Legal Advice</h3><p>Jyoti does not provide financial investment advice, legal advice, or any other professional regulated advice. Do not make significant financial or legal decisions based solely on astrological readings.</p></div>
     <div class="modal-section"><h3>No Guaranteed Outcomes</h3><p>Astrological interpretation is a traditional spiritual practice. Jyoti makes no representation or warranty that readings, remedies, or guidance will produce any specific outcome in your life. Individual results vary. Jyoti accepts no liability for decisions made in reliance on content provided.</p></div>
     <div class="modal-section"><h3>Remedy Safety</h3><p>Daily remedies are traditional Vedic spiritual practices including mantra, offering, and ritual. They are not medical treatments. Some remedies involve physical activity such as fasting, bathing, or movement. If you have any medical condition, please consult your doctor before adopting any physical practice.</p></div>
@@ -904,6 +999,7 @@ select option{background:var(--s2);color:var(--text)}
 <script>
 // ── DEMO MODE ──
 function loadDemo(){
+  isDemoMode=true;
   // Pre-fill form with sample data
   document.getElementById('fname').value = 'Priya Sharma';
   document.getElementById('dob').value = '1990-03-14';
@@ -969,8 +1065,20 @@ function loadDemo(){
 
 // ── STATE ──
 let currentLang=(()=>{try{return localStorage.getItem('jyoti_lang')||'en';}catch(e){return'en';}})();
+let currentTheme=(()=>{try{return localStorage.getItem('jyoti_theme')||'dark';}catch(e){return'dark';}})();
+function setTheme(theme){
+  currentTheme=theme;
+  try{localStorage.setItem('jyoti_theme',theme);}catch(e){}
+  if(theme==='light')document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  const btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=theme==='light'?'☾':'☀';
+}
+function toggleTheme(){setTheme(currentTheme==='light'?'dark':'light');}
+setTheme(currentTheme);
 let userData={};
 let chartData={};
+let isDemoMode=false;
 let chantCurrent=0,chantTarget=108;
 
 // ── SOUL ORACLE ARCHIVE ──
@@ -1007,6 +1115,7 @@ function clearSoulArchive(){
 }
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function weekStartStr(){const d=new Date(),day=d.getDay(),mon=new Date(d);mon.setDate(d.getDate()+(day===0?-6:1-day));return`${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;}
+function _chartKey(){const d=(userData?.dob||'').replace(/\//g,'-');const t=(userData?.tob||'').replace(/:/g,'').slice(0,4);const p=(userData?.pob||'').replace(/\s+/g,'').slice(0,6).toLowerCase();return d+'_'+t+'_'+p;}
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
 let soulReadingCache=(()=>{
   const arc=getSoulArchive();
@@ -1145,6 +1254,11 @@ async function goToPayment(plan='monthly'){
 
 function toggleRestoreBox(){
   const box=document.getElementById('restore-box');
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+
+function toggleBetaBox(){
+  const box=document.getElementById('beta-box');
   if(box)box.style.display=box.style.display==='none'?'block':'none';
 }
 
@@ -1514,7 +1628,7 @@ async function buildChartAsync(){
       if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error||resp.status); }
       chartData=await resp.json();
       chartData._geocodedPlace=coords.display||null;
-      try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr()}));}catch(e){}
+      try{localStorage.setItem('jyoti_chart',JSON.stringify({userData,chartData:chartData,saved:todayStr(),isDemo:isDemoMode}));}catch(e){}
       try{localStorage.setItem('jyoti_user',JSON.stringify(userData));}catch(e){}
       soulReadingCache=null; // reset so new chart gets a fresh soul reading
       planetReadingsCache=null;
@@ -1533,12 +1647,23 @@ async function buildChartAsync(){
   showChart();
   setTimeout(()=>loadNakshatraReading(),600);
   setTimeout(()=>showFullChart(),800);
+  // Already a real subscriber (e.g. paid while only demo data existed, now entering their real details) —
+  // skip the preview/paywall and go straight to the subscriber dashboard with this freshly-built real chart.
+  if(!isDemoMode&&localStorage.getItem('jyoti_sub_email')){
+    const tier=localStorage.getItem('jyoti_tier')||'full';
+    setTimeout(()=>{
+      _activatePanel(5);
+      _syncManageSubLink();
+      if(tier==='compat'){applyCompatMode();}
+      else{showDailyReading();}
+    },1000);
+  }
 }
 
 function goToPanel(n){
-  // Paid subscribers locked to panel 5 — beta testers ('beta' tier) can still re-enter details
-  const _t=localStorage.getItem('jyoti_tier');
-  if(n===1&&(_t==='full'||_t==='compat')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
+  // Real paying subscribers (jyoti_sub_email set by Stripe flow) are locked to panel 5 — corrections go through email, not self-service.
+  // Owner bypass / beta codes never set jyoti_sub_email, so they retain full navigation for testing.
+  if(n===1&&localStorage.getItem('jyoti_sub_email')&&JSON.parse(localStorage.getItem('jyoti_chart')||'null')?.userData?.name) return;
   if(n===2){
     const name=document.getElementById('fname').value;
     const dob=document.getElementById('dob').value;
@@ -1549,6 +1674,7 @@ function goToPanel(n){
       alert(currentLang==='hi'?'कृपया सभी आवश्यक फ़ील्ड भरें':currentLang==='es'?'Por favor completa todos los campos requeridos.':'Please fill in all required fields.');
       return;
     }
+    isDemoMode=false;
     userData={name,dob,tob,pob,email,lang:document.getElementById('pref-lang').value,gender:document.getElementById('gender').value};
   }
   if(n===3){
@@ -1564,13 +1690,39 @@ function goToPanel(n){
     return;
   }
   if(n===5){
+    try{sessionStorage.removeItem('jyoti_tester_view');}catch(e){}
+    _syncTesterReturnBox();
     _activatePanel(5);
     const tier=localStorage.getItem('jyoti_tier')||'full';
+    _syncManageSubLink();
+    _reverifySubscription();
     if(tier==='compat'){applyCompatMode();}
     else{setTimeout(()=>showDailyReading(),800);}
     return;
   }
   _activatePanel(n);
+}
+
+function _syncTesterReturnBox(){
+  const box=document.getElementById('tester-return-box');
+  if(box)box.style.display=(sessionStorage.getItem('jyoti_tester_view')==='1')?'block':'none';
+}
+
+// Code-gated escape hatch from panel 5 back to panels 1-4, for testers only.
+// Re-checks the owner code at click time (not just the persisted tester flag) so the
+// link itself can't be used to reach panels 1-4 by anyone who doesn't have the code.
+// While in this mode, a "Back to Full App" link stays visible on panels 1-4 (see
+// tester-return-box) so testing the onboarding flow never strands them away from the real app.
+function testerBackToPanels(){
+  const code=(prompt(currentLang==='hi'?'एक्सेस कोड दर्ज करें':currentLang==='es'?'Ingresa el código de acceso':'Enter access code')||'').trim().toUpperCase();
+  if(!code)return;
+  if(code!==_OC){
+    alert(currentLang==='hi'?'कोड पहचाना नहीं गया।':currentLang==='es'?'Código no reconocido.':'Code not recognised.');
+    return;
+  }
+  try{sessionStorage.setItem('jyoti_tester_view','1');}catch(e){}
+  _syncTesterReturnBox();
+  goToPanel(1);
 }
 
 function showChart(){
@@ -1750,8 +1902,8 @@ async function loadNakshatraReading(){
   const nak = chartData.moonNak;
   const L = T[currentLang];
   const nakData = NAKSHATRA_DATA[currentLang]?.[nak] || NAKSHATRA_DATA['en'][nak];
-  document.getElementById('nak-name').textContent = nakData.name;
-  document.getElementById('nak-reading').textContent = nakData.desc;
+  ['nak-name','nak-name-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.name;});
+  ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.desc;});
   // Try to enhance with Claude for a more personalised touch
   try {
     const nakResp = await fetch('/api/get-remedy', {
@@ -1765,7 +1917,7 @@ async function loadNakshatraReading(){
     });
     const data = await nakResp.json();
     const text = (data.text || data.content?.[0]?.text || '').trim();
-    if(text && text.length > 20) document.getElementById('nak-reading').textContent = text;
+    if(text && text.length > 20) ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=text;});
   } catch(e){ /* use static fallback already shown */ }
 }
 
@@ -1916,6 +2068,68 @@ async function _swNotif(title, body, tag){
   }catch(e){}
 }
 
+function _urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const rawData=atob(base64);
+  const outputArray=new Uint8Array(rawData.length);
+  for(let i=0;i<rawData.length;i++)outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+
+// Subscribes to real server-sent Web Push (delivers even when the app is fully closed)
+// and registers the subscription + the user's IANA timezone with the backend.
+// window._jyotiPushDebug holds the reason for the last failure so it can be
+// surfaced on-screen — these errors are invisible otherwise on a phone with no devtools.
+async function subscribeWebPush(evening, morning){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)){
+      window._jyotiPushDebug='Push not supported in this browser context';
+      return false;
+    }
+    const reg=await navigator.serviceWorker.ready;
+    const keyResp=await fetch('/api/vapid-public-key');
+    const {publicKey}=await keyResp.json();
+    if(!publicKey){
+      window._jyotiPushDebug='Server has no VAPID public key configured';
+      return false;
+    }
+
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      sub=await reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:_urlBase64ToUint8Array(publicKey),
+      });
+    }
+
+    const subJson=sub.toJSON();
+    const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const saveResp=await fetch('/api/save-push-subscription',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        endpoint:subJson.endpoint,
+        keys:subJson.keys,
+        tz, evening, morning,
+        name:userData?.name||'',
+        lang:currentLang,
+      }),
+    });
+    if(!saveResp.ok){
+      let detail='';
+      try{ detail=(await saveResp.json()).error||''; }catch(e2){}
+      window._jyotiPushDebug='Save failed ('+saveResp.status+') '+detail;
+      return false;
+    }
+    window._jyotiPushDebug='';
+    return true;
+  }catch(e){
+    window._jyotiPushDebug=(e&&e.message)||String(e);
+    return false;
+  }
+}
+
 function checkNotifOnLoad(){
   try{
     const pref=localStorage.getItem('jyoti_notif');
@@ -1952,7 +2166,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''))||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey())||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=1)||r.no_remedy_message);
     if(cached&&hasContent){
@@ -2072,7 +2286,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+(userData?.dob||''),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
+    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey(),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
@@ -2089,12 +2303,13 @@ function renderDailyReading(r,dayName){
     <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">MANTRA</div>
       <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
+      ${rem.mantra_translit&&rem.mantra_translit.trim()!==rem.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${rem.mantra_translit}</div>`:''}
       <div style="font-size:.8rem;color:var(--muted)">${rem.mantra_meaning||''}</div>
       ${rem.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(rem.mantra_why)}</div>`:''}
       <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
     </div>
     <div class="remedy-actions">
-      <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+      <button class="chant-btn" onclick="openChant('${rem.mantra}','${(rem.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(rem.mantra_phonetic||'').replace(/'/g,"\\'")}','${(rem.mantra_translit||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
     </div>`:'';
   if(r.has_remedy&&r.remedy&&(r.remedy.morning_practice||r.remedy.practices||r.remedy.practice||r.remedy.what_is_happening)){
     const rem=r.remedy;
@@ -2156,7 +2371,7 @@ async function loadDailyDepth(el){
   const contentEl=el.querySelector('.daily-depth-content');
   if(!contentEl) return;
   const _L=currentLang;
-  const cacheKey='jyoti_d_'+todayStr()+'_'+_L+'_'+(userData?.dob||'');
+  const cacheKey='jyoti_d_'+todayStr()+'_'+_L+'_'+_chartKey();
   // Serve from cache if available
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
@@ -2420,7 +2635,7 @@ function showFullChart(){
     if(prat.lord){
       dashaRows+=`
       <div style="background:rgba(180,100,200,.05);border:1px solid rgba(180,100,200,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;margin-left:1.6rem">
-        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:#C080E0;margin-bottom:.5rem">${DL.prat}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--purple-soft);margin-bottom:.5rem">${DL.prat}</div>
         <div style="font-size:.92rem;color:var(--text);font-family:'Cinzel',serif;margin-bottom:.2rem">${DSM[prat.lord]||''} ${prat.lord} ${DL.pratName}</div>
         <div style="font-size:.82rem;color:var(--dim)">${prat.startDate} → ${prat.endDate} · ${DL.next}: ${prat.next}</div>
       </div>`;
@@ -2784,7 +2999,7 @@ function showPlanetError(detail){
 async function showWeeklyReading(){
   if(!chartData||!userData)return;
   const capturedLang=currentLang;
-  const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+(userData?.dob||'');
+  const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+_chartKey();
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
     if(cached?.has_practice||cached?.no_practice_message){renderWeeklyReading(cached);return;}
@@ -2879,12 +3094,13 @@ function renderWeeklyReading(d){
     <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_L==='hi'?'सप्ताह का मंत्र':_L==='es'?'MANTRA DE LA SEMANA':'WEEK\'S MANTRA'}</div>
       <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${pr.mantra}</div>
+      ${pr.mantra_translit&&pr.mantra_translit.trim()!==pr.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${pr.mantra_translit}</div>`:''}
       <div style="font-size:.8rem;color:var(--muted)">${pr.mantra_meaning||''}</div>
       ${pr.mantra_why?`<div style="font-size:.78rem;color:var(--dim);font-style:italic;margin-top:.4rem;border-top:1px solid rgba(200,169,74,.12);padding-top:.4rem">${glossify(pr.mantra_why)}</div>`:''}
       <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${_mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
     </div>
     <div class="remedy-actions">
-      <button class="chant-btn" onclick="openChant('${pr.mantra}','${(pr.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(pr.mantra_phonetic||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+      <button class="chant-btn" onclick="openChant('${pr.mantra}','${(pr.mantra_meaning||'').replace(/'/g,"\\'")}',${_mc},'${(pr.mantra_phonetic||'').replace(/'/g,"\\'")}','${(pr.mantra_translit||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
     </div>`:'';
   const html=d.has_practice&&pr?`
     <div class="remedy-card">
@@ -2999,9 +3215,15 @@ const _GLOSS_REGEX = (() => {
 })();
 
 function glossify(html){
+  // Strip any markdown that leaked through from AI responses
+  let clean=(html||'')
+    .replace(/\*\*([^*]+)\*\*/g,'$1')
+    .replace(/\*([^*\n]+)\*/g,'$1')
+    .replace(/^[-*]\s+/gm,'')
+    .replace(/^#{1,3}\s+/gm,'');
   // Replace in text nodes only — don't touch HTML tags or attributes
   // We parse the string and skip anything inside < >
-  return html.replace(/(<[^>]+>)|([^<]+)/g,(match,tag,text)=>{
+  return clean.replace(/(<[^>]+>)|([^<]+)/g,(match,tag,text)=>{
     if(tag) return tag;
     if(!text) return text;
     // Track if we're inside a word boundary-sensitive spot
@@ -3064,23 +3286,23 @@ const MANTRA_PHONETICS = {
 };
 const MANTRA_PHONETICS_HI = {
   'Om Hraam Hreem Hraum Sah Suryaya Namah':
-    'ॐ · ह्रां · ह्रीं · ह्रौं · सः · सूर्-या-य · नमः',
+    'ॐ (ओम) · ह्रां (हराम) · ह्रीं (हरीम) · ह्रौं (हरोम) · सः (सह) · सूर्याय (सूर्-या-य) · नमः (नमः)',
   'Om Shraam Shreem Shraum Sah Chandraya Namah':
-    'ॐ · श्रां · श्रीं · श्रौं · सः · चन्-द्रा-य · नमः',
+    'ॐ (ओम) · श्रां (श्राम) · श्रीं (श्रीम) · श्रौं (श्रोम) · सः (सह) · चन्द्राय (चन्-द्रा-य) · नमः (नमः)',
   'Om Kraam Kreem Kraum Sah Bhaumaya Namah':
-    'ॐ · क्रां · क्रीं · क्रौं · सः · भौ-मा-य · नमः',
+    'ॐ (ओम) · क्रां (क्राम) · क्रीं (क्रीम) · क्रौं (क्रोम) · सः (सह) · भौमाय (भौ-मा-य) · नमः (नमः)',
   'Om Braam Breem Braum Sah Budhaya Namah':
-    'ॐ · ब्रां · ब्रीं · ब्रौं · सः · बु-धा-य · नमः',
+    'ॐ (ओम) · ब्रां (ब्राम) · ब्रीं (ब्रीम) · ब्रौं (ब्रोम) · सः (सह) · बुधाय (बु-धा-य) · नमः (नमः)',
   'Om Graam Greem Graum Sah Gurave Namah':
-    'ॐ · ग्रां · ग्रीं · ग्रौं · सः · गु-र-वे · नमः',
+    'ॐ (ओम) · ग्रां (ग्राम) · ग्रीं (ग्रीम) · ग्रौं (ग्रोम) · सः (सह) · गुरवे (गु-र-वे) · नमः (नमः)',
   'Om Draam Dreem Draum Sah Shukraya Namah':
-    'ॐ · द्रां · द्रीं · द्रौं · सः · शुक्-रा-य · नमः',
+    'ॐ (ओम) · द्रां (द्राम) · द्रीं (द्रीम) · द्रौं (द्रोम) · सः (सह) · शुक्राय (शुक्-रा-य) · नमः (नमः)',
   'Om Praam Preem Praum Sah Shanaischaraya Namah':
-    'ॐ · प्रां · प्रीं · प्रौं · सः · श-नैश्-च-रा-य · नमः',
+    'ॐ (ओम) · प्रां (प्राम) · प्रीं (प्रीम) · प्रौं (प्रोम) · सः (सह) · शनैश्चराय (श-नैश्-च-रा-य) · नमः (नमः)',
   'Om Bhraam Bhreem Bhraum Sah Rahave Namah':
-    'ॐ · भ्रां · भ्रीं · भ्रौं · सः · रा-ह-वे · नमः',
+    'ॐ (ओम) · भ्रां (भ्राम) · भ्रीं (भ्रीम) · भ्रौं (भ्रोम) · सः (सह) · राहवे (रा-ह-वे) · नमः (नमः)',
   'Om Sraam Sreem Sraum Sah Ketave Namah':
-    'ॐ · स्रां · स्रीं · स्रौं · सः · के-त-वे · नमः'
+    'ॐ (ओम) · स्रां (स्राम) · स्रीं (स्रीम) · स्रौं (स्रोम) · सः (सह) · केतवे (के-त-वे) · नमः (नमः)'
 };
 const MANTRA_PHONETICS_ES = {
   'Om Hraam Hreem Hraum Sah Suryaya Namah':
@@ -3103,22 +3325,47 @@ const MANTRA_PHONETICS_ES = {
     'Om (om) · Sraam (sraam) · Sreem (srim) · Sraum (sraum) · Sah (sa) · Ke·ta·ve (ke·ta·ve) · Na·mah (na·ma)'
 };
 
-function openChant(mantra,meaning,target,phonetic){
+function openChant(mantra,meaning,target,phonetic,translit){
   chantCurrent=0;chantTarget=target||108;
   document.getElementById('cm-mantra').textContent=mantra;
   document.getElementById('cm-meaning').textContent=meaning||'';
   document.getElementById('cm-count').textContent='0';
   document.getElementById('cm-target').textContent=currentLang==='hi'?`में से ${chantTarget}`:currentLang==='es'?`de ${chantTarget}`:`of ${chantTarget}`;
   document.getElementById('cm-bar').style.width='0%';
+  // English transliteration — shown under the Sanskrit script, above the pronunciation guide
+  const translitEl=document.getElementById('cm-translit');
+  if(translitEl){
+    if(translit&&translit.trim()&&translit.trim()!==mantra.trim()){
+      translitEl.textContent=translit.trim();
+      translitEl.style.display='';
+    }else{
+      translitEl.style.display='none';
+    }
+  }
   // Phonetic guide — use passed value (from API, already in the right language) or
   // fall back to the language-appropriate static lookup table
   const lookup = currentLang==='hi' ? MANTRA_PHONETICS_HI : currentLang==='es' ? MANTRA_PHONETICS_ES : MANTRA_PHONETICS;
-  const ph=phonetic||lookup[mantra]||MANTRA_PHONETICS[mantra]||'';
+  // Lookup table takes priority — AI phonetic only used for mantras not in the table
+  const ph=lookup[mantra]||MANTRA_PHONETICS[mantra]||phonetic||'';
   const phSec=document.getElementById('cm-phonetic-section');
   const phEl=document.getElementById('cm-phonetic');
   if(phSec&&phEl){
-    if(ph){phEl.textContent=ph;phSec.style.display='';}
-    else{phSec.style.display='none';}
+    if(ph){
+      // Render word-by-word — split on · and display each word + pronunciation on its own row
+      const parts=ph.split(' · ');
+      phEl.innerHTML=parts.map(p=>{
+        const m=p.match(/^(.+?)\s*\((.+?)\)$/);
+        if(m){
+          return `<div style="display:flex;align-items:baseline;gap:.6rem;padding:.18rem 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="color:var(--gold);font-size:.88rem;font-weight:500;min-width:5.5rem">${m[1]}</span>
+            <span style="color:var(--muted);font-size:.82rem;font-style:italic">${m[2]}</span>
+          </div>`;
+        }
+        // Hindi / no-bracket format — show each syllable clearly
+        return `<span style="color:var(--gold);font-size:1rem;margin-right:.5rem">${p}</span>`;
+      }).join('');
+      phSec.style.display='';
+    }else{phSec.style.display='none';}
   }
   // Update phonetic label language
   const phLabel=phSec&&phSec.querySelector('.phonetic-label');
@@ -3164,7 +3411,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '104';
+const JYOTI_BUILD = '118';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3248,7 +3495,7 @@ async function requestNotifications() {
       if(evening&&morning) localStorage.setItem('jyoti_notif','both');
       else if(evening) localStorage.setItem('jyoti_notif','evening');
       else if(morning) localStorage.setItem('jyoti_notif','morning');
-      scheduleLocalNotifications(evening, morning);
+      const pushOk = await subscribeWebPush(evening, morning);
       if(btn) btn.style.display = 'none';
       // Show test button so beta testers can immediately verify
       const testBtn=document.getElementById('notif-test-btn');
@@ -3260,8 +3507,10 @@ async function requestNotifications() {
         const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
         if(evening) parts.push(_ev_lbl);
         if(morning) parts.push(_mo_lbl);
-        status.style.color='var(--teal)';
-        status.textContent = currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;
+        status.style.color=pushOk?'var(--teal)':'var(--err-red)';
+        status.textContent = pushOk
+          ? (currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios configurados para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
+          : 'Debug: '+(window._jyotiPushDebug||'unknown error');
         status.style.display = 'block';
       }
     } else {
@@ -3278,43 +3527,6 @@ async function requestNotifications() {
       status.style.color='var(--teal)';
       status.textContent = currentLang==='hi'?'✦ प्राथमिकताएं सहेजी गईं।':currentLang==='es'?'✦ Preferencias guardadas.':'✦ Preferences saved.';
       status.style.display='block';
-    }
-  }
-}
-
-function scheduleLocalNotifications(evening, morning) {
-  const now = new Date();
-  const name = userData?.name || '';
-
-  if (evening) {
-    const target = new Date();
-    target.setHours(20, 0, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const msUntil = target - now;
-    if (msUntil < 12 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          const title = currentLang==='hi'?'ज्योति ✦ कल का अभ्यास':currentLang==='es'?'Jyoti ✦ Práctica de Mañana':"Jyoti ✦ Tomorrow's Practice";
-          const body = currentLang==='hi'?`${name?name+', आपका':'आपका'} कल का पवित्र उपाय तैयार है। श्रद्धापूर्वक तैयारी करें।`:currentLang==='es'?`${name?'Tu remedio sagrado de mañana, '+name:'Tu remedio sagrado de mañana'} está listo. Prepárate con intención.`:`${name?name+', your':'Your'} sacred remedy for tomorrow is ready. Prepare with intention.`;
-          _swNotif(title, body, 'evening-prep');
-        }
-      }, msUntil);
-    }
-  }
-
-  if (morning) {
-    const target = new Date();
-    target.setHours(6, 0, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const msUntil = target - now;
-    if (msUntil < 12 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          const title = currentLang==='hi'?'ज्योति ✦ अभ्यास शुरू करें':currentLang==='es'?'Jyoti ✦ Comienza Tu Práctica':'Jyoti ✦ Begin Your Practice';
-          const body = currentLang==='hi'?`शुभ प्रभात${name?', '+name:''}। आज का पवित्र अभ्यास आपकी प्रतीक्षा कर रहा है।`:currentLang==='es'?`Buenos días${name?', '+name:''}. Tu práctica sagrada de hoy te espera.`:`Good morning${name?', '+name:''}. Your sacred practice for today is waiting.`;
-          _swNotif(title, body, 'morning-reminder');
-        }
-      }, msUntil);
     }
   }
 }
@@ -3353,7 +3565,7 @@ function _showInstallBanner() {
   if (!deferredPrompt || _isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
+  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
   banner.innerHTML = `
     <div style="font-size:1.4rem">✨</div>
     <div style="flex:1">
@@ -3372,7 +3584,7 @@ function _showIOSInstallBanner() {
   if (_isStandalone() || _installDismissed() || document.getElementById('install-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(12,9,24,.97);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
+  banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
   banner.innerHTML = `
     <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem">
       <div style="font-size:1.2rem">✨</div>
@@ -3404,9 +3616,36 @@ async function installPWA() {
 // ── BETA ACCESS ──
 const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F:1,NADI2026G:1,NADI2026H:1,NADI2026I:1,NADI2026J:1,NADI2026K:1,NADI2026L:1,NADI2026M:1,NADI2026N:1,NADI2026O:1,NADI2026P:1,NADI2026Q:1,NADI2026R:1,NADI2026S:1,NADI2026T:1,NADI2026U:1,NADI2026V:1,NADI2026W:1,NADI2026X:1,NADI2026Y:1,NADI2026Z:1};
 const _BE=new Date('2026-06-21T00:00:00').getTime();
+// Owner code — never expires, sets full tier
+const _OC='JYOTI2026SACRED';
 function redeemBeta(){
   const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
   const msg=document.getElementById('beta-msg');
+  // Owner bypass — permanent, no expiry
+  if(code===_OC){
+    msg.style.color='var(--teal)';
+    msg.textContent='✦ Welcome back, Jyoti';
+    try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
+    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
+    return;
+  }
+  // One-time gift codes — server-verified single use (Redis), 30-day access,
+  // independent of the public beta window. Falls back to the local beta-pool
+  // check below if the server says no (wrong code, already redeemed, or offline).
+  fetch('/api/redeem-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
+    .then(r=>r.json()).then(data=>{
+      if(data.ok){
+        msg.style.color='var(--teal)';
+        msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso gratuito':'✦ Welcome, enjoy your free access';
+        try{localStorage.setItem('jyoti_tier','gift');localStorage.setItem('jyoti_gift_expires',String(data.expiresAt));}catch(e){}
+        setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
+      }else{
+        _redeemLocalBeta(code,msg);
+      }
+    }).catch(()=>_redeemLocalBeta(code,msg));
+}
+
+function _redeemLocalBeta(code,msg){
   if(Date.now()>_BE){
     msg.style.color='var(--rose)';
     msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'El período beta ha terminado. Suscríbete para continuar.':'This beta period has ended. Subscribe to continue.';
@@ -3415,12 +3654,22 @@ function redeemBeta(){
   if(_BC[code]){
     msg.style.color='var(--teal)';
     msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access';
-    try{localStorage.setItem('jyoti_tier','beta');}catch(e){}
-    setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1400);
+    try{localStorage.setItem('jyoti_tier','beta');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
+    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
   }else{
     msg.style.color='var(--rose)';
     msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
   }
+}
+
+// True (and clears state) if a gifted trial has passed its 30-day window
+function _giftExpired(){
+  if(localStorage.getItem('jyoti_tier')!=='gift')return false;
+  const exp=parseInt(localStorage.getItem('jyoti_gift_expires')||'0',10);
+  if(!exp||Date.now()<=exp)return false;
+  localStorage.removeItem('jyoti_tier');
+  localStorage.removeItem('jyoti_gift_expires');
+  return true;
 }
 
 // ── INIT ──
@@ -3429,23 +3678,89 @@ function resetChart(){
   window.location.reload();
 }
 
-// Auto-restore saved chart — paid users go straight to panel 5, unpaid see continue button
+// "Manage Subscription" only applies to real Stripe subscribers (jyoti_sub_email is only
+// ever set by the checkout/restore flows) — never shown for the owner bypass or beta codes.
+function _syncManageSubLink(){
+  const tier=localStorage.getItem('jyoti_tier');
+  const email=localStorage.getItem('jyoti_sub_email');
+  const box=document.getElementById('manage-sub-box');
+  if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
+}
+
+async function openBillingPortal(){
+  const email=localStorage.getItem('jyoti_sub_email')||userData?.email;
+  if(!email){
+    alert(currentLang==='hi'?'ईमेल नहीं मिला। कृपया hellojyoti@proton.me पर संपर्क करें।':currentLang==='es'?'No se encontró el correo. Contacta a hellojyoti@proton.me.':'No email on file. Please contact hellojyoti@proton.me.');
+    return;
+  }
+  try{
+    const resp=await fetch('/api/create-portal-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await resp.json();
+    if(!resp.ok||!data.url)throw new Error(data.error||'Portal unavailable');
+    window.location.href=data.url;
+  }catch(e){
+    alert(currentLang==='hi'?'सदस्यता पोर्टल नहीं खोल सका। पुनः प्रयास करें या hellojyoti@proton.me पर संपर्क करें।':currentLang==='es'?'No se pudo abrir el portal de suscripción. Intenta de nuevo o contacta a hellojyoti@proton.me.':'Could not open the subscription portal. Try again or contact hellojyoti@proton.me.');
+  }
+}
+
+// Re-checks Stripe at most once a day for real subscribers (jyoti_sub_email present).
+// Stripe keeps a cancelled subscription "active" until the paid period actually ends,
+// so this naturally gives cancelled users their full remaining days before being cut off.
+async function _reverifySubscription(){
+  try{
+    if(_giftExpired()){
+      _activatePanel(4);
+      const msgEl=document.getElementById('checkout-msg');
+      if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी मुफ्त ट्रायल समाप्त हो गई है। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'Tu prueba gratuita ha finalizado. Suscríbete para continuar.':'Your free trial has ended. Subscribe to continue your practice.';}
+      return;
+    }
+    const tier=localStorage.getItem('jyoti_tier');
+    if(tier!=='full'&&tier!=='compat')return;
+    const email=localStorage.getItem('jyoti_sub_email');
+    if(!email)return; // owner bypass / beta codes never set this — leave them alone
+    const last=parseInt(localStorage.getItem('jyoti_sub_checked')||'0',10);
+    if(Date.now()-last<86400000)return;
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await resp.json();
+    localStorage.setItem('jyoti_sub_checked',String(Date.now()));
+    if(data.subscribed)return;
+    localStorage.removeItem('jyoti_tier');
+    _activatePanel(4);
+    const msgEl=document.getElementById('checkout-msg');
+    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी सदस्यता समाप्त हो गई है। जारी रखने के लिए पुनः सदस्यता लें।':currentLang==='es'?'Tu suscripción ha finalizado. Suscríbete de nuevo para continuar.':'Your subscription has ended. Subscribe again to continue your practice.';}
+    const emailEl=document.getElementById('checkout-email');
+    if(emailEl&&!emailEl.value)emailEl.value=email;
+  }catch(e){} // network failure — don't punish the user for connectivity issues
+}
+
+// Auto-restore saved chart — subscribed users (paid or beta) go straight to panel 5, unpaid see continue button
 (function initAutoRestore(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
     if(!saved?.chartData?.planets||!saved?.userData?.name)return;
+    // Real subscriber whose only saved chart is demo data — never lock them into Priya Sharma's chart.
+    // Owner bypass / beta codes never set jyoti_sub_email, so testers exploring demo data are unaffected.
+    if(saved.isDemo&&localStorage.getItem('jyoti_sub_email'))return;
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
+    _giftExpired();
     const tier=localStorage.getItem('jyoti_tier');
-    if(tier==='full'||tier==='compat'){
-      // Paid subscriber — skip panels 1-4 entirely, go straight to daily practice
+    // Tester deliberately navigated back to panels 1-4 via the code-gated link — let them stay there
+    // through a reload instead of bouncing straight back to panel 5.
+    if(sessionStorage.getItem('jyoti_tester_view')==='1'){_syncTesterReturnBox();return;}
+    if(tier==='full'||tier==='compat'||tier==='beta'||tier==='gift'){
+      // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
-      // Hide edit/back buttons so details can't be changed mid-subscription
-      document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
-        const btn=el.closest('button');if(btn)btn.style.display='none';
-      });
+      // Hide edit/back buttons for real paying subscribers only — owner bypass / beta testers keep full navigation
+      if(localStorage.getItem('jyoti_sub_email')){
+        document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
+          const btn=el.closest('button');if(btn)btn.style.display='none';
+        });
+      }
+      _syncManageSubLink();
+      _reverifySubscription();
       if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
       else{
         setTimeout(()=>showFullChart(),100);
@@ -3456,12 +3771,13 @@ function resetChart(){
     }
     // Has chart but hasn't paid — show continue button so they can proceed to payment
     const btn=document.createElement('button');
-    btn.className='btn btn-gold btn-full';
-    btn.style.cssText='margin-top:.8rem;font-size:.85rem';
+    btn.className='btn btn-ghost btn-full';
+    btn.style.cssText='margin-top:.6rem;font-size:.78rem;opacity:.85';
     {const n0=userData.name?userData.name.split(' ')[0]:'';btn.innerHTML=currentLang==='hi'?`✦ ${n0?n0+'का ':''}अभ्यास जारी रखें`:currentLang==='es'?`✦ Continuar${n0?' práctica de '+n0:' mi práctica'}`:(`✦ Continue ${n0?n0+"'s":'my'} practice`);}
     btn.onclick=function(){
+      _giftExpired();
       const t=localStorage.getItem('jyoti_tier');
-      if(t==='full'||t==='compat'||t==='beta'){
+      if(t==='full'||t==='compat'||t==='beta'||t==='gift'){
         showChart();
         _activatePanel(5);
         if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
@@ -3490,7 +3806,8 @@ function resetChart(){
     function _applySubscriber(email){
       try{localStorage.setItem('jyoti_tier','full');if(email)localStorage.setItem('jyoti_sub_email',email);}catch(e){}
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
-      if(saved?.chartData?.planets&&saved?.userData?.name){
+      // Never lock a real subscriber into demo (Priya Sharma) data — only restore a saved chart that's real.
+      if(saved?.chartData?.planets&&saved?.userData?.name&&!saved.isDemo){
         userData=saved.userData;chartData=saved.chartData;
         if(userData.lang)setLang(userData.lang);
         showChart();
@@ -3498,20 +3815,21 @@ function resetChart(){
         document.querySelectorAll('[data-en="Edit Details"],[data-en="Back"]').forEach(el=>{
           const btn=el.closest('button');if(btn)btn.style.display='none';
         });
+        _syncManageSubLink();
         setTimeout(()=>showFullChart(),100);
         setTimeout(()=>loadNakshatraReading(),200);
         setTimeout(()=>showDailyReading(),200);
       }
-      // Otherwise stay on panel 1 — user enters chart details then auto-goes to panel 5
+      // Otherwise stay on panel 1 — user enters their real chart details then auto-goes to panel 5
     }
+    // Only grant access once Stripe has actually verified the session server-side.
+    // A bare ?subscribed=1 with no session_id proves nothing — never trust it on its own,
+    // since that query string is publicly visible and anyone could craft it.
     if(sessionId.startsWith('cs_')){
       fetch('/api/verify-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId})})
         .then(r=>r.json())
         .then(data=>{if(data.subscribed)_applySubscriber(data.email||'');})
         .catch(()=>{});
-    } else {
-      // No session id to verify — trust the redirect param
-      _applySubscriber('');
     }
   }catch(e){}
 })();
@@ -3525,6 +3843,22 @@ function resetChart(){
     if(btn)btn.style.display='none';
     if(testBtn)testBtn.style.display='inline-flex';
   });
+  // Migrate testers who granted permission under the old local-only scheme —
+  // re-subscribing is a no-op if a push subscription already exists.
+  const pref=localStorage.getItem('jyoti_notif');
+  if(pref){
+    subscribeWebPush(pref==='evening'||pref==='both', pref==='morning'||pref==='both').then(ok=>{
+      if(ok)return;
+      ['notif-status','p5-notif-status'].forEach(id=>{
+        const status=document.getElementById(id);
+        if(status){
+          status.style.color='var(--err-red)';
+          status.textContent='Debug: '+(window._jyotiPushDebug||'unknown error');
+          status.style.display='block';
+        }
+      });
+    });
+  }
 })();
 
 // Mirror of requestNotifications() for the panel-5 notification box
@@ -3552,7 +3886,7 @@ async function requestNotificationsP5(){
       if(evening&&morning)localStorage.setItem('jyoti_notif','both');
       else if(evening)localStorage.setItem('jyoti_notif','evening');
       else if(morning)localStorage.setItem('jyoti_notif','morning');
-      scheduleLocalNotifications(evening,morning);
+      const pushOk=await subscribeWebPush(evening,morning);
       if(btn)btn.style.display='none';
       if(testBtn)testBtn.style.display='inline-flex';
       // Also update panel-4 buttons
@@ -3562,7 +3896,13 @@ async function requestNotificationsP5(){
       const _mo=currentLang==='hi'?'🌅 सुबह 6 बजे':currentLang==='es'?'🌅 6am mañanas':'🌅 6am mornings';
       const _and=currentLang==='hi'?' और ':currentLang==='es'?' y ':' and ';
       const parts=[];if(evening)parts.push(_ev);if(morning)parts.push(_mo);
-      if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`;status.style.display='block';}
+      if(status){
+        status.style.color=pushOk?'var(--teal)':'var(--err-red)';
+        status.textContent=pushOk
+          ?(currentLang==='hi'?`✦ ${parts.join(_and)} के लिए अनुस्मारक सेट किए`:currentLang==='es'?`✦ Recordatorios para ${parts.join(_and)}`:`✦ Reminders set for ${parts.join(_and)}`)
+          :'Debug: '+(window._jyotiPushDebug||'unknown error');
+        status.style.display='block';
+      }
     }else{
       if(status){status.style.color='var(--teal)';status.textContent=currentLang==='hi'?'✦ ब्राउज़र सेटिंग में सूचनाएं चालू करें।':currentLang==='es'?'✦ Activa las notificaciones en ajustes del navegador.':'✦ Enable notifications in your browser settings.';status.style.display='block';}
     }
@@ -3575,7 +3915,7 @@ async function requestNotificationsP5(){
 // Bump this whenever synastry prompts or chart computation change — invalidates
 // every previously cached compatibility reading so stale (e.g. pre-fix, truncated,
 // or non-sidereal) text is never served again from localStorage.
-const SYN_CACHE_VER='v5';
+const SYN_CACHE_VER='v6';
 let synChartA=null,synChartB=null;
 let synUserA={},synUserB={};
 let synRelContext='';
@@ -3787,8 +4127,10 @@ async function loadSynTier(type){
         if(!r.ok){
           // 504/520 = timeout or gateway error — fail immediately, no retry
           if(r.status===504||r.status===408||r.status===520)throw new Error(currentLang==='hi'?'समय सीमा समाप्त, पुनः प्रयास करें':currentLang==='es'?'Tiempo agotado, toca para reintentar':'Loading timed out, tap to retry');
+          // 429 = rate limited — fail immediately, retrying won't help
+          if(r.status===429)throw new Error(currentLang==='hi'?'आपने सीमा पार कर ली है, कृपया कुछ समय बाद पुनः प्रयास करें':currentLang==='es'?'Has alcanzado el límite, inténtalo de nuevo más tarde':"You've reached the limit, please try again in a bit");
           if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
-          throw new Error('api '+r.status);
+          throw new Error(currentLang==='hi'?'पठन उपलब्ध नहीं, पुनः प्रयास करें':currentLang==='es'?'Lectura no disponible, reintenta':'Reading unavailable, tap to retry');
         }
         const d=await r.json();
         if(d.error)throw new Error(d.error);
@@ -3797,8 +4139,9 @@ async function loadSynTier(type){
         clearTimeout(tId);
         if(e.name==='AbortError'||e.message.includes('fetch')){
           if(attempt<2){await new Promise(res=>setTimeout(res,2000*(attempt+1)));continue;}
+          throw new Error(currentLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':currentLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry');
         }
-        throw new Error(e.name==='AbortError'?(currentLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':currentLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry'):e.message);
+        throw e;
       }
     }
   };
@@ -3818,7 +4161,7 @@ async function loadSynTier(type){
       document.getElementById('syn-form-wrap').style.display='block';
       document.getElementById('syn-loading').style.display='none';
       const err=document.getElementById('syn-form-error');
-      err.textContent=(currentLang==='hi'?'पठन तैयार नहीं हो सका। कृपया पुनः प्रयास करें।':currentLang==='es'?'No se pudo generar la lectura. Por favor inténtalo de nuevo.':'Could not generate the reading. Please try again.');err.style.display='block';
+      err.textContent=e.message||(currentLang==='hi'?'पठन तैयार नहीं हो सका। कृपया पुनः प्रयास करें।':currentLang==='es'?'No se pudo generar la lectura. Por favor inténtalo de nuevo.':'Could not generate the reading. Please try again.');err.style.display='block';
     }else{_showSynSectionError(type,e.message);}
   }
 }
@@ -3845,7 +4188,8 @@ function _showSynInlineLoading(type){
 }
 function _showSynSectionError(type,detail){
   const el=document.getElementById('syn-sec-'+type);if(!el)return;
-  el.innerHTML=`<div style="text-align:center;padding:1.5rem"><p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${currentLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar, toca para reintentar':'Could not load, tap to retry'}</p><button onclick="delete synCache['${type}'];exploreSyn('${type}')" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button></div>`;
+  const msg=detail||(currentLang==='hi'?'लोड नहीं हो सका, पुनः प्रयास करें':currentLang==='es'?'No se pudo cargar, toca para reintentar':'Could not load, tap to retry');
+  el.innerHTML=`<div style="text-align:center;padding:1.5rem"><p style="color:var(--dim);font-size:.8rem;margin-bottom:.6rem">${msg}</p><button onclick="delete synCache['${type}'];exploreSyn('${type}')" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer">↺ ${currentLang==='hi'?'पुनः प्रयास':currentLang==='es'?'Reintentar':'Retry'}</button></div>`;
 }
 
 function prefillSynPersonA(){
@@ -3952,6 +4296,9 @@ function _renderTier1(d){
   document.getElementById('syn-reading').style.display='block';
   const nA=synUserA.name,nB=synUserB.name;
   const sl=_sl();
+  const otherMatchTitle=(n)=>currentLang==='hi'?`✦ ${n} के अन्य साथी`:currentLang==='es'?`✦ Otras Coincidencias para ${n}`:`✦ Other Matches for ${n}`;
+  const otherSub1=(n)=>currentLang==='hi'?`${n} की कुंडली को वास्तव में क्या चाहिए, और वह अनुनाद दुनिया में कहाँ और रहता है।`:currentLang==='es'?`La carta de ${n} verdaderamente necesita, y dónde más vive esa resonancia en el mundo.`:`What ${n}'s chart truly needs, and where else that resonance lives in the world.`;
+  const otherSub2=(n)=>currentLang==='hi'?`क्या यह ${n} के लिए एक दुर्लभ संयोग है, या कुंडली आसानी से अनुनाद पाती है?`:currentLang==='es'?`¿Es esta una combinación rara para ${n}, o la carta encuentra resonancia fácilmente?`:`Is this a rare match for ${n}, or does the chart find resonance easily?`;
   document.getElementById('syn-tier1').innerHTML=`
     <div style="text-align:center;margin-bottom:1.4rem">
       <div style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.6rem">${sl.compatHdr}</div>
@@ -3984,23 +4331,44 @@ function _renderTier1(d){
         <div class="doorway-title">${sl.d_gifts[0]}</div>
         <div class="doorway-sub">${sl.d_gifts[1]}</div>
       </div>
+      <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
+        <div class="doorway-title">${sl.d_higher_road[0]}</div>
+        <div class="doorway-sub">${sl.d_higher_road[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-soul_debt" onclick="exploreSyn('soul_debt')">
+        <div class="doorway-title">${sl.d_soul_debt[0]}</div>
+        <div class="doorway-sub">${sl.d_soul_debt[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
+        <div class="doorway-title">${sl.d_work_life[0]}</div>
+        <div class="doorway-sub">${sl.d_work_life[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-timing" onclick="exploreSyn('timing')">
+        <div class="doorway-title">${sl.d_timing[0]}</div>
+        <div class="doorway-sub">${sl.d_timing[1]}</div>
+      </div>
+      <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
+        <div class="doorway-title">${otherMatchTitle(nA)}</div>
+        <div class="doorway-sub">${otherSub1(nA)}</div>
+      </div>
+      <div class="doorway-card" id="door-other_b" onclick="exploreSyn('other_b')">
+        <div class="doorway-title">${otherMatchTitle(nB)}</div>
+        <div class="doorway-sub">${otherSub2(nB)}</div>
+      </div>
     </div>`;
 }
 
 function _renderSynSection(type,d){
   const el=_getOrCreateSection(type);
+  if(!synTier2Done.has(type)){synTier2Done.add(type);synTier2Count++;}
   const nA=synUserA?.name||(currentLang==='hi'?'व्यक्ति A':currentLang==='es'?'Persona A':'Person A'),nB=synUserB?.name||(currentLang==='hi'?'व्यक्ति B':currentLang==='es'?'Persona B':'Person B');
   const sl=_sl();
   const inConn=currentLang==='hi'?'इस संबंध में':currentLang==='es'?'EN ESTA CONEXIÓN':'IN THIS CONNECTION';
   const carriesFor=(x,y)=>currentLang==='hi'?`${x} ${y} के लिए`:currentLang==='es'?`LO QUE ${x} LLEVA PARA ${y}`:`WHAT ${x} CARRIES FOR ${y}`;
-  const otherMatchTitle=(n)=>currentLang==='hi'?`✦ ${n} के अन्य साथी`:currentLang==='es'?`✦ Otras Coincidencias para ${n}`:`✦ Other Matches for ${n}`;
   const otherMatchLabel=(n)=>currentLang==='hi'?`✦ ${n.toUpperCase()} के अन्य साथी`:currentLang==='es'?`✦ OTRAS COINCIDENCIAS PARA ${n.toUpperCase()}`:`✦ OTHER MATCHES FOR ${n.toUpperCase()}`;
-  const otherSub1=(n)=>currentLang==='hi'?`${n} की कुंडली को वास्तव में क्या चाहिए, और वह अनुनाद दुनिया में कहाँ और रहता है।`:currentLang==='es'?`La carta de ${n} verdaderamente necesita, y dónde más vive esa resonancia en el mundo.`:`What ${n}'s chart truly needs, and where else that resonance lives in the world.`;
-  const otherSub2=(n)=>currentLang==='hi'?`क्या यह ${n} के लिए एक दुर्लभ संयोग है, या कुंडली आसानी से अनुनाद पाती है?`:currentLang==='es'?`¿Es esta una combinación rara para ${n}, o la carta encuentra resonancia fácilmente?`:`Is this a rare match for ${n}, or does the chart find resonance easily?`;
   const whatNeeds=(n)=>currentLang==='hi'?`${n.toUpperCase()} को क्या चाहिए`:currentLang==='es'?`LO QUE ${n.toUpperCase()} NECESITA`:`WHAT ${n.toUpperCase()} NEEDS`;
   let html='';
   if(type==='karmic'){
-    if(!synTier2Done.has('karmic')){synTier2Done.add('karmic');synTier2Count++;}
     // Normalise verdict_type — model may translate to Hindi/Spanish despite instructions
     const _kvt=(d.verdict_type||'').toLowerCase();
     const _ktype=_kvt.includes('complet')||_kvt.includes('पूर्णत')||_kvt.includes('समापन')||_kvt.includes('finaliz')||_kvt.includes('conclus')?'completion':_kvt.includes('continu')||_kvt.includes('निरंतर')||_kvt.includes('जारी')?'continuation':'both';
@@ -4014,24 +4382,12 @@ function _renderSynSection(type,d){
         <div class="syn-sub-label" style="margin-bottom:.35rem">${sl.sl_verdict}</div>
         <div style="color:${vCol};font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.04em">${d.verdict||''}</div>
       </div>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-higher_road" onclick="exploreSyn('higher_road')">
-        <div class="doorway-title">${sl.d_higher_road[0]}</div>
-        <div class="doorway-sub">${sl.d_higher_road[1]}</div>
-      </div>
-      <div class="doorway-card" id="door-soul_debt" onclick="exploreSyn('soul_debt')">
-        <div class="doorway-title">${sl.d_soul_debt[0]}</div>
-        <div class="doorway-sub">${sl.d_soul_debt[1]}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('karmic')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='duration'){
-    if(!synTier2Done.has('duration')){synTier2Done.add('duration');synTier2Count++;}
     // Normalise verdict_type — model may translate to Hindi/Spanish despite instructions
     const _dvt=(d.verdict_type||'').toLowerCase();
     const _dtype=_dvt.includes('lifetimes')||_dvt.includes('जन्मों')||_dvt.includes('vidas')||_dvt.includes('múltiples')?'lifetimes':_dvt.includes('lifetime')||_dvt.includes('जीवन')||_dvt.includes('vida entera')?'lifetime':_dvt.includes('season')||_dvt.includes('मौसम')||_dvt.includes('ऋतु')||_dvt.includes('temporada')?'season':_dvt.includes('chapter')||_dvt.includes('अध्याय')||_dvt.includes('capítulo')?'chapter':_dvt.includes('moment')||_dvt.includes('क्षण')||_dvt.includes('momento')?'moment':'lifetime';
-    const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'#E8D0FF'};
+    const vColMap={moment:'var(--rose)',chapter:'var(--teal)',season:'var(--gold)',lifetime:'var(--gold-pale)',lifetimes:'var(--lavender)'};
     const vCol=vColMap[_dtype]||'var(--gold)';
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_duration}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.duration_signature||''}</p>
@@ -4041,20 +4397,8 @@ function _renderSynSection(type,d){
       </div>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_season}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.season||''}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-work_life" onclick="exploreSyn('work_life')">
-        <div class="doorway-title">${sl.d_work_life[0]}</div>
-        <div class="doorway-sub">${sl.d_work_life[1]}</div>
-      </div>
-      <div class="doorway-card" id="door-timing" onclick="exploreSyn('timing')">
-        <div class="doorway-title">${sl.d_timing[0]}</div>
-        <div class="doorway-sub">${sl.d_timing[1]}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('duration')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='gifts'){
-    if(!synTier2Done.has('gifts')){synTier2Done.add('gifts');synTier2Count++;}
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_gifts}</div>
       <div class="syn-sub-label">${nA.toUpperCase()} ${inConn}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.gifts_a||''}</p>
@@ -4064,18 +4408,7 @@ function _renderSynSection(type,d){
       <p style="color:var(--text);line-height:1.85;font-size:.93rem;margin-bottom:1rem">${d.shadow_dynamic||''}</p>
       <div class="syn-sub-label" style="padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08)">${sl.sl_healing}</div>
       <p style="color:var(--text);line-height:1.85;font-size:.93rem">${d.healing_potential||''}</p>
-      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>
-    <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--dim);text-align:center;margin:1rem 0 .6rem">${sl.goDeeper}</div>
-    <div class="doorway-grid-2">
-      <div class="doorway-card" id="door-other_a" onclick="exploreSyn('other_a')">
-        <div class="doorway-title">${otherMatchTitle(nA)}</div>
-        <div class="doorway-sub">${otherSub1(nA)}</div>
-      </div>
-      <div class="doorway-card" id="door-other_b" onclick="exploreSyn('other_b')">
-        <div class="doorway-title">${otherMatchTitle(nB)}</div>
-        <div class="doorway-sub">${otherSub2(nB)}</div>
-      </div>
-    </div>`;
+      <div style="text-align:center;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.08);margin-top:.4rem"><button onclick="openDeepReadingByType('gifts')" class="btn-full-read">${sl.fullAnalysis}</button></div></div>`;
   }else if(type==='higher_road'){
     html=`<div class="syn-section"><div class="syn-label">${sl.sl_higher}</div>
       <div class="syn-sub-label">${nA.toUpperCase()}</div>
@@ -4223,7 +4556,8 @@ async function openDeepReading(type,title){
     clearTimeout(tId);
     if(!r.ok){
       if(r.status===504||r.status===408||r.status===520)throw new Error(capturedLang==='hi'?'समय सीमा समाप्त, पुनः प्रयास करें':capturedLang==='es'?'Tiempo agotado, toca para reintentar':'Loading timed out, tap to retry');
-      throw new Error('api '+r.status);
+      if(r.status===429)throw new Error(capturedLang==='hi'?'आपने सीमा पार कर ली है, कृपया कुछ समय बाद पुनः प्रयास करें':capturedLang==='es'?'Has alcanzado el límite, inténtalo de nuevo más tarde':"You've reached the limit, please try again in a bit");
+      throw new Error(capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.');
     }
     const d=await r.json();
     if(d.error)throw new Error(d.error);
@@ -4233,7 +4567,8 @@ async function openDeepReading(type,title){
   }catch(e){
     if(capturedLang!==currentLang){return;} // language changed — discard error too
     const safeType=type.replace(/'/g,"\\'");const safeTitle=title.replace(/'/g,"\\'");
-    contentEl.innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--dim);margin-bottom:1rem">${capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.'}</p><button onclick="openDeepReading('${safeType}','${safeTitle}')" class="btn-full-read">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button></div>`;
+    const msg=e.name==='AbortError'?(capturedLang==='hi'?'पठन में बहुत समय लगा, पुनः प्रयास करें':capturedLang==='es'?'La lectura tardó demasiado, toca para reintentar':'Reading took too long, tap to retry'):(e.message||(capturedLang==='hi'?'लोड नहीं हो सका, कृपया पुनः प्रयास करें।':capturedLang==='es'?'No se pudo cargar, inténtalo de nuevo.':'Could not load, please try again.'));
+    contentEl.innerHTML=`<div style="text-align:center;padding:2rem"><p style="color:var(--dim);margin-bottom:1rem">${msg}</p><button onclick="openDeepReading('${safeType}','${safeTitle}')" class="btn-full-read">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button></div>`;
   }
 }
 

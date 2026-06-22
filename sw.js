@@ -1,4 +1,4 @@
-const CACHE = 'jyoti-v104';
+const CACHE = 'jyoti-v118';
 const SHELL = [
   '/',
   '/index.html',
@@ -60,14 +60,31 @@ self.addEventListener('fetch', e => {
   );
 });
 
+// Real Web Push — server sends these even when the app is fully closed
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch { data = {}; }
+  const title = data.title || 'Jyoti ✦';
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || '',
+      tag: data.tag || 'jyoti-push',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      data: { url: data.url || '/' }
+    })
+  );
+});
+
 // Open the app when a notification is tapped
 self.addEventListener('notificationclick', e => {
   e.notification.close();
+  const target = e.notification.data?.url || '/';
   e.waitUntil(
     clients.matchAll({type: 'window', includeUncontrolled: true}).then(cs => {
       const open = cs.find(c => c.url.includes(self.location.origin));
       if (open) return open.focus();
-      return clients.openWindow('/');
+      return clients.openWindow(target);
     })
   );
 });
