@@ -25,6 +25,21 @@ async function _redisSetNX(key, value) {
   return result[0]?.result ?? null; // 'OK' if newly set, null if already redeemed (or Redis unreachable)
 }
 
+async function _redisGet(key) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+
+  const resp = await fetch(`${url}/pipeline`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify([['GET', key]]),
+  });
+  if (!resp.ok) return null;
+  const result = await resp.json();
+  return result[0]?.result ?? null;
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -40,14 +55,24 @@ module.exports = async (req, res) => {
     return res.status(200).json({ ok: false });
   }
 
-  // Fail closed on any Redis ambiguity (already used OR unreachable) — never grant
-  // a second free redemption just because Redis hiccuped.
+  // Fail closed on Redis being unreachable — never grant a redemption we can't
+  // confirm. If the code was already redeemed before, re-derive the original
+  // redemption time from the stored value and re-issue a token for whatever's
+  // left of that window — this lets a legitimate holder recover access (lost
+  // token, new device, cleared storage) without restarting their trial clock.
   const result = await _redisSetNX(`giftcode:${code}`, new Date().toISOString());
-  if (result !== 'OK') {
-    return res.status(200).json({ ok: false });
+  let redeemedAt;
+  if (result === 'OK') {
+    redeemedAt = Date.now();
+  } else {
+    const stored = await _redisGet(`giftcode:${code}`);
+    const ts = stored ? Date.parse(stored) : NaN;
+    if (!stored || isNaN(ts)) return res.status(200).json({ ok: false });
+    redeemedAt = ts;
   }
 
-  const expiresAt = Date.now() + days * 86400000;
+  const expiresAt = redeemedAt + days * 86400000;
+  if (Date.now() > expiresAt) return res.status(200).json({ ok: false });
   const token = sign({ tier: 'gift', exp: expiresAt });
   return res.status(200).json({ ok: true, expiresAt, token });
 };
