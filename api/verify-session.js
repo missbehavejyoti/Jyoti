@@ -1,5 +1,6 @@
 // Verifies a Stripe Checkout Session after successful payment redirect
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sign } = require('./_token');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,7 +18,8 @@ module.exports = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(session_id);
     if (session.status === 'complete' || session.payment_status === 'paid') {
       const email = session.customer_details?.email || session.customer_email;
-      return res.status(200).json({ subscribed: true, email });
+      const token = sign({ tier: 'full', exp: Date.now() + 3 * 86400000 });
+      return res.status(200).json({ subscribed: true, email, token });
     }
     return res.status(200).json({ subscribed: false });
   } catch (e) {

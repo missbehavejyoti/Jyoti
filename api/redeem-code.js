@@ -3,6 +3,7 @@
 // number of days mapped to that code, from the moment of redemption. Add an entry
 // to GIFT_CODES for each person you want to gift trial access to.
 const { rateLimit } = require('./_rateLimit');
+const { sign } = require('./_token');
 
 const GIFT_CODES = new Map([
   ['IVAN30TRIAL', 30],
@@ -46,5 +47,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({ ok: false });
   }
 
-  return res.status(200).json({ ok: true, expiresAt: Date.now() + days * 86400000 });
+  const expiresAt = Date.now() + days * 86400000;
+  const token = sign({ tier: 'gift', exp: expiresAt });
+  return res.status(200).json({ ok: true, expiresAt, token });
 };

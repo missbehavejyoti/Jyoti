@@ -1275,7 +1275,7 @@ async function restoreAccess(){
     const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
     const data=await resp.json();
     if(data.subscribed){
-      try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_sub_email',email);}catch(e){}
+      try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_sub_email',email);if(data.token)localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
       if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'✦ सदस्यता की पुष्टि हुई! एप्लिकेशन खोल रहे हैं…':currentLang==='es'?'✦ ¡Suscripción confirmada! Abriendo la app…':'✦ Subscription confirmed! Opening the app…';}
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
       if(saved?.chartData?.planets&&saved?.userData?.name){
@@ -1650,12 +1650,14 @@ async function buildChartAsync(){
   // Already a real subscriber (e.g. paid while only demo data existed, now entering their real details) —
   // skip the preview/paywall and go straight to the subscriber dashboard with this freshly-built real chart.
   if(!isDemoMode&&localStorage.getItem('jyoti_sub_email')){
-    const tier=localStorage.getItem('jyoti_tier')||'full';
     setTimeout(()=>{
-      _activatePanel(5);
-      _syncManageSubLink();
-      if(tier==='compat'){applyCompatMode();}
-      else{showDailyReading();}
+      requireAccess().then(tier=>{
+        if(!tier)return;
+        _activatePanel(5);
+        _syncManageSubLink();
+        if(tier==='compat'){applyCompatMode();}
+        else{showDailyReading();}
+      });
     },1000);
   }
 }
@@ -1692,12 +1694,13 @@ function goToPanel(n){
   if(n===5){
     try{sessionStorage.removeItem('jyoti_tester_view');}catch(e){}
     _syncTesterReturnBox();
-    _activatePanel(5);
-    const tier=localStorage.getItem('jyoti_tier')||'full';
-    _syncManageSubLink();
-    _reverifySubscription();
-    if(tier==='compat'){applyCompatMode();}
-    else{setTimeout(()=>showDailyReading(),800);}
+    requireAccess().then(tier=>{
+      if(!tier){_activatePanel(4);return;}
+      _activatePanel(5);
+      _syncManageSubLink();
+      if(tier==='compat'){applyCompatMode();}
+      else{setTimeout(()=>showDailyReading(),800);}
+    });
     return;
   }
   _activatePanel(n);
@@ -1713,11 +1716,18 @@ function _syncTesterReturnBox(){
 // link itself can't be used to reach panels 1-4 by anyone who doesn't have the code.
 // While in this mode, a "Back to Full App" link stays visible on panels 1-4 (see
 // tester-return-box) so testing the onboarding flow never strands them away from the real app.
-function testerBackToPanels(){
+async function testerBackToPanels(){
   const code=(prompt(currentLang==='hi'?'एक्सेस कोड दर्ज करें':currentLang==='es'?'Ingresa el código de acceso':'Enter access code')||'').trim().toUpperCase();
   if(!code)return;
-  if(code!==_OC){
-    alert(currentLang==='hi'?'कोड पहचाना नहीं गया।':currentLang==='es'?'Código no reconocido.':'Code not recognised.');
+  try{
+    const resp=await fetch('/api/redeem-beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+    const data=await resp.json();
+    if(!data.ok||data.tier!=='full'){
+      alert(currentLang==='hi'?'कोड पहचाना नहीं गया।':currentLang==='es'?'Código no reconocido.':'Code not recognised.');
+      return;
+    }
+  }catch(e){
+    alert(currentLang==='hi'?'जाँच विफल। पुनः प्रयास करें।':currentLang==='es'?'Error de verificación. Intenta de nuevo.':'Verification failed. Please try again.');
     return;
   }
   try{sessionStorage.setItem('jyoti_tester_view','1');}catch(e){}
@@ -3119,7 +3129,7 @@ function renderWeeklyReading(d){
 
 // ── TABS ──
 function switchTab(tab,el){
-  const tier=localStorage.getItem('jyoti_tier')||'full';
+  const tier=_verifiedTier||localStorage.getItem('jyoti_tier')||'full';
   if(tier==='compat'&&(tab==='daily'||tab==='chart'||tab==='weekly')){
     const m=currentLang==='hi'?'दैनिक साधना और कुंडली के लिए पूर्ण एक्सेस में अपग्रेड करें।':currentLang==='es'?'Actualiza a acceso completo para práctica diaria y lectura de carta.':'Upgrade to full access for daily practice and chart reading.';
     alert(m);return;
@@ -3614,52 +3624,46 @@ async function installPWA() {
 // ── TIME WHEEL ──
 
 // ── BETA ACCESS ──
-const _BC={NADI2026A:1,NADI2026B:1,NADI2026C:1,NADI2026D:1,NADI2026E:1,NADI2026F:1,NADI2026G:1,NADI2026H:1,NADI2026I:1,NADI2026J:1,NADI2026K:1,NADI2026L:1,NADI2026M:1,NADI2026N:1,NADI2026O:1,NADI2026P:1,NADI2026Q:1,NADI2026R:1,NADI2026S:1,NADI2026T:1,NADI2026U:1,NADI2026V:1,NADI2026W:1,NADI2026X:1,NADI2026Y:1,NADI2026Z:1};
-const _BE=new Date('2026-06-21T00:00:00').getTime();
-// Owner code — never expires, sets full tier
-const _OC='JYOTI2026SACRED';
+// Owner code, beta codes, and gift codes are all verified server-side now —
+// none of them ship in this file, so viewing page source no longer leaks them.
 function redeemBeta(){
   const code=(document.getElementById('beta-input').value||'').trim().toUpperCase();
   const msg=document.getElementById('beta-msg');
-  // Owner bypass — permanent, no expiry
-  if(code===_OC){
-    msg.style.color='var(--teal)';
-    msg.textContent='✦ Welcome back, Jyoti';
-    try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
-    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
-    return;
-  }
-  // One-time gift codes — server-verified single use (Redis), 30-day access,
-  // independent of the public beta window. Falls back to the local beta-pool
-  // check below if the server says no (wrong code, already redeemed, or offline).
+  msg.style.color='var(--muted)';
+  msg.textContent=currentLang==='hi'?'जाँच हो रही है…':currentLang==='es'?'Verificando…':'Checking…';
+  // Try one-time gift codes first (server-verified single use via Redis, 30-day access).
   fetch('/api/redeem-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
     .then(r=>r.json()).then(data=>{
       if(data.ok){
         msg.style.color='var(--teal)';
         msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso gratuito':'✦ Welcome, enjoy your free access';
-        try{localStorage.setItem('jyoti_tier','gift');localStorage.setItem('jyoti_gift_expires',String(data.expiresAt));}catch(e){}
+        try{localStorage.setItem('jyoti_tier','gift');localStorage.setItem('jyoti_gift_expires',String(data.expiresAt));if(data.token)localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
         setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
       }else{
-        _redeemLocalBeta(code,msg);
+        _redeemBetaOrOwner(code,msg);
       }
-    }).catch(()=>_redeemLocalBeta(code,msg));
+    }).catch(()=>_redeemBetaOrOwner(code,msg));
 }
 
-function _redeemLocalBeta(code,msg){
-  if(Date.now()>_BE){
-    msg.style.color='var(--rose)';
-    msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'El período beta ha terminado. Suscríbete para continuar.':'This beta period has ended. Subscribe to continue.';
-    return;
-  }
-  if(_BC[code]){
-    msg.style.color='var(--teal)';
-    msg.textContent=currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access';
-    try{localStorage.setItem('jyoti_tier','beta');localStorage.setItem('jyoti_is_tester','1');}catch(e){}
-    setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
-  }else{
-    msg.style.color='var(--rose)';
-    msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
-  }
+function _redeemBetaOrOwner(code,msg){
+  fetch('/api/redeem-beta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
+    .then(r=>r.json()).then(data=>{
+      if(data.ok){
+        msg.style.color='var(--teal)';
+        msg.textContent=data.tier==='full'?'✦ Welcome back, Jyoti':(currentLang==='hi'?'✦ स्वागत है, अपनी मुफ्त बीटा एक्सेस का आनंद लें':currentLang==='es'?'✦ Bienvenido, disfruta tu acceso beta gratuito':'✦ Welcome, enjoy your free beta access');
+        try{localStorage.setItem('jyoti_tier',data.tier);localStorage.setItem('jyoti_is_tester','1');if(data.token)localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
+        setTimeout(()=>{_activatePanel(5);_syncManageSubLink();setTimeout(()=>showDailyReading(),800);},1400);
+      }else if(data.expired){
+        msg.style.color='var(--rose)';
+        msg.textContent=currentLang==='hi'?'बीटा अवधि समाप्त हो गई। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'El período beta ha terminado. Suscríbete para continuar.':'This beta period has ended. Subscribe to continue.';
+      }else{
+        msg.style.color='var(--rose)';
+        msg.textContent=currentLang==='hi'?'कोड पहचाना नहीं गया। वर्तनी जांचें और पुनः प्रयास करें।':currentLang==='es'?'Código no reconocido. Verifica la ortografía e intenta de nuevo.':'Code not recognised. Check spelling and try again.';
+      }
+    }).catch(()=>{
+      msg.style.color='var(--rose)';
+      msg.textContent=currentLang==='hi'?'जाँच विफल। पुनः प्रयास करें।':currentLang==='es'?'Error al verificar. Intenta de nuevo.':'Verification failed. Please try again.';
+    });
 }
 
 // True (and clears state) if a gifted trial has passed its 30-day window
@@ -3670,6 +3674,48 @@ function _giftExpired(){
   localStorage.removeItem('jyoti_tier');
   localStorage.removeItem('jyoti_gift_expires');
   return true;
+}
+
+// ── ACCESS VERIFICATION ──
+// The real paywall gate. localStorage.jyoti_tier is only ever an optimistic
+// UI hint — actual access requires a signed jyoti_access_token that the
+// server (Stripe payment, redeemed code) issued, re-checked here against
+// /api/verify-token. Without this, anyone could grant themselves full access
+// just by typing localStorage.setItem('jyoti_tier','full') in devtools.
+let _verifiedTier=null;
+function _clearAccess(){
+  _verifiedTier=null;
+  ['jyoti_tier','jyoti_access_token','jyoti_sub_email','jyoti_gift_expires','jyoti_is_tester'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+}
+async function requireAccess(){
+  if(_giftExpired()){_clearAccess();return null;}
+  const tier=localStorage.getItem('jyoti_tier');
+  if(!tier)return null;
+  let token=localStorage.getItem('jyoti_access_token');
+  if(!token){
+    // Migration path for subscribers who paid before signed tokens existed —
+    // re-verify against Stripe once and mint a token, instead of bouncing
+    // a legitimate paying subscriber straight to the paywall.
+    const email=localStorage.getItem('jyoti_sub_email');
+    if(!email){_clearAccess();return null;}
+    try{
+      const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      const data=await resp.json();
+      if(!data.subscribed||!data.token){_clearAccess();return null;}
+      token=data.token;
+      try{localStorage.setItem('jyoti_access_token',token);}catch(e){}
+    }catch(e){return null;} // can't verify right now — don't grant, but don't wipe their data either
+  }
+  try{
+    const resp=await fetch('/api/verify-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});
+    const data=await resp.json();
+    if(!data.valid){_clearAccess();return null;}
+    _verifiedTier=data.tier;
+    try{localStorage.setItem('jyoti_tier',data.tier);}catch(e){}
+    return data.tier;
+  }catch(e){
+    return null; // network error — don't grant, don't wipe; user can retry
+  }
 }
 
 // ── INIT ──
@@ -3703,38 +3749,8 @@ async function openBillingPortal(){
   }
 }
 
-// Re-checks Stripe at most once a day for real subscribers (jyoti_sub_email present).
-// Stripe keeps a cancelled subscription "active" until the paid period actually ends,
-// so this naturally gives cancelled users their full remaining days before being cut off.
-async function _reverifySubscription(){
-  try{
-    if(_giftExpired()){
-      _activatePanel(4);
-      const msgEl=document.getElementById('checkout-msg');
-      if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी मुफ्त ट्रायल समाप्त हो गई है। जारी रखने के लिए सदस्यता लें।':currentLang==='es'?'Tu prueba gratuita ha finalizado. Suscríbete para continuar.':'Your free trial has ended. Subscribe to continue your practice.';}
-      return;
-    }
-    const tier=localStorage.getItem('jyoti_tier');
-    if(tier!=='full'&&tier!=='compat')return;
-    const email=localStorage.getItem('jyoti_sub_email');
-    if(!email)return; // owner bypass / beta codes never set this — leave them alone
-    const last=parseInt(localStorage.getItem('jyoti_sub_checked')||'0',10);
-    if(Date.now()-last<86400000)return;
-    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
-    const data=await resp.json();
-    localStorage.setItem('jyoti_sub_checked',String(Date.now()));
-    if(data.subscribed)return;
-    localStorage.removeItem('jyoti_tier');
-    _activatePanel(4);
-    const msgEl=document.getElementById('checkout-msg');
-    if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आपकी सदस्यता समाप्त हो गई है। जारी रखने के लिए पुनः सदस्यता लें।':currentLang==='es'?'Tu suscripción ha finalizado. Suscríbete de nuevo para continuar.':'Your subscription has ended. Subscribe again to continue your practice.';}
-    const emailEl=document.getElementById('checkout-email');
-    if(emailEl&&!emailEl.value)emailEl.value=email;
-  }catch(e){} // network failure — don't punish the user for connectivity issues
-}
-
 // Auto-restore saved chart — subscribed users (paid or beta) go straight to panel 5, unpaid see continue button
-(function initAutoRestore(){
+(async function initAutoRestore(){
   try{
     const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
     if(!saved?.chartData?.planets||!saved?.userData?.name)return;
@@ -3744,13 +3760,12 @@ async function _reverifySubscription(){
     userData=saved.userData;
     chartData=saved.chartData;
     if(userData.lang)setLang(userData.lang);
-    _giftExpired();
-    const tier=localStorage.getItem('jyoti_tier');
     // Tester deliberately navigated back to panels 1-4 via the code-gated link — let them stay there
     // through a reload instead of bouncing straight back to panel 5.
     if(sessionStorage.getItem('jyoti_tester_view')==='1'){_syncTesterReturnBox();return;}
-    if(tier==='full'||tier==='compat'||tier==='beta'||tier==='gift'){
-      // Already subscribed (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
+    const tier=await requireAccess();
+    if(tier){
+      // Server-verified subscriber (paid or beta) — skip panels 1-4 entirely, go straight to daily practice
       showChart();
       _activatePanel(5);
       // Hide edit/back buttons for real paying subscribers only — owner bypass / beta testers keep full navigation
@@ -3760,7 +3775,6 @@ async function _reverifySubscription(){
         });
       }
       _syncManageSubLink();
-      _reverifySubscription();
       if(tier==='compat'){setTimeout(()=>applyCompatMode(),100);}
       else{
         setTimeout(()=>showFullChart(),100);
@@ -3769,15 +3783,14 @@ async function _reverifySubscription(){
       }
       return;
     }
-    // Has chart but hasn't paid — show continue button so they can proceed to payment
+    // Has chart but hasn't paid (or couldn't be verified) — show continue button so they can proceed to payment
     const btn=document.createElement('button');
     btn.className='btn btn-ghost btn-full';
     btn.style.cssText='margin-top:.6rem;font-size:.78rem;opacity:.85';
     {const n0=userData.name?userData.name.split(' ')[0]:'';btn.innerHTML=currentLang==='hi'?`✦ ${n0?n0+'का ':''}अभ्यास जारी रखें`:currentLang==='es'?`✦ Continuar${n0?' práctica de '+n0:' mi práctica'}`:(`✦ Continue ${n0?n0+"'s":'my'} practice`);}
-    btn.onclick=function(){
-      _giftExpired();
-      const t=localStorage.getItem('jyoti_tier');
-      if(t==='full'||t==='compat'||t==='beta'||t==='gift'){
+    btn.onclick=async function(){
+      const t=await requireAccess();
+      if(t){
         showChart();
         _activatePanel(5);
         if(t==='compat'){setTimeout(()=>applyCompatMode(),100);}
@@ -3803,8 +3816,8 @@ async function _reverifySubscription(){
     const sessionId=params.get('session_id')||'';
     // Clean URL immediately so refresh doesn't re-trigger
     window.history.replaceState({},'',window.location.pathname+(window.location.hash||''));
-    function _applySubscriber(email){
-      try{localStorage.setItem('jyoti_tier','full');if(email)localStorage.setItem('jyoti_sub_email',email);}catch(e){}
+    function _applySubscriber(email,token){
+      try{localStorage.setItem('jyoti_tier','full');if(email)localStorage.setItem('jyoti_sub_email',email);if(token)localStorage.setItem('jyoti_access_token',token);}catch(e){}
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
       // Never lock a real subscriber into demo (Priya Sharma) data — only restore a saved chart that's real.
       if(saved?.chartData?.planets&&saved?.userData?.name&&!saved.isDemo){
@@ -3828,7 +3841,7 @@ async function _reverifySubscription(){
     if(sessionId.startsWith('cs_')){
       fetch('/api/verify-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId})})
         .then(r=>r.json())
-        .then(data=>{if(data.subscribed)_applySubscriber(data.email||'');})
+        .then(data=>{if(data.subscribed)_applySubscriber(data.email||'',data.token);})
         .catch(()=>{});
     }
   }catch(e){}

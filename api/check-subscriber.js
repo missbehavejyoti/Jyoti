@@ -1,5 +1,6 @@
 // Checks if an email has an active Stripe subscription — used for returning users
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sign } = require('./_token');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,7 +27,8 @@ module.exports = async (req, res) => {
         limit: 1,
       });
       if (subs.data.length > 0) {
-        return res.status(200).json({ subscribed: true, email: customer.email });
+        const token = sign({ tier: 'full', exp: Date.now() + 3 * 86400000 });
+        return res.status(200).json({ subscribed: true, email: customer.email, token });
       }
     }
 
