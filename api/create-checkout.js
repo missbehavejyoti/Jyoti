@@ -1,4 +1,7 @@
-// Creates a Stripe Checkout Session for a monthly subscription
+// Creates a Stripe Checkout Session for a monthly subscription, or — when
+// rewritten from /api/create-portal-session with ?action=portal — a Billing
+// Portal session so subscribers can manage/cancel their own subscription.
+// Merged into one file to stay under Vercel Hobby's 12-serverless-function cap.
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports = async (req, res) => {
@@ -13,12 +16,28 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Valid email required' });
   }
 
-  const priceId = process.env.STRIPE_PRICE_ID;
-  if (!priceId) return res.status(500).json({ error: 'Payment not configured' });
-
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers.host;
   const origin = `${protocol}://${host}`;
+
+  if (req.query.action === 'portal') {
+    try {
+      const customers = await stripe.customers.list({ email: email.toLowerCase().trim(), limit: 1 });
+      if (!customers.data.length) {
+        return res.status(404).json({ error: 'No subscription found for this email' });
+      }
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customers.data[0].id,
+        return_url: `${origin}/`,
+      });
+      return res.status(200).json({ url: session.url });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  const priceId = process.env.STRIPE_PRICE_ID;
+  if (!priceId) return res.status(500).json({ error: 'Payment not configured' });
 
   try {
     const session = await stripe.checkout.sessions.create({

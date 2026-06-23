@@ -7,16 +7,17 @@
     "api/get-synastry.js":      { "maxDuration": 300 },
     "api/create-checkout.js":   { "maxDuration": 30 },
     "api/verify-session.js":    { "maxDuration": 30 },
-    "api/check-subscriber.js":  { "maxDuration": 30 },
     "api/redeem-code.js":       { "maxDuration": 15 },
     "api/redeem-beta.js":       { "maxDuration": 15 },
     "api/verify-token.js":      { "maxDuration": 10 },
-    "api/create-portal-session.js": { "maxDuration": 30 },
     "api/webhook.js":           { "maxDuration": 30 },
     "api/save-push-subscription.js": { "maxDuration": 15 },
     "api/send-push.js":         { "maxDuration": 60 }
   },
   "rewrites": [
+    { "source": "/api/create-portal-session", "destination": "/api/create-checkout?action=portal" },
+    { "source": "/api/check-subscriber", "destination": "/api/verify-session?action=check-subscriber" },
+    { "source": "/api/vapid-public-key", "destination": "/api/save-push-subscription" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
