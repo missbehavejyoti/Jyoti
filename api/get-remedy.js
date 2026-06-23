@@ -1,7 +1,7 @@
 // Vercel Serverless Function — Jyoti Daily Remedy / Nakshatra / Soul Map
 // Keeps API key secure server-side, never exposed to browser
 const { rateLimit, dailyLimit } = require('./_rateLimit');
-const { sanitize, sanitizeDeep } = require('./_sanitize');
+const { sanitize, sanitizeDeep, trimIfTruncated } = require('./_sanitize');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -336,7 +336,7 @@ JSON structure:
           max_tokens: (()=>{
             // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
             const hi = lang === 'hi', es = lang === 'es';
-            if (isSoul)                        return hi ? 2600 : es ? 2400 : 2000;
+            if (isSoul)                        return hi ? 6200 : es ? 5200 : 4200;
             if (isPlanet)                      return hi ? 2400 : es ? 2200 : 1800;
             if (isPlanetD)                     return hi ?  350 : es ?  280 :  220;
             if (isPlanetC)                     return hi ?  600 : es ?  480 :  380;
@@ -370,7 +370,8 @@ JSON structure:
     if (!text) return res.status(502).json({ error: 'Empty response from API' });
 
     if (isNakshatra || isSoul) {
-      return res.status(200).json({ text: sanitize(text.trim()) });
+      const out = trimIfTruncated(text.trim(), data.stop_reason);
+      return res.status(200).json({ text: sanitize(out) });
     }
 
     // Parse JSON response for remedy/planets — handles truncation (no closing }) and literal newlines

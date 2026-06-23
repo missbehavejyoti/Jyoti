@@ -34,4 +34,19 @@ function sanitizeDeep(value) {
   return value;
 }
 
-module.exports = { stripDashes, stripAsterisks, sanitize, sanitizeDeep };
+// When the model hits its max_tokens cap mid-sentence, trim back to the last
+// complete sentence rather than showing readers a reading that stops mid-word.
+// Only called when the API itself reports truncation (stop_reason === 'max_tokens') —
+// a complete response with unconventional trailing punctuation is left untouched.
+function trimIfTruncated(text, stopReason) {
+  if (stopReason !== 'max_tokens' || typeof text !== 'string') return text;
+  const trimmed = text.trimEnd();
+  if (/[.!?।…”"')\]]$/.test(trimmed)) return trimmed;
+  const lastBoundary = Math.max(
+    trimmed.lastIndexOf('. '), trimmed.lastIndexOf('! '), trimmed.lastIndexOf('? '),
+    trimmed.lastIndexOf('।'), trimmed.lastIndexOf('.\n'), trimmed.lastIndexOf('\n')
+  );
+  return lastBoundary > 0 ? trimmed.slice(0, lastBoundary + 1).trimEnd() : trimmed;
+}
+
+module.exports = { stripDashes, stripAsterisks, sanitize, sanitizeDeep, trimIfTruncated };

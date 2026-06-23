@@ -2,7 +2,7 @@
 // Handles all reading types: tier1, karmic, duration, gifts, higher_road,
 // soul_debt, work_life, timing, other_a, other_b, soul_verdict
 const { rateLimit, dailyLimit } = require('./_rateLimit');
-const { sanitize, sanitizeDeep } = require('./_sanitize');
+const { sanitize, sanitizeDeep, trimIfTruncated } = require('./_sanitize');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -280,7 +280,7 @@ Paragraph 4 — THE WISE WAY FORWARD: A classical Vedic prescription for how bot
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -298,7 +298,7 @@ Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -316,7 +316,7 @@ Paragraph 4 — THE ALCHEMICAL POSSIBILITY: If both people engage consciously wi
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -334,7 +334,7 @@ Paragraph 4 — WHAT LOVE ASKS: The higher road is not detachment — it is full
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -352,7 +352,7 @@ Paragraph 4 — HOW TO SETTLE WITH GRACE: The classical tradition offers wisdom 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -370,7 +370,7 @@ Paragraph 4 — THE SHARED LIFE: What would a shared life actually look like for
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -388,7 +388,7 @@ Paragraph 4 — HOW TO WORK WITH TIME: Neither person can force this connection 
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -406,7 +406,7 @@ Paragraph 4 — THE INVITATION TO ${A}: A loving, direct invitation to ${A} to s
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -424,7 +424,7 @@ Paragraph 4 — THE INVITATION TO ${B}: A loving invitation to ${B} to see their
 
 ${langInstruction}`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
-      maxTokens: lang === 'hi' ? 5000 : lang === 'es' ? 4200 : 3400,
+      maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
       model: 'claude-sonnet-4-6'
     },
@@ -518,7 +518,8 @@ The human experience still leads every paragraph. The classical precision is now
 
     // Plain-text types (deep readings) return text directly
     if (config.isText) {
-      return res.status(200).json({ text: sanitize(text.trim()) });
+      const out = trimIfTruncated(text.trim(), data.stop_reason);
+      return res.status(200).json({ text: sanitize(out) });
     }
 
     let parsed;
