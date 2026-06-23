@@ -7,6 +7,7 @@ const { sign } = require('./_token');
 
 const GIFT_CODES = new Map([
   ['IVAN30TRIAL', 30],
+  ['IVAN30TRIAL2', 30],
   ['SANJEEV7TRIAL', 7],
 ]);
 
