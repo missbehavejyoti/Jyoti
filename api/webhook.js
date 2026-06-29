@@ -1,6 +1,7 @@
 // Stripe webhook handler — verifies events by retrieving from Stripe API
 // (avoids raw-body parsing issues on Vercel serverless functions)
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Stripe is initialised inside the handler, not at module level, so a missing
+// env var can't crash the cold-start and cause a connection-reset "other error".
 
 async function sendWelcomeEmail(email, name) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -89,48 +90,65 @@ async function sendOwnerNotification(subject, lines) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { id: eventId } = req.body || {};
-  if (!eventId) return res.status(400).json({ error: 'Missing event id' });
-
-  let event;
   try {
-    event = await stripe.events.retrieve(eventId);
-  } catch (e) {
-    return res.status(400).json({ error: 'Could not verify event: ' + e.message });
-  }
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      console.error('Webhook: STRIPE_SECRET_KEY env var not set');
+      return res.status(200).json({ received: true });
+    }
+    const stripe = require('stripe')(stripeKey);
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const email = session.customer_details?.email || session.customer_email;
-    const name = session.customer_details?.name || '';
-    console.log('New subscriber:', email, '| session:', session.id, '| customer:', session.customer);
-    if (email) {
-      sendWelcomeEmail(email, name).catch(e => console.error('Welcome email failed:', e.message));
-      sendOwnerNotification('New Jyoti subscriber', [
-        `<strong>New subscriber:</strong> ${email}`,
-        name ? `Name: ${name}` : '',
+    const body = req.body || {};
+    const eventId = typeof body === 'object' ? body.id : null;
+    if (!eventId) {
+      console.error('Webhook: no event id in body:', JSON.stringify(body).slice(0, 200));
+      return res.status(200).json({ received: true });
+    }
+
+    let event;
+    try {
+      event = await stripe.events.retrieve(eventId);
+    } catch (e) {
+      console.error('Webhook: could not retrieve event', eventId, ':', e.message);
+      return res.status(200).json({ received: true });
+    }
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const email = session.customer_details?.email || session.customer_email;
+      const name = session.customer_details?.name || '';
+      console.log('New subscriber:', email, '| session:', session.id, '| customer:', session.customer);
+      if (email) {
+        sendWelcomeEmail(email, name).catch(e => console.error('Welcome email failed:', e.message));
+        sendOwnerNotification('New Jyoti subscriber', [
+          `<strong>New subscriber:</strong> ${email}`,
+          name ? `Name: ${name}` : '',
+        ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
+      }
+    }
+
+    if (event.type === 'customer.subscription.deleted') {
+      const sub = event.data.object;
+      console.log('Subscription cancelled:', sub.id, '| customer:', sub.customer);
+      sendOwnerNotification('Jyoti subscription cancelled', [
+        `<strong>Subscription cancelled.</strong>`,
+        `Customer ID: ${sub.customer}`,
+      ]).catch(e => console.error('Owner notification failed:', e.message));
+    }
+
+    if (event.type === 'invoice.payment_failed') {
+      const invoice = event.data.object;
+      console.log('Payment failed for customer:', invoice.customer, '| email:', invoice.customer_email);
+      sendOwnerNotification('Jyoti payment failed', [
+        `<strong>Payment failed.</strong>`,
+        invoice.customer_email ? `Email: ${invoice.customer_email}` : '',
+        `Customer ID: ${invoice.customer}`,
       ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
     }
-  }
 
-  if (event.type === 'customer.subscription.deleted') {
-    const sub = event.data.object;
-    console.log('Subscription cancelled:', sub.id, '| customer:', sub.customer);
-    sendOwnerNotification('Jyoti subscription cancelled', [
-      `<strong>Subscription cancelled.</strong>`,
-      `Customer ID: ${sub.customer}`,
-    ]).catch(e => console.error('Owner notification failed:', e.message));
+    return res.status(200).json({ received: true });
+  } catch (e) {
+    console.error('Webhook top-level error:', e.message, e.stack);
+    return res.status(200).json({ received: true });
   }
-
-  if (event.type === 'invoice.payment_failed') {
-    const invoice = event.data.object;
-    console.log('Payment failed for customer:', invoice.customer, '| email:', invoice.customer_email);
-    sendOwnerNotification('Jyoti payment failed', [
-      `<strong>Payment failed.</strong>`,
-      invoice.customer_email ? `Email: ${invoice.customer_email}` : '',
-      `Customer ID: ${invoice.customer}`,
-    ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
-  }
-
-  return res.status(200).json({ received: true });
 };
