@@ -2216,6 +2216,14 @@ The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's 
   const tr=_tr.planets;
   const trAsc=_tr.asc;
   const S=L_en.signs;
+  // Dignity + house + nakshatra helpers — defined before transitBlock so _n/_h/_dg are in scope
+  const _ex={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const _db={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const _ow={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const _pn=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const _dg=(i,s)=>i>=7?'':_ex[_pn[i]]===s?' (exalted)':_db[_pn[i]]===s?' (debilitated)':(_ow[_pn[i]]||[]).includes(s)?' (own sign)':'';
+  const _h=pl=>(pl.sign-chartData.ascSign+12)%12+1;
+  const _n=pl=>pl.nakshatraName||L_en.nakshatras[pl.nakshatra]||'';
   // Helper: house of transit planet relative to natal ascendant
   const trHouse=i=>(tr[i].sign-chartData.ascSign+12)%12+1;
   // Helper: detect close conjunction to any natal planet (within 5°)
@@ -2238,15 +2246,6 @@ Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
   Transit Saturn: ${S[tr[6].sign]} ${tr[6].degree}°, natal House ${trHouse(6)}${trConj(6)}
   Transit Rahu: ${S[tr[7].sign]} ${tr[7].degree}°, natal House ${trHouse(7)}${trConj(7)}
   Transit Ketu: ${S[tr[8].sign]} ${tr[8].degree}°, natal House ${trHouse(8)}${trConj(8)}`;
-
-  // Dignity + house helpers for chart summary
-  const _ex={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
-  const _db={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
-  const _ow={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
-  const _pn=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
-  const _dg=(i,s)=>i>=7?'':_ex[_pn[i]]===s?' (exalted)':_db[_pn[i]]===s?' (debilitated)':(_ow[_pn[i]]||[]).includes(s)?' (own sign)':'';
-  const _h=pl=>(pl.sign-chartData.ascSign+12)%12+1;
-  const _n=pl=>pl.nakshatraName||L_en.nakshatras[pl.nakshatra]||'';
   const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
   const _llName=_rulers[chartData.ascSign];
   const _llIdx=_pn.indexOf(_llName);
