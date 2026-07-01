@@ -2165,8 +2165,14 @@ async function showDailyReading(){
   const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
   const L=T[capturedLang];
   const now=new Date();
-  const dayName=L.days[now.getDay()];
-  const dateStr=now.toLocaleDateString(capturedLang==='hi'?'hi-IN':capturedLang==='es'?'es-ES':'en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // After 8pm, load tomorrow's practice so the evening notification reveals fresh content
+  const isTomorrow=now.getHours()>=20;
+  const practiceDate=isTomorrow?new Date(now.getTime()+86400000):now;
+  const practiceStr=(d=>()=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(practiceDate);
+  const dayName=L.days[practiceDate.getDay()];
+  const _loc=capturedLang==='hi'?'hi-IN':capturedLang==='es'?'es-ES':'en-AU';
+  const dateStr=(isTomorrow?(capturedLang==='hi'?'कल: ':capturedLang==='es'?'Mañana: ':'Tomorrow: '):'')
+    +practiceDate.toLocaleDateString(_loc,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('today-greeting').textContent=`${L.greeting}, ${userData.name}`;
   document.getElementById('today-date').textContent=dateStr;
   renderMoonPhase();
@@ -2176,7 +2182,7 @@ async function showDailyReading(){
 
   // Serve cached reading for today if same language and has real content
   try{
-    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey())||'null');
+    const cached=JSON.parse(localStorage.getItem('jyoti_q_'+practiceStr()+'_'+capturedLang+'_'+_chartKey())||'null');
     const r=cached?.reading;
     const hasContent=r&&((r.has_remedy&&r.remedy&&Array.isArray(r.remedy.practices)&&r.remedy.practices.length>=1)||r.no_remedy_message);
     if(cached&&hasContent){
@@ -2206,7 +2212,7 @@ The daily remedy and practice should draw PRIMARILY from the Pratyantara lord's 
   const _tUTCH=now.getUTCHours(), _tUTCM=now.getUTCMinutes();
   const _tTOB=`${String(_tUTCH).padStart(2,'0')}:${String(_tUTCM).padStart(2,'0')}:00`;
   const _birthLat=chartData.lat||20.59, _birthLon=chartData.lon||78.96;
-  const _tr=calcChart(todayStr(),_tTOB,{lat:_birthLat,lon:_birthLon},0);
+  const _tr=calcChart(practiceStr(),_tTOB,{lat:_birthLat,lon:_birthLon},0);
   const tr=_tr.planets;
   const trAsc=_tr.asc;
   const S=L_en.signs;
@@ -2224,7 +2230,7 @@ CURRENT PLANETARY TRANSITS, exact positions right now (${now.toUTCString()}):
 Location used for transit ascendant: ${_birthLat.toFixed(2)}°N ${_birthLon.toFixed(2)}°E (birth location)
 Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
   Transit Sun: ${S[tr[0].sign]} ${tr[0].degree}°, natal House ${trHouse(0)}${trConj(0)}
-  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°, natal House ${trHouse(1)}${trConj(1)}
+  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°, natal House ${trHouse(1)}${trConj(1)}, Nakshatra: ${_n(tr[1])||'unknown'}
   Transit Mars: ${S[tr[2].sign]} ${tr[2].degree}°, natal House ${trHouse(2)}${trConj(2)}
   Transit Mercury: ${S[tr[3].sign]} ${tr[3].degree}°, natal House ${trHouse(3)}${trConj(3)}
   Transit Jupiter: ${S[tr[4].sign]} ${tr[4].degree}°, natal House ${trHouse(4)}${trConj(4)}
@@ -2262,7 +2268,7 @@ Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])} | House
 ${dashaContext}
 ${transitBlock}
 Malefic influences (natal): ${chartData.malefics.map(m=>m.name).join(', ')}
-Today: ${L_en.days[now.getDay()]}
+Today: ${L_en.days[practiceDate.getDay()]}
 Vara lord (weekday ruler): ${[
   'Sun (Ravi, ruler of Sunday)',
   'Moon (Soma, ruler of Monday)',
@@ -2271,14 +2277,14 @@ Vara lord (weekday ruler): ${[
   'Jupiter (Guru, ruler of Thursday)',
   'Venus (Shukra, ruler of Friday)',
   'Saturn + Rahu (co-rulers of Saturday)'
-][now.getDay()]}
+][practiceDate.getDay()]}
 Vara lord natal placement: ${(()=>{
-  const pi=[0,1,2,3,4,5,6][now.getDay()];
+  const pi=[0,1,2,3,4,5,6][practiceDate.getDay()];
   const pl=p[pi];
   return pl?`${L_en.planets[pi]} in ${L_en.signs[pl.sign]} ${pl.degree}°${_dg(pi,pl.sign)}, House ${_h(pl)}, Nakshatra: ${_n(pl)}`:'unknown';
-})()}${now.getDay()===2?`\nKetu natal placement: ${L_en.signs[p[8].sign]} ${p[8].degree}°, House ${_h(p[8])}`:''}${now.getDay()===6?`\nRahu natal placement: ${L_en.signs[p[7].sign]} ${p[7].degree}°, House ${_h(p[7])}`:''}
-Today's date: ${now.toDateString()}
-Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()}
+})()}${practiceDate.getDay()===2?`\nKetu natal placement: ${L_en.signs[p[8].sign]} ${p[8].degree}°, House ${_h(p[8])}`:''}${practiceDate.getDay()===6?`\nRahu natal placement: ${L_en.signs[p[7].sign]} ${p[7].degree}°, House ${_h(p[7])}`:''}
+Today's date: ${practiceDate.toDateString()}
+Days until month end: ${new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate()}
 `;
   _dailyChartCtx = chartSummary; // save for lazy depth call
   let dailyData=null;
@@ -2287,7 +2293,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
       const resp = await fetch('/api/get-remedy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily_quick', daysUntilMonthEnd: new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate()})
+        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily_quick', daysUntilMonthEnd: new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate()})
       });
       if(!resp.ok){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('api-error');}
       const data = await resp.json();
@@ -2296,7 +2302,7 @@ Days until month end: ${new Date(now.getFullYear(),now.getMonth()+1,0).getDate()
     }catch(e){if(attempt===2){if(capturedLang===currentLang)renderFallbackReading(dayName,now);return;}}
   }
   if(dailyData&&capturedLang===currentLang){
-    try{localStorage.setItem('jyoti_q_'+todayStr()+'_'+capturedLang+'_'+_chartKey(),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
+    try{localStorage.setItem('jyoti_q_'+practiceStr()+'_'+capturedLang+'_'+_chartKey(),JSON.stringify({reading:dailyData,chartCtx:chartSummary}));}catch(e){}
     renderDailyReading(dailyData, dayName);
   }
 }
