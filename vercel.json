@@ -12,7 +12,8 @@
     "api/verify-token.js":      { "maxDuration": 10 },
     "api/webhook.js":           { "maxDuration": 30 },
     "api/save-push-subscription.js": { "maxDuration": 15 },
-    "api/send-push.js":         { "maxDuration": 60 }
+    "api/send-push.js":         { "maxDuration": 60 },
+    "api/resend-welcome.js":    { "maxDuration": 15 }
   },
   "rewrites": [
     { "source": "/api/create-portal-session", "destination": "/api/create-checkout?action=portal" },
