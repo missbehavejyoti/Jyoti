@@ -4118,8 +4118,7 @@ async function beginSynastry(){
     setT(currentLang==='hi'?nameB+'की कुंडली गणना हो रही है...':currentLang==='es'?'Calculando la carta de '+nameB+'...':'Calculating '+nameB+'\'s chart...');
     synChartB=await _calcSynChart(dobB,tobB,geoB);
     synTier2Count=0;synTier2Done=new Set();synCache={};synLoadingType=null;
-    loadSynCacheFromStorage();
-    delete synCache['tier1']; // Always fetch fresh tier1 when user explicitly submits the form
+    // Do NOT restore from localStorage — every form submit fetches all sections fresh
     setT(currentLang==='hi'?'तारे पढ़ रहे हैं...':currentLang==='es'?'Leyendo las estrellas...':'Reading the stars...');
     await loadSynTier('tier1');
   }catch(e){
@@ -4573,7 +4572,7 @@ async function openDeepReading(type,title){
   document.body.style.overflow='hidden';
   // Cache key includes language + version so switching language or shipping
   // prompt/chart fixes both force a re-fetch instead of replaying stale text
-  const cacheKey='deep_'+SYN_CACHE_VER+'_'+type+'_'+capturedLang;
+  const cacheKey='deep_'+SYN_CACHE_VER+'_'+type+'_'+capturedLang+'_'+synCacheKey().slice(-12);
   if(synCache[cacheKey]){_renderDeepContent(synCache[cacheKey]);return;}
   const summaryA=buildSynChartSummary(synUserA,synChartA,synUserA.name||'Person A');
   const summaryB=buildSynChartSummary(synUserB,synChartB,synUserB.name||'Person B');
