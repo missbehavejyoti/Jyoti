@@ -115,10 +115,12 @@ Webhook verifies events by retrieving from Stripe API (not by signature — avoi
 ---
 
 ## Known Issues / Watch Out For
-- **`const` in template literals:** Helpers (`_n`, `_h`, `_dg`) must be declared BEFORE any template literal that uses them. `const` is not hoisted — using it before declaration throws ReferenceError.
+- **`const` in template literals:** Helpers (`_n`, `_h`, `_dg`) must be declared BEFORE any template literal that uses them. `const` is not hoisted — using it before declaration throws ReferenceError. In `showDailyReading()`, all helpers are now declared before `transitBlock`.
 - **Vercel function limit:** 12 functions max on Hobby plan. Currently 11. Don't add more without removing one.
 - **Stripe webhook "other errors":** Connection-reset errors mean the function crashed before sending any HTTP response. Always ensure a 200 response is returned in all code paths.
 - **localStorage cache:** Daily practice cached by `practiceDate_lang_chartKey`. Clear cache by changing any of those three values. Cache is NOT cleared by refreshing — user must clear manually or cache key must change.
+- **Synastry caching:** Do NOT call `loadSynCacheFromStorage()` on form submit — it restores stale tier2 readings. Each form submit clears `synCache={}` and fetches all sections fresh. In-session memory cache prevents redundant re-fetches while browsing within one reading.
+- **Deep read cache key:** Must include `synCacheKey().slice(-12)` suffix to be person-specific — without it, different people share the same cached deep read.
 
 ---
 
