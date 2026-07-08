@@ -2256,6 +2256,39 @@ Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
   const _nakLordName=typeof tr[1].nakshatra==='number'?(_nakLords[tr[1].nakshatra]||''):'';
   const _nlIdx={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8}[_nakLordName]??-1;
   const _nakLordBlock=_nakLordName&&_nlIdx>=0?`\nTransit Moon nakshatra lord: ${_nakLordName} (rules ${_n(tr[1])||'transit nakshatra'})\n  ${_nakLordName} natal: ${L_en.signs[p[_nlIdx].sign]} ${p[_nlIdx].degree}°${_dg(_nlIdx,p[_nlIdx].sign)}, House ${_h(p[_nlIdx])}, Nakshatra: ${_n(p[_nlIdx])}\n  ${_nakLordName} transit: ${S[tr[_nlIdx].sign]} ${tr[_nlIdx].degree}°, natal House ${trHouse(_nlIdx)}${trConj(_nlIdx)}`:'';
+  // Nakshatra nature (Muhurta quality) — colours the felt quality of the day
+  const _nakNature={
+    Ashwini:'Laghu (light, swift — favours starting things, quick actions)',
+    Bharani:'Ugra (fierce, severe — intense energy, not for auspicious beginnings)',
+    Krittika:'Misra (mixed — suitable for fire, purification, religious work)',
+    Rohini:'Dhruva (fixed, permanent — supports anything meant to last)',
+    Mrigashira:'Mridu (soft, mild — favours gentleness, new connections, creativity)',
+    Ardra:'Tikshna (sharp, dreadful — piercing quality, suited to difficult tasks)',
+    Punarvasu:'Chara (movable — favours travel, change, motion)',
+    Pushya:'Laghu (light, swift — one of the most auspicious nakshatras for new endeavours)',
+    Ashlesha:'Tikshna (sharp, dreadful — intense, transformative, not for soft beginnings)',
+    Magha:'Ugra (fierce — ancestral energy, suited to bold or difficult tasks)',
+    'Purva Phalguni':'Ugra (fierce — passionate, creative, but intense)',
+    'Uttara Phalguni':'Dhruva (fixed — supports commitments, steady endeavours)',
+    Hasta:'Laghu (light, swift — skilled, dexterous, good for practical action)',
+    Chitra:'Mridu (soft — creative, beautiful, favours art and adornment)',
+    Swati:'Chara (movable — independent, seeks space and movement)',
+    Vishakha:'Misra (mixed — purposeful, goal-oriented, suits religious and determined work)',
+    Anuradha:'Mridu (soft — devotional, favours friendships and cooperation)',
+    Jyeshtha:'Tikshna (sharp — protective, fierce, suited to confronting difficult things)',
+    Mula:'Tikshna (sharp, dreadful — uprooting, transformative, not for gentle starts)',
+    'Purva Ashada':'Ugra (fierce — invincible quality, suited to bold action)',
+    'Uttara Ashada':'Dhruva (fixed — enduring, supports long-term foundations)',
+    Shravana:'Chara (movable — listening, learning, connection across distance)',
+    Dhanishtha:'Chara (movable — abundant, rhythmic, good for music and movement)',
+    Shatabhisha:'Chara (movable — healing, secretive, suited to solitary work)',
+    'Purva Bhadrapada':'Ugra (fierce — intense, transformative fire energy)',
+    'Uttara Bhadrapada':'Dhruva (fixed — deep, wise, supports lasting spiritual work)',
+    Revati:'Mridu (soft — nourishing, protective, favours completion and closure)'
+  };
+  const _moonNakName=_n(tr[1])||'';
+  const _nakNatureStr=_nakNature[_moonNakName]||'';
+  const _nakNatureBlock=_nakNatureStr?`\nToday's nakshatra nature: ${_nakNatureStr}`:'';
   const chartSummary=`
 Name: ${userData.name}
 Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
@@ -2271,7 +2304,7 @@ Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra
 Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])} | House ${_h(p[7])}
 Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])} | House ${_h(p[8])}
 ${dashaContext}
-${transitBlock}${_nakLordBlock}
+${transitBlock}${_nakLordBlock}${_nakNatureBlock}
 Malefic influences (natal): ${chartData.malefics.map(m=>m.name).join(', ')}
 Today: ${L_en.days[practiceDate.getDay()]}
 Vara lord (weekday ruler): ${[
