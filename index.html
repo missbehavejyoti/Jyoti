@@ -722,6 +722,7 @@ select option{background:var(--s2);color:var(--text)}
         <div class="tab" onclick="switchTab('weekly',this)" data-en="Weekly Practice" data-hi="साप्ताहिक अभ्यास" data-es="Práctica Semanal">Weekly Practice</div>
         <div class="tab" onclick="switchTab('chart',this)" data-en="Full Chart" data-hi="पूर्ण कुंडली" data-es="Carta Completa">Full Chart</div>
         <div class="tab" onclick="switchTab('compat',this)" data-en="Compatibility" data-hi="अनुकूलता" data-es="Compatibilidad">Compatibility</div>
+        <div class="tab" onclick="switchTab('career',this)" data-en="Career" data-hi="करियर" data-es="Carrera">Career</div>
       </div>
 
       <!-- Daily Tab -->
@@ -895,6 +896,24 @@ select option{background:var(--s2);color:var(--text)}
           </div>
         </div>
 
+      </div>
+
+      <!-- Career Tab -->
+      <div id="tab-career" style="display:none">
+        <div id="career-loading" class="loading" style="padding:2rem;display:none">
+          <div class="loading-flame">✨</div>
+          <div class="loading-text" data-en="Reading your vocational dharma..." data-hi="आपके करियर धर्म को पढ़ रहे हैं..." data-es="Leyendo tu dharma vocacional...">Reading your vocational dharma...</div>
+        </div>
+        <div id="career-content" style="display:none"></div>
+        <div id="career-context-box" style="display:none;margin-top:1.2rem">
+          <div style="border:1px solid rgba(200,169,74,.2);border-radius:12px;padding:1.2rem;background:var(--soft-bg)">
+            <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;color:var(--gold-d);margin-bottom:.7rem">✦ <span data-en="YOUR SITUATION" data-hi="आपकी स्थिति" data-es="TU SITUACIÓN">YOUR SITUATION</span></div>
+            <p style="font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:.8rem" data-en="Share a specific question or situation — the reading responds through your chart." data-hi="अपना विशेष प्रश्न या स्थिति साझा करें — पाठ आपकी कुंडली के माध्यम से उत्तर देगा।" data-es="Comparte una pregunta o situación específica — la lectura responde a través de tu carta.">Share a specific question or situation — the reading responds through your chart.</p>
+            <textarea id="career-question" style="width:100%;min-height:88px;background:var(--s2);border:1px solid var(--s4);border-radius:8px;padding:.75rem;color:var(--text);font-size:.88rem;font-family:Georgia,serif;resize:vertical;line-height:1.6;box-sizing:border-box" placeholder="e.g. I've been in the same role for 8 years and feel stuck. Should I start my own business?"></textarea>
+            <button id="career-ctx-btn" class="btn btn-gold btn-full" onclick="submitCareerContext()" style="margin-top:.8rem" data-en="Get Guidance ✦" data-hi="मार्गदर्शन प्राप्त करें ✦" data-es="Obtener Orientación ✦">Get Guidance ✦</button>
+          </div>
+          <div id="career-context-response" style="display:none"></div>
+        </div>
       </div>
 
       <!-- Tiny utility footer — always reachable from page 5 regardless of subscription state.
@@ -3148,17 +3167,18 @@ function renderWeeklyReading(d){
 // ── TABS ──
 function switchTab(tab,el){
   const tier=_verifiedTier||localStorage.getItem('jyoti_tier')||'full';
-  if(tier==='compat'&&(tab==='daily'||tab==='chart'||tab==='weekly')){
+  if(tier==='compat'&&(tab==='daily'||tab==='chart'||tab==='weekly'||tab==='career')){
     const m=currentLang==='hi'?'दैनिक साधना और कुंडली के लिए पूर्ण एक्सेस में अपग्रेड करें।':currentLang==='es'?'Actualiza a acceso completo para práctica diaria y lectura de carta.':'Upgrade to full access for daily practice and chart reading.';
     alert(m);return;
   }
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  ['daily','weekly','chart','compat'].forEach(t=>{
+  ['daily','weekly','chart','compat','career'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
   if(tab==='compat')prefillSynPersonA();
   if(tab==='weekly')showWeeklyReading();
+  if(tab==='career')showCareerReading();
   if(tab==='chart'){
     if(!document.getElementById('tab-chart').innerHTML.trim())showFullChart();
     // Load planets every time chart tab is opened (guard inside prevents duplicate calls)
@@ -3167,6 +3187,197 @@ function switchTab(tab,el){
       ?soulLoadingPromise.then(()=>new Promise(r=>setTimeout(r,2000)))
       :new Promise(r=>setTimeout(r,1000));
     wait.then(()=>loadPlanetReadings());
+  }
+}
+
+// ── CAREER ──
+let _careerChartCtx=null;
+let _careerLoadedLang=null;
+
+async function showCareerReading(){
+  if(_careerLoadedLang===currentLang)return;
+  const capturedLang=currentLang;
+  const L_en=T['en'];
+  const p=chartData.planets;
+  const dasha=chartData.dashaPeriod;
+
+  const cacheKey='jyoti_career_'+capturedLang+'_'+_chartKey();
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached&&cached.reading){
+      _careerLoadedLang=capturedLang;
+      renderCareerReading(cached,capturedLang);
+      return;
+    }
+  }catch(e){}
+
+  const loadEl=document.getElementById('career-loading');
+  const contEl=document.getElementById('career-content');
+  const ctxBox=document.getElementById('career-context-box');
+  if(loadEl)loadEl.style.display='block';
+  if(contEl)contEl.style.display='none';
+  if(ctxBox)ctxBox.style.display='none';
+
+  const _ex={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const _db={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const _ow={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[5,2],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const _pn=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+  const _pni={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8};
+  const _dg=(i,s)=>i>=7?'':_ex[_pn[i]]===s?' (exalted)':_db[_pn[i]]===s?' (debilitated)':(_ow[_pn[i]]||[]).includes(s)?' (own sign)':'';
+  const _h=pl=>(pl.sign-chartData.ascSign+12)%12+1;
+  const _n=pl=>pl.nakshatraName||L_en.nakshatras[pl.nakshatra]||'';
+  const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+
+  const _ruledHouses=name=>{
+    const h=[];
+    for(let s=0;s<12;s++){if(_rulers[s]===name)h.push((s-chartData.ascSign+12)%12+1);}
+    return h;
+  };
+  const _natalH=name=>{const i=_pni[name];return(i!==undefined&&p[i])?_h(p[i]):null;};
+
+  const mahaDashaLord=dasha?.lord||'unknown';
+  const antarLord=dasha?.antar?.lord||mahaDashaLord;
+  const pratLord=dasha?.pratyantara?.lord||antarLord;
+
+  const _dashaHouses=name=>{
+    const nh=_natalH(name);
+    const rh=_ruledHouses(name);
+    return [...new Set(nh?[nh,...rh]:rh)].sort((a,b)=>a-b);
+  };
+  const mahaH=_dashaHouses(mahaDashaLord);
+  const antarH=_dashaHouses(antarLord);
+  const pratH=_dashaHouses(pratLord);
+  const threeLevel=mahaH.filter(h=>antarH.includes(h)&&pratH.includes(h));
+  const antarPratOverlap=antarH.filter(h=>pratH.includes(h));
+
+  const _planetsInH=h=>p.map((pl,i)=>_h(pl)===h?_pn[i]:null).filter(Boolean);
+
+  const _careerHouseInfo=[10,11,2,6,7].map(h=>{
+    const lord=_rulers[(chartData.ascSign+h-1)%12];
+    const li=_pni[lord];
+    const lordSign=li!==undefined&&p[li]?L_en.signs[p[li].sign]:'?';
+    const lordDig=li!==undefined&&p[li]?_dg(li,p[li].sign):'';
+    const lordH=_natalH(lord);
+    const pls=_planetsInH(h);
+    return `  House ${h} lord: ${lord} in ${lordSign}${lordDig}, House ${lordH||'?'}${pls.length?' | Planets in House '+h+': '+pls.join(', '):''}`;
+  }).join('\n');
+
+  const _ak=[...p.slice(0,7)].map((pl,i)=>({name:_pn[i],deg:parseFloat(pl.degree)||0})).sort((a,b)=>b.deg-a.deg);
+  const akName=_ak[0]?.name||'';
+  const amkName=_ak[1]?.name||'';
+
+  const dashaContext=dasha?`
+VIMSHOTTARI DASHA (DBA timing):
+  Maha Dasha (D, background context): ${mahaDashaLord}, ${dasha.remaining} years remaining, next: ${dasha.next}
+  Antar Dasha (B, active months): ${antarLord}, ends ${dasha.antar?.endDate||'?'}
+  Pratyantara (A, immediate weeks): ${pratLord}, ends ${dasha.pratyantara?.endDate||'?'}
+
+DBA CAREER HOUSE ANALYSIS (career events manifest when combinations appear in Antar + Pratyantara):
+  Maha Dasha ${mahaDashaLord} activates houses: ${mahaH.join(', ')||'none'} [natal House ${_natalH(mahaDashaLord)||'?'}, rules Houses ${_ruledHouses(mahaDashaLord).join(' & ')||'none'}]
+  Antar Dasha ${antarLord} activates houses: ${antarH.join(', ')||'none'} [natal House ${_natalH(antarLord)||'?'}, rules Houses ${_ruledHouses(antarLord).join(' & ')||'none'}]
+  Pratyantara ${pratLord} activates houses: ${pratH.join(', ')||'none'} [natal House ${_natalH(pratLord)||'?'}, rules Houses ${_ruledHouses(pratLord).join(' & ')||'none'}]
+  Antar + Pratyantara overlap (currently active now): ${antarPratOverlap.join(', ')||'none'}
+  Houses at all THREE DBA levels (extremely strong): ${threeLevel.join(', ')||'none'}`:'';
+
+  const chartSummary=`Name: ${userData.name}
+Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
+Ascendant (Lagna): ${L_en.signs[chartData.ascSign]} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°
+Lagna Lord: ${_rulers[chartData.ascSign]} in ${(()=>{const li=_pni[_rulers[chartData.ascSign]];return li!==undefined&&p[li]?L_en.signs[p[li].sign]+''+_dg(li,p[li].sign)+', House '+_h(p[li]):'?'})()}
+
+NATAL CHART:
+Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | House ${_h(p[0])} | Nakshatra: ${_n(p[0])}
+Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | House ${_h(p[1])} | Nakshatra: ${_n(p[1])}
+Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | House ${_h(p[2])}
+Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | House ${_h(p[3])}
+Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | House ${_h(p[4])}
+Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | House ${_h(p[5])}
+Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | House ${_h(p[6])}
+Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | House ${_h(p[7])}
+Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | House ${_h(p[8])}
+
+Soul planet (Atmakaraka, highest degree): ${akName}${p[_pni[akName]]?' in '+L_en.signs[p[_pni[akName]].sign]+' '+p[_pni[akName]].degree+'°, House '+_h(p[_pni[akName]]):''}
+Career minister (Amatyakaraka, 2nd highest degree): ${amkName}${p[_pni[amkName]]?' in '+L_en.signs[p[_pni[amkName]].sign]+' '+p[_pni[amkName]].degree+'°, House '+_h(p[_pni[amkName]]):''}
+
+CAREER HOUSE LORDS AND OCCUPANTS:
+${_careerHouseInfo}
+${dashaContext}
+Today: ${new Date().toDateString()}`;
+
+  _careerChartCtx=chartSummary;
+
+  try{
+    const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary,lang:capturedLang,type:'career_layer1'})});
+    if(!resp.ok)throw new Error('api-error');
+    const data=await resp.json();
+    if(!data||data.error||!data.reading)throw new Error('bad-data');
+    try{localStorage.setItem(cacheKey,JSON.stringify(data));}catch(e){}
+    if(capturedLang===currentLang){_careerLoadedLang=capturedLang;renderCareerReading(data,capturedLang);}
+  }catch(e){
+    if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);text-align:center;padding:1rem;font-size:.85rem">${capturedLang==='hi'?'लोड नहीं हो सका।':capturedLang==='es'?'No se pudo cargar.':'Could not load. Please try again.'}</p><button onclick="_careerLoadedLang=null;showCareerReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer;display:block;margin:0 auto">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button>`;
+  }
+}
+
+function renderCareerReading(d,lang){
+  const loadEl=document.getElementById('career-loading');
+  const contEl=document.getElementById('career-content');
+  const ctxBox=document.getElementById('career-context-box');
+  if(loadEl)loadEl.style.display='none';
+  if(!contEl)return;
+  contEl.style.display='block';
+  const _L=lang||currentLang;
+  const mc=d.mantra_count||108;
+  const _hdr=(en,hi,es)=>`<div style="font-family:'Cinzel',serif;font-size:.57rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.45rem">✦ ${_L==='hi'?hi:_L==='es'?es:en}</div>`;
+  const strengthsHtml=(d.strengths||[]).map(s=>`<li style="display:flex;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08);line-height:1.72;color:var(--text)"><span style="flex-shrink:0;color:var(--gold);font-size:1.05em;margin-top:.1em">✦</span><span>${glossify(s)}</span></li>`).join('');
+  const mantraBlock=d.mantra?`
+    <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_L==='hi'?'करियर मंत्र':_L==='es'?'MANTRA DE CARRERA':'CAREER MANTRA'}</div>
+      <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${d.mantra}</div>
+      ${d.mantra_translit&&d.mantra_translit.trim()!==d.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${d.mantra_translit}</div>`:''}
+      <div style="font-size:.8rem;color:var(--muted)">${d.mantra_meaning||''}</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${mc} ${_L==='hi'?'बार':_L==='es'?'veces':'times'}</div>
+    </div>
+    <div class="remedy-actions">
+      <button class="chant-btn" onclick="openChant('${d.mantra}','${(d.mantra_meaning||'').replace(/'/g,"\\'")}',${mc},'','${(d.mantra_translit||'').replace(/'/g,"\\'")}')">🙏 ${_L==='hi'?'जपें':_L==='es'?'Cantar':'Chant'}</button>
+    </div>`:'';
+  contEl.innerHTML=`
+    <div class="remedy-card">
+      <div class="remedy-day">${_L==='hi'?'करियर धर्म':_L==='es'?'Dharma Vocacional':'Vocational Dharma'}</div>
+      <p style="font-size:.9rem;color:var(--text);line-height:1.78;margin-bottom:1.2rem">${glossify(d.reading||'')}</p>
+      ${strengthsHtml?`${_hdr('NATURAL STRENGTHS','प्राकृतिक शक्तियां','FORTALEZAS NATURALES')}<ul style="list-style:none;padding:0;margin:0 0 1rem">${strengthsHtml}</ul>`:''}
+      ${d.current_period?`${_hdr('THIS PERIOD','इस काल में','ESTE PERÍODO')}<p style="font-size:.88rem;color:var(--text);line-height:1.72;margin-bottom:1rem">${glossify(d.current_period)}</p>`:''}
+      ${d.timing?`${_hdr('TIMING','समय','TIEMPO')}<p style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.65;margin-bottom:1rem">${glossify(d.timing)}</p>`:''}
+      ${mantraBlock}
+    </div>`;
+  if(ctxBox)ctxBox.style.display='block';
+}
+
+async function submitCareerContext(){
+  const q=(document.getElementById('career-question')?.value||'').trim();
+  if(!q)return;
+  const btn=document.getElementById('career-ctx-btn');
+  const respEl=document.getElementById('career-context-response');
+  const _L=currentLang;
+  if(btn){btn.disabled=true;btn.textContent=_L==='hi'?'पढ़ रहे हैं...':_L==='es'?'Leyendo...':'Reading...';}
+  if(respEl){respEl.style.display='none';respEl.innerHTML='';}
+  try{
+    const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary:_careerChartCtx,lang:_L,type:'career_layer2',context:q})});
+    if(!resp.ok)throw new Error('api-error');
+    const data=await resp.json();
+    if(!data||data.error||!data.guidance)throw new Error('bad-data');
+    if(respEl){
+      const forLabel=_L==='hi'?'आपके लिए':_L==='es'?'PARA TU SITUACIÓN':'FOR YOUR SITUATION';
+      respEl.innerHTML=`<div style="border-top:1px solid rgba(200,169,74,.15);padding-top:1rem;margin-top:1rem"><div style="font-family:'Cinzel',serif;font-size:.57rem;letter-spacing:.15em;color:var(--gold-d);margin-bottom:.6rem">✦ ${forLabel}</div><p style="font-size:.9rem;color:var(--text);line-height:1.78">${glossify(data.guidance)}</p></div>`;
+      respEl.style.display='block';
+    }
+  }catch(e){
+    if(respEl){
+      respEl.innerHTML=`<p style="color:var(--rose);font-size:.85rem;text-align:center;margin-top:.5rem">${currentLang==='hi'?'लोड नहीं हो सका।':currentLang==='es'?'No se pudo cargar.':'Could not load. Please try again.'}</p>`;
+      respEl.style.display='block';
+    }
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=_L==='hi'?'मार्गदर्शन प्राप्त करें ✦':_L==='es'?'Obtener Orientación ✦':'Get Guidance ✦';}
   }
 }
 
