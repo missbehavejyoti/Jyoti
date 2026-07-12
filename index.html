@@ -3224,10 +3224,11 @@ function switchTab(tab,el){
 
 // ── CAREER ──
 let _careerChartCtx=null;
-let _careerLoadedLang=null;
+let _careerLoadedKey=null;
 
 async function showCareerReading(){
-  if(_careerLoadedLang===currentLang)return;
+  const _ck=currentLang+'_'+_chartKey();
+  if(_careerLoadedKey===_ck)return;
   const capturedLang=currentLang;
   const L_en=T['en'];
   const p=chartData.planets;
@@ -3237,7 +3238,7 @@ async function showCareerReading(){
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
     if(cached&&cached.reading){
-      _careerLoadedLang=capturedLang;
+      _careerLoadedKey=_ck;
       if(cached.chartCtx)_careerChartCtx=cached.chartCtx;
       renderCareerReading(cached,capturedLang);
       return;
@@ -3345,9 +3346,9 @@ Today: ${new Date().toDateString()}`;
     const data=await resp.json();
     if(!data||data.error||!data.reading)throw new Error('bad-data');
     try{localStorage.setItem(cacheKey,JSON.stringify({...data,chartCtx:chartSummary}));}catch(e){}
-    if(capturedLang===currentLang){_careerLoadedLang=capturedLang;renderCareerReading(data,capturedLang);}
+    if(capturedLang===currentLang){_careerLoadedKey=_ck;renderCareerReading(data,capturedLang);}
   }catch(e){
-    if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);text-align:center;padding:1rem;font-size:.85rem">${capturedLang==='hi'?'लोड नहीं हो सका।':capturedLang==='es'?'No se pudo cargar.':'Could not load. Please try again.'}</p><button onclick="_careerLoadedLang=null;showCareerReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer;display:block;margin:0 auto">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button>`;
+    if(loadEl)loadEl.innerHTML=`<p style="color:var(--dim);text-align:center;padding:1rem;font-size:.85rem">${capturedLang==='hi'?'लोड नहीं हो सका।':capturedLang==='es'?'No se pudo cargar.':'Could not load. Please try again.'}</p><button onclick="_careerLoadedKey=null;showCareerReading()" style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;padding:.4rem 1.2rem;border-radius:20px;background:rgba(200,169,74,.1);border:1px solid rgba(200,169,74,.3);color:var(--gold);cursor:pointer;display:block;margin:0 auto">↺ ${capturedLang==='hi'?'पुनः प्रयास':capturedLang==='es'?'Reintentar':'Retry'}</button>`;
   }
 }
 
