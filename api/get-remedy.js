@@ -152,6 +152,17 @@ CONTENT RULES: Each practice must be grounded in this specific chart but feel li
 
 MANTRA RULE: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of the response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. "mantra_translit" is ALWAYS a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), regardless of response language. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
 
+MANTRA OPTIONS — choose the one that fits this specific chart and day, not always the most obvious one:
+Sun: Gayatri Mantra, Aditya Hrudayam Stotram, Surya Dvadasha Nama, Om Hraam Hreem Hraum Sah Suryaya Namah
+Moon: Om Namah Shivaya, Om Shraam Shreem Shraum Sah Chandraya Namah, Sri Suktam, Annapurna Stotram
+Mars: Hanuman Chalisa, Skanda Shashti Kavacham, Om Kraam Kreem Kraum Sah Bhaumaya Namah, Om Angarakaya Namah
+Mercury: Vishnu Sahasranamam, Om Namo Narayanaya, Om Braam Breem Braum Sah Budhaya Namah
+Jupiter: Guru Paduka Stotram, Guru Vandana, Dakshinamurthy Stotram, Om Graam Greem Graum Sah Gurave Namah
+Venus: Sri Suktam, Maha Lakshmi Ashtakam, Lalita Sahasranamam, Om Shreem Mahalakshmyai Namah, Om Draam Dreem Draum Sah Shukraya Namah
+Saturn: Sri Rudram, Hanuman Chalisa, Om Namah Shivaya, Om Praam Preem Praum Sah Shanaischaraya Namah
+Rahu: Durga Saptashati, Om Krim Kalikaye Namah, Bagalamukhi mantra, Om Bhraam Bhreem Bhraum Sah Rahave Namah
+Ketu: Om Gam Ganapataye Namah, Skanda Shashti Kavacham, Om Aim Saraswatyai Namah, Om Sraam Sreem Sraum Sah Ketave Namah, Dakshinamurthy Stotram
+
 JSON:
 {
   "cosmic_weather": "One sentence. A felt quality for the day — what energy is present and why from this chart. Max 20 words.",
@@ -256,15 +267,15 @@ You are Jyoti, a master Nadi Jyotish guide. Your daily practice readings are the
 CLASSICAL SOURCES: Brihat Parashara Hora Shastra (BPHS), Phaladeepika, Saravali, Brihat Jataka, Chandra Kala Nadi (Deva Keralam), Bhrigu Nandi Nadi, Dhruva Nadi, Jaimini Sutras, Muhurta Chintamani, and the South Indian Nadi oral tradition. Mantra sources: Rig Veda, Atharva Veda, and the Shaiva/Vaishnava Tantras. Every practice named must be traceable to one of these lineages.
 
 CLASSICAL REMEDY REPERTOIRE — draw from these when appropriate, but always choose the mantra or practice that fits this specific chart, not just the day:
-Sun: Gayatri Mantra, Aditya Hrudayam Stotram, Surya Arghya (water offering at sunrise)
-Moon: Om Namah Shivaya, Chandra mantra, sitting by water at dusk, warm milk practice
-Mars: Hanuman Chalisa, Skanda Shashti Kavacham, vigorous physical practice facing south
-Mercury: Vishnu Sahasranamam, Nadi Shodhana pranayama, intentional writing and study
-Jupiter: Guru Paduka Stotram, Guru Vandana, turmeric tilak, facing northeast, acts of true generosity
-Venus: Maha Lakshmi Ashtakam, Lalita Sahasranamam, rose or jasmine offering, beauty as sadhana
-Saturn: Sri Rudram, Hanuman Chalisa, sesame oil lamp facing west, service without recognition
-Rahu: Durga Saptashati, Kali mantras, camphor flame at dusk, Trataka gazing
-Ketu: Ganesha mantras, Skanda mantras, mauna (intentional silence), navel meditation
+Sun: Gayatri Mantra (Om Bhur Bhuvaḥ Svaḥ Tat Savitur...), Aditya Hrudayam Stotram, Surya Dvadasha Nama Stotram (12 names of Surya), Om Hraam Hreem Hraum Sah Suryaya Namah (beeja), Surya Arghya (copper vessel water offering at sunrise)
+Moon: Om Namah Shivaya, Om Shraam Shreem Shraum Sah Chandraya Namah (beeja), Sri Suktam, Annapurna Stotram, sitting by water or in moonlight at dusk, warm milk with cardamom before sleep
+Mars: Hanuman Chalisa, Skanda Shashti Kavacham, Om Kraam Kreem Kraum Sah Bhaumaya Namah (beeja), Om Angarakaya Namah, vigorous physical practice facing south
+Mercury: Vishnu Sahasranamam, Om Namo Narayanaya, Om Braam Breem Braum Sah Budhaya Namah (beeja), Nadi Shodhana pranayama, intentional writing and sacred study
+Jupiter: Guru Paduka Stotram, Guru Vandana (Gurur Brahma Gurur Vishnu...), Dakshinamurthy Stotram, Om Graam Greem Graum Sah Gurave Namah (beeja), turmeric tilak facing northeast, acts of genuine generosity
+Venus: Sri Suktam, Maha Lakshmi Ashtakam, Lalita Sahasranamam, Om Shreem Mahalakshmyai Namah, Om Draam Dreem Draum Sah Shukraya Namah (beeja), rose or jasmine offering, beauty as conscious sadhana
+Saturn: Sri Rudram (Namakam/Chamakam), Hanuman Chalisa, Om Namah Shivaya, Om Praam Preem Praum Sah Shanaischaraya Namah (beeja), sesame oil lamp facing west, service without recognition
+Rahu: Durga Saptashati, Om Krim Kalikaye Namah, Bagalamukhi mantra (Om Hleem Bagalamukhi...), Om Bhraam Bhreem Bhraum Sah Rahave Namah (beeja), camphor flame at dusk facing southwest, Trataka gazing practice
+Ketu: Om Gam Ganapataye Namah, Skanda Shashti Kavacham, Om Aim Saraswatyai Namah, Dakshinamurthy Stotram (the wisdom aspect), Om Sraam Sreem Sraum Sah Ketave Namah (beeja), mauna (intentional silence), navel meditation
 
 GEMSTONE GUIDANCE (Ratna Chikitsa):
 Sun=Ruby, Moon=Pearl, Mars=Red Coral, Mercury=Emerald, Jupiter=Yellow Sapphire, Venus=Diamond, Saturn=Blue Sapphire, Rahu=Hessonite (Gomed), Ketu=Cat's Eye (Lehsunia).
