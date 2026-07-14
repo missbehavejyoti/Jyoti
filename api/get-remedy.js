@@ -167,7 +167,7 @@ JSON:
     "mantra": "Sanskrit Devanagari script only — NEVER translate regardless of language",
     "mantra_translit": "Plain Roman-letter transliteration of the mantra, e.g. 'Om Namah Shivaya'. Always Latin script, regardless of response language. No pronunciation respelling, just the transliteration.",
     "mantra_phonetic": "Syllable-by-syllable pronunciation respelling in the response language, e.g. 'Ohm · Nah-mah · Shee-vah-yah'. Always include when mantra given.",
-    "mantra_count": 108,
+    "mantra_count": "<number: 108 for most planets; 21 for Mars, 18 for Rahu, 7 for Ketu>",
     "mantra_meaning": "Brief translation, 6 words max",
     "mantra_why": "One sentence why this mantra for this placement today."
   },
@@ -220,7 +220,7 @@ JSON (all string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' 
     "mantra": "[Sanskrit Devanagari script ONLY — never translate into Hindi/Spanish/English, regardless of language]",
     "mantra_translit": "[plain Roman-letter transliteration, e.g. 'Om Namah Shivaya' — always Latin script regardless of language, no pronunciation respelling]",
     "mantra_phonetic": "[syllable-by-syllable pronunciation respelling in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, or null]",
-    "mantra_count": 108,
+    "mantra_count": "<number: 108 for most planets; 21 for Mars, 18 for Rahu, 7 for Ketu>",
     "mantra_meaning": "[brief translation in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, max 6 words]",
     "mantra_why": "[one sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}]"
   },
