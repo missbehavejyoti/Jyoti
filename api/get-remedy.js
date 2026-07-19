@@ -142,11 +142,14 @@ STRICT LENGTH RULES — this is a morning scan card, not an essay:
 - Each practice bullet: ONE sentence only. Max 20 words. Starts with a verb describing a real human action. The chart placement is the reason, not the subject.
 - mantra_why: ONE sentence only. Warm and personal.
 
+NAMING RULE — every bullet must earn its place in this chart, not just sound nice: cosmic_weather and EACH of the three practice bullets must name at least one specific chart element in the visible text (a planet, a house number, a sign, a nakshatra, or a dasha lord — e.g. "your Mercury antar dasha," "Saturn in House 6," "Venus in your 11th"). A bullet with no named element could belong to any subscriber on any day — that is the one failure mode to avoid above all others. The named element stays woven in as the reason, never the opening subject.
+
 EXAMPLES of the right tone:
 ✓ "Light a sesame oil lamp at dusk and sit with whatever you cannot fix — Saturn in House 6 asks for surrender today."
 ✗ "Offer water to Saturn in natal House 6 position invoking Pushya nakshatra healing."
 ✓ "Breathe slowly before any important conversation today — your Mercury period sharpens clarity when given space."
 ✗ "Trace Rahu's House 9 dharma path through pranayama focusing on Mercury antar dasha clarity."
+✗ "Write three things you have held back from saying, then speak one aloud to someone who will listen." (no chart element named anywhere — this could be anyone's card on any day, not this one)
 
 CONTENT RULES: Each practice must be grounded in this specific chart but feel like a real human instruction. No generic content. No em dashes (—), en dashes (–), or asterisks (*). No Markdown formatting. Valid JSON only.
 
@@ -165,15 +168,15 @@ Ketu: Om Gam Ganapataye Namah, Skanda Shashti Kavacham, Om Aim Saraswatyai Namah
 
 JSON:
 {
-  "cosmic_weather": "One sentence. A felt quality for the day — what energy is present and why from this chart. Max 20 words.",
+  "cosmic_weather": "One sentence. A felt quality for the day — must name a specific planet, house, sign, or dasha lord as why. Max 20 words.",
   "has_remedy": true,
   "remedy": {
     "title": "Short evocative name for today's practice theme",
     "timing": "Best time, 8 words max",
     "practices": [
-      "One sentence. Real human action first, chart reason second. Max 20 words.",
-      "One sentence. Different practice type. Warm and specific. Max 20 words.",
-      "One sentence. Body or quality practice. Grounded in this chart. Max 20 words."
+      "One sentence. Real human action first, then must name a specific planet, house, sign, or dasha lord as the reason. Max 20 words.",
+      "One sentence. Different practice type. Must name a different specific chart element than bullet 1. Max 20 words.",
+      "One sentence. Body or quality practice. Must name a specific chart element too — no bullet left ungrounded. Max 20 words."
     ],
     "mantra": "Sanskrit Devanagari script only — NEVER translate regardless of language",
     "mantra_translit": "Plain Roman-letter transliteration of the mantra, e.g. 'Om Namah Shivaya'. Always Latin script, regardless of response language. No pronunciation respelling, just the transliteration.",
