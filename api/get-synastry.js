@@ -43,6 +43,7 @@ module.exports = async (req, res) => {
     : lang === 'es'
     ? 'Respond entirely in Spanish.'
     : 'Respond in English.';
+  const langName = lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English';
 
   const LANG_PREFIX = lang === 'hi'
     ? 'IMPORTANT LANGUAGE REQUIREMENT: You MUST respond entirely in Hindi (Devanagari script). Every word of text content in your response must be in Hindi. Do not use English words in text values.\n\n'
@@ -70,7 +71,7 @@ CRITICAL RULES:
 - Every sentence must be specific to THESE exact charts — never generic.
 - Tone: the voice of a great teacher: precise, warm, honest, alive. Never clinical. Never alarming. Never explaining astrology to the reader — speaking through it.
 - For spiritual guidance only. Never give medical, psychiatric, financial or legal advice.
-- LANGUAGE: ${langInstruction} Every word of text content must be in this language. Do not mix languages.
+- LANGUAGE, ABSOLUTE: ${langInstruction} Every single word of every text value in the JSON below must be in ${langName} — not English, unless ${langName} is English. Do not mix languages, and do not lapse into English partway through a paragraph. The only exceptions are values explicitly marked as programmatic English strings above (resonance_label options, verdict_type codes, JSON keys).
 - RELATIONSHIP STAGE: Honour the relationship context exactly. If they have been married 30 years, write for 30 years of marriage — not a new meeting. If the context is unspecified, never assume they have just met; write in a way that is true for any stage of connection.
 - LOCATION: The birth place listed for each person is their place of birth only — not their current residence. People frequently move. Do not assume either person currently lives where they were born. When discussing geography or distance, base observations on chart patterns (4th/9th/12th house indicators, Rahu), not on the natal city.
 - PROGRAMMATIC FIELDS: JSON keys and enum code values like "verdict_type" must remain as exact English strings, never translate them.
@@ -278,7 +279,7 @@ Paragraph 3 — THE SOUL RECOGNITION: Draw from Moon nakshatra compatibility, La
 
 Paragraph 4 — THE WISE WAY FORWARD: A classical Vedic prescription for how both souls can engage with this connection consciously — honouring the karma without being consumed by it, embracing the dharma without forcing it. Specific practices, mantras, or intentions that support the highest expression of this bond.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended karmic and dharmic analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -296,7 +297,7 @@ Paragraph 3 — THE TIME MAP: Each chart summary states its EXACT current Vimsho
 
 Paragraph 4 — HOW TO HONOUR THE TIME: Whether this connection is time-bounded or a lifetime bond, each carries its own wisdom. How should each person hold the natural arc of this connection? What orientation helps them remain true to both the karmic timing and their own sovereignty?
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended duration and timing analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -314,7 +315,7 @@ Paragraph 3 — THE SHADOW DYNAMIC: Name specifically the wound patterns in each
 
 Paragraph 4 — THE ALCHEMICAL POSSIBILITY: If both people engage consciously with the shadow dynamic — neither projecting, neither withdrawing — what genuine transformation becomes possible in each soul? The highest outcome of this bond consciously lived.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended gifts and shadows analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -332,7 +333,7 @@ Paragraph 3 — THE PRACTICE IN DEPTH: Describe the specific classical Vedic pra
 
 Paragraph 4 — WHAT LOVE ASKS: The higher road is not detachment — it is fuller love, not lesser. What does the highest expression of love look like in this specific connection? What would it mean for each person to love the other from wholeness rather than need, from dharma rather than karma? A loving, sacred close.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended higher road guidance.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -350,7 +351,7 @@ Paragraph 3 — THE NATURE OF THE EXCHANGE: When soul debts and soul gifts meet,
 
 Paragraph 4 — HOW TO SETTLE WITH GRACE: The classical tradition offers wisdom on completing karmic debts gracefully — honouring the soul without being imprisoned by it. What specific practices, attitudes, or offerings would help these two souls settle their ledger with love and move forward in clarity?
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended soul debt and soul gift analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -368,7 +369,7 @@ Paragraph 3 — GEOGRAPHY AND DISTANCE: The 9th house (travel, foreign connectio
 
 Paragraph 4 — THE SHARED LIFE: What would a shared life actually look like for these two charts? Where would they thrive together, where would they need conscious negotiation? A practical, loving synthesis of how these two people would actually function in day-to-day coexistence — honest, specific, and warm.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended work, life, and geography analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -386,7 +387,7 @@ Paragraph 3 — JUPITER AND RAHU TRANSITS: Jupiter's transit through key houses 
 
 Paragraph 4 — HOW TO WORK WITH TIME: Neither person can force this connection to move faster than it is designed to move. What specific attitude or practice helps both people align with the natural timing — expanding in the windows of opening, deepening inward during the seasons of pressure? A wise, loving close.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended timing and dasha window analysis.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -404,7 +405,7 @@ Paragraph 3 — COMPATIBLE CHART SIGNATURES: Which rising sign types, Moon place
 
 Paragraph 4 — THE INVITATION TO ${A}: A loving, direct invitation to ${A} to see their own chart clearly — to distinguish between the pull of past-life hunger and the dharmic call toward genuine nourishment. What would ${A} find if they followed the wisdom of their chart? Warm, encouraging, honest.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${A}.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,
@@ -422,7 +423,7 @@ Paragraph 3 — COMPATIBLE CHART SIGNATURES: Which rising sign types, Moon place
 
 Paragraph 4 — THE INVITATION TO ${B}: A loving invitation to ${B} to see their chart clearly — to distinguish attraction patterns from genuine dharmic resonance. What would ${B} discover following the wisdom of their chart? Warm, encouraging, honest.
 
-${langInstruction}`,
+LANGUAGE, ABSOLUTE: ${langInstruction} Every single word in all four paragraphs must be in ${langName} — not English, unless ${langName} is English. Do not lapse into English partway through.`,
       user: `${CHART_CONTEXT}\n\nWrite the extended partner profile analysis for ${B}.`,
       maxTokens: lang === 'hi' ? 6200 : lang === 'es' ? 5200 : 4200,
       isText: true,

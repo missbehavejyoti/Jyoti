@@ -910,7 +910,7 @@ select option{background:var(--s2);color:var(--text)}
           <div style="border:1px solid rgba(200,169,74,.2);border-radius:12px;padding:1.2rem;background:var(--soft-bg)">
             <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;color:var(--gold-d);margin-bottom:.7rem">✦ <span data-en="YOUR SITUATION" data-hi="आपकी स्थिति" data-es="TU SITUACIÓN">YOUR SITUATION</span></div>
             <p style="font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:.8rem" data-en="Share a specific question or situation — the reading responds through your chart." data-hi="अपना विशेष प्रश्न या स्थिति साझा करें — पाठ आपकी कुंडली के माध्यम से उत्तर देगा।" data-es="Comparte una pregunta o situación específica — la lectura responde a través de tu carta.">Share a specific question or situation — the reading responds through your chart.</p>
-            <textarea id="career-question" style="width:100%;min-height:60px;background:var(--s2);border:1px solid var(--s4);border-radius:8px;padding:.75rem;color:var(--text);font-size:.88rem;font-family:Georgia,serif;resize:vertical;line-height:1.6;box-sizing:border-box" placeholder="e.g. I've been in the same role for 8 years and feel stuck. Should I start my own business?"></textarea>
+            <textarea id="career-question" style="width:100%;min-height:60px;background:var(--s2);border:1px solid var(--s4);border-radius:8px;padding:.75rem;color:var(--text);font-size:.88rem;font-family:Georgia,serif;resize:vertical;line-height:1.6;box-sizing:border-box" data-en="e.g. I've been in the same role for 8 years and feel stuck. Should I start my own business?" data-hi="जैसे, मैं 8 वर्षों से एक ही भूमिका में हूं और फंसा हुआ महसूस करता हूं। क्या मुझे अपना व्यवसाय शुरू करना चाहिए?" data-es="p. ej. Llevo 8 años en el mismo puesto y me siento estancado. ¿Debería iniciar mi propio negocio?" placeholder="e.g. I've been in the same role for 8 years and feel stuck. Should I start my own business?"></textarea>
             <button id="career-ctx-btn" class="btn btn-gold btn-full" onclick="submitCareerContext()" style="margin-top:.8rem" data-en="Get Guidance ✦" data-hi="मार्गदर्शन प्राप्त करें ✦" data-es="Obtener Orientación ✦">Get Guidance ✦</button>
           </div>
           <div id="career-context-response" style="display:none"></div>
@@ -1183,7 +1183,7 @@ function setLang(lang){
     const v=el.getAttribute('data-'+lang);
     if(v){if(v.includes('<'))el.innerHTML=v;else el.textContent=v;}
   });
-  document.querySelectorAll('input[data-hi], input[data-es]').forEach(el=>{
+  document.querySelectorAll('input[data-hi], input[data-es], textarea[data-hi], textarea[data-es]').forEach(el=>{
     const v=el.getAttribute('data-'+lang);
     if(v)el.placeholder=v;
     else if(lang==='en')el.placeholder=el.getAttribute('data-en')||el.getAttribute('placeholder')||el.placeholder;
@@ -1209,6 +1209,15 @@ function setLang(lang){
     const weeklyContent=document.getElementById('weekly-content');
     if(weeklyContent)weeklyContent.style.display='none';
     if(document.getElementById('tab-weekly')?.style.display!=='none')showWeeklyReading();
+    // Clear career reading so it re-fetches in new language
+    if(typeof _careerLoadedKey!=='undefined'){
+      _careerLoadedKey=null;
+      const careerContent=document.getElementById('career-content');
+      if(careerContent){careerContent.innerHTML='';careerContent.style.display='none';}
+      const careerCtxResp=document.getElementById('career-context-response');
+      if(careerCtxResp){careerCtxResp.innerHTML='';careerCtxResp.style.display='none';}
+      if(document.getElementById('tab-career')?.style.display!=='none')showCareerReading();
+    }
     // Clear compat in-memory cache so next view re-fetches in new language
     if(typeof synCache!=='undefined'){
       synCache={};synLoadingType=null;
@@ -3685,7 +3694,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '118';
+const JYOTI_BUILD = '119';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3694,7 +3703,8 @@ const JYOTI_BUILD = '118';
     Object.keys(localStorage).forEach(k=>{
       if(k.startsWith('jyoti_q_')||k.startsWith('jyoti_d_')||
          k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')||
-         k.startsWith('jyoti_w_')||k.startsWith('jyoti_syn_')){
+         k.startsWith('jyoti_w_')||k.startsWith('jyoti_syn_')||
+         k.startsWith('jyoti_career_')){
         localStorage.removeItem(k);
       }
     });
@@ -4870,7 +4880,7 @@ if(currentLang!=='en'){
     const v=el.getAttribute('data-'+currentLang);
     if(v){if(v.includes('<'))el.innerHTML=v;else el.textContent=v;}
   });
-  document.querySelectorAll('input[data-hi], input[data-es]').forEach(el=>{
+  document.querySelectorAll('input[data-hi], input[data-es], textarea[data-hi], textarea[data-es]').forEach(el=>{
     const v=el.getAttribute('data-'+currentLang);
     if(v)el.placeholder=v;
   });
