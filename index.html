@@ -1193,6 +1193,7 @@ function setLang(lang){
     showChart();
     const fc=document.getElementById('full-reading');
     if(fc&&fc.innerHTML.trim())showFullChart();
+    loadNakshatraReading().catch(()=>{});
     showDailyReading();
     // Soul map — clear cache so it re-fetches in new language
     soulReadingCache=null;
