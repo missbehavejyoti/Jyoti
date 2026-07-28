@@ -69,12 +69,17 @@ module.exports = async (req, res) => {
   })();
   const isMonthEndPrep = isDailyRemedy && _daysLeft >= 0 && _daysLeft <= 7;
 
-  const LANG_PREFIX = (isDailyRemedy || isWeekly || isDailyQuick)
-    ? (lang === 'hi'
-      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), never Hindi. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n'
-      : lang === 'es'
-      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. El campo "mantra_translit" es siempre una transliteración simple en letras romanas (por ejemplo "Om Namah Shivaya"), nunca en español. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n'
-      : '')
+  // Plain-text readings (nakshatra, soul) have no JSON keys/mantra fields — use prose-oriented wording.
+  const isPlainTextReading = isNakshatra || isSoul;
+
+  const LANG_PREFIX = lang === 'hi'
+    ? (isPlainTextReading
+      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every single sentence must be in Hindi — do not include any English words or phrases anywhere in the response.\n\n'
+      : 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), never Hindi. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n')
+    : lang === 'es'
+    ? (isPlainTextReading
+      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Cada oración debe estar en español — no incluyas ninguna palabra o frase en inglés en ninguna parte de la respuesta.\n\n'
+      : 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. El campo "mantra_translit" es siempre una transliteración simple en letras romanas (por ejemplo "Om Namah Shivaya"), nunca en español. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n')
     : '';
 
   const systemPrompt = isNakshatra
@@ -166,24 +171,26 @@ Saturn: Sri Rudram, Hanuman Chalisa, Om Namah Shivaya, Om Praam Preem Praum Sah 
 Rahu: Durga Saptashati, Om Krim Kalikaye Namah, Bagalamukhi mantra, Om Bhraam Bhreem Bhraum Sah Rahave Namah
 Ketu: Om Gam Ganapataye Namah, Skanda Shashti Kavacham, Om Aim Saraswatyai Namah, Om Sraam Sreem Sraum Sah Ketave Namah, Dakshinamurthy Stotram
 
-JSON:
+LANGUAGE REMINDER (read this again before writing): ${langInstruction} The "cosmic_weather", "title", "timing", "practices", "mantra_phonetic", "mantra_meaning", and "mantra_why" fields must ALL be written in that language, not English, unless English was requested. Only "mantra" (Sanskrit) and "mantra_translit" (Roman transliteration) stay non-translated.
+
+JSON (all human-readable string values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' ? 'Spanish' : 'English'} except mantra/mantra_translit):
 {
-  "cosmic_weather": "One sentence. A felt quality for the day — must name a specific planet, house, sign, or dasha lord as why. Max 20 words.",
+  "cosmic_weather": "One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. A felt quality for the day — must name a specific planet, house, sign, or dasha lord as why. Max 20 words.",
   "has_remedy": true,
   "remedy": {
-    "title": "Short evocative name for today's practice theme",
-    "timing": "Best time, 8 words max",
+    "title": "Short evocative name in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} for today's practice theme",
+    "timing": "Best time in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, 8 words max",
     "practices": [
-      "One sentence. Real human action first, then must name a specific planet, house, sign, or dasha lord as the reason. Max 20 words.",
-      "One sentence. Different practice type. Must name a different specific chart element than bullet 1. Max 20 words.",
-      "One sentence. Body or quality practice. Must name a specific chart element too — no bullet left ungrounded. Max 20 words."
+      "One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Real human action first, then must name a specific planet, house, sign, or dasha lord as the reason. Max 20 words.",
+      "One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Different practice type. Must name a different specific chart element than bullet 1. Max 20 words.",
+      "One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Body or quality practice. Must name a specific chart element too — no bullet left ungrounded. Max 20 words."
     ],
     "mantra": "Sanskrit Devanagari script only — NEVER translate regardless of language",
     "mantra_translit": "Plain Roman-letter transliteration of the mantra, e.g. 'Om Namah Shivaya'. Always Latin script, regardless of response language. No pronunciation respelling, just the transliteration.",
-    "mantra_phonetic": "Syllable-by-syllable pronunciation respelling in the response language, e.g. 'Ohm · Nah-mah · Shee-vah-yah'. Always include when mantra given.",
+    "mantra_phonetic": "Syllable-by-syllable pronunciation respelling in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, e.g. 'Ohm · Nah-mah · Shee-vah-yah'. Always include when mantra given.",
     "mantra_count": "<number: 108 for most planets; 21 for Mars, 18 for Rahu, 7 for Ketu>",
-    "mantra_meaning": "Brief translation, 6 words max",
-    "mantra_why": "One sentence why this mantra for this placement today."
+    "mantra_meaning": "Brief translation in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, 6 words max",
+    "mantra_why": "One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} why this mantra for this placement today."
   },
   "no_remedy_message": null,
   "gemstone": null
@@ -254,13 +261,15 @@ CLASSICAL DEPTH: The person has chosen to go deeper — name the tradition fully
 
 RULES: Warm, specific, grounded in this chart. No em dashes (—), en dashes (–), or asterisks (*). No Markdown formatting of any kind. No generic content. No medical/financial/legal advice. Valid JSON only.
 
-JSON structure:
+LANGUAGE REMINDER (read this again before writing): ${langInstruction} Every field below must be written entirely in that language, not English, unless English was requested.
+
+JSON structure (all values in ${lang === 'hi' ? 'Hindi/Devanagari' : lang === 'es' ? 'Spanish' : 'English'}):
 {
-  "karma_thread": "1-2 sentences. Speak to this person about the deeper pattern they are living through right now — warm, honest, and human. Name the dasha period as context, not as the subject.",
-  "morning_practice": "3-5 complete instructional sentences. Tell them exactly what to do: where to sit or stand, what to hold or light, how to breathe, how many repetitions, what quality of attention to bring. The chart reason comes at the end, naturally. Write as a teacher who loves their student.",
-  "body_practice": "2-3 sentences. Name the practice (asana, pranayama, mudra) and give precise physical instruction — position, breath, duration. End with what this opens or releases specifically for this chart.",
-  "evening_practice": "2-3 sentences. A practice for completion — different in feel from morning. What to do, when, and what to consciously let go of as the day closes.",
-  "contemplation": "One searching question for journaling or sitting — specific to what this person is genuinely working through in their current dasha. Not philosophical in general. The real growing edge of their life right now."
+  "karma_thread": "1-2 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Speak to this person about the deeper pattern they are living through right now — warm, honest, and human. Name the dasha period as context, not as the subject.",
+  "morning_practice": "3-5 complete instructional sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Tell them exactly what to do: where to sit or stand, what to hold or light, how to breathe, how many repetitions, what quality of attention to bring. The chart reason comes at the end, naturally. Write as a teacher who loves their student.",
+  "body_practice": "2-3 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. Name the practice (asana, pranayama, mudra) and give precise physical instruction — position, breath, duration. End with what this opens or releases specifically for this chart.",
+  "evening_practice": "2-3 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}. A practice for completion — different in feel from morning. What to do, when, and what to consciously let go of as the day closes.",
+  "contemplation": "One searching question in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} for journaling or sitting — specific to what this person is genuinely working through in their current dasha. Not philosophical in general. The real growing edge of their life right now."
 }`
 
     : `${langInstruction} Every single word of your response must be in the requested language — do not switch to English at any point.
