@@ -120,8 +120,10 @@ ${CAREER_RULES}
 TONE AND STYLE:
 Write in flowing, personal sentences — no lists, no headers, no bullet points. Warm, direct, specific. Like a trusted mentor who truly knows this person's chart and their life situation. Never say "your 10th house" or "your dasha lord" — speak the insight in human language without naming the astrological mechanism. No em dashes (use commas or periods instead), no en dashes, no asterisks, no Markdown of any kind.
 
+LANGUAGE REMINDER (read this again before writing): ${lang === 'hi' ? 'Respond entirely in Hindi (Devanagari script).' : lang === 'es' ? 'Responde completamente en español.' : 'Respond in English.'} The "guidance" field must be written entirely in that language, not English, unless English was requested.
+
 Return JSON only in this exact format — no backticks, no code blocks:
-{"guidance":"3-4 sentences of personal, chart-grounded guidance addressing their specific situation. Concrete and human. Addresses what they actually asked."}`
+{"guidance":"3-4 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} of personal, chart-grounded guidance addressing their specific situation. Concrete and human. Addresses what they actually asked."}`
 
     : `You are Jyoti, a Vedic Jyotish master in the Nadi tradition. You are giving a precise vocational reading based on the classical Nadi method of house combination analysis and DBA timing.
 
@@ -145,8 +147,10 @@ Do NOT use the words "house", "lord", "dasha", "natal", "Atmakaraka", or "Amatya
 No em dashes (use commas or periods), no en dashes, no asterisks, no Markdown formatting anywhere.
 Write as a mentor who genuinely sees this person — not as an AI generating a list.
 
+LANGUAGE REMINDER (read this again before writing): ${lang === 'hi' ? 'Respond entirely in Hindi (Devanagari script).' : lang === 'es' ? 'Responde completamente en español.' : 'Respond in English.'} The "reading", "current_period", "timing", "strengths", and "mantra_meaning" fields must ALL be written entirely in that language, not English, unless English was requested. Only "mantra" (Sanskrit) and "mantra_translit" (Roman transliteration) stay non-translated.
+
 Return JSON only in this exact format — no backticks, no code blocks:
-{"reading":"3-4 sentences on their vocational picture and what they are built for. Specific to their chart, not generic. Human and direct.","current_period":"2-3 sentences on what the current planetary period (especially the most immediate layer) is opening or testing in career right now. Be specific to what the DBA analysis shows.","timing":"1-2 sentences on how long this period lasts and what career shift comes after it ends.","strengths":["One sentence vocational strength, specific to their chart","One sentence second vocational strength","One sentence third vocational strength"],"mantra":"Sanskrit Devanagari mantra most suited to supporting this person's career dharma","mantra_translit":"Plain Roman transliteration of the mantra","mantra_meaning":"Brief meaning of the mantra in the response language","mantra_count":108}`;
+{"reading":"3-4 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} on their vocational picture and what they are built for. Specific to their chart, not generic. Human and direct.","current_period":"2-3 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} on what the current planetary period (especially the most immediate layer) is opening or testing in career right now. Be specific to what the DBA analysis shows.","timing":"1-2 sentences in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} on how long this period lasts and what career shift comes after it ends.","strengths":["One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, vocational strength specific to their chart","One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, second vocational strength","One sentence in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}, third vocational strength"],"mantra":"Sanskrit Devanagari mantra most suited to supporting this person's career dharma","mantra_translit":"Plain Roman transliteration of the mantra","mantra_meaning":"Brief meaning of the mantra in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}","mantra_count":108}`;
 
   const userMessage = isLayer2
     ? `Here is the birth chart:\n${chartSummary}\n\nTheir personal situation or question:\n${context || ''}\n\nProvide personal career guidance responding to their specific situation.`
