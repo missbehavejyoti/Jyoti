@@ -3685,7 +3685,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '118';
+const JYOTI_BUILD = '119';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -3694,7 +3694,9 @@ const JYOTI_BUILD = '118';
     Object.keys(localStorage).forEach(k=>{
       if(k.startsWith('jyoti_q_')||k.startsWith('jyoti_d_')||
          k.startsWith('jyoti_daily')||k.startsWith('jyoti_remedy_')||
-         k.startsWith('jyoti_w_')||k.startsWith('jyoti_syn_')){
+         k.startsWith('jyoti_w_')||k.startsWith('jyoti_syn_')||
+         k.startsWith('jyoti_career_')||k.startsWith('jyoti_soul_')||
+         k.startsWith('jyoti_planets')){
         localStorage.removeItem(k);
       }
     });
