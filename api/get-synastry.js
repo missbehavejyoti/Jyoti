@@ -39,15 +39,15 @@ module.exports = async (req, res) => {
   if (!apiKey) return res.status(500).json({ error: 'API not configured' });
 
   const langInstruction = lang === 'hi'
-    ? 'Respond entirely in Hindi (Devanagari script).'
+    ? 'Respond entirely in Hindi (Devanagari script). Do not mix in English or Spanish words.'
     : lang === 'es'
-    ? 'Respond entirely in Spanish.'
-    : 'Respond in English.';
+    ? 'Respond entirely in Spanish. Do not mix in English or Hindi words.'
+    : 'Respond in English. Do not mix in Hindi or Spanish words.';
 
   const LANG_PREFIX = lang === 'hi'
-    ? 'IMPORTANT LANGUAGE REQUIREMENT: You MUST respond entirely in Hindi (Devanagari script). Every word of text content in your response must be in Hindi. Do not use English words in text values.\n\n'
+    ? 'IMPORTANT LANGUAGE REQUIREMENT: You MUST respond entirely in Hindi (Devanagari script). Every word of text content in your response must be in Hindi. Do not use English or Spanish words in text values.\n\n'
     : lang === 'es'
-    ? 'IMPORTANTE REQUISITO DE IDIOMA: Debes responder completamente en español. Cada palabra del contenido de texto debe estar en español. No uses palabras en inglés en los valores de texto.\n\n'
+    ? 'IMPORTANTE REQUISITO DE IDIOMA: Debes responder completamente en español. Cada palabra del contenido de texto debe estar en español. No uses palabras en inglés o hindi en los valores de texto.\n\n'
     : '';
 
   const A = nameA || 'Person A';

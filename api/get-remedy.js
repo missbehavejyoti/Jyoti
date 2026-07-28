@@ -41,10 +41,10 @@ module.exports = async (req, res) => {
   }
 
   const langInstruction = lang === 'hi'
-    ? 'Respond entirely in Hindi (Devanagari script).'
+    ? 'Respond entirely in Hindi (Devanagari script). Do not mix in English or Spanish words.'
     : lang === 'es'
-    ? 'Respond entirely in Spanish.'
-    : 'Respond in English.';
+    ? 'Respond entirely in Spanish. Do not mix in English or Hindi words.'
+    : 'Respond in English. Do not mix in Hindi or Spanish words.';
 
   const isNakshatra = type === 'nakshatra';
   const isSoul      = type === 'soul';
@@ -74,12 +74,12 @@ module.exports = async (req, res) => {
 
   const LANG_PREFIX = lang === 'hi'
     ? (isPlainTextReading
-      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every single sentence must be in Hindi — do not include any English words or phrases anywhere in the response.\n\n'
-      : 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), never Hindi. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n')
+      ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every single sentence must be in Hindi — do not include any English or Spanish words or phrases anywhere in the response.\n\n'
+      : 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Do not mix in English or Spanish words. Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text (e.g. ॐ नमः शिवाय, गायत्री मंत्र text, etc.) — Sanskrit mantras are sacred sounds and must never be translated into Hindi words or replaced with a Hindi description. The "mantra_translit" field is always a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), never Hindi. Only "mantra_phonetic" and "mantra_meaning" are in Hindi.\n\n')
     : lang === 'es'
     ? (isPlainTextReading
-      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Cada oración debe estar en español — no incluyas ninguna palabra o frase en inglés en ninguna parte de la respuesta.\n\n'
-      : 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. El campo "mantra_translit" es siempre una transliteración simple en letras romanas (por ejemplo "Om Namah Shivaya"), nunca en español. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n')
+      ? 'REQUISITO DE IDIOMA: Responde completamente en español. Cada oración debe estar en español — no incluyas ninguna palabra o frase en inglés o hindi en ninguna parte de la respuesta.\n\n'
+      : 'REQUISITO DE IDIOMA: Responde completamente en español. No mezcles palabras en inglés o hindi. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (por ejemplo ॐ नमः शिवाय) — los mantras son sonidos sagrados y nunca deben traducirse al español ni reemplazarse con una descripción. El campo "mantra_translit" es siempre una transliteración simple en letras romanas (por ejemplo "Om Namah Shivaya"), nunca en español. Solo "mantra_phonetic" y "mantra_meaning" van en español.\n\n')
     : '';
 
   const systemPrompt = isNakshatra
@@ -126,9 +126,9 @@ Write a personalised lifetime reading for each of the planets listed below. Each
 
 ${isPlanetA ? 'Write readings for: Sun, Moon, Mars.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"..."}' : ''}${isPlanetB ? 'Write readings for: Mercury, Jupiter, Venus.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Mercury":"...","Jupiter":"...","Venus":"..."}' : ''}${isPlanetC ? 'Write readings for: Saturn, Rahu.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Saturn":"...","Rahu":"..."}' : ''}${isPlanetD ? 'Write the reading for Ketu only.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Ketu":"..."}' : ''}${isPlanet ? 'Write readings for all nine planets.\n\nReturn valid JSON only — no markdown, no backticks:\n{"Sun":"...","Moon":"...","Mars":"...","Mercury":"...","Jupiter":"...","Venus":"...","Saturn":"...","Rahu":"...","Ketu":"..."}' : ''}
 ${lang === 'hi'
-  ? 'IMPORTANT: Write the reading text in Hindi (Devanagari script). The JSON keys — "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu" — must remain in English exactly as shown. Only the reading values (the text after the colon) should be in Hindi.'
+  ? 'IMPORTANT: Write the reading text in Hindi (Devanagari script). Do not mix in English or Spanish words. The JSON keys — "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu" — must remain in English exactly as shown. Only the reading values (the text after the colon) should be in Hindi.'
   : lang === 'es'
-  ? 'IMPORTANT: Write the reading text in Spanish. The JSON keys must remain in English exactly as shown. Only the reading values should be in Spanish.'
+  ? 'IMPORTANT: Write the reading text in Spanish. Do not mix in English or Hindi words. The JSON keys must remain in English exactly as shown. Only the reading values should be in Spanish.'
   : 'Write the readings in English.'}`
 
     : isDailyQuick

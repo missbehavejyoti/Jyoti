@@ -561,9 +561,9 @@ select option{background:var(--s2);color:var(--text)}
       <!-- Nakshatra free reading -->
       <div id="nakshatra-reading" style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:14px;padding:1.4rem 1.6rem;margin:1rem 0;position:relative;overflow:hidden">
         <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.4),transparent)"></div>
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label">✦ Your Nakshatra</div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label" data-en="✦ Your Nakshatra" data-hi="✦ आपका नक्षत्र" data-es="✦ Tu Nakshatra">✦ Your Nakshatra</div>
         <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name"></div>
-        <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading">Loading your nakshatra reading...</div>
+        <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading" data-en="Loading your nakshatra reading..." data-hi="आपकी नक्षत्र रीडिंग लोड हो रही है..." data-es="Cargando tu lectura de nakshatra...">Loading your nakshatra reading...</div>
         <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
           <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
           <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
@@ -798,9 +798,9 @@ select option{background:var(--s2);color:var(--text)}
         <!-- Nakshatra reading (mirrors the free preview on panel 3, kept reachable after subscribing) -->
         <div id="nakshatra-reading-p5" style="background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.2);border-radius:14px;padding:1.4rem 1.6rem;margin:0 0 1.2rem;position:relative;overflow:hidden">
           <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,74,.4),transparent)"></div>
-          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label-p5">✦ Your Nakshatra</div>
+          <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.6rem;text-transform:uppercase" id="nak-label-p5" data-en="✦ Your Nakshatra" data-hi="✦ आपका नक्षत्र" data-es="✦ Tu Nakshatra">✦ Your Nakshatra</div>
           <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-pale);margin-bottom:.6rem" id="nak-name-p5"></div>
-          <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading-p5">Loading your nakshatra reading...</div>
+          <div style="font-family:'EB Garamond',Georgia,serif;font-weight:500;font-size:1.02rem;color:var(--text);line-height:1.75" id="nak-reading-p5" data-en="Loading your nakshatra reading..." data-hi="आपकी नक्षत्र रीडिंग लोड हो रही है..." data-es="Cargando tu lectura de nakshatra...">Loading your nakshatra reading...</div>
           <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(200,169,74,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
             <span style="font-size:.78rem;color:var(--dim)" id="nak-share-hint-p5" data-en="✦ Share your nakshatra" data-hi="✦ अपना नक्षत्र शेयर करें" data-es="✦ Compartir tu nakshatra">✦ Share your nakshatra</span>
             <button class="btn btn-ghost btn-sm" onclick="shareNakshatra()" style="font-size:.65rem;padding:.3rem .9rem">Share ↗</button>
@@ -1209,6 +1209,11 @@ function setLang(lang){
     const weeklyContent=document.getElementById('weekly-content');
     if(weeklyContent)weeklyContent.style.display='none';
     if(document.getElementById('tab-weekly')?.style.display!=='none')showWeeklyReading();
+    // Clear career reading so it re-fetches in new language
+    _careerLoadedKey=null;
+    const careerContent=document.getElementById('career-content');
+    if(careerContent)careerContent.style.display='none';
+    if(document.getElementById('tab-career')?.style.display!=='none')showCareerReading();
     // Clear compat in-memory cache so next view re-fetches in new language
     if(typeof synCache!=='undefined'){
       synCache={};synLoadingType=null;
@@ -2375,7 +2380,7 @@ function renderDailyReading(r,dayName){
   // mantra block shared by both formats
   const _mantraBlock=(rem,_mc)=>rem.mantra?`
     <div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
-      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">MANTRA</div>
+      <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_L==='hi'?'मंत्र':_L==='es'?'MANTRA':'MANTRA'}</div>
       <div style="font-size:1.1rem;color:var(--gold);font-style:italic;margin-bottom:.2rem">${rem.mantra}</div>
       ${rem.mantra_translit&&rem.mantra_translit.trim()!==rem.mantra.trim()?`<div style="font-size:.85rem;color:var(--text);opacity:.82;margin-bottom:.3rem">${rem.mantra_translit}</div>`:''}
       <div style="font-size:.8rem;color:var(--muted)">${rem.mantra_meaning||''}</div>
@@ -2492,61 +2497,98 @@ function renderFallbackReading(dayName,now){
   const dayIdx=now.getDay();
 
   // Dasha-lord specific remedies — grounded in authentic Vedic vibrational tradition
+  // Mantras stay in Sanskrit regardless of language; timing/practices are trilingual.
   const DASHA_DATA={
     Sun:{
       mantra:'Om Hraam Hreem Hraum Sah Suryaya Namah',
       count:108,
       color:'saffron, copper or gold',
-      timing:'Within one hour of sunrise, facing east',
-      practices:['At sunrise facing east, pour water in a slow arc from a copper vessel while chanting Om Hraam Hreem Hraum Sah Suryaya Namah 108 times, this is Surya Arghya, the ancient solar offering.','After the offering, sit for 5 minutes in stillness, spine erect, visualising golden light at the centre of your chest.','Wear saffron, copper or gold today. Give something of genuine value to someone without expectation.']},
+      timing:{en:'Within one hour of sunrise, facing east',hi:'सूर्योदय के एक घंटे के भीतर, पूर्व की ओर मुख करके',es:'Dentro de la primera hora tras el amanecer, mirando al este'},
+      practices:{
+        en:['At sunrise facing east, pour water in a slow arc from a copper vessel while chanting Om Hraam Hreem Hraum Sah Suryaya Namah 108 times, this is Surya Arghya, the ancient solar offering.','After the offering, sit for 5 minutes in stillness, spine erect, visualising golden light at the centre of your chest.','Wear saffron, copper or gold today. Give something of genuine value to someone without expectation.'],
+        hi:['सूर्योदय के समय पूर्व की ओर मुख करके, तांबे के पात्र से धीरे धीरे जल की धारा अर्पित करते हुए ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः का 108 बार जप करें, यही सूर्य अर्घ्य है, प्राचीन सौर अर्पण।','अर्पण के बाद, रीढ़ सीधी रखते हुए 5 मिनट मौन बैठें और अपने हृदय के केंद्र में स्वर्णिम प्रकाश की कल्पना करें।','आज केसरिया, तांबे या सोने के रंग पहनें। बिना किसी अपेक्षा के किसी को कुछ सच्चा मूल्यवान दें।'],
+        es:['Al amanecer, mirando al este, vierte agua en un arco lento desde una vasija de cobre mientras cantas Om Hraam Hreem Hraum Sah Suryaya Namah 108 veces, esto es Surya Arghya, la antigua ofrenda solar.','Después de la ofrenda, siéntate en quietud durante 5 minutos, con la columna erguida, visualizando una luz dorada en el centro de tu pecho.','Viste de azafrán, cobre o dorado hoy. Da algo de verdadero valor a alguien sin esperar nada a cambio.']
+      }},
     Moon:{
       mantra:'Om Shraam Shreem Shraum Sah Chandraya Namah',
       count:108,
       color:'white or silver',
-      timing:'Dusk, or by water',
-      practices:['At dusk, light a ghee or sesame oil lamp beside a small bowl of water. Chant Om Shraam Shreem Shraum Sah Chandraya Namah 108 times facing the lamp.','Drink warm milk with a pinch of cardamom before sleep tonight.','Wear or carry silver today. On full moon nights, sit in open moonlight for 21 minutes.']},
+      timing:{en:'Dusk, or by water',hi:'संध्या के समय, या जल के निकट',es:'Al anochecer, o cerca del agua'},
+      practices:{
+        en:['At dusk, light a ghee or sesame oil lamp beside a small bowl of water. Chant Om Shraam Shreem Shraum Sah Chandraya Namah 108 times facing the lamp.','Drink warm milk with a pinch of cardamom before sleep tonight.','Wear or carry silver today. On full moon nights, sit in open moonlight for 21 minutes.'],
+        hi:['संध्या के समय, जल से भरे एक छोटे पात्र के पास घी या तिल के तेल का दीपक जलाएं। दीपक की ओर मुख करके ॐ श्रां श्रीं श्रौं सः चंद्राय नमः का 108 बार जप करें।','आज रात सोने से पहले एक चुटकी इलायची डालकर गर्म दूध पिएं।','आज चांदी पहनें या साथ रखें। पूर्णिमा की रात्रि में 21 मिनट खुले चांदनी में बैठें।'],
+        es:['Al anochecer, enciende una lámpara de ghee o aceite de sésamo junto a un pequeño cuenco de agua. Canta Om Shraam Shreem Shraum Sah Chandraya Namah 108 veces mirando hacia la llama.','Bebe leche tibia con una pizca de cardamomo antes de dormir esta noche.','Viste o lleva plata hoy. En noches de luna llena, siéntate bajo la luz de la luna durante 21 minutos.']
+      }},
     Mars:{
       mantra:'Om Kraam Kreem Kraum Sah Bhaumaya Namah',
       count:21,
       color:'red or coral',
-      timing:'Tuesday morning, before noon',
-      practices:['Light a ghee lamp and place something red nearby. Chant Om Kraam Kreem Kraum Sah Bhaumaya Namah 21 times facing south, with full breath and steady voice.','Recite the Hanuman Chalisa or its opening verse, Hanuman embodies Mars energy at its highest.','Channel Mars energy physically today: exercise, yoga, or vigorous breathwork with full intention.']},
+      timing:{en:'Tuesday morning, before noon',hi:'मंगलवार की सुबह, दोपहर से पहले',es:'Martes por la mañana, antes del mediodía'},
+      practices:{
+        en:['Light a ghee lamp and place something red nearby. Chant Om Kraam Kreem Kraum Sah Bhaumaya Namah 21 times facing south, with full breath and steady voice.','Recite the Hanuman Chalisa or its opening verse, Hanuman embodies Mars energy at its highest.','Channel Mars energy physically today: exercise, yoga, or vigorous breathwork with full intention.'],
+        hi:['घी का दीपक जलाएं और पास में कुछ लाल रंग की वस्तु रखें। दक्षिण की ओर मुख करके पूरी सांस और स्थिर स्वर में ॐ क्रां क्रीं क्रौं सः भौमाय नमः का 21 बार जप करें।','हनुमान चालीसा या उसकी पहली चौपाई का पाठ करें, हनुमान जी मंगल की ऊर्जा को उसके उच्चतम रूप में धारण करते हैं।','आज मंगल की ऊर्जा को शारीरिक रूप से प्रवाहित करें: व्यायाम, योग, या पूर्ण संकल्प के साथ प्राणायाम।'],
+        es:['Enciende una lámpara de ghee y coloca algo rojo cerca. Canta Om Kraam Kreem Kraum Sah Bhaumaya Namah 21 veces mirando al sur, con respiración plena y voz firme.','Recita el Hanuman Chalisa o su primer verso, Hanuman encarna la energía de Marte en su forma más elevada.','Canaliza la energía de Marte físicamente hoy: ejercicio, yoga, o respiración vigorosa con plena intención.']
+      }},
     Mercury:{
       mantra:'Om Braam Breem Braum Sah Budhaya Namah',
       count:108,
       color:'grass green or emerald',
-      timing:'Wednesday morning, after sunrise',
-      practices:['Begin with 10 rounds of Nadi Shodhana (alternate nostril breathing), then chant Om Braam Breem Braum Sah Budhaya Namah 108 times with full attention on each syllable.','Study something of genuine intellectual or sacred value for 10 minutes with full absorption, not casually.','Wear or carry something green. On Wednesdays, write your intentions clearly and specifically.']},
+      timing:{en:'Wednesday morning, after sunrise',hi:'बुधवार की सुबह, सूर्योदय के बाद',es:'Miércoles por la mañana, después del amanecer'},
+      practices:{
+        en:['Begin with 10 rounds of Nadi Shodhana (alternate nostril breathing), then chant Om Braam Breem Braum Sah Budhaya Namah 108 times with full attention on each syllable.','Study something of genuine intellectual or sacred value for 10 minutes with full absorption, not casually.','Wear or carry something green. On Wednesdays, write your intentions clearly and specifically.'],
+        hi:['10 चक्र नाड़ी शोधन प्राणायाम (अनुलोम विलोम) से आरंभ करें, फिर प्रत्येक अक्षर पर पूर्ण ध्यान देते हुए ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः का 108 बार जप करें।','10 मिनट के लिए किसी सच्चे बौद्धिक या पवित्र विषय का पूर्ण तल्लीनता से अध्ययन करें, सरसरी तौर पर नहीं।','आज हरे रंग की कोई वस्तु पहनें या साथ रखें। बुधवार को अपने संकल्पों को स्पष्ट और सुनिश्चित रूप से लिखें।'],
+        es:['Comienza con 10 rondas de Nadi Shodhana (respiración alterna por las fosas nasales), luego canta Om Braam Breem Braum Sah Budhaya Namah 108 veces con plena atención en cada sílaba.','Estudia algo de verdadero valor intelectual o sagrado durante 10 minutos con plena absorción, no de forma superficial.','Viste o lleva algo verde. Los miércoles, escribe tus intenciones de forma clara y específica.']
+      }},
     Jupiter:{
       mantra:'Om Graam Greem Graum Sah Gurave Namah',
       count:108,
       color:'yellow or turmeric gold',
-      timing:'Thursday morning, facing northeast, the direction of Guru',
-      practices:['Apply a turmeric tilak to your forehead, light a ghee lamp, offer yellow flowers. Chant Om Graam Greem Graum Sah Gurave Namah 108 times facing northeast.','Recite the Guru Vandana: \'Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah...\', bow inwardly to all teachers of your life.','Give something of genuine value today (time, knowledge, or care) with no expectation of return.']},
+      timing:{en:'Thursday morning, facing northeast, the direction of Guru',hi:'गुरुवार की सुबह, ईशान कोण (उत्तर पूर्व) की ओर मुख करके, गुरु की दिशा',es:'Jueves por la mañana, mirando al noreste, la dirección de Guru'},
+      practices:{
+        en:['Apply a turmeric tilak to your forehead, light a ghee lamp, offer yellow flowers. Chant Om Graam Greem Graum Sah Gurave Namah 108 times facing northeast.','Recite the Guru Vandana: \'Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah...\', bow inwardly to all teachers of your life.','Give something of genuine value today (time, knowledge, or care) with no expectation of return.'],
+        hi:['माथे पर हल्दी का तिलक लगाएं, घी का दीपक जलाएं, पीले फूल अर्पित करें। ईशान कोण की ओर मुख करके ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः का 108 बार जप करें।','गुरु वंदना का पाठ करें: \'गुरुर्ब्रह्मा गुरुर्विष्णुः गुरुर्देवो महेश्वरः...\', अपने जीवन के सभी गुरुओं को अंतर्मन से नमन करें।','आज बिना किसी प्रतिफल की अपेक्षा किए कुछ सच्चा मूल्यवान (समय, ज्ञान या देखभाल) प्रदान करें।'],
+        es:['Aplica un tilak de cúrcuma en tu frente, enciende una lámpara de ghee, ofrece flores amarillas. Canta Om Graam Greem Graum Sah Gurave Namah 108 veces mirando al noreste.','Recita el Guru Vandana: \'Gurur Brahma, Gurur Vishnu, Gurur Devo Maheshwarah...\', inclínate interiormente ante todos los maestros de tu vida.','Da algo de verdadero valor hoy (tiempo, conocimiento o cuidado) sin esperar nada a cambio.']
+      }},
     Venus:{
       mantra:'Om Draam Dreem Draum Sah Shukraya Namah',
       count:108,
       color:'white, cream or soft pink',
-      timing:'Friday dusk, when Venus rises as the evening star',
-      practices:['At dusk, light rose or jasmine incense and place white flowers as an offering to Lakshmi. Chant Om Draam Dreem Draum Sah Shukraya Namah 108 times, then Om Shreem Mahalakshmyai Namah 108 times.','Dress with care today and keep your space clean and harmonious, beauty as spiritual discipline.','Engage with music or art as a sacred act today, not a distraction.']},
+      timing:{en:'Friday dusk, when Venus rises as the evening star',hi:'शुक्रवार की संध्या, जब शुक्र संध्या तारे के रूप में उदय होता है',es:'Viernes al anochecer, cuando Venus aparece como estrella vespertina'},
+      practices:{
+        en:['At dusk, light rose or jasmine incense and place white flowers as an offering to Lakshmi. Chant Om Draam Dreem Draum Sah Shukraya Namah 108 times, then Om Shreem Mahalakshmyai Namah 108 times.','Dress with care today and keep your space clean and harmonious, beauty as spiritual discipline.','Engage with music or art as a sacred act today, not a distraction.'],
+        hi:['संध्या के समय गुलाब या चमेली की धूप जलाएं और लक्ष्मी जी को अर्पण स्वरूप सफेद फूल रखें। ॐ द्रां द्रीं द्रौं सः शुक्राय नमः का 108 बार, फिर ॐ श्रीं महालक्ष्म्यै नमः का 108 बार जप करें।','आज सोच समझकर वस्त्र धारण करें और अपने स्थान को स्वच्छ व सामंजस्यपूर्ण रखें, सौंदर्य को आध्यात्मिक अनुशासन मानें।','आज संगीत या कला को एक पवित्र क्रिया के रूप में अपनाएं, विचलन के रूप में नहीं।'],
+        es:['Al anochecer, enciende incienso de rosa o jazmín y coloca flores blancas como ofrenda a Lakshmi. Canta Om Draam Dreem Draum Sah Shukraya Namah 108 veces, luego Om Shreem Mahalakshmyai Namah 108 veces.','Vístete con cuidado hoy y mantén tu espacio limpio y armonioso, la belleza como disciplina espiritual.','Dedícate a la música o el arte como un acto sagrado hoy, no como una distracción.']
+      }},
     Saturn:{
       mantra:'Om Praam Preem Praum Sah Shanaischaraya Namah',
       count:108,
       color:'dark blue, black or dark grey',
-      timing:'Saturday morning, before eating, on an empty stomach',
-      practices:['On an empty stomach, light a sesame oil lamp and face west. Chant Om Praam Preem Praum Sah Shanaischaraya Namah 108 times in a slow, unhurried rhythm, do not rush Saturn.','Recite the Hanuman Chalisa, this is the most classical Shani remedy in the tradition.','Perform one act of genuine service today with no expectation of recognition. Wear dark blue or black.']},
+      timing:{en:'Saturday morning, before eating, on an empty stomach',hi:'शनिवार की सुबह, भोजन से पहले, खाली पेट',es:'Sábado por la mañana, antes de comer, con el estómago vacío'},
+      practices:{
+        en:['On an empty stomach, light a sesame oil lamp and face west. Chant Om Praam Preem Praum Sah Shanaischaraya Namah 108 times in a slow, unhurried rhythm, do not rush Saturn.','Recite the Hanuman Chalisa, this is the most classical Shani remedy in the tradition.','Perform one act of genuine service today with no expectation of recognition. Wear dark blue or black.'],
+        hi:['खाली पेट, तिल के तेल का दीपक जलाएं और पश्चिम की ओर मुख करें। धीमी, बिना जल्दबाज़ी की लय में ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः का 108 बार जप करें, शनि को जल्दबाज़ी पसंद नहीं।','हनुमान चालीसा का पाठ करें, यह परंपरा में सबसे शास्त्रीय शनि उपाय है।','आज बिना किसी पहचान की अपेक्षा किए एक सच्ची सेवा करें। गहरा नीला या काला रंग पहनें।'],
+        es:['Con el estómago vacío, enciende una lámpara de aceite de sésamo y mira hacia el oeste. Canta Om Praam Preem Praum Sah Shanaischaraya Namah 108 veces en un ritmo lento y sin prisa, no apresures a Saturno.','Recita el Hanuman Chalisa, este es el remedio más clásico para Shani en la tradición.','Realiza un acto de servicio genuino hoy sin esperar reconocimiento. Viste azul oscuro o negro.']
+      }},
     Rahu:{
       mantra:'Om Bhraam Bhreem Bhraum Sah Rahave Namah',
       count:18,
       color:'deep indigo, dark violet or smoke blue',
-      timing:'At dusk, the twilight threshold, Rahu\'s hour',
-      practices:['At dusk, light a camphor flame and sit facing southwest. Chant Om Bhraam Bhreem Bhraum Sah Rahave Namah 18 times with total attention on each syllable.','Practice Trataka: steady gazing at the camphor flame for 5 minutes without blinking. Then sit in complete stillness for 5 minutes, observing the mind without engaging it.','If available, offer a whole coconut to flowing water, the classical Vedic Rahu offering for dissolving attachment.']},
+      timing:{en:'At dusk, the twilight threshold, Rahu\'s hour',hi:'संध्या के समय, गोधूलि की दहलीज़, राहु का समय',es:'Al anochecer, el umbral del crepúsculo, la hora de Rahu'},
+      practices:{
+        en:['At dusk, light a camphor flame and sit facing southwest. Chant Om Bhraam Bhreem Bhraum Sah Rahave Namah 18 times with total attention on each syllable.','Practice Trataka: steady gazing at the camphor flame for 5 minutes without blinking. Then sit in complete stillness for 5 minutes, observing the mind without engaging it.','If available, offer a whole coconut to flowing water, the classical Vedic Rahu offering for dissolving attachment.'],
+        hi:['संध्या के समय कपूर जलाएं और दक्षिण पश्चिम की ओर मुख करके बैठें। प्रत्येक अक्षर पर पूर्ण ध्यान देते हुए ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः का 18 बार जप करें।','त्राटक का अभ्यास करें: बिना पलक झपकाए 5 मिनट तक कपूर की ज्योति पर स्थिर दृष्टि रखें। फिर 5 मिनट पूर्ण मौन में बैठें, मन को बिना उलझे केवल देखें।','यदि संभव हो तो बहते जल में एक साबुत नारियल अर्पित करें, यह आसक्ति को विसर्जित करने का शास्त्रीय वैदिक राहु उपाय है।'],
+        es:['Al anochecer, enciende una llama de alcanfor y siéntate mirando al suroeste. Canta Om Bhraam Bhreem Bhraum Sah Rahave Namah 18 veces con total atención en cada sílaba.','Practica Trataka: mirada fija y sostenida en la llama de alcanfor durante 5 minutos sin parpadear. Luego siéntate en completa quietud durante 5 minutos, observando la mente sin involucrarte con ella.','Si es posible, ofrece un coco entero a agua corriente, la ofrenda védica clásica a Rahu para disolver el apego.']
+      }},
     Ketu:{
       mantra:'Om Sraam Sreem Sraum Sah Ketave Namah',
       count:7,
       color:'grey, smoke or earthy brown',
-      timing:'Evening, as daylight fades',
-      practices:['As daylight fades, burn camphor and sit before it. Chant Om Sraam Sreem Sraum Sah Ketave Namah 7 times with slow, full breath, then chant Om Gam Ganapataye Namah 108 times.','Practice 7 rounds of Nadi Shodhana pranayama, then sit in absolute stillness for 10 minutes.','Practice one hour of mauna (intentional silence) today if possible, Ketu\'s deepest teaching arrives in silence.']}
+      timing:{en:'Evening, as daylight fades',hi:'संध्या के समय, जब दिन का प्रकाश धीरे धीरे लुप्त होता है',es:'Al anochecer, cuando la luz del día se desvanece'},
+      practices:{
+        en:['As daylight fades, burn camphor and sit before it. Chant Om Sraam Sreem Sraum Sah Ketave Namah 7 times with slow, full breath, then chant Om Gam Ganapataye Namah 108 times.','Practice 7 rounds of Nadi Shodhana pranayama, then sit in absolute stillness for 10 minutes.','Practice one hour of mauna (intentional silence) today if possible, Ketu\'s deepest teaching arrives in silence.'],
+        hi:['जब दिन का प्रकाश लुप्त हो रहा हो, कपूर जलाएं और उसके सामने बैठें। धीमी, पूर्ण सांस के साथ ॐ स्रां स्रीं स्रौं सः केतवे नमः का 7 बार जप करें, फिर ॐ गं गणपतये नमः का 108 बार जप करें।','नाड़ी शोधन प्राणायाम के 7 चक्र करें, फिर 10 मिनट पूर्ण मौन में बैठें।','यदि संभव हो तो आज एक घंटे मौन (इच्छापूर्वक चुप्पी) का अभ्यास करें, केतु की सबसे गहरी शिक्षा मौन में ही मिलती है।'],
+        es:['Cuando la luz del día se desvanezca, quema alcanfor y siéntate frente a él. Canta Om Sraam Sreem Sraum Sah Ketave Namah 7 veces con respiración lenta y plena, luego canta Om Gam Ganapataye Namah 108 veces.','Practica 7 rondas de pranayama Nadi Shodhana, luego siéntate en quietud absoluta durante 10 minutos.','Practica una hora de mauna (silencio intencional) hoy si es posible, la enseñanza más profunda de Ketu llega en el silencio.']
+      }}
   };
 
   // ── Three-tier dasha — most immediate layer drives the practice ──
@@ -2556,7 +2598,8 @@ function renderFallbackReading(dayName,now){
   const mahaLord  = dp?.lord;
   // Pratyantara is the sharpest daily influence; fall back up the chain
   const primaryLord = pratLord || antarLord || mahaLord || 'Sun';
-  const di = DASHA_DATA[primaryLord] || DASHA_DATA.Sun;
+  const _diRaw = DASHA_DATA[primaryLord] || DASHA_DATA.Sun;
+  const di = {..._diRaw, timing:_diRaw.timing[currentLang]||_diRaw.timing.en, practices:_diRaw.practices[currentLang]||_diRaw.practices.en};
 
   const moonNak  = chartData?.planets?.[1]?.nakshatraName || '';
   const moonSign = chartData?.planets?.[1]?.signName      || '';
@@ -2605,7 +2648,7 @@ function renderFallbackReading(dayName,now){
         <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">${di.count} ${currentLang==='hi'?'बार':currentLang==='es'?'veces':'times'}</div>
       </div>
       <div class="remedy-actions">
-        <button class="chant-btn" onclick="openChant('${di.mantra}','${primaryLord} Pratyantara mantra',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
+        <button class="chant-btn" onclick="openChant('${di.mantra}','${currentLang==='hi'?primaryLord+' प्रत्यंतर मंत्र':currentLang==='es'?'Mantra Pratyantara de '+primaryLord:primaryLord+' Pratyantara mantra'}',${di.count})">🙏 ${currentLang==='hi'?'जपें':currentLang==='es'?'Cantar':'Chant'}</button>
       </div>
       <p style="font-size:.9rem;color:var(--muted);font-style:italic;margin-top:.8rem;border-top:1px solid var(--s4);padding-top:.8rem">${currentLang==='hi'?`आज का अभ्यास आपकी आत्मा और ब्रह्मांड के बीच एक संवाद है। अपनी यात्रा के समय पर विश्वास रखें, ${userData.name}।`:currentLang==='es'?`Tu práctica hoy es una conversación entre tu alma y el cosmos. Confía en el momento de tu viaje, ${userData.name}.`:`Your practice today is a conversation between your soul and the cosmos. Trust the timing of your journey, ${userData.name}.`}</p>
     </div>
@@ -3842,15 +3885,18 @@ function _showInstallBanner() {
   const banner = document.createElement('div');
   banner.id = 'install-banner';
   banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1rem 1.5rem;z-index:50;display:flex;align-items:center;gap:1rem;max-width:340px;width:90%;backdrop-filter:blur(12px)';
+  const _il=currentLang==='hi'?{title:'ज्योति को होम स्क्रीन पर जोड़ें',sub:'अपना दैनिक अभ्यास तुरंत खोलें',install:'इंस्टॉल करें',later:'बाद में'}
+    :currentLang==='es'?{title:'AÑADE JYOTI A TU PANTALLA DE INICIO',sub:'Accede a tu práctica diaria al instante',install:'Instalar',later:'Más tarde'}
+    :{title:'ADD JYOTI TO YOUR HOME SCREEN',sub:'Access your daily practice instantly',install:'Install',later:'Later'};
   banner.innerHTML = `
     <div style="font-size:1.4rem">✨</div>
     <div style="flex:1">
-      <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.2rem">ADD JYOTI TO YOUR HOME SCREEN</div>
-      <div style="font-size:.8rem;color:var(--muted)">Access your daily practice instantly</div>
+      <div style="font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;color:var(--gold);margin-bottom:.2rem">${_il.title}</div>
+      <div style="font-size:.8rem;color:var(--muted)">${_il.sub}</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:.4rem">
-      <button onclick="installPWA()" style="background:linear-gradient(135deg,#7A6120,#C8A94A);border:none;border-radius:6px;color:#080510;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;padding:.4rem .8rem;cursor:pointer;font-weight:600">Install</button>
-      <button onclick="_markDismissed();document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:.7rem;cursor:pointer;font-family:'Cinzel',serif">Later</button>
+      <button onclick="installPWA()" style="background:linear-gradient(135deg,#7A6120,#C8A94A);border:none;border-radius:6px;color:#080510;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.08em;padding:.4rem .8rem;cursor:pointer;font-weight:600">${_il.install}</button>
+      <button onclick="_markDismissed();document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:.7rem;cursor:pointer;font-family:'Cinzel',serif">${_il.later}</button>
     </div>
   `;
   document.body.appendChild(banner);
@@ -3861,14 +3907,17 @@ function _showIOSInstallBanner() {
   const banner = document.createElement('div');
   banner.id = 'install-banner';
   banner.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--banner-bg);border:1px solid rgba(200,169,74,.3);border-radius:14px;padding:1.1rem 1.4rem;z-index:50;max-width:320px;width:90%;backdrop-filter:blur(12px)';
+  const _iil=currentLang==='hi'?{title:'ज्योति को होम स्क्रीन पर जोड़ें',tap:'शेयर ⬆',bottom:'सफारी के नीचे टैप करें,',then:'फिर',add:'"होम स्क्रीन पर जोड़ें"'}
+    :currentLang==='es'?{title:'AÑADE JYOTI A TU PANTALLA DE INICIO',tap:'Compartir ⬆',bottom:'en la parte inferior de Safari,',then:'luego',add:'"Añadir a pantalla de inicio"'}
+    :{title:'ADD JYOTI TO YOUR HOME SCREEN',tap:'Share ⬆',bottom:'at the bottom of Safari,',then:'then',add:'"Add to Home Screen"'};
   banner.innerHTML = `
     <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem">
       <div style="font-size:1.2rem">✨</div>
-      <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;color:var(--gold);flex:1">ADD JYOTI TO YOUR HOME SCREEN</div>
+      <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;color:var(--gold);flex:1">${_iil.title}</div>
       <button onclick="_markDismissed();document.getElementById('install-banner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;line-height:1;padding:0">✕</button>
     </div>
     <div style="font-size:.82rem;color:var(--muted);line-height:1.7">
-      Tap <strong style="color:var(--gold)">Share ⬆</strong> at the bottom of Safari,<br>then <strong style="color:var(--gold)">"Add to Home Screen"</strong>
+      ${currentLang==='hi'?`<strong style="color:var(--gold)">${_iil.tap}</strong> ${_iil.bottom}<br>${_iil.then} <strong style="color:var(--gold)">${_iil.add}</strong>`:`Tap <strong style="color:var(--gold)">${_iil.tap}</strong> ${_iil.bottom}<br>${_iil.then} <strong style="color:var(--gold)">${_iil.add}</strong>`}
     </div>
   `;
   document.body.appendChild(banner);

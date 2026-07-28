@@ -31,9 +31,9 @@ module.exports = async (req, res) => {
   if (!apiKey) return res.status(500).json({ error: 'API not configured' });
 
   const LANG_PREFIX = lang === 'hi'
-    ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text in Devanagari script — sacred sounds must never be translated or replaced with Hindi descriptions. The "mantra_translit" field is always plain Roman-letter transliteration, never Hindi. Only "mantra_meaning" and all other text fields go in Hindi.\n\n'
+    ? 'LANGUAGE REQUIREMENT: Respond entirely in Hindi (Devanagari script). Do not mix in English or Spanish words. Every human-readable text value in the JSON must be in Hindi. JSON keys stay in English. CRITICAL EXCEPTION: The "mantra" field must always contain the actual Sanskrit mantra text in Devanagari script — sacred sounds must never be translated or replaced with Hindi descriptions. The "mantra_translit" field is always plain Roman-letter transliteration, never Hindi. Only "mantra_meaning" and all other text fields go in Hindi.\n\n'
     : lang === 'es'
-    ? 'REQUISITO DE IDIOMA: Responde completamente en español. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (Devanagari) — nunca traducirlo. El campo "mantra_translit" es siempre transliteración romana simple. Solo "mantra_meaning" y los demás campos de texto van en español.\n\n'
+    ? 'REQUISITO DE IDIOMA: Responde completamente en español. No mezcles palabras en inglés o hindi. Todos los valores de texto legibles en el JSON deben estar en español. Las claves JSON permanecen en inglés. EXCEPCIÓN CRÍTICA: El campo "mantra" debe contener siempre el texto del mantra en sánscrito (Devanagari) — nunca traducirlo. El campo "mantra_translit" es siempre transliteración romana simple. Solo "mantra_meaning" y los demás campos de texto van en español.\n\n'
     : '';
 
   const isLayer2 = type === 'career_layer2';
