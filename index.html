@@ -2477,7 +2477,7 @@ Days until month end: ${new Date(practiceDate.getFullYear(),practiceDate.getMont
       const resp = await fetch('/api/get-remedy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily_quick', daysUntilMonthEnd: new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate()})
+        body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily_quick', daysUntilMonthEnd: new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate(), token: localStorage.getItem('jyoti_access_token')})
       });
       if(!resp.ok){if(attempt<2){await new Promise(r=>setTimeout(r,2000*(attempt+1)));continue;}throw new Error('api-error');}
       const data = await resp.json();
@@ -2587,7 +2587,7 @@ async function loadDailyDepth(el){
   try{
     const resp=await fetch('/api/get-remedy',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartSummary:_dailyChartCtx,lang:_L,type:'daily_depth'})
+      body:JSON.stringify({chartSummary:_dailyChartCtx,lang:_L,type:'daily_depth',token:localStorage.getItem('jyoti_access_token')})
     });
     if(!resp.ok) throw new Error('api-error');
     const depth=await resp.json();
@@ -3307,7 +3307,7 @@ Mercury: ${S[trW[3].sign]} ${trW[3].degree}°, natal House ${trHW(3)}
 Moon at week start: ${S[trW[1].sign]} ${trW[1].degree}°, Nakshatra: ${_n(trW[1])||'unknown'} (travels ~3 signs this week)${_wNakLordBlock}`;
   try{
     const resp=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartSummary,lang:capturedLang,type:'weekly'})});
+      body:JSON.stringify({chartSummary,lang:capturedLang,type:'weekly',token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
     if(!data||data.error||(!data.has_practice&&!data.no_practice_message))throw new Error('bad-data');
@@ -3506,7 +3506,7 @@ Today: ${new Date().toDateString()}`;
 
   try{
     const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartSummary,lang:capturedLang,type:'career_layer1'})});
+      body:JSON.stringify({chartSummary,lang:capturedLang,type:'career_layer1',token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
     if(!data||data.error||!data.reading)throw new Error('bad-data');
@@ -3561,7 +3561,7 @@ async function submitCareerContext(){
   if(respEl){respEl.style.display='none';respEl.innerHTML='';}
   try{
     const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartSummary:_careerChartCtx,lang:_L,type:'career_layer2',context:q})});
+      body:JSON.stringify({chartSummary:_careerChartCtx,lang:_L,type:'career_layer2',context:q,token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
     if(!data||data.error||!data.guidance)throw new Error('bad-data');
@@ -4570,7 +4570,7 @@ async function loadSynTier(type){
       const tId=setTimeout(()=>ctrl.abort(),180000);
       try{
         const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang,relationshipContext:synRelContext}),
+          body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang,relationshipContext:synRelContext,token:localStorage.getItem('jyoti_access_token')}),
           signal:ctrl.signal});
         clearTimeout(tId);
         if(!r.ok){
@@ -5000,7 +5000,7 @@ async function openDeepReading(type,title){
     const tId=setTimeout(()=>ctrl.abort(),270000);
     // API type is 'deep_karmic' etc (without language suffix)
     const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang,relationshipContext:synRelContext}),
+      body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang,relationshipContext:synRelContext,token:localStorage.getItem('jyoti_access_token')}),
       signal:ctrl.signal});
     clearTimeout(tId);
     if(!r.ok){

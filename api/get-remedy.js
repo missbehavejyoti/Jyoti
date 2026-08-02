@@ -2,6 +2,11 @@
 // Keeps API key secure server-side, never exposed to browser
 const { rateLimit, dailyLimit } = require('./_rateLimit');
 const { sanitize, sanitizeDeep, trimIfTruncated } = require('./_sanitize');
+const { verify } = require('./_token');
+
+// Paid subscriber content — chart preview types (nakshatra/soul/planets*) stay
+// open since they're shown pre-checkout as the free sample reading.
+const PAID_TYPES = new Set(['daily_quick', 'daily_depth', 'weekly']);
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,12 +19,15 @@ module.exports = async (req, res) => {
   if (!await rateLimit(req, res, { max: 30, windowSecs: 3600, prefix: 'remedy' })) return;
   if (!await dailyLimit(req, res, { max: 80, prefix: 'remedy-day' })) return;
 
-  const { chartSummary, lang, type, daysUntilMonthEnd } = req.body || {};
+  const { chartSummary, lang, type, daysUntilMonthEnd, token } = req.body || {};
 
   // Input validation — reject bad requests before touching the AI
   const VALID_LANGS = ['en', 'hi', 'es'];
   const VALID_TYPES = ['daily_quick', 'daily_depth', 'weekly', 'nakshatra', 'soul',
                        'planets', 'planets_a', 'planets_b', 'planets_c', 'planets_d'];
+  if (PAID_TYPES.has(type) && !verify(token)) {
+    return res.status(401).json({ error: 'Subscription required' });
+  }
   if (!chartSummary || typeof chartSummary !== 'string' || chartSummary.length > 8000) {
     return res.status(400).json({ error: 'Invalid chart data' });
   }

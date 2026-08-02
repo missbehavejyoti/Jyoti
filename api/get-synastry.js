@@ -3,6 +3,7 @@
 // soul_debt, work_life, timing, other_a, other_b, soul_verdict
 const { rateLimit, dailyLimit } = require('./_rateLimit');
 const { sanitize, sanitizeDeep, trimIfTruncated } = require('./_sanitize');
+const { verify } = require('./_token');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,7 +15,11 @@ module.exports = async (req, res) => {
   if (!await rateLimit(req, res, { max: 60, windowSecs: 3600, prefix: 'syn' })) return;
   if (!await dailyLimit(req, res, { max: 150, prefix: 'syn-day' })) return;
 
-  const { chartA, chartB, nameA, nameB, type, lang, relationshipContext } = req.body || {};
+  const { chartA, chartB, nameA, nameB, type, lang, relationshipContext, token } = req.body || {};
+
+  if (!verify(token)) {
+    return res.status(401).json({ error: 'Subscription required' });
+  }
 
   // Input validation — reject bad requests before touching the AI
   const VALID_LANGS = ['en', 'hi', 'es'];

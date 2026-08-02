@@ -1,6 +1,7 @@
 // Vercel Serverless Function — Jyoti Career Reading (Nadi Jyotish Vocational Dharma)
 const { rateLimit, dailyLimit } = require('./_rateLimit');
 const { sanitizeDeep } = require('./_sanitize');
+const { verify } = require('./_token');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,7 +14,11 @@ module.exports = async (req, res) => {
   if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'career' })) return;
   if (!await dailyLimit(req, res, { max: 50, prefix: 'career-day' })) return;
 
-  const { chartSummary, lang, type, context } = req.body || {};
+  const { chartSummary, lang, type, context, token } = req.body || {};
+
+  if (!verify(token)) {
+    return res.status(401).json({ error: 'Subscription required' });
+  }
 
   const VALID_LANGS = ['en', 'hi', 'es'];
   const VALID_TYPES = ['career_layer1', 'career_layer2'];
