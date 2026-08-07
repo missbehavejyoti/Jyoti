@@ -1680,7 +1680,13 @@ async function buildChartAsync(){
       );
       const d=await r.json();
       if(d?.length){
-        const best=d.find(r=>['city','town','village','municipality','suburb','hamlet','locality'].includes(r.type))||d[0];
+        // Nominatim's own top result is already ranked by relevance/importance — trust it
+        // unless it's clearly not a real place (a road, POI, postcode, etc). Filtering by an
+        // allow-list of types instead skips incorporated cities tagged type:"administrative"
+        // (most official US cities, e.g. San Rafael, CA) and falls through to a lower-relevance
+        // same-named suburb elsewhere (e.g. a "San Rafael" neighbourhood inside San Clemente).
+        const NOT_PLACE=new Set(['house','postcode','amenity','shop','office','tourism','highway','railway','waterway','natural','leisure','man_made','residential','path','road']);
+        const best=NOT_PLACE.has(d[0].type)?(d.find(r=>!NOT_PLACE.has(r.type))||d[0]):d[0];
         const cc=(best.address?.country_code||'').toUpperCase();
         const state=(best.address?.state||best.address?.region||best.address?.county||'').toLowerCase();
         coords={lat:+best.lat,lon:+best.lon,display:best.display_name,type:best.type,cc,state};
@@ -4403,7 +4409,10 @@ async function synGeocode(pob,dob){
     const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(pob)}&format=json&limit=3&addressdetails=1`,{headers:{'Accept-Language':'en','User-Agent':'JyotiNadiApp/1.0'}});
     const d=await r.json();
     if(d?.length){
-      const best=d.find(r=>['city','town','village','municipality','suburb','hamlet','locality'].includes(r.type))||d[0];
+      // See buildChartAsync's geocoder for why we trust Nominatim's own top result
+      // instead of filtering by a type allow-list (skips "administrative"-tagged cities).
+      const NOT_PLACE=new Set(['house','postcode','amenity','shop','office','tourism','highway','railway','waterway','natural','leisure','man_made','residential','path','road']);
+      const best=NOT_PLACE.has(d[0].type)?(d.find(r=>!NOT_PLACE.has(r.type))||d[0]):d[0];
       coords={lat:+best.lat,lon:+best.lon,cc:(best.address?.country_code||'').toUpperCase(),state:(best.address?.state||best.address?.region||'').toLowerCase()};
     }
   }catch(e){}
