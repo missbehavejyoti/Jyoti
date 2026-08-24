@@ -8,6 +8,25 @@ const { verify } = require('./_token');
 // open since they're shown pre-checkout as the free sample reading.
 const PAID_TYPES = new Set(['daily_quick', 'daily_depth', 'weekly']);
 
+// Safety net for the practices[] array: the UI renders every item it's given
+// with no length check, so if the model ever repeats a bullet or returns more
+// items than asked for, drop exact/near-duplicates and cap at maxCount.
+function dedupePractices(arr, maxCount) {
+  if (!Array.isArray(arr)) return arr;
+  const seen = new Set();
+  const out = [];
+  for (const p of arr) {
+    if (typeof p === 'string') {
+      const key = p.trim().toLowerCase().replace(/\s+/g, ' ');
+      if (key && seen.has(key)) continue;
+      if (key) seen.add(key);
+    }
+    out.push(p);
+    if (out.length >= maxCount) break;
+  }
+  return out;
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -157,6 +176,8 @@ STRICT LENGTH RULES — this is a morning scan card, not an essay:
 
 NAMING RULE — every bullet must earn its place in this chart, not just sound nice: cosmic_weather and EACH of the three practice bullets must name at least one specific chart element in the visible text (a planet, a house number, a sign, a nakshatra, or a dasha lord — e.g. "your Mercury antar dasha," "Saturn in House 6," "Venus in your 11th"). A bullet with no named element could belong to any subscriber on any day — that is the one failure mode to avoid above all others. The named element stays woven in as the reason, never the opening subject.
 
+BULLET COUNT: The "practices" array must contain EXACTLY 3 items, no more and no fewer. Never repeat, restate, or lightly reword a bullet you already wrote — each of the 3 must be a genuinely distinct action and a distinct chart element. Do not append a 4th bullet that echoes bullet 1.
+
 EXAMPLES of the right tone:
 ✓ "Light a sesame oil lamp at dusk and sit with whatever you cannot fix — Saturn in House 6 asks for surrender today."
 ✗ "Offer water to Saturn in natal House 6 position invoking Pushya nakshatra healing."
@@ -228,6 +249,8 @@ STRICT RULES — keep everything short and scannable:
 - mantra_why: ONE sentence only. Warm and personal.
 
 UNIQUENESS: This must be genuinely different from a daily reading — broader arc, Antar dasha driven, 5 flexible practices not 3 rigid daily ones. No generic content. No em dashes (—), en dashes (–), or asterisks (*). No Markdown formatting. Valid JSON only.
+
+BULLET COUNT: The "practices" array must contain EXACTLY 5 items, no more and no fewer. Never repeat, restate, or lightly reword a practice you already wrote — each of the 5 must be a genuinely distinct action and a distinct chart element.
 
 LANGUAGE REMINDER: ${langInstruction} Every value in every JSON field must be in the requested language. Not English. Not mixed. The requested language only.
 MANTRA EXCEPTION: The "mantra" field is ALWAYS Sanskrit Devanagari script, regardless of response language. Mantras are sacred sounds — never translate or render them in Hindi words, Spanish, or English. "mantra_translit" is ALWAYS a plain Roman-letter transliteration (e.g. "Om Namah Shivaya"), regardless of response language. Only "mantra_phonetic" and "mantra_meaning" are in the response language.
@@ -306,6 +329,7 @@ ABSOLUTE RULES:
 2. THREE-LAYER ANALYSIS before writing: (a) Vara lord — today's weekday ruler and its exact natal placement quality; (b) Pratyantara dasha lord — immediate karmic activation; (c) Exact transits within 5 degrees of natal planets right now. Every practice emerges from these three layers.
 3. WEEKDAY RULERS: Sunday=Sun, Monday=Moon, Tuesday=Mars+Ketu, Wednesday=Mercury, Thursday=Jupiter, Friday=Venus, Saturday=Saturn+Rahu.
 4. PRACTICE FIRST, CHART SECOND: Each bullet must describe a real human action first. The astrological placement is the reason or context, not the opening subject. GOOD: "Light a sesame oil lamp at dusk and sit with what you cannot fix — Saturn in House 6 asks for surrender today." BAD: "Offer water to Saturn in natal House 6 position invoking Pushya nakshatra healing."
+4b. BULLET COUNT: The "practices" array must contain EXACTLY 3 items, no more and no fewer. Never repeat, restate, or lightly reword an earlier bullet — each must be a genuinely distinct action grounded in a distinct chart element. Do not append a 4th bullet that echoes bullet 1.
 5. NEVER give medical, psychiatric, financial, or legal advice. Never claim specific outcomes. Frame everything as spiritual practice.
 6. NO DASHES: NEVER use an em dash (—) or en dash (–) anywhere. A hyphen between two words in a date range is also forbidden — write "July to September" not "July-September". Use commas, colons, semicolons, or periods.
 7. NO ASTERISKS: NEVER use asterisks (*) for any purpose — not for emphasis, not for bullets. No Markdown formatting of any kind inside text values. Plain prose only.
@@ -443,6 +467,13 @@ JSON structure:
       console.error('All JSON parse attempts failed. text[:500]:', text.slice(0, 500));
       return res.status(502).json({ error: 'JSON parse error', detail: text ? text.slice(0, 400) : '(empty)' });
     }
+    if (parsed.remedy && Array.isArray(parsed.remedy.practices)) {
+      parsed.remedy.practices = dedupePractices(parsed.remedy.practices, 3);
+    }
+    if (parsed.practice && Array.isArray(parsed.practice.practices)) {
+      parsed.practice.practices = dedupePractices(parsed.practice.practices, 5);
+    }
+
     return res.status(200).json(sanitizeDeep(parsed));
 
   } catch(e) {
