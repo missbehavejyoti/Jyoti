@@ -1136,6 +1136,49 @@ function clearSoulArchive(){
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function weekStartStr(){const d=new Date(),day=d.getDay(),mon=new Date(d);mon.setDate(d.getDate()+(day===0?-6:1-day));return`${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`;}
 function _chartKey(){const d=(userData?.dob||'').replace(/\//g,'-');const t=(userData?.tob||'').replace(/:/g,'').slice(0,4);const p=(userData?.pob||'').replace(/\s+/g,'').slice(0,6).toLowerCase();return d+'_'+t+'_'+p;}
+// Recompute the Vimshottari Dasha (Maha/Antar/Pratyantara) against the current moment.
+// A restored chart from localStorage carries whatever dasha was current on the day it was
+// first calculated — natal planets never change, but the dasha DOES, so every time a saved
+// chart is restored (returning subscriber reopening the app) this must run again, or the
+// subscriber gets stuck on their original dasha forever. Mirrors api/calc-chart.js exactly,
+// using only birthUT + the Moon's natal longitude, both already saved on the chart.
+function _refreshDashaPeriod(cd){
+  try{
+    if(!cd||!cd.birthUT||!cd.planets?.[1])return;
+    const DASHA_LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+    const DASHA_YEARS=[7,20,6,10,7,18,16,19,17];
+    const MS_PER_YEAR=365.25*24*3600*1000;
+    const birthDate=new Date(cd.birthUT);
+    const moonLon=cd.planets[1].lon;
+    if(isNaN(birthDate.getTime())||typeof moonLon!=='number')return;
+    const moonNakFrac=(moonLon*27/360)%1;
+    const birthLordIdx=cd.planets[1].nakshatra%9;
+    const elapsedAtBirth=moonNakFrac*DASHA_YEARS[birthLordIdx];
+    const birthMahaStart=new Date(birthDate.getTime()-elapsedAtBirth*MS_PER_YEAR);
+    const nowMs=Date.now();
+    let mahaIdx=birthLordIdx,mahaStart=birthMahaStart;
+    while(mahaStart.getTime()+DASHA_YEARS[mahaIdx]*MS_PER_YEAR<=nowMs){mahaStart=new Date(mahaStart.getTime()+DASHA_YEARS[mahaIdx]*MS_PER_YEAR);mahaIdx=(mahaIdx+1)%9;}
+    const mahaEnd=new Date(mahaStart.getTime()+DASHA_YEARS[mahaIdx]*MS_PER_YEAR);
+    const mahaRemaining=(mahaEnd.getTime()-nowMs)/MS_PER_YEAR;
+    let antarIdx=mahaIdx,antarStart=mahaStart;
+    while(true){const dur=(DASHA_YEARS[mahaIdx]*DASHA_YEARS[antarIdx])/120;const end=antarStart.getTime()+dur*MS_PER_YEAR;if(end>nowMs)break;antarStart=new Date(end);antarIdx=(antarIdx+1)%9;}
+    const antarDuration=(DASHA_YEARS[mahaIdx]*DASHA_YEARS[antarIdx])/120;
+    const antarEnd=new Date(antarStart.getTime()+antarDuration*MS_PER_YEAR);
+    const antarRemaining=(antarEnd.getTime()-nowMs)/MS_PER_YEAR;
+    let pratIdx=antarIdx,pratStart=antarStart;
+    while(true){const dur=(antarDuration*DASHA_YEARS[pratIdx])/120;const end=pratStart.getTime()+dur*MS_PER_YEAR;if(end>nowMs)break;pratStart=new Date(end);pratIdx=(pratIdx+1)%9;}
+    const pratDuration=(antarDuration*DASHA_YEARS[pratIdx])/120;
+    const pratEnd=new Date(pratStart.getTime()+pratDuration*MS_PER_YEAR);
+    const pratRemaining=(pratEnd.getTime()-nowMs)/MS_PER_YEAR;
+    const fmtDate=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    cd.dashaPeriod={
+      lord:DASHA_LORDS[mahaIdx],years:DASHA_YEARS[mahaIdx],remaining:mahaRemaining.toFixed(2),
+      next:DASHA_LORDS[(mahaIdx+1)%9],endDate:fmtDate(mahaEnd),
+      antar:{lord:DASHA_LORDS[antarIdx],duration:antarDuration.toFixed(3),remaining:antarRemaining.toFixed(2),next:DASHA_LORDS[(antarIdx+1)%9],startDate:fmtDate(antarStart),endDate:fmtDate(antarEnd)},
+      pratyantara:{lord:DASHA_LORDS[pratIdx],duration:pratDuration.toFixed(3),remaining:pratRemaining.toFixed(2),next:DASHA_LORDS[(pratIdx+1)%9],startDate:fmtDate(pratStart),endDate:fmtDate(pratEnd)}
+    };
+  }catch(e){}
+}
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
 let soulReadingCache=(()=>{
   const arc=getSoulArchive();
@@ -1425,7 +1468,7 @@ async function restoreAccess(){
       if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'✦ सदस्यता की पुष्टि हुई! एप्लिकेशन खोल रहे हैं…':currentLang==='es'?'✦ ¡Suscripción confirmada! Abriendo la app…':'✦ Subscription confirmed! Opening the app…';}
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
       if(saved?.chartData?.planets&&saved?.userData?.name){
-        userData=saved.userData;chartData=saved.chartData;
+        userData=saved.userData;chartData=saved.chartData;_refreshDashaPeriod(chartData);
         if(userData.lang)setLang(userData.lang);
         showChart();
         setTimeout(()=>{_activatePanel(5);setTimeout(()=>showDailyReading(),800);},1200);
@@ -3858,7 +3901,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '120';
+const JYOTI_BUILD = '121';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
@@ -4203,7 +4246,7 @@ async function openBillingPortal(){
     // Owner bypass / beta codes never set jyoti_sub_email, so testers exploring demo data are unaffected.
     if(saved.isDemo&&localStorage.getItem('jyoti_sub_email'))return;
     userData=saved.userData;
-    chartData=saved.chartData;
+    chartData=saved.chartData;_refreshDashaPeriod(chartData);
     if(userData.lang)setLang(userData.lang);
     // Tester deliberately navigated back to panels 1-4 via the code-gated link — let them stay there
     // through a reload instead of bouncing straight back to panel 5.
@@ -4266,7 +4309,7 @@ async function openBillingPortal(){
       const saved=JSON.parse(localStorage.getItem('jyoti_chart')||'null');
       // Never lock a real subscriber into demo (Priya Sharma) data — only restore a saved chart that's real.
       if(saved?.chartData?.planets&&saved?.userData?.name&&!saved.isDemo){
-        userData=saved.userData;chartData=saved.chartData;
+        userData=saved.userData;chartData=saved.chartData;_refreshDashaPeriod(chartData);
         if(userData.lang)setLang(userData.lang);
         showChart();
         _activatePanel(5);
