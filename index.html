@@ -3398,14 +3398,17 @@ let _careerChartCtx=null;
 let _careerLoadedKey=null;
 
 async function showCareerReading(){
-  const _ck=currentLang+'_'+_chartKey();
+  const dasha=chartData.dashaPeriod;
+  // Tag the cache by current Maha/Antar/Pratyantara lords so a dasha shift
+  // invalidates old readings instead of serving the original search forever.
+  const _dashaTag=dasha?`${dasha.lord||''}-${dasha.antar?.lord||''}-${dasha.pratyantara?.lord||''}`:'none';
+  const _ck=currentLang+'_'+_chartKey()+'_'+_dashaTag;
   if(_careerLoadedKey===_ck)return;
   const capturedLang=currentLang;
   const L_en=T['en'];
   const p=chartData.planets;
-  const dasha=chartData.dashaPeriod;
 
-  const cacheKey='jyoti_career_'+capturedLang+'_'+_chartKey();
+  const cacheKey='jyoti_career_'+capturedLang+'_'+_chartKey()+'_'+_dashaTag;
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
     if(cached&&cached.reading){
@@ -3855,7 +3858,7 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
 // ── APP VERSION CHECK ──
 // Clears stale caches and reloads once when a new build is deployed.
 // Catches devices where the SW_UPDATED message didn't fire (common on iOS PWA).
-const JYOTI_BUILD = '119';
+const JYOTI_BUILD = '120';
 (function enforceLatestBuild(){
   try{
     if(localStorage.getItem('jyoti_build')===JYOTI_BUILD)return;
