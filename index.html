@@ -3549,12 +3549,12 @@ DBA CAREER HOUSE ANALYSIS (career events manifest when combinations appear in An
   Antar + Pratyantara overlap (currently active now): ${antarPratOverlap.join(', ')||'none'}
   Houses at all THREE DBA levels (extremely strong): ${threeLevel.join(', ')||'none'}${dasha.pratyantara?.endMs?`
 
-TIMING FROM TODAY (${new Date().toDateString()}), use this so the reading is accurate for today and looks ahead:
+TIMING FROM TODAY (${new Date().toDateString()}), for your accuracy only. Do not recite these dates; the reading is about the prediction, not the calendar:
   ${pratLord} Pratyantara: ${dasha.pratyantara.startDate} to ${dasha.pratyantara.endDate}, ${_pratDaysLeft<1?'ends within the next day':'about '+Math.round(_pratDaysLeft)+' days left'}.
   Next Pratyantara: ${dasha.pratyantara.next}, from ${dasha.pratyantara.endDate} until ${dasha.pratyantara.nextEndDate||'?'}, activates houses: ${_dashaHouses(dasha.pratyantara.next).join(', ')||'none'}
   ${_inTransition
-    ?`${pratLord} is closing now, not continuing. Write current_period as the handover: what ${pratLord} is completing today and what ${dasha.pratyantara.next} opens next. Write timing around the ${dasha.pratyantara.next} window and when it ends. Never say ${pratLord} continues through or beyond this month.`
-    :`Write current_period about what ${pratLord} is doing now. In timing, state when ${pratLord} ends using the dates above, then what ${dasha.pratyantara.next} brings after it. Never stretch ${pratLord} beyond its end date.`}`:''}`:'';
+    ?`${pratLord} is closing now, not continuing. In current_period, predict what is being completed or resolved in their career right now as ${pratLord} hands over. In timing, predict what ${dasha.pratyantara.next} will bring next in concrete career terms (what opens, shifts or is asked of them). Never describe ${pratLord} as continuing.`
+    :`In current_period, predict what is unfolding in their career right now under ${pratLord}. In timing, predict what comes next under ${dasha.pratyantara.next} in concrete career terms. Refer to timing loosely (in the coming weeks, from late this month) rather than listing dates, and never stretch ${pratLord} beyond its end.`}`:''}`:'';
 
   const chartSummary=`Name: ${userData.name}
 Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
