@@ -1170,14 +1170,25 @@ function _refreshDashaPeriod(cd){
     const pratDuration=(antarDuration*DASHA_YEARS[pratIdx])/120;
     const pratEnd=new Date(pratStart.getTime()+pratDuration*MS_PER_YEAR);
     const pratRemaining=(pratEnd.getTime()-nowMs)/MS_PER_YEAR;
+    const nextPratIdx=(pratIdx+1)%9;
+    const nextPratEnd=new Date(pratEnd.getTime()+(antarDuration*DASHA_YEARS[nextPratIdx])/120*MS_PER_YEAR);
     const fmtDate=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
     cd.dashaPeriod={
       lord:DASHA_LORDS[mahaIdx],years:DASHA_YEARS[mahaIdx],remaining:mahaRemaining.toFixed(2),
       next:DASHA_LORDS[(mahaIdx+1)%9],endDate:fmtDate(mahaEnd),
       antar:{lord:DASHA_LORDS[antarIdx],duration:antarDuration.toFixed(3),remaining:antarRemaining.toFixed(2),next:DASHA_LORDS[(antarIdx+1)%9],startDate:fmtDate(antarStart),endDate:fmtDate(antarEnd)},
-      pratyantara:{lord:DASHA_LORDS[pratIdx],duration:pratDuration.toFixed(3),remaining:pratRemaining.toFixed(2),next:DASHA_LORDS[(pratIdx+1)%9],startDate:fmtDate(pratStart),endDate:fmtDate(pratEnd)}
+      pratyantara:{lord:DASHA_LORDS[pratIdx],duration:pratDuration.toFixed(3),remaining:pratRemaining.toFixed(2),next:DASHA_LORDS[(pratIdx+1)%9],startDate:fmtDate(pratStart),endDate:fmtDate(pratEnd),endMs:pratEnd.getTime(),nextEndDate:fmtDate(nextPratEnd)}
     };
   }catch(e){}
+}
+// Re-run the dasha against the clock and report whether the Pratyantara rolled over.
+// The app can stay open (or sit resumed in a phone's background) across a period change,
+// so this runs on every tab switch, every reading load, and whenever the app comes back.
+function _syncLiveDasha(){
+  if(!chartData?.planets)return false;
+  const before=currentPratKey();
+  _refreshDashaPeriod(chartData);
+  return before!==currentPratKey();
 }
 // Load cached reading for the current Pratyantara — null if this period has no reading yet
 let soulReadingCache=(()=>{
@@ -2357,6 +2368,7 @@ let _dailyChartCtx = ''; // stored so lazy depth call can reuse chart summary
 
 // ── DAILY READING via Claude API ──
 async function showDailyReading(){
+  _syncLiveDasha();
   const capturedLang=currentLang; // snapshot — user may switch language mid-fetch
   const L=T[capturedLang];
   const now=new Date();
@@ -3285,6 +3297,7 @@ function showPlanetError(detail){
 // ── WEEKLY PRACTICE ──
 async function showWeeklyReading(){
   if(!chartData||!userData)return;
+  _syncLiveDasha();
   const capturedLang=currentLang;
   const cacheKey='jyoti_w_'+weekStartStr()+'_'+capturedLang+'_'+_chartKey();
   try{
@@ -3417,6 +3430,7 @@ function switchTab(tab,el){
     const m=currentLang==='hi'?'दैनिक साधना और कुंडली के लिए पूर्ण एक्सेस में अपग्रेड करें।':currentLang==='es'?'Actualiza a acceso completo para práctica diaria y lectura de carta.':'Upgrade to full access for daily practice and chart reading.';
     alert(m);return;
   }
+  if(_syncLiveDasha()&&document.getElementById('full-reading')?.innerHTML.trim())showFullChart();
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   ['daily','weekly','chart','compat','career'].forEach(t=>{
@@ -3441,10 +3455,15 @@ let _careerChartCtx=null;
 let _careerLoadedKey=null;
 
 async function showCareerReading(){
+  _syncLiveDasha();
   const dasha=chartData.dashaPeriod;
+  // Final days of a Pratyantara: the reading should speak to the handover into the next lord,
+  // not describe the outgoing period as if it runs on for months.
+  const _pratDaysLeft=dasha?.pratyantara?.endMs?(dasha.pratyantara.endMs-Date.now())/86400000:null;
+  const _inTransition=_pratDaysLeft!==null&&_pratDaysLeft<=5;
   // Tag the cache by current Maha/Antar/Pratyantara lords so a dasha shift
   // invalidates old readings instead of serving the original search forever.
-  const _dashaTag=dasha?`${dasha.lord||''}-${dasha.antar?.lord||''}-${dasha.pratyantara?.lord||''}`:'none';
+  const _dashaTag=dasha?`${dasha.lord||''}-${dasha.antar?.lord||''}-${dasha.pratyantara?.lord||''}${_inTransition?'-t':''}`:'none';
   const _ck=currentLang+'_'+_chartKey()+'_'+_dashaTag;
   if(_careerLoadedKey===_ck)return;
   const capturedLang=currentLang;
@@ -3528,7 +3547,14 @@ DBA CAREER HOUSE ANALYSIS (career events manifest when combinations appear in An
   Antar Dasha ${antarLord} activates houses: ${antarH.join(', ')||'none'} [natal House ${_natalH(antarLord)||'?'}, rules Houses ${_ruledHouses(antarLord).join(' & ')||'none'}]
   Pratyantara ${pratLord} activates houses: ${pratH.join(', ')||'none'} [natal House ${_natalH(pratLord)||'?'}, rules Houses ${_ruledHouses(pratLord).join(' & ')||'none'}]
   Antar + Pratyantara overlap (currently active now): ${antarPratOverlap.join(', ')||'none'}
-  Houses at all THREE DBA levels (extremely strong): ${threeLevel.join(', ')||'none'}`:'';
+  Houses at all THREE DBA levels (extremely strong): ${threeLevel.join(', ')||'none'}${dasha.pratyantara?.endMs?`
+
+TIMING FROM TODAY (${new Date().toDateString()}), use this so the reading is accurate for today and looks ahead:
+  ${pratLord} Pratyantara: ${dasha.pratyantara.startDate} to ${dasha.pratyantara.endDate}, ${_pratDaysLeft<1?'ends within the next day':'about '+Math.round(_pratDaysLeft)+' days left'}.
+  Next Pratyantara: ${dasha.pratyantara.next}, from ${dasha.pratyantara.endDate} until ${dasha.pratyantara.nextEndDate||'?'}, activates houses: ${_dashaHouses(dasha.pratyantara.next).join(', ')||'none'}
+  ${_inTransition
+    ?`${pratLord} is closing now, not continuing. Write current_period as the handover: what ${pratLord} is completing today and what ${dasha.pratyantara.next} opens next. Write timing around the ${dasha.pratyantara.next} window and when it ends. Never say ${pratLord} continues through or beyond this month.`
+    :`Write current_period about what ${pratLord} is doing now. In timing, state when ${pratLord} ends using the dates above, then what ${dasha.pratyantara.next} brings after it. Never stretch ${pratLord} beyond its end date.`}`:''}`:'';
 
   const chartSummary=`Name: ${userData.name}
 Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
@@ -4237,6 +4263,24 @@ async function openBillingPortal(){
   }
 }
 
+// App resumed (phone unlocked, tab refocused): if the Pratyantara rolled over or the practice
+// day changed while it sat open, reload whichever tab is showing so nothing stale stays on screen.
+let _lastPracticeDay=null;
+function _practiceDayNow(){const n=new Date();return n.getHours()>=20?todayStr()+'+1':todayStr();}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible'||!chartData?.planets||!userData?.name)return;
+  const dashaChanged=_syncLiveDasha();
+  const day=_practiceDayNow();
+  const dayChanged=_lastPracticeDay!==null&&_lastPracticeDay!==day;
+  _lastPracticeDay=day;
+  if(!dashaChanged&&!dayChanged)return;
+  const shown=t=>{const el=document.getElementById('tab-'+t);return el&&el.style.display!=='none'&&el.offsetParent!==null;};
+  if(dashaChanged&&document.getElementById('full-reading')?.innerHTML.trim()){showFullChart();if(shown('chart'))setTimeout(()=>loadPlanetReadings(),1000);}
+  if(shown('daily'))showDailyReading();
+  else if(shown('weekly'))showWeeklyReading();
+  else if(shown('career'))showCareerReading();
+});
+_lastPracticeDay=_practiceDayNow();
 // Auto-restore saved chart — subscribed users (paid or beta) go straight to panel 5, unpaid see continue button
 (async function initAutoRestore(){
   try{
