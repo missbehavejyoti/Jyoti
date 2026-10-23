@@ -2535,7 +2535,7 @@ Days until month end: ${new Date(practiceDate.getFullYear(),practiceDate.getMont
   let dailyData=null;
   for(let attempt=0;attempt<3;attempt++){
     try{
-      const resp = await fetch('/api/get-remedy', {
+      const resp = await _paidFetch('/api/get-remedy', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({chartSummary, lang: capturedLang, type: 'daily_quick', daysUntilMonthEnd: new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate(), token: localStorage.getItem('jyoti_access_token')})
@@ -2646,7 +2646,7 @@ async function loadDailyDepth(el){
     _dailyChartCtx=`Name: ${userData.name}\nDate of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}\nAscendant: ${_L2.signs[chartData.ascSign]} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°\n${['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'].map((n,i)=>`${n}: ${_L2.signs[_p[i].sign]} ${_p[i].degree}°, House ${_h(_p[i])}`).join('\n')}`;
   }
   try{
-    const resp=await fetch('/api/get-remedy',{
+    const resp=await _paidFetch('/api/get-remedy',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:_dailyChartCtx,lang:_L,type:'daily_depth',token:localStorage.getItem('jyoti_access_token')})
     });
@@ -3074,7 +3074,7 @@ Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.l
 Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const soulCtrl=new AbortController();
     const soulTimer=setTimeout(()=>soulCtrl.abort(),180000);
-    const resp=await fetch('/api/get-remedy',{
+    const resp=await _paidFetch('/api/get-remedy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:soulSummary, lang:capturedLang, type:'soul'}),
@@ -3199,7 +3199,7 @@ ${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixe
       const ctrl=new AbortController();
       const tId=setTimeout(()=>ctrl.abort(),120000);
       try{
-        const r=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+        const r=await _paidFetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({chartSummary:summary,lang:capturedLang,type:batchType}),signal:ctrl.signal});
         clearTimeout(tId);
         if(!r.ok){
@@ -3368,7 +3368,7 @@ Mars: ${S[trW[2].sign]} ${trW[2].degree}°, natal House ${trHW(2)}
 Mercury: ${S[trW[3].sign]} ${trW[3].degree}°, natal House ${trHW(3)}
 Moon at week start: ${S[trW[1].sign]} ${trW[1].degree}°, Nakshatra: ${_n(trW[1])||'unknown'} (travels ~3 signs this week)${_wNakLordBlock}`;
   try{
-    const resp=await fetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+    const resp=await _paidFetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary,lang:capturedLang,type:'weekly',token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
@@ -3583,7 +3583,7 @@ Today: ${new Date().toDateString()}`;
   _careerChartCtx=chartSummary;
 
   try{
-    const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
+    const resp=await _paidFetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary,lang:capturedLang,type:'career_layer1',token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
@@ -3638,7 +3638,7 @@ async function submitCareerContext(){
   if(btn){btn.disabled=true;btn.textContent=_L==='hi'?'पढ़ रहे हैं...':_L==='es'?'Leyendo...':'Reading...';}
   if(respEl){respEl.style.display='none';respEl.innerHTML='';}
   try{
-    const resp=await fetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
+    const resp=await _paidFetch('/api/get-career',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary:_careerChartCtx,lang:_L,type:'career_layer2',context:q,token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
@@ -4201,6 +4201,35 @@ function _clearAccess(){
   _verifiedTier=null;
   ['jyoti_tier','jyoti_access_token','jyoti_sub_email','jyoti_gift_expires','jyoti_is_tester'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
 }
+// Subscriber tokens last 3 days. When one lapses, re-check the subscription with Stripe via
+// the saved email and mint a fresh one, so a paying subscriber isn't silently locked out.
+// Returns the new token, false if Stripe says they're not subscribed, or null if unknown.
+let _renewing=null;
+function _renewAccessToken(){
+  const email=localStorage.getItem('jyoti_sub_email');
+  if(!email)return Promise.resolve(false);
+  if(_renewing)return _renewing;
+  _renewing=(async()=>{
+    try{
+      const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      if(!resp.ok)return null;
+      const data=await resp.json();
+      if(!data.subscribed||!data.token)return false;
+      try{localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
+      return data.token;
+    }catch(e){return null;}
+    finally{setTimeout(()=>{_renewing=null;},0);}
+  })();
+  return _renewing;
+}
+// POST to a paid API with the current token; on 401 (expired token) renew it and retry once.
+async function _paidFetch(url,opts){
+  const send=()=>{const b=JSON.parse(opts.body);b.token=localStorage.getItem('jyoti_access_token');return fetch(url,{...opts,body:JSON.stringify(b)});};
+  const resp=await send();
+  if(resp.status!==401)return resp;
+  const tok=await _renewAccessToken();
+  return tok?send():resp;
+}
 async function requireAccess(){
   if(_giftExpired()){_clearAccess();return null;}
   const tier=localStorage.getItem('jyoti_tier');
@@ -4223,7 +4252,15 @@ async function requireAccess(){
   try{
     const resp=await fetch('/api/verify-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});
     const data=await resp.json();
-    if(!data.valid){_clearAccess();return null;}
+    if(!data.valid){
+      // Expired subscriber token — re-check with Stripe before locking them out
+      const renewed=await _renewAccessToken();
+      if(renewed===false){_clearAccess();return null;}
+      if(!renewed)return null; // couldn't reach Stripe — don't grant, don't wipe
+      _verifiedTier='full';
+      try{localStorage.setItem('jyoti_tier','full');}catch(e){}
+      return 'full';
+    }
     _verifiedTier=data.tier;
     try{localStorage.setItem('jyoti_tier',data.tier);}catch(e){}
     return data.tier;
@@ -4668,7 +4705,7 @@ async function loadSynTier(type){
       const ctrl=new AbortController();
       const tId=setTimeout(()=>ctrl.abort(),180000);
       try{
-        const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+        const r=await _paidFetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:apiType,lang:capturedLang,relationshipContext:synRelContext,token:localStorage.getItem('jyoti_access_token')}),
           signal:ctrl.signal});
         clearTimeout(tId);
@@ -5098,7 +5135,7 @@ async function openDeepReading(type,title){
     const ctrl=new AbortController();
     const tId=setTimeout(()=>ctrl.abort(),270000);
     // API type is 'deep_karmic' etc (without language suffix)
-    const r=await fetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
+    const r=await _paidFetch('/api/get-synastry',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartA:summaryA,chartB:summaryB,nameA:synUserA.name,nameB:synUserB.name,type:'deep_'+type,lang:capturedLang,relationshipContext:synRelContext,token:localStorage.getItem('jyoti_access_token')}),
       signal:ctrl.signal});
     clearTimeout(tId);
