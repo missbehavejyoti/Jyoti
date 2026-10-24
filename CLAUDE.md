@@ -32,7 +32,8 @@ A Vedic astrology daily practice app (jyotiapp.app) built by Alana. Subscribers 
   - `beginSynastry()` (~line 4051) — starts compatibility reading
 
 ### API
-- **`api/get-remedy.js`** — daily + weekly + depth readings via Claude AI
+- **`api/get-remedy.js`** — daily + weekly + depth readings, plus `dharma` and `marriage` path readings, via Claude AI
+- **`api/get-career.js`** — career readings via Claude AI
 - **`api/get-synastry.js`** — compatibility/synastry readings via Claude AI
 - **`api/webhook.js`** — Stripe webhook (checkout, cancellation, payment failed)
 - **`api/send-push.js`** — sends push notifications (cron, every ~15 min)
@@ -50,7 +51,7 @@ A Vedic astrology daily practice app (jyotiapp.app) built by Alana. Subscribers 
 
 ### Config
 - **`vercel.json`** — function maxDurations + URL rewrites
-  - Vercel Hobby plan limit: 12 serverless functions. Currently at 11. Do not exceed.
+  - Vercel Hobby plan limit: 12 serverless functions. Currently at 12 (the limit). Add new AI reading types inside an existing function, never as a new file.
 
 ---
 
@@ -97,6 +98,16 @@ The AI silently analyses:
 
 ---
 
+## Dharma Path & Marriage Path
+- Dharma Path: collapsible section in the full chart reading (after Soul Map). Marriage Path: card at the top of the Compatibility tab.
+- `_dharmaFactors()` in `index.html` computes the classical factors client-side (Pravrajya yoga, Jaimini karakas, Karakamsha, Ishta Devata, Navamsa 7th, Upapada and 2nd from it, 7th house, Mangal dosha) and sends them as text to `get-remedy` (`type: 'dharma'` / `'marriage'`).
+- "What's ahead" dates come from `_dashaTimeline()` at render time, never from the AI. The AI only writes meaning per period id (e.g. `Mercury/Ketu`); past periods drop off automatically.
+- Cached in localStorage by type + lang + chartKey + current Maha/Antar id, so a fresh reading is written when a new sub-period begins.
+- Tone rules: verdict first, direct, compassionate, never fatalistic; partner age weighed across all indicators, never one factor.
+
+## Access Tokens
+- Subscriber tokens (`api/_token.js`) expire after 3 days. `_renewAccessToken()` re-checks Stripe via the saved email and mints a fresh one; `_paidFetch()` retries paid API calls once after a 401. Without this, an expired token silently shows the daily fallback card and locks subscribers out on reopen.
+
 ## Push Notifications
 - Cron fires every ~15 min (external service hitting `/api/send-push?key=SECRET`)
 - Morning slot: 6:00–6:14am local time → "Begin Your Practice"
@@ -116,7 +127,7 @@ Webhook verifies events by retrieving from Stripe API (not by signature — avoi
 
 ## Known Issues / Watch Out For
 - **`const` in template literals:** Helpers (`_n`, `_h`, `_dg`) must be declared BEFORE any template literal that uses them. `const` is not hoisted — using it before declaration throws ReferenceError. In `showDailyReading()`, all helpers are now declared before `transitBlock`.
-- **Vercel function limit:** 12 functions max on Hobby plan. Currently 11. Don't add more without removing one.
+- **Vercel function limit:** 12 functions max on Hobby plan. Currently 12. Don't add more without removing one.
 - **Stripe webhook "other errors":** Connection-reset errors mean the function crashed before sending any HTTP response. Always ensure a 200 response is returned in all code paths.
 - **localStorage cache:** Daily practice cached by `practiceDate_lang_chartKey`. Clear cache by changing any of those three values. Cache is NOT cleared by refreshing — user must clear manually or cache key must change.
 - **Synastry caching:** Do NOT call `loadSynCacheFromStorage()` on form submit — it restores stale tier2 readings. Each form submit clears `synCache={}` and fetches all sections fresh. In-session memory cache prevents redundant re-fetches while browsing within one reading.

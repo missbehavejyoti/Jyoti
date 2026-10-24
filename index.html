@@ -825,6 +825,7 @@ select option{background:var(--s2);color:var(--text)}
 
       <!-- Compatibility Tab -->
       <div id="tab-compat" style="display:none">
+        <div id="marriage-path-wrap"></div>
 
         <!-- Form -->
         <div id="syn-form-wrap">
@@ -1379,6 +1380,7 @@ function setLang(lang){
     const prEl=document.getElementById('planet-readings-wrap');
     if(prEl&&document.getElementById('tab-chart')?.style.display!=='none')loadPlanetReadings();
     // Clear weekly reading so it re-fetches in new language
+    if(document.getElementById('marriage-path-wrap')?.innerHTML)renderMarriageEntry();
     const weeklyMain=document.getElementById('weekly-main');
     if(weeklyMain)weeklyMain.innerHTML='';
     const weeklyContent=document.getElementById('weekly-content');
@@ -2993,6 +2995,11 @@ function showFullChart(){
       <div id="soul-content" style="display:none"></div>
     </div>
 
+    <!-- Dharma Path (loads only when opened) -->
+    ${cd.birthUT?`<div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आपका धर्म मार्ग':currentLang==='es'?'Tu Camino del Dharma':'Your Dharma Path'}</span></div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् जातक, जैमिनी सूत्र और नाडी परंपरा: आपकी आत्मा किस आध्यात्मिक जीवन के लिए बनी है':currentLang==='es'?'Brihat Jataka, los Jaimini Sutras y la tradición Nadi: la vida espiritual para la que está hecha tu alma':'Brihat Jataka, the Jaimini Sutras and the Nadi tradition: the spiritual life your soul is built for'}</p>
+    ${_pathDetails('dharma')}`:''}
+
     <!-- Your Planetary Blueprint (personalised AI reading) -->
     <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='es'?'Tu Plano Planetario':'Your Planetary Blueprint'}</span></div>
     <p style="font-size:.82rem;color:var(--dim);margin-bottom:1rem;font-style:italic">${currentLang==='hi'?'प्रत्येक ग्रह आपके जीवन में कैसे कार्य करता है':currentLang==='es'?'Cómo opera cada planeta específicamente en tu vida':'How each planet operates specifically in your lifetime'}</p>
@@ -3436,7 +3443,7 @@ function switchTab(tab,el){
   ['daily','weekly','chart','compat','career'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
-  if(tab==='compat')prefillSynPersonA();
+  if(tab==='compat'){renderMarriageEntry();prefillSynPersonA();}
   if(tab==='weekly')showWeeklyReading();
   if(tab==='career')showCareerReading();
   if(tab==='chart'){
@@ -3448,6 +3455,207 @@ function switchTab(tab,el){
       :new Promise(r=>setTimeout(r,1000));
     wait.then(()=>loadPlanetReadings());
   }
+}
+
+// ── DHARMA PATH & MARRIAGE PATH ──
+// Classical factors (Brihat Jataka Pravrajya yoga, Jaimini karakas, Upapada and Karakamsha,
+// Navamsa) are computed here from the saved chart and sent as text to get-remedy, which
+// writes the reading. Dates in "What's ahead" come from _dashaTimeline() at render time,
+// never from the AI, so the timeline stays correct as periods pass. The cache is keyed by
+// the current Maha/Antar, so a fresh reading is written when a new sub-period begins.
+const _GR=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const _SLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+
+// Current and upcoming Maha/Antar periods, computed against the clock (same maths as _refreshDashaPeriod)
+function _dashaTimeline(cd,count){
+  const LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'],YRS=[7,20,6,10,7,18,16,19,17],MY=365.25*864e5;
+  if(!cd?.birthUT||typeof cd.planets?.[1]?.lon!=='number')return[];
+  const birth=new Date(cd.birthUT).getTime();if(isNaN(birth))return[];
+  const m=cd.planets[1],i0=m.nakshatra%9,now=Date.now(),out=[];
+  let s=birth-((m.lon*27/360)%1)*YRS[i0]*MY;
+  for(let k=0;k<12&&out.length<count;k++){
+    const mi=(i0+k)%9;let as=s;
+    for(let j=0;j<9&&out.length<count;j++){
+      const ai=(mi+j)%9,e=as+YRS[mi]*YRS[ai]/120*MY;
+      if(e>now)out.push({id:LORDS[mi]+'/'+LORDS[ai],maha:LORDS[mi],antar:LORDS[ai],start:as,end:e,now:as<=now});
+      as=e;
+    }
+    s+=YRS[mi]*MY;
+  }
+  return out;
+}
+
+function _dharmaFactors(cd){
+  const S=T.en.signs,P=cd.planets,asc=cd.ascSign;
+  const H=s=>(s-asc+12)%12+1,d9=l=>Math.floor(l*9/30)%12;
+  const EX={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6},DEB={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[2,5],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const COMB={Moon:12,Mars:17,Mercury:14,Jupiter:11,Venus:10,Saturn:15};
+  const pos=n=>P[_GR.indexOf(n)];
+  const dig=(n,s)=>EX[n]===s?'exalted':DEB[n]===s?'debilitated':(OWN[n]||[]).includes(s)?'own sign':'';
+  const comb=n=>COMB[n]?Math.abs(((pos(n).lon-P[0].lon+540)%360)-180)<=COMB[n]:false;
+  // Baladi avastha: odd signs run infant→dead across 6° bands, even signs reversed
+  const avastha=p=>{const b=Math.min(4,Math.floor((parseFloat(p.degree)||0)/6)),st=['infant (bala)','youthful (kumara)','mature (yuva)','old (vriddha)','dead (mrita)'];return st[p.sign%2===0?b:4-b];};
+  const asp=(n,from)=>{const a=[7];if(n==='Mars')a.push(4,8);if(n==='Jupiter'||n==='Rahu'||n==='Ketu')a.push(5,9);if(n==='Saturn')a.push(3,10);return a.map(x=>(from+x-1)%12);};
+  const aspOn=(s,skip)=>_GR.filter(n=>n!==skip&&asp(n,pos(n).sign).includes(s));
+  const inSign=s=>_GR.filter(n=>pos(n).sign===s);
+  const in9=s=>_GR.filter(n=>d9(pos(n).lon)===s);
+  const list=a=>a.length?a.join(', '):'none';
+  const classical=_GR.slice(0,7),L=[];
+
+  L.push(`Ascendant (Lagna): ${S[asc]} ${parseFloat(cd.asc?.degree||0).toFixed(1)}°`);
+  _GR.forEach(n=>{const p=pos(n),dg=dig(n,p.sign);
+    L.push(`${n}: ${S[p.sign]} ${parseFloat(p.degree).toFixed(1)}°, House ${H(p.sign)}, ${p.nakshatraName||T.en.nakshatras[p.nakshatra]||''}, Navamsa ${S[d9(p.lon)]}${dg?', '+dg:''}${comb(n)?', combust':''}${classical.includes(n)?', avastha '+avastha(p):''}`);});
+
+  L.push('\nPRAVRAJYA YOGA (renunciation):');
+  const groups={};classical.forEach(n=>(groups[pos(n).sign]=groups[pos(n).sign]||[]).push(n));
+  const big=Object.entries(groups).filter(([,v])=>v.length>=3).sort((a,b)=>b[1].length-a[1].length);
+  if(!big.length)L.push('No sign holds 3 or more of the 7 classical planets. Not formed.');
+  big.forEach(([sk,v])=>{const s=+sk,nodes=inSign(s).filter(n=>n==='Rahu'||n==='Ketu');
+    L.push(`${S[s]} (House ${H(s)}): ${v.join(', ')} = ${v.length} classical planets${nodes.length?' (also '+nodes.join(', ')+', which do not count)':''}. ${v.length>=4?'FORMED.':'NOT formed (needs 4).'} Strength: ${v.map(n=>`${n} ${dig(n,s)||'neutral'}${comb(n)?' combust':''}`).join('; ')}. Aspected by: ${list(aspOn(s).filter(n=>!v.includes(n)))}.`);});
+  const msl=_SLORD[P[1].sign],mp=pos(msl),sat=pos('Saturn');
+  L.push(`Moon-sign lord ${msl} in ${S[mp.sign]}; aspected by classical planets: ${list(classical.filter(n=>n!==msl&&asp(n,pos(n).sign).includes(mp.sign)))}; ${msl} aspects or joins Saturn: ${msl!=='Saturn'&&(asp(msl,mp.sign).includes(sat.sign)||mp.sign===sat.sign)?'yes':'no'}; Saturn aspects ${msl}: ${msl!=='Saturn'&&asp('Saturn',sat.sign).includes(mp.sign)?'yes':'no'}.`);
+
+  const kar=classical.map(n=>({n,d:parseFloat(pos(n).degree)||0})).sort((a,b)=>b.d-a.d);
+  const AK=kar[0].n,kk=d9(pos(AK).lon),k12=(kk+11)%12,k12occ=in9(k12);
+  const ketuK=(d9(pos('Ketu').lon)-kk+12)%12+1;
+  L.push(`\nJAIMINI KARAKAS: Atmakaraka ${AK} (${kar[0].d.toFixed(2)}°), Amatyakaraka ${kar[1].n}, Darakaraka ${kar[6].n} (${kar[6].d.toFixed(2)}°)`);
+  L.push(`Karakamsha (Atmakaraka's Navamsa sign): ${S[kk]}; Navamsa planets there: ${list(in9(kk))}`);
+  L.push(`Ketu is ${ketuK} from Karakamsha${ketuK===12?' (12th: classical MOKSHA signature)':''}; Jupiter is ${(d9(pos('Jupiter').lon)-kk+12)%12+1} from Karakamsha`);
+  L.push(`12th from Karakamsha: ${S[k12]}, Navamsa occupants: ${list(k12occ)}. Ishta Devata planet: ${k12occ.length?k12occ[0]:_SLORD[k12]+' (lord of the empty 12th)'}`);
+
+  const n9f=(cd.asc.lon*9/30)%1,n9=d9(cd.asc.lon),n7=(n9+6)%12,n7l=_SLORD[n7],n7ls=d9(pos(n7l).lon);
+  L.push(`\nNAVAMSA (D9): Lagna ${S[n9]}${n9f<.05||n9f>.95?' (on a boundary, birth-time sensitive)':''}; 7th ${S[n7]} holds ${list(in9(n7))}; 7th lord ${n7l} in Navamsa ${S[n7ls]}${dig(n7l,n7ls)?' ('+dig(n7l,n7ls)+')':''}`);
+
+  const h12=(asc+11)%12,ls=pos(_SLORD[h12]).sign;
+  let ul=(ls+(ls-h12+12)%12)%12;if(ul===h12||ul===(h12+6)%12)ul=(ul+9)%12;
+  const ull=_SLORD[ul];
+  L.push(`\nUPAPADA (Jaimini): ${S[ul]} (House ${H(ul)}); occupants ${list(inSign(ul))}; aspected by ${list(aspOn(ul))}; lord ${ull} in ${S[pos(ull).sign]} (House ${H(pos(ull).sign)})`);
+  L.push(`2nd from Upapada: ${S[(ul+1)%12]}; occupants ${list(inSign((ul+1)%12))}`);
+
+  const h7=(asc+6)%12,l7=_SLORD[h7],l7p=pos(l7),v=pos('Venus'),j=pos('Jupiter'),ma=pos('Mars');
+  L.push(`\n7TH HOUSE: ${S[h7]}; occupants ${list(inSign(h7))}; aspected by ${list(aspOn(h7))}`);
+  L.push(`7th lord ${l7} in ${S[l7p.sign]} (House ${H(l7p.sign)})${dig(l7,l7p.sign)?', '+dig(l7,l7p.sign):''}${comb(l7)?', combust':''}${[2,5,8,11].includes(l7p.sign)?', DUAL sign':''}; with ${list(inSign(l7p.sign).filter(n=>n!==l7))}; aspected by ${list(aspOn(l7p.sign,l7))}`);
+  L.push(`Venus in House ${H(v.sign)}, with ${list(inSign(v.sign).filter(n=>n!=='Venus'))}, aspected by ${list(aspOn(v.sign,'Venus'))}`);
+  L.push(`Jupiter in House ${H(j.sign)}, aspects Houses ${asp('Jupiter',j.sign).map(H).join(', ')}`);
+  L.push(`Mars is ${(ma.sign-asc+12)%12+1} from Lagna, ${(ma.sign-P[1].sign+12)%12+1} from Moon, ${(ma.sign-v.sign+12)%12+1} from Venus (Mangal dosha houses: 1, 2, 4, 7, 8, 12)`);
+
+  const same=(a,b)=>pos(a).sign===pos(b).sign;
+  const h9=(asc+8)%12,h10=(asc+9)%12;
+  L.push(`\nSPIRITUAL: Moksha houses 4: ${list(inSign((asc+3)%12))}; 8: ${list(inSign((asc+7)%12))}; 12: ${list(inSign(h12))}. Jupiter with Ketu: ${same('Jupiter','Ketu')?'yes':'no'}; Saturn with Ketu: ${same('Saturn','Ketu')?'yes':'no'}; Venus with Ketu: ${same('Venus','Ketu')?'yes':'no'}`);
+  L.push(`9th (dharma): ${S[h9]}, occupants ${list(inSign(h9))}, lord ${_SLORD[h9]} in House ${H(pos(_SLORD[h9]).sign)}. 10th: ${S[h10]}, occupants ${list(inSign(h10))}, lord ${_SLORD[h10]} in House ${H(pos(_SLORD[h10]).sign)}. 6th occupants: ${list(inSign((asc+5)%12))}`);
+  return L.join('\n');
+}
+
+function _pathSummary(){
+  _syncLiveDasha();
+  const tl=_dashaTimeline(chartData,6);
+  const f=t=>new Date(t).toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+  const text=`Name: ${userData.name}
+Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
+${_dharmaFactors(chartData)}
+
+UPCOMING PERIODS (Maha/Antar):
+${tl.map(p=>`${p.id}: ${f(p.start)} to ${f(p.end)}${p.now?' (NOW)':''}`).join('\n')}
+Today: ${new Date().toDateString()}`;
+  return {tl,text};
+}
+
+function _escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function _renderPath(kind,d,box){
+  const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
+  const hdr=t=>`<div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;color:var(--gold-d);margin:1.1rem 0 .35rem">✦ ${t}</div>`;
+  const para=t=>t?`<p style="line-height:1.8;margin:0 0 .4rem;color:var(--text)">${glossify(_escHtml(t))}</p>`:'';
+  const sec=(t,x)=>x?hdr(t)+para(x):'';
+  const loc=_L==='hi'?'hi-IN':_L==='es'?'es-ES':'en-AU';
+  const f=t=>new Date(t).toLocaleDateString(loc,{month:'short',year:'numeric'});
+  const pl=n=>{const i=_GR.indexOf(n);return i>=0?T[_L].planets[i]:n;};
+  // Live dates, past periods dropped; only periods the reading has words for are shown
+  const ahead=_dashaTimeline(chartData,6).filter(p=>d.windows&&d.windows[p.id]);
+  const win=ahead.length?hdr(tr("WHAT'S AHEAD",'आगे क्या है','LO QUE VIENE'))+ahead.map(p=>`
+    <div style="padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08)">
+      <div style="font-size:.8rem;color:var(--gold)">${pl(p.maha)} · ${pl(p.antar)} &nbsp;${f(p.start)} → ${f(p.end)}${p.now?` · <strong>${tr('NOW','अभी','AHORA')}</strong>`:''}</div>
+      <div style="font-size:.92rem;line-height:1.7;margin-top:.2rem">${glossify(_escHtml(d.windows[p.id]))}</div>
+    </div>`).join(''):'';
+  if(kind==='dharma'){
+    box.innerHTML=`
+      ${d.title?`<div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold-l);margin-bottom:.3rem">${_escHtml(d.title)}</div>`:''}
+      ${d.path_type?`<p style="font-style:italic;color:var(--muted);line-height:1.7;margin:0 0 .4rem">${glossify(_escHtml(d.path_type))}</p>`:''}
+      ${sec(tr('YOUR PATH','आपका मार्ग','TU CAMINO'),d.dharmic_path)}
+      ${sec(tr('YOUR WORK AS DHARMA','धर्म के रूप में आपका कार्य','TU TRABAJO COMO DHARMA'),d.work_as_dharma)}
+      ${sec(tr('YOUR PRACTICE','आपकी साधना','TU PRÁCTICA'),d.practice)}
+      ${d.mantra?`<div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
+        ${d.deity?`<div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_escHtml(d.deity)}</div>`:''}
+        <div style="font-size:1.15rem;color:var(--gold);margin-bottom:.2rem">${_escHtml(d.mantra)}</div>
+        ${d.mantra_translit?`<div style="font-size:.85rem;opacity:.82">${_escHtml(d.mantra_translit)}</div>`:''}
+        ${d.mantra_meaning?`<div style="font-size:.8rem;color:var(--muted);margin-top:.2rem">${_escHtml(d.mantra_meaning)}</div>`:''}
+      </div>`:''}
+      ${sec(tr("YOUR SOUL'S DIRECTION",'आत्मा की दिशा','LA DIRECCIÓN DE TU ALMA'),d.soul_direction)}
+      ${sec(tr('RIGHT NOW','अभी','AHORA MISMO'),d.right_now)}
+      ${win}`;
+  }else{
+    box.innerHTML=`
+      ${d.verdict?`<p style="font-size:1.02rem;line-height:1.75;color:var(--gold-l);border-left:2px solid var(--gold);padding-left:.9rem;margin:0 0 .4rem">${glossify(_escHtml(d.verdict))}</p>`:''}
+      ${sec(tr('WHY','क्यों','POR QUÉ'),d.why)}
+      ${sec(tr('HOW MANY UNIONS','विवाह की संख्या','CUÁNTAS UNIONES'),d.unions)}
+      ${sec(tr('YOUR PARTNER','आपका साथी','TU PAREJA'),d.partner)}
+      ${sec(tr('WHAT PROTECTS IT','क्या इसकी रक्षा करता है','LO QUE LA PROTEGE'),d.protection)}
+      ${sec(tr('LIVING ALONE','एकांत जीवन','VIVIR SOLO'),d.solitude)}
+      ${sec(tr('RIGHT NOW','अभी','AHORA MISMO'),d.right_now)}
+      ${win}`;
+  }
+}
+
+async function loadPathReading(kind,el){
+  if(!el||!el.open||el.dataset.loaded==='1'||el.dataset.loading==='1')return;
+  const box=el.querySelector('.path-content');if(!box)return;
+  const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
+  const retry=`<p style="font-size:.84rem;color:var(--muted);text-align:center;padding:.6rem 0">${tr('Not available right now.','अभी उपलब्ध नहीं।','No disponible ahora.')} <a href="#" onclick="const d=this.closest('details');d.dataset.loaded='';loadPathReading('${kind}',d);return false" style="color:var(--gold)">${tr('Tap to retry','पुनः प्रयास करें','Reintentar')}</a></p>`;
+  let summary;
+  try{
+    if(!chartData?.planets||!chartData.birthUT)throw new Error('no-chart');
+    summary=_pathSummary();
+  }catch(e){box.innerHTML=retry;return;}
+  const cur=summary.tl.find(p=>p.now);
+  const key=`jyoti_${kind}_${_L}_${_chartKey()}_${cur?cur.id:''}`;
+  try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
+  el.dataset.loading='1';
+  box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
+  try{
+    const resp=await _paidFetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chartSummary:summary.text,lang:_L,type:kind,token:localStorage.getItem('jyoti_access_token')})});
+    if(!resp.ok)throw new Error('api-error');
+    const data=await resp.json();
+    if(!data||data.error||!(kind==='dharma'?data.dharmic_path:data.verdict))throw new Error('bad-data');
+    try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
+    if(_L!==currentLang||!box.isConnected)return;
+    _renderPath(kind,data,box);el.dataset.loaded='1';
+  }catch(e){if(box.isConnected)box.innerHTML=retry;}
+  finally{el.dataset.loading='';}
+}
+
+// Collapsible entry point, shared by the chart tab (dharma) and compatibility tab (marriage)
+function _pathDetails(kind){
+  const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
+  const label=kind==='dharma'?tr('Reveal your Dharma Path','अपना धर्म मार्ग देखें','Descubre tu Camino del Dharma'):tr('Reveal your Marriage Path','अपना विवाह मार्ग देखें','Descubre tu Camino del Matrimonio');
+  return`<details ontoggle="loadPathReading('${kind}',this)">
+    <summary style="cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--gold);padding:.5rem .85rem;border:1px solid rgba(200,169,74,.3);border-radius:20px">
+      <span style="font-size:.85em">▾</span> ${label}
+    </summary>
+    <div class="path-content" style="margin-top:.9rem"></div>
+  </details>`;
+}
+
+function renderMarriageEntry(){
+  const wrap=document.getElementById('marriage-path-wrap');if(!wrap)return;
+  if(!chartData?.planets||!chartData.birthUT||!userData?.name){wrap.innerHTML='';return;}
+  const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
+  wrap.innerHTML=`<div class="remedy-card" style="margin:0 0 1.4rem">
+    <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('YOUR MARRIAGE PATH','आपका विवाह मार्ग','TU CAMINO DEL MATRIMONIO')}</div>
+    <p style="font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.7;margin:0 0 .8rem">${tr('What your own chart says about partnership, from the Jaimini Sutras and Parashara: whether marriage favours you, the partner who fits, and when.','जैमिनी सूत्र और पाराशर के अनुसार आपकी कुंडली साझेदारी के बारे में क्या कहती है: विवाह आपके लिए अनुकूल है या नहीं, उपयुक्त साथी, और कब।','Lo que tu propia carta dice sobre la pareja, según los Jaimini Sutras y Parashara: si el matrimonio te favorece, la pareja adecuada y cuándo.')}</p>
+    ${_pathDetails('marriage')}
+  </div>`;
 }
 
 // ── CAREER ──

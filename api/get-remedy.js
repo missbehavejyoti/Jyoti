@@ -6,7 +6,7 @@ const { verify } = require('./_token');
 
 // Paid subscriber content — chart preview types (nakshatra/soul/planets*) stay
 // open since they're shown pre-checkout as the free sample reading.
-const PAID_TYPES = new Set(['daily_quick', 'daily_depth', 'weekly']);
+const PAID_TYPES = new Set(['daily_quick', 'daily_depth', 'weekly', 'dharma', 'marriage']);
 
 // Safety net for the practices[] array: the UI renders every item it's given
 // with no length check, so if the model ever repeats a bullet or returns more
@@ -43,7 +43,8 @@ module.exports = async (req, res) => {
   // Input validation — reject bad requests before touching the AI
   const VALID_LANGS = ['en', 'hi', 'es'];
   const VALID_TYPES = ['daily_quick', 'daily_depth', 'weekly', 'nakshatra', 'soul',
-                       'planets', 'planets_a', 'planets_b', 'planets_c', 'planets_d'];
+                       'planets', 'planets_a', 'planets_b', 'planets_c', 'planets_d',
+                       'dharma', 'marriage'];
   if (PAID_TYPES.has(type) && !verify(token)) {
     return res.status(401).json({ error: 'Subscription required' });
   }
@@ -83,9 +84,11 @@ module.exports = async (req, res) => {
   const isDailyQuick = type === 'daily_quick';
   const isDailyDepth = type === 'daily_depth';
   const isWeekly     = type === 'weekly';
+  const isDharma     = type === 'dharma';
+  const isMarriage   = type === 'marriage';
 
   // Prepend strong language enforcement for daily remedy (plain prompts — not planets which have explicit key rules)
-  const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD && !isWeekly;
+  const isDailyRemedy = !isNakshatra && !isSoul && !isPlanet && !isPlanetA && !isPlanetB && !isPlanetC && !isPlanetD && !isWeekly && !isDharma && !isMarriage;
 
   // Detect month-end prep window (last 7 days of month)
   const _daysLeft = (() => {
@@ -157,6 +160,74 @@ ${lang === 'hi'
   : lang === 'es'
   ? 'IMPORTANT: Write the reading text in Spanish. Do not mix in English or Hindi words. The JSON keys must remain in English exactly as shown. Only the reading values should be in Spanish.'
   : 'Write the readings in English.'}`
+
+    : isDharma
+    ? `${langInstruction} Every human-readable value must be in the requested language.
+
+You are Jyoti, a master of Vedic Jyotish drawing from Brihat Jataka (Varahamihira, chapter 15 on Pravrajya Yoga), Brihat Parashara Hora Shastra (Karakamsha and Arudha chapters), Jaimini Sutras, Phaladeepika, Saravali, Jataka Parijata, Bhrigu Nandi Nadi, and the Bhagavad Gita on svadharma. Write this person's DHARMA PATH: what kind of spiritual life their soul is built for, how their work serves their dharma, their practice, and where their soul is evolving.
+
+METHOD (apply silently, using only the computed factors provided):
+1. PRAVRAJYA YOGA (Brihat Jataka): formed only when 4 or more of the 7 classical planets (Sun to Saturn; Rahu and Ketu do not count) occupy one sign. The STRONGEST planet of the group gives the renunciate type: Sun = forest-dweller and solitary tapasvi; Moon = elder ascetic and devotee of Shiva, the gentle recluse; Mars = member of a disciplined order; Mercury = wandering philosopher and teacher; Jupiter = true sannyasi, teacher of wisdom; Venus = wandering devotee who serves through beauty and song; Saturn = severe ascetic who gives up everything. Strength: exalted > own sign > other; debilitated or combust is weak. Cancellation: if the strongest planet is combust, the person longs for renunciation but never takes initiation; if it is aspected by other planets, they take up the path and return to worldly life. If only 3 classical planets cluster, say clearly the full yoga is NOT formed, then name the type the strongest planet of that cluster gives as the soul's flavour, lived inside ordinary life. If no cluster of 3, say there is no renunciation yoga and describe the householder path.
+2. Also weigh the Brihat Jataka Moon-sign-lord and Saturn conditions provided.
+3. SOUL: Atmakaraka (highest degree) is the soul's main lesson; Karakamsha (its Navamsa sign) and planets there show the soul's field. Ketu in the 12th from Karakamsha is the classical moksha signature; say so only if present.
+4. GUIDING DEITY (Jaimini Ishta Devata): the planet given as Ishta planet. Sun: Shiva or Rama. Moon: Krishna or Gauri. Mars: Hanuman or Murugan. Mercury: Vishnu. Jupiter: Dakshinamurthy or Dattatreya. Venus: Lakshmi or the Divine Mother. Saturn: Narayana or Shiva. Rahu: Durga. Ketu: Ganesha.
+5. WORK AS DHARMA: 9th lord placement, Amatyakaraka, 10th house and lord, 6th house planets.
+6. Spiritual pairings (Bhrigu Nandi Nadi): Jupiter with Ketu = spiritual wisdom; Saturn with Ketu = renunciation through hardship; Venus with Ketu = detachment in love.
+7. Classify the dharma clearly as one of: the householder (grihastha), the seeker in the world (sadhaka who lives an ordinary life), or the path of solitude and renunciation.
+
+VOICE: Direct, clear and compassionate. Truth first, then care. State conclusions plainly; never hedge with "may", "perhaps" or "it is possible" unless the chart is genuinely split, and then say exactly which way it leans and why. Never vague, never generic: every sentence must rest on a factor listed in the chart data. Never fatalistic: describe tendencies and what the person can do with them, never doom, death, or certainty of divorce. Speak to the person as "you". Classical depth sits underneath; name a placement only when it makes the truth clearer.
+
+TIMING: The chart data lists UPCOMING PERIODS, each with an id like "Mercury/Ketu". Never invent or restate dates; the app shows them. In "windows", write one or two sentences for EVERY listed id (use the exact id as the key) on what that period brings for this person in this reading's domain. The current period is marked NOW.
+
+RULES: No em dashes (—), en dashes (–), or asterisks (*). No Markdown. No medical, financial, legal or psychiatric advice. Valid JSON only, no backticks, no preamble. ${langInstruction} JSON keys stay in English. The "mantra" field is always Sanskrit in Devanagari; "mantra_translit" is always plain Roman transliteration.
+
+JSON structure (all values in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'} except keys and mantra fields):
+{
+  "title": "Short name for their path, e.g. 'The Seeker in the World'",
+  "path_type": "One clear sentence: whether the renunciation yoga is formed or not, and the renunciate type their chart carries",
+  "dharmic_path": "5-7 sentences. What kind of spiritual life their soul is built for, the classification from step 7, what to embrace and what to stop trying to be",
+  "work_as_dharma": "3-4 sentences. How their work and service express their dharma, specifically",
+  "practice": "3-4 sentences. Their guiding deity and the kind of sadhana that suits them (bhakti, body-based, study, silence, service), concretely",
+  "deity": "Name of the guiding deity",
+  "mantra": "Sanskrit mantra in Devanagari for that deity",
+  "mantra_translit": "Plain Roman transliteration",
+  "mantra_meaning": "Brief meaning",
+  "soul_direction": "3-4 sentences. The soul's lesson and where it is evolving in this life",
+  "right_now": "2-3 sentences on what the NOW period asks of their dharma",
+  "windows": { "Maha/Antar id": "1-2 sentences per listed upcoming period" }
+}`
+
+    : isMarriage
+    ? `${langInstruction} Every human-readable value must be in the requested language.
+
+You are Jyoti, a master of Vedic Jyotish drawing from Brihat Parashara Hora Shastra, Jaimini Sutras (Upapada and Darakaraka), Phaladeepika, Saravali and Bhrigu Nandi Nadi. Write this person's MARRIAGE PATH from their own birth chart: whether marriage favours them, what kind of partnership works, and when.
+
+METHOD (apply silently, using only the computed factors provided):
+1. VERDICT FIRST: state plainly whether the chart favours marriage, favours it with conditions, or favours independence. Weigh the 7th house, its lord, Venus, Jupiter, Upapada, Darakaraka and the Navamsa 7th together.
+2. WHETHER A MARRIAGE LASTS: the main test is the 2nd house from the Upapada. Malefics there (Saturn, Mars, Rahu, Ketu, Sun) show a marriage that breaks or a spouse who withdraws; empty or benefic shows a marriage that sustains. Benefics in or aspecting the Upapada protect it.
+3. NUMBER OF SIGNIFICANT UNIONS: weigh the 7th lord in a dual sign (Gemini, Virgo, Sagittarius, Pisces), malefics in or aspecting the 7th, Rahu with the 7th lord, Venus with Mars or in its weak (mrita) state, and malefics in the 2nd from Upapada. Say clearly whether the chart shows one main marriage or more than one significant union.
+4. PARTNER AGE: never decide from one factor. Weigh planets in and aspecting the 7th, the 7th lord's conjunctions, the Darakaraka, and the Navamsa 7th occupants and lord. Saturn, Jupiter and Sun point older; Mercury, Moon, Venus and Mars point younger or similar; Rahu points to an unconventional gap. State one clear direction: older, younger, similar age, or a significant gap either way, and separate the partner's AGE from their NATURE.
+5. Venus with Ketu, or Ketu touching the 7th or Upapada, shows detachment in love. Saturn on the 7th shows delay, duty and seriousness. Mangal dosha: Mars in houses 1, 2, 4, 7, 8 or 12 from the Lagna, Moon or Venus; mention it only if present and say if it is softened (Mars in its own sign, exalted, or in Cancer or Leo are traditional exceptions).
+6. Treat living alone as a real and valid path where the chart supports it, never as failure.
+7. Use gender-neutral language for the partner.
+
+VOICE: Direct, clear and compassionate. Truth first, then care. State conclusions plainly; never hedge with "may", "perhaps" or "it is possible" unless the chart is genuinely split, and then say exactly which way it leans and why. Never vague, never generic: every sentence must rest on a factor listed in the chart data. Never fatalistic: describe tendencies and what the person can do with them, never doom, death, or certainty of divorce. Speak to the person as "you". Classical depth sits underneath; name a placement only when it makes the truth clearer.
+
+TIMING: The chart data lists UPCOMING PERIODS, each with an id like "Mercury/Ketu". Never invent or restate dates; the app shows them. In "windows", write one or two sentences for EVERY listed id (use the exact id as the key) on what that period brings for this person in this reading's domain. The current period is marked NOW.
+
+RULES: No em dashes (—), en dashes (–), or asterisks (*). No Markdown. No medical, financial, legal or psychiatric advice. Valid JSON only, no backticks, no preamble. ${langInstruction} JSON keys stay in English. The "mantra" field is always Sanskrit in Devanagari; "mantra_translit" is always plain Roman transliteration.
+
+JSON structure (all values in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spanish' : 'English'}):
+{
+  "verdict": "1-2 sentences. The direct answer: does this chart favour marriage, and in what form",
+  "why": "4-6 sentences. The specific reasons, both difficulties and strengths",
+  "unions": "1-2 sentences. One main marriage, or more than one significant union, and whether the marriage that forms tends to last",
+  "partner": "2-3 sentences. The partner's nature, and the age direction from step 4",
+  "protection": "2-3 sentences. What protects partnership in this chart and the form in which it works best",
+  "solitude": "1-2 sentences. The place of living alone in this person's path",
+  "right_now": "2-3 sentences on what the NOW period means for relationship",
+  "windows": { "Maha/Antar id": "1-2 sentences per listed upcoming period" }
+}`
 
     : isDailyQuick
     ? `${langInstruction} Every word must be in the requested language.
@@ -374,6 +445,10 @@ JSON structure:
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the Soul Map & Karmic Blueprint.`
     : (isPlanet || isPlanetA || isPlanetB || isPlanetC || isPlanetD)
     ? `Here is the birth chart:\n${chartSummary}\n\nWrite the personalised planetary readings.`
+    : isDharma
+    ? `Here is the birth chart with computed classical factors:\n${chartSummary}\n\nWrite the Dharma Path reading.`
+    : isMarriage
+    ? `Here is the birth chart with computed classical factors:\n${chartSummary}\n\nWrite the Marriage Path reading.`
     : isWeekly
     ? `Here is the birth chart and this week's information:\n${chartSummary}\n\nWrite this week's Vedic practice reading.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
@@ -403,6 +478,7 @@ JSON structure:
             if (isWeekly)      return hi ? 1600 : es ? 1350 : 1100;
             if (isDailyDepth)  return hi ? 2800 : es ? 2300 : 1900;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
+            if (isDharma || isMarriage) return hi ? 3600 : es ? 2900 : 2400;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
           system: LANG_PREFIX + systemPrompt,
@@ -454,7 +530,7 @@ JSON structure:
     // Attempt 4: key-by-key extraction — works even when JSON is truncated with no closing }
     if (!parsed) {
       const pairs = {};
-      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview|karma_thread|morning_practice|body_practice|evening_practice|contemplation|week_overview|has_practice|practice|no_practice_message)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\}|\[[\s\S]*?\])/g;
+      const re = /"(Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu|greeting|cosmic_weather|has_remedy|remedy|no_remedy_message|tomorrow_preview|karma_thread|morning_practice|body_practice|evening_practice|contemplation|week_overview|has_practice|practice|no_practice_message|title|path_type|dharmic_path|work_as_dharma|deity|mantra|mantra_translit|mantra_meaning|soul_direction|right_now|windows|verdict|why|unions|partner|protection|solitude)"\s*:\s*("(?:[^"\\]|\\.)*"|true|false|\{[\s\S]*?\}|\[[\s\S]*?\])/g;
       let hit;
       while ((hit = re.exec(text)) !== null) {
         try { pairs[hit[1]] = JSON.parse(hit[2]); } catch(_) {
