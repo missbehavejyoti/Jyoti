@@ -2995,10 +2995,6 @@ function showFullChart(){
       <div id="soul-content" style="display:none"></div>
     </div>
 
-    <!-- Dharma Path (loads only when opened) -->
-    ${cd.birthUT?`<div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आपका धर्म मार्ग':currentLang==='es'?'Tu Camino del Dharma':'Your Dharma Path'}</span></div>
-    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् जातक, जैमिनी सूत्र और नाडी परंपरा: आपकी आत्मा किस आध्यात्मिक जीवन के लिए बनी है':currentLang==='es'?'Brihat Jataka, los Jaimini Sutras y la tradición Nadi: la vida espiritual para la que está hecha tu alma':'Brihat Jataka, the Jaimini Sutras and the Nadi tradition: the spiritual life your soul is built for'}</p>
-    ${_pathDetails('dharma')}`:''}
 
     <!-- Your Planetary Blueprint (personalised AI reading) -->
     <div class="divider" style="margin-top:1.4rem"><span>${currentLang==='hi'?'आपकी ग्रह कुंडली':currentLang==='es'?'Tu Plano Planetario':'Your Planetary Blueprint'}</span></div>
@@ -3032,6 +3028,10 @@ function showFullChart(){
         </div>
       `).join('')}
     </div>
+    <!-- Dharma Path (loads only when opened) -->
+    ${cd.birthUT?`<div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आपका धर्म मार्ग':currentLang==='es'?'Tu Camino del Dharma':'Your Dharma Path'}</span></div>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् जातक, जैमिनी सूत्र और नाडी परंपरा: आपकी आत्मा किस आध्यात्मिक जीवन के लिए बनी है':currentLang==='es'?'Brihat Jataka, los Jaimini Sutras y la tradición Nadi: la vida espiritual para la que está hecha tu alma':'Brihat Jataka, the Jaimini Sutras and the Nadi tradition: the spiritual life your soul is built for'}</p>
+    ${_pathDetails('dharma')}`:''}
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
   // Load soul only — planets load lazily when user opens Full Chart tab
