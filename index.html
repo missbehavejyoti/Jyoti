@@ -1956,6 +1956,8 @@ async function testerBackToPanels(){
 }
 
 function showChart(){
+  // A new or switched chart must not leave the previous person's Marriage Path on screen
+  if(document.getElementById('marriage-path-wrap')?.innerHTML)renderMarriageEntry();
   const L=T[currentLang];
   document.getElementById('chart-name').textContent=userData.name;
   // Place planets in chart houses
@@ -3585,9 +3587,10 @@ function _dharmaFactors(cd){
 }
 
 // Optional self-reported history for Marriage Path; kept on this device only
-function _marriageHistory(){try{return localStorage.getItem('jyoti_mhist')||'';}catch(e){return'';}}
+// Keyed per chart so one person's answer never carries over to someone else's details
+function _marriageHistory(){try{return localStorage.getItem('jyoti_mhist_'+_chartKey())||'';}catch(e){return'';}}
 function _setMarriageHistory(v){
-  try{v?localStorage.setItem('jyoti_mhist',v):localStorage.removeItem('jyoti_mhist');}catch(e){}
+  try{const k='jyoti_mhist_'+_chartKey();v?localStorage.setItem(k,v):localStorage.removeItem(k);}catch(e){}
   const d=document.querySelector('#marriage-path-wrap details');
   if(d){d.dataset.loaded='';if(d.open)loadPathReading('marriage',d);}
 }
