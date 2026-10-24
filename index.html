@@ -3698,7 +3698,7 @@ async function loadPathReading(kind,el){
     summary=_pathSummary(kind);
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_${kind==='dharma'?'v9':'v8'}_${_L}_${_chartKey()}_${cur?cur.id:''}${kind==='marriage'?'_h'+(_marriageHistory()||'x'):''}`;
+  const key=`jyoti_${kind}_${kind==='dharma'?'v9':'v9'}_${_L}_${_chartKey()}_${cur?cur.id:''}${kind==='marriage'?'_h'+(_marriageHistory()||'x'):''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;

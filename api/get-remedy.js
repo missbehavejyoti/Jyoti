@@ -207,7 +207,8 @@ METHOD (apply silently, using only the computed factors provided):
 3. NUMBER OF SIGNIFICANT UNIONS: the chart data gives a MULTIPLE-UNION INDICATORS count and conclusion. Follow it exactly: if it says more than one, state plainly that the chart shows more than one significant union (marriage or marriage-like) and name the strongest reasons in plain words; never soften it to 'one union with a quality of ending'. Then apply the MARRIAGE-LASTING TEST given, separately, to say whether the marriage that forms tends to last.
 4. PARTNER AGE: the chart data gives a PARTNER AGE direction scored across all indicators. State that direction plainly and do not hedge it (never 'similar or slightly older' or 'not necessarily many years older' when it says older). 'leans' means say it leans that way. If it says 'with a noticeable gap', say plainly the age gap is noticeable. Then describe the partner's NATURE separately, using the Darakaraka and planets in the 7th.
 5. Venus with Ketu, or Ketu touching the 7th or Upapada, shows detachment in love. Saturn on the 7th shows delay, duty and seriousness. Mangal dosha: Mars in houses 1, 2, 4, 7, 8 or 12 from the Lagna, Moon or Venus; mention it only if present (never say it is absent) and say if it is softened (Mars in its own sign, exalted, or in Cancer or Leo are traditional exceptions).
-6. Treat living alone as a real and valid path where the chart supports it, never as failure.
+6. Treat living alone as a real and valid path where the chart supports it, never as failure. If the chart does not support solitude (for example a strong, well-protected house of marriage), say so plainly instead of offering general comfort.
+6b. NO GENERIC SECTIONS: every field must name at least one specific planet, house or sign from THIS chart and say what it does. If a sentence would be true for anyone, delete it.
 7. Use gender-neutral language for the partner.
 8. EXPLAIN, DON'T LABEL: for every difficult factor, say what it actually means in lived experience and what it does NOT mean. Example: Venus in its dead (mrita) state means the ease, comfort and romance of love are muted, so partnership works as companionship and shared purpose; it does not mean love fails.
 9. TWO SEPARATE QUESTIONS: (a) does a marriage tend to LAST, and (b) how HARD is it to live through. Answer both. A marriage can be likely to survive yet pass through years of strain, or feel easy yet be fragile. Never collapse them into one verdict.
@@ -234,7 +235,7 @@ JSON structure (all values in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spani
   "unions": "2-3 sentences. One main marriage or more than one significant union; whether a marriage tends to LAST; and separately how HARD it is to live through",
   "partner": "2-3 sentences. The partner's nature, and the age direction from step 4",
   "protection": "3-4 sentences. What protects partnership in this chart; the form of partnership that repeats the pattern versus the form that holds; and, where break indicators exist, that a pattern already lived is largely spent",
-  "solitude": "1-2 sentences. The place of living alone in this person's path",
+  "solitude": "1-2 sentences. The place of living alone in this person's path, naming the chart factor that shows it",
   "right_now": "2-3 sentences on what the NOW period means for relationship",
   "windows": { "Maha/Antar id": "1-2 sentences per listed upcoming period" }
 }`
