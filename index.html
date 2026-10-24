@@ -3492,7 +3492,10 @@ function _dharmaFactors(cd){
   const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[2,5],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
   const COMB={Moon:12,Mars:17,Mercury:14,Jupiter:11,Venus:10,Saturn:15};
   const pos=n=>P[_GR.indexOf(n)];
-  const dig=(n,s)=>EX[n]===s?'exalted':DEB[n]===s?'debilitated':(OWN[n]||[]).includes(s)?'own sign':'';
+  // Natural friendships (BPHS) so every planet gets an explicit dignity and the AI never has to guess one
+  const FR={Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],Saturn:['Mercury','Venus']};
+  const EN={Sun:['Venus','Saturn'],Moon:[],Mars:['Mercury'],Mercury:['Moon'],Jupiter:['Mercury','Venus'],Venus:['Sun','Moon'],Saturn:['Sun','Moon','Mars']};
+  const dig=(n,s)=>EX[n]===s?'exalted':DEB[n]===s?'debilitated':(OWN[n]||[]).includes(s)?'own sign':!FR[n]?'':FR[n].includes(_SLORD[s])?"friend's sign":EN[n].includes(_SLORD[s])?"enemy's sign":'neutral sign';
   const comb=n=>COMB[n]?Math.abs(((pos(n).lon-P[0].lon+540)%360)-180)<=COMB[n]:false;
   // Baladi avastha: odd signs run infant→dead across 6° bands, even signs reversed
   const avastha=p=>{const b=Math.min(4,Math.floor((parseFloat(p.degree)||0)/6)),st=['infant (bala)','youthful (kumara)','mature (yuva)','old (vriddha)','dead (mrita)'];return st[p.sign%2===0?b:4-b];};
@@ -3512,7 +3515,7 @@ function _dharmaFactors(cd){
   const big=Object.entries(groups).filter(([,v])=>v.length>=3).sort((a,b)=>b[1].length-a[1].length);
   if(!big.length)L.push('No sign holds 3 or more of the 7 classical planets. Not formed.');
   big.forEach(([sk,v])=>{const s=+sk,nodes=inSign(s).filter(n=>n==='Rahu'||n==='Ketu');
-    L.push(`${S[s]} (House ${H(s)}): ${v.join(', ')} = ${v.length} classical planets${nodes.length?' (also '+nodes.join(', ')+', which do not count)':''}. ${v.length>=4?'FORMED.':'NOT formed (needs 4).'} Strength: ${v.map(n=>`${n} ${dig(n,s)||'neutral'}${comb(n)?' combust':''}`).join('; ')}. Aspected by: ${list(aspOn(s).filter(n=>!v.includes(n)))}.`);});
+    L.push(`${S[s]} (House ${H(s)}): ${v.join(', ')} = ${v.length} classical planets${nodes.length?' (also '+nodes.join(', ')+', which do not count)':''}. ${v.length>=4?'FORMED.':'NOT formed (needs 4).'} Strength: ${v.map(n=>`${n} ${dig(n,s)}${comb(n)?' combust':''}`).join('; ')}. Aspected by: ${list(aspOn(s).filter(n=>!v.includes(n)))}.`);});
   const msl=_SLORD[P[1].sign],mp=pos(msl),sat=pos('Saturn');
   L.push(`Moon-sign lord ${msl} in ${S[mp.sign]}; aspected by classical planets: ${list(classical.filter(n=>n!==msl&&asp(n,pos(n).sign).includes(mp.sign)))}; ${msl} aspects or joins Saturn: ${msl!=='Saturn'&&(asp(msl,mp.sign).includes(sat.sign)||mp.sign===sat.sign)?'yes':'no'}; Saturn aspects ${msl}: ${msl!=='Saturn'&&asp('Saturn',sat.sign).includes(mp.sign)?'yes':'no'}.`);
 
@@ -3618,7 +3621,7 @@ async function loadPathReading(kind,el){
     summary=_pathSummary();
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_v2_${_L}_${_chartKey()}_${cur?cur.id:''}`;
+  const key=`jyoti_${kind}_v3_${_L}_${_chartKey()}_${cur?cur.id:''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
