@@ -3044,7 +3044,7 @@ function showFullChart(){
     </div>
     <!-- Dharma Path (loads only when opened) -->
     ${cd.birthUT?`<div class="divider" style="margin-top:1.5rem"><span>${currentLang==='hi'?'आपका धर्म मार्ग':currentLang==='es'?'Tu Camino del Dharma':'Your Dharma Path'}</span></div>
-    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'बृहत् जातक, जैमिनी सूत्र और नाडी परंपरा: आपकी आत्मा किस आध्यात्मिक जीवन के लिए बनी है':currentLang==='es'?'Brihat Jataka, los Jaimini Sutras y la tradición Nadi: la vida espiritual para la que está hecha tu alma':'Brihat Jataka, the Jaimini Sutras and the Nadi tradition: the spiritual life your soul is built for'}</p>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem;font-style:italic">${currentLang==='hi'?'पाराशर, भगवद्गीता और नाडी परंपरा: वह धर्म जो आपके जीवन को धारण करता है':currentLang==='es'?'Parashara, el Bhagavad Gita y la tradición Nadi: el dharma que sostiene tu vida':'Parashara, the Bhagavad Gita and the Nadi tradition: the dharma that holds your life together'}</p>
     ${_pathDetails('dharma')}`:''}
     <p style="font-size:.75rem;color:var(--dim);font-style:italic;text-align:center;margin-top:1rem">${FC.tradition}</p>
   `;
@@ -3479,6 +3479,8 @@ function switchTab(tab,el){
 // the current Maha/Antar, so a fresh reading is written when a new sub-period begins.
 const _GR=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
 const _SLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const _NAK_DEITY=['the Ashvins','Yama','Agni','Brahma','Soma','Rudra','Aditi','Brihaspati','the Nagas','the Pitris','Bhaga','Aryaman','Savitar','Tvashtar','Vayu','Indra and Agni','Mitra','Indra','Nirriti','the Waters (Apah)','the Vishvedevas','Vishnu','the Vasus','Varuna','Aja Ekapada','Ahirbudhnya','Pushan'];
+const _HOUSE_MEANS=['your own nature, body and self','money, speech and family','voice, learning, courage and siblings','home, mother, the heart and inner peace','intelligence, children, devotion and merit carried from past lives','daily work, service, health and obstacles overcome','partnership and marriage','what is hidden, deep change, inheritance and longevity','dharma itself: wisdom, teachers, faith and fortune','career, action and your place in the world','friendship, gains and wishes fulfilled','release, retreat, foreign lands and liberation'];
 
 // Current and upcoming Maha/Antar periods, computed against the clock (same maths as _refreshDashaPeriod)
 function _dashaTimeline(cd,count){
@@ -3523,6 +3525,17 @@ function _dharmaFactors(cd){
   L.push(`Ascendant (Lagna): ${S[asc]} ${parseFloat(cd.asc?.degree||0).toFixed(1)}°`);
   _GR.forEach(n=>{const p=pos(n),dg=dig(n,p.sign);
     L.push(`${n}: ${S[p.sign]} ${parseFloat(p.degree).toFixed(1)}°, House ${H(p.sign)}, ${p.nakshatraName||T.en.nakshatras[p.nakshatra]||''}, Navamsa ${S[d9(p.lon)]}${dg?', '+dg:''}${comb(n)?', combust':''}${classical.includes(n)?', avastha '+avastha(p):''}`);});
+
+  // Dharma wheel: every house with sign, meaning, occupants and ruler, grouped by the four aims
+  const AIM=h=>['dharma','purpose (artha)','love (kama)','liberation (moksha)'][(h-1)%4];
+  L.push('\nHOUSES (number: sign; what it governs; planets in it; where its ruler sits; planets looking at it):');
+  for(let h=1;h<=12;h++){const sg=(asc+h-1)%12,lord=_SLORD[sg],lh=H(pos(lord).sign);
+    L.push(`${h}: ${S[sg]}; governs ${_HOUSE_MEANS[h-1]}; planets: ${list(inSign(sg))}; ruler ${lord} in House ${lh} (${S[pos(lord).sign]}, a ${AIM(lh)} house); looked at by ${list(aspOn(sg))}`);}
+  L.push(`\nFOUR AIMS: the dharma houses 1, 5, 9 are all ${['fire','earth','air','water'][asc%4]} signs (${[0,4,8].map(k=>S[(asc+k)%12]).join(', ')}).`);
+  [[1,5,9],[2,6,10],[3,7,11],[4,8,12]].forEach(hs=>{const pl=hs.flatMap(h=>inSign((asc+h-1)%12).map(n=>`${n} in House ${h}`));
+    L.push(`${AIM(hs[0])} houses ${hs.join(', ')}: ${pl.length} planets${pl.length?' ('+pl.join(', ')+')':''}`);});
+  const jp=pos('Jupiter'),su=pos('Sun');
+  L.push(`Dharma significators: Jupiter in House ${H(jp.sign)} (${S[jp.sign]}), ${dig('Jupiter',jp.sign)}, nakshatra ${jp.nakshatraName||T.en.nakshatras[jp.nakshatra]||''} (deity ${_NAK_DEITY[jp.nakshatra]||'?'}); Sun in House ${H(su.sign)} (${S[su.sign]}), ${dig('Sun',su.sign)}${inSign(su.sign).includes('Rahu')?', with Rahu':''}`);
 
   L.push('\nPRAVRAJYA YOGA (renunciation):');
   const groups={};classical.forEach(n=>(groups[pos(n).sign]=groups[pos(n).sign]||[]).push(n));
@@ -3609,6 +3622,24 @@ RELATIONSHIP HISTORY (told by the person): ${({none:'No marriage or long partner
   return {tl,text};
 }
 
+// Fixed "Understanding Dharma" introduction, shown above every Dharma Path reading
+const _DHARMA_INTRO={
+  en:['In the old texts, the dharma of fire is to burn, and the dharma of water is to flow. Nothing has to teach them. It is simply what they are, and when they are allowed to be it, the world is held in balance.',
+      'The word comes from <em>dhṛ</em>, "to hold". The Mahabharata says it is called dharma because it upholds. Your dharma is what holds your life together: the truth of who you are, lived out loud. When you are in it, life has a feeling of rightness, even when it is hard. When you drift from it, even good things feel hollow.',
+      'The Bhagavad Gita says it is better to live your own dharma imperfectly than another\'s perfectly. You are not here to become a better version of someone else. You are here to become fully yourself.',
+      'The sages saw four aims in every life: <strong>dharma</strong>, living true; <strong>artha</strong>, the work and means through which we give; <strong>kama</strong>, love and the joy of connection; and <strong>moksha</strong>, freedom. They are not four separate roads. Dharma is the ground beneath the other three. When your work and your loves grow from your dharma, they become the very path to freedom.',
+      'Your birth chart turns through these four aims three times: first through your body and self, then through your heart and mind, and finally through wisdom and spirit. Wherever your dharma lives in that wheel, that is where your life is meant to be most alive.'],
+  hi:['प्राचीन ग्रंथों में, अग्नि का धर्म जलना है और जल का धर्म बहना। उन्हें कोई सिखाता नहीं। यह बस वही है जो वे हैं, और जब उन्हें वैसा रहने दिया जाता है, तो संसार संतुलन में रहता है।',
+      'यह शब्द <em>धृ</em> धातु से आता है, जिसका अर्थ है "धारण करना"। महाभारत कहता है कि इसे धर्म इसलिए कहते हैं क्योंकि यह धारण करता है। आपका धर्म वह है जो आपके जीवन को एक साथ थामे रखता है: आप जो हैं उसका सत्य, खुलकर जिया हुआ। जब आप उसमें होते हैं, तो कठिन समय में भी जीवन सही लगता है। जब आप उससे भटकते हैं, तो अच्छी चीज़ें भी खोखली लगती हैं।',
+      'भगवद्गीता कहती है कि अपना धर्म अपूर्ण रूप से जीना, दूसरे का धर्म पूर्ण रूप से जीने से श्रेष्ठ है। आप किसी और का बेहतर रूप बनने नहीं आए। आप पूरी तरह स्वयं बनने आए हैं।',
+      'ऋषियों ने हर जीवन में चार लक्ष्य देखे: <strong>धर्म</strong>, सत्य से जीना; <strong>अर्थ</strong>, वह कार्य और साधन जिनसे हम देते हैं; <strong>काम</strong>, प्रेम और जुड़ाव का आनंद; और <strong>मोक्ष</strong>, मुक्ति। ये चार अलग रास्ते नहीं हैं। धर्म बाकी तीनों की नींव है। जब आपका कार्य और आपका प्रेम आपके धर्म से उपजते हैं, तो वे स्वयं मुक्ति का मार्ग बन जाते हैं।',
+      'आपकी कुंडली इन चार लक्ष्यों से तीन बार गुज़रती है: पहले आपके शरीर और स्वयं के स्तर पर, फिर हृदय और मन के स्तर पर, और अंत में ज्ञान और आत्मा के स्तर पर। इस चक्र में जहाँ आपका धर्म रहता है, वहीं आपका जीवन सबसे अधिक जीवंत होने के लिए बना है।'],
+  es:['En los textos antiguos, el dharma del fuego es arder, y el dharma del agua es fluir. Nada tiene que enseñarles. Es simplemente lo que son, y cuando se les permite serlo, el mundo se mantiene en equilibrio.',
+      'La palabra viene de <em>dhṛ</em>, "sostener". El Mahabharata dice que se llama dharma porque sostiene. Tu dharma es lo que sostiene tu vida: la verdad de quien eres, vivida en voz alta. Cuando estás en él, la vida se siente correcta, incluso cuando es difícil. Cuando te alejas de él, incluso lo bueno se siente vacío.',
+      'El Bhagavad Gita dice que es mejor vivir tu propio dharma de forma imperfecta que el de otro de forma perfecta. No estás aquí para ser una versión mejor de otra persona. Estás aquí para ser plenamente tú.',
+      'Los sabios vieron cuatro fines en toda vida: <strong>dharma</strong>, vivir con verdad; <strong>artha</strong>, el trabajo y los medios con los que damos; <strong>kama</strong>, el amor y la alegría de la conexión; y <strong>moksha</strong>, la libertad. No son cuatro caminos separados. El dharma es la base de los otros tres. Cuando tu trabajo y tus amores nacen de tu dharma, se convierten en el camino mismo hacia la libertad.',
+      'Tu carta natal recorre estos cuatro fines tres veces: primero a través de tu cuerpo y tu ser, luego de tu corazón y tu mente, y finalmente de la sabiduría y el espíritu. Donde vive tu dharma en esa rueda, allí está hecha tu vida para estar más viva.']
+};
 function _escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function _renderPath(kind,d,box){
@@ -3627,11 +3658,14 @@ function _renderPath(kind,d,box){
       <div style="font-size:.92rem;line-height:1.7;margin-top:.2rem">${glossify(_escHtml(d.windows[p.id]))}</div>
     </div>`).join(''):'';
   if(kind==='dharma'){
+    const paras=String(d.reading||'').split(/\n\s*\n/).filter(x=>x.trim()).map(x=>para(x)).join('');
     box.innerHTML=`
-      ${d.title?`<div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold-l);margin-bottom:.3rem">${_escHtml(d.title)}</div>`:''}
-      ${d.path_type?`<p style="font-style:italic;color:var(--muted);line-height:1.7;margin:0 0 .4rem">${glossify(_escHtml(d.path_type))}</p>`:''}
-      ${sec(tr('YOUR PATH','आपका मार्ग','TU CAMINO'),d.dharmic_path)}
-      ${sec(tr('YOUR WORK AS DHARMA','धर्म के रूप में आपका कार्य','TU TRABAJO COMO DHARMA'),d.work_as_dharma)}
+      <div style="background:var(--soft-bg);border:1px solid rgba(200,169,74,.18);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem">
+        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('UNDERSTANDING DHARMA','धर्म को समझना','COMPRENDER EL DHARMA')}</div>
+        ${_DHARMA_INTRO[_L==='hi'?'hi':_L==='es'?'es':'en'].map(x=>`<p style="font-size:.92rem;line-height:1.8;color:var(--muted);margin:0 0 .55rem">${x}</p>`).join('')}
+      </div>
+      ${d.title?`<div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold-l);margin:.2rem 0 .6rem">${_escHtml(d.title)}</div>`:''}
+      ${paras}
       ${sec(tr('YOUR PRACTICE','आपकी साधना','TU PRÁCTICA'),d.practice)}
       ${d.mantra?`<div style="background:rgba(200,169,74,.06);border:1px solid rgba(200,169,74,.2);border-radius:10px;padding:1rem;margin:.8rem 0;text-align:center">
         ${d.deity?`<div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.4rem">${_escHtml(d.deity)}</div>`:''}
@@ -3639,8 +3673,6 @@ function _renderPath(kind,d,box){
         ${d.mantra_translit?`<div style="font-size:.85rem;opacity:.82">${_escHtml(d.mantra_translit)}</div>`:''}
         ${d.mantra_meaning?`<div style="font-size:.8rem;color:var(--muted);margin-top:.2rem">${_escHtml(d.mantra_meaning)}</div>`:''}
       </div>`:''}
-      ${sec(tr("YOUR SOUL'S DIRECTION",'आत्मा की दिशा','LA DIRECCIÓN DE TU ALMA'),d.soul_direction)}
-      ${sec(tr('RIGHT NOW','अभी','AHORA MISMO'),d.right_now)}
       ${win}`;
   }else{
     box.innerHTML=`
@@ -3666,7 +3698,7 @@ async function loadPathReading(kind,el){
     summary=_pathSummary(kind);
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_v7_${_L}_${_chartKey()}_${cur?cur.id:''}${kind==='marriage'?'_h'+(_marriageHistory()||'x'):''}`;
+  const key=`jyoti_${kind}_v8_${_L}_${_chartKey()}_${cur?cur.id:''}${kind==='marriage'?'_h'+(_marriageHistory()||'x'):''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
@@ -3675,7 +3707,7 @@ async function loadPathReading(kind,el){
       body:JSON.stringify({chartSummary:summary.text,lang:_L,type:kind,token:localStorage.getItem('jyoti_access_token')})});
     if(!resp.ok)throw new Error('api-error');
     const data=await resp.json();
-    if(!data||data.error||!(kind==='dharma'?data.dharmic_path:data.verdict))throw new Error('bad-data');
+    if(!data||data.error||!(kind==='dharma'?data.reading:data.verdict))throw new Error('bad-data');
     try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
     if(_L!==currentLang||!box.isConnected)return;
     _renderPath(kind,data,box);el.dataset.loaded='1';
