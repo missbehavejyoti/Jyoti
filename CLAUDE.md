@@ -98,8 +98,8 @@ The AI silently analyses:
 
 ---
 
-## Dharma Path & Marriage Path
-- Dharma Path: collapsible section in the full chart reading (after Soul Map). Marriage Path: card at the top of the Compatibility tab.
+## Dharma Path & Relationship Path
+- Dharma Path: collapsible section in the full chart reading (after Soul Map). Relationship Path (API type `marriage`): card at the top of the Compatibility tab, with an optional per-chart "has a marriage or long partnership ended" question.
 - `_dharmaFactors()` in `index.html` computes the classical factors client-side (Pravrajya yoga, Jaimini karakas, Karakamsha, Ishta Devata, Navamsa 7th, Upapada and 2nd from it, 7th house, Mangal dosha) and sends them as text to `get-remedy` (`type: 'dharma'` / `'marriage'`).
 - "What's ahead" dates come from `_dashaTimeline()` at render time, never from the AI. The AI only writes meaning per period id (e.g. `Mercury/Ketu`); past periods drop off automatically.
 - Cached in localStorage by type + lang + chartKey + current Maha/Antar id, so a fresh reading is written when a new sub-period begins.

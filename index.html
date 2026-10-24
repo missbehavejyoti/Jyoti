@@ -3586,7 +3586,7 @@ function _dharmaFactors(cd){
   return L.join('\n');
 }
 
-// Optional self-reported history for Marriage Path; kept on this device only
+// Optional self-reported history for the Relationship Path (type 'marriage'); kept on this device only
 // Keyed per chart so one person's answer never carries over to someone else's details
 function _marriageHistory(){try{return localStorage.getItem('jyoti_mhist_'+_chartKey())||'';}catch(e){return'';}}
 function _setMarriageHistory(v){
@@ -3686,7 +3686,7 @@ async function loadPathReading(kind,el){
 // Collapsible entry point, shared by the chart tab (dharma) and compatibility tab (marriage)
 function _pathDetails(kind){
   const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
-  const label=kind==='dharma'?tr('Reveal your Dharma Path','अपना धर्म मार्ग देखें','Descubre tu Camino del Dharma'):tr('Reveal your Marriage Path','अपना विवाह मार्ग देखें','Descubre tu Camino del Matrimonio');
+  const label=kind==='dharma'?tr('Reveal your Dharma Path','अपना धर्म मार्ग देखें','Descubre tu Camino del Dharma'):tr('Reveal your Relationship Path','अपना संबंध मार्ग देखें','Descubre tu Camino de las Relaciones');
   return`<details ontoggle="loadPathReading('${kind}',this)">
     <summary style="cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;color:var(--gold);padding:.5rem .85rem;border:1px solid rgba(200,169,74,.3);border-radius:20px">
       <span style="font-size:.85em">▾</span> ${label}
@@ -3700,8 +3700,8 @@ function renderMarriageEntry(){
   if(!chartData?.planets||!chartData.birthUT||!userData?.name){wrap.innerHTML='';return;}
   const _L=currentLang,tr=(en,hi,es)=>_L==='hi'?hi:_L==='es'?es:en;
   wrap.innerHTML=`<div class="remedy-card" style="margin:0 0 1.4rem">
-    <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('YOUR MARRIAGE PATH','आपका विवाह मार्ग','TU CAMINO DEL MATRIMONIO')}</div>
-    <p style="font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.7;margin:0 0 .8rem">${tr('What your own chart says about partnership, from the Jaimini Sutras and Parashara: whether marriage favours you, the partner who fits, and when.','जैमिनी सूत्र और पाराशर के अनुसार आपकी कुंडली साझेदारी के बारे में क्या कहती है: विवाह आपके लिए अनुकूल है या नहीं, उपयुक्त साथी, और कब।','Lo que tu propia carta dice sobre la pareja, según los Jaimini Sutras y Parashara: si el matrimonio te favorece, la pareja adecuada y cuándo.')}</p>
+    <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('YOUR RELATIONSHIP PATH','आपका संबंध मार्ग','TU CAMINO DE LAS RELACIONES')}</div>
+    <p style="font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.7;margin:0 0 .8rem">${tr('What your own chart says about partnership, from the Jaimini Sutras and Parashara: whether marriage or long partnership favours you, the partner who fits, and when.','जैमिनी सूत्र और पाराशर के अनुसार आपकी कुंडली साझेदारी के बारे में क्या कहती है: विवाह या दीर्घ संबंध आपके लिए अनुकूल है या नहीं, उपयुक्त साथी, और कब।','Lo que tu propia carta dice sobre la pareja, según los Jaimini Sutras y Parashara: si el matrimonio o una relación larga te favorece, la pareja adecuada y cuándo.')}</p>
     <div class="field" style="margin:0 0 .9rem">
       <label for="mp-history">${tr('Has a marriage or long partnership ended for you before?','क्या पहले आपका कोई विवाह या लंबा संबंध समाप्त हुआ है?','¿Ha terminado antes para ti un matrimonio o una relación larga?')}</label>
       <select id="mp-history" onchange="_setMarriageHistory(this.value)">

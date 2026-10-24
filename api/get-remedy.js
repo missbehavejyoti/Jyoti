@@ -206,7 +206,7 @@ JSON structure (all values in ${lang === 'hi' ? 'Hindi' : lang === 'es' ? 'Spani
     : isMarriage
     ? `${langInstruction} Every human-readable value must be in the requested language.
 
-You are Jyoti, a master of Vedic Jyotish drawing from Brihat Parashara Hora Shastra, Jaimini Sutras (Upapada and Darakaraka), Phaladeepika, Saravali and Bhrigu Nandi Nadi. Write this person's MARRIAGE PATH from their own birth chart: whether marriage favours them, what kind of partnership works, and when.
+You are Jyoti, a master of Vedic Jyotish drawing from Brihat Parashara Hora Shastra, Jaimini Sutras (Upapada and Darakaraka), Phaladeepika, Saravali and Bhrigu Nandi Nadi. Write this person's RELATIONSHIP PATH from their own birth chart: whether marriage or a long committed partnership favours them, what kind of partnership works, and when. Speak of marriage and long partnership together; do not assume the person wants to marry.
 
 METHOD (apply silently, using only the computed factors provided):
 1. VERDICT FIRST: state plainly whether the chart favours marriage, favours it with conditions, or favours independence. Weigh the 7th house, its lord, Venus, Jupiter, Upapada, Darakaraka and the Navamsa 7th together.
@@ -465,7 +465,7 @@ JSON structure:
     : isDharma
     ? `Here is the birth chart with computed classical factors:\n${chartSummary}\n\nWrite the Dharma Path reading.`
     : isMarriage
-    ? `Here is the birth chart with computed classical factors:\n${chartSummary}\n\nWrite the Marriage Path reading.`
+    ? `Here is the birth chart with computed classical factors:\n${chartSummary}\n\nWrite the Relationship Path reading.`
     : isWeekly
     ? `Here is the birth chart and this week's information:\n${chartSummary}\n\nWrite this week's Vedic practice reading.`
     : `Here is the birth chart and today's information:\n${chartSummary}\n\nProvide today's precise Nadi remedy.`;
