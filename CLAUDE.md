@@ -104,6 +104,8 @@ The AI silently analyses:
 - "What's ahead" dates come from `_dashaTimeline()` at render time, never from the AI. The AI only writes meaning per period id (e.g. `Mercury/Ketu`); past periods drop off automatically.
 - Cached in localStorage by type + lang + chartKey + current Maha/Antar id, so a fresh reading is written when a new sub-period begins.
 - Tone rules: verdict first, direct, compassionate, never fatalistic; partner age weighed across all indicators, never one factor.
+- Dharma Path layout: fixed "Understanding Dharma" intro (`_DHARMA_INTRO`, en/hi/es), then one flowing AI `reading` (dharma houses 1/5/9 with signs and element, where their rulers sit, purpose 2/6/10, love 3/7/11, liberation 4/8/12, Jupiter and Sun, a short renunciation paragraph, closing), then practice and mantra, then What's ahead. The code passes every house's sign, meaning, occupants and ruler.
+- Content rules agreed with Alana: every house introduced with number, sign and meaning; planets always named when counted; stay within classical significations (never name a profession or method); renunciation means "go forth from household life", never "leave the world"; Rahu/Ketu explained in one sentence as shadow planets not counted.
 
 ## Access Tokens
 - Subscriber tokens (`api/_token.js`) expire after 3 days. `_renewAccessToken()` re-checks Stripe via the saved email and mints a fresh one; `_paidFetch()` retries paid API calls once after a 401. Without this, an expired token silently shows the daily fallback card and locks subscribers out on reopen.

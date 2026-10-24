@@ -488,7 +488,8 @@ JSON structure:
             if (isWeekly)      return hi ? 1600 : es ? 1350 : 1100;
             if (isDailyDepth)  return hi ? 2800 : es ? 2300 : 1900;
             if (isDailyQuick)  return hi ?  950 : es ?  850 :  750;
-            if (isDharma || isMarriage) return hi ? 3600 : es ? 2900 : 2400;
+            if (isDharma)      return hi ? 5200 : es ? 3800 : 3200; // long flowing reading
+            if (isMarriage)    return hi ? 3600 : es ? 2900 : 2400;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
           system: LANG_PREFIX + systemPrompt,
