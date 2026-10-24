@@ -3554,6 +3554,15 @@ function _dharmaFactors(cd){
   ].filter(x=>x[0]).map(x=>x[1]);
   L.push(`MULTIPLE-UNION INDICATORS: ${mu.length} present${mu.length?': '+mu.join('; '):''}. ${mu.length>=2?'Shows MORE THAN ONE significant union.':'Shows ONE main union.'}`);
   L.push(`MARRIAGE-LASTING TEST (2nd from Upapada): ${ul2occ.some(n=>MAL.includes(n))?'malefic present, so a marriage tends to BREAK or a partner withdraws':'no malefic, so the marriage that forms tends to LAST'}${aspOn(ul).some(n=>n==='Jupiter'||n==='Venus')||inSign(ul).some(n=>n==='Jupiter'||n==='Venus')?'; Upapada protected by a benefic':''}.`);
+  // Partner age direction, scored across every marriage indicator so no single factor decides it
+  const OLD=['Sun','Jupiter','Saturn'],YNG=['Moon','Mercury','Venus','Mars'];
+  const ageSrc=[...inSign(h7).map(n=>[n,'in the 7th']),...aspOn(h7).map(n=>[n,'aspects the 7th']),[l7,'rules the 7th'],
+    ...inSign(l7p.sign).filter(n=>n!==l7).map(n=>[n,'with the 7th lord']),[kar[6].n,'Darakaraka'],
+    ...in9(n7).map(n=>[n,'in the Navamsa 7th']),[n7l,'rules the Navamsa 7th']];
+  const ol=ageSrc.filter(([n])=>OLD.includes(n)),yg=ageSrc.filter(([n])=>YNG.includes(n)),gap=ageSrc.some(([n])=>n==='Rahu');
+  const dAge=ol.length-yg.length;
+  const ageVerdict=dAge>=2?'clearly OLDER':dAge===1?'leans OLDER':dAge<=-2?'clearly YOUNGER':dAge===-1?'leans YOUNGER':'SIMILAR AGE';
+  L.push(`PARTNER AGE: ${ol.length} older indicators (${ol.map(x=>x.join(' ')).join('; ')||'none'}), ${yg.length} younger (${yg.map(x=>x.join(' ')).join('; ')||'none'})${gap?', Rahu adds an unconventional, noticeable gap':''}. Direction: ${ageVerdict}${gap?' with a noticeable gap':''}. The Darakaraka also describes the partner's NATURE.`);
   L.push(`Mars is ${(ma.sign-asc+12)%12+1} from Lagna, ${(ma.sign-P[1].sign+12)%12+1} from Moon, ${(ma.sign-v.sign+12)%12+1} from Venus (Mangal dosha houses: 1, 2, 4, 7, 8, 12)`);
 
   const same=(a,b)=>pos(a).sign===pos(b).sign;
@@ -3634,7 +3643,7 @@ async function loadPathReading(kind,el){
     summary=_pathSummary();
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_v5_${_L}_${_chartKey()}_${cur?cur.id:''}`;
+  const key=`jyoti_${kind}_v6_${_L}_${_chartKey()}_${cur?cur.id:''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
