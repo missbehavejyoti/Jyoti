@@ -9,8 +9,12 @@ const GIFT_CODES = new Map([
   ['IVAN30TRIAL', 30],
   ['IVAN30TRIAL2', 30],
   ['SANJEEV7TRIAL', 7],
-  // Shared demo code: 24 hours from its FIRST use; works on any device inside that window
-  ['GLIMPSE24', 1],
+]);
+
+// Shared demo codes with a fixed end time: valid on any device until that moment,
+// then dead for everyone, regardless of when (or whether) they were first used.
+const FIXED_CODES = new Map([
+  ['GLIMPSE24', Date.parse('2026-10-25T20:59:00Z')], // Mon 26 Oct 2026, 6:59am AEST
 ]);
 
 async function _redisSetNX(key, value) {
@@ -53,6 +57,11 @@ module.exports = async (req, res) => {
   if (!await rateLimit(req, res, { max: 10, windowSecs: 3600, prefix: 'redeem-code' })) return;
 
   const code = ((req.body || {}).code || '').trim().toUpperCase();
+  const until = FIXED_CODES.get(code);
+  if (until) {
+    if (Date.now() > until) return res.status(200).json({ ok: false });
+    return res.status(200).json({ ok: true, expiresAt: until, token: sign({ tier: 'gift', exp: until }) });
+  }
   const days = GIFT_CODES.get(code);
   if (!days) {
     return res.status(200).json({ ok: false });
