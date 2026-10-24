@@ -3541,6 +3541,19 @@ function _dharmaFactors(cd){
   L.push(`7th lord ${l7} in ${S[l7p.sign]} (House ${H(l7p.sign)})${dig(l7,l7p.sign)?', '+dig(l7,l7p.sign):''}${comb(l7)?', combust':''}${[2,5,8,11].includes(l7p.sign)?', DUAL sign':''}; with ${list(inSign(l7p.sign).filter(n=>n!==l7))}; aspected by ${list(aspOn(l7p.sign,l7))}`);
   L.push(`Venus in House ${H(v.sign)}, with ${list(inSign(v.sign).filter(n=>n!=='Venus'))}, aspected by ${list(aspOn(v.sign,'Venus'))}`);
   L.push(`Jupiter in House ${H(j.sign)}, aspects Houses ${asp('Jupiter',j.sign).map(H).join(', ')}`);
+  // Multiple-union indicators, counted here so every reading applies the same threshold
+  const MAL=['Sun','Mars','Saturn','Rahu','Ketu'],ul2occ=inSign((ul+1)%12);
+  const mu=[
+    [[2,5,8,11].includes(l7p.sign),'7th lord in a dual sign'],
+    [inSign(h7).some(n=>MAL.includes(n)),'malefic in the 7th ('+inSign(h7).filter(n=>MAL.includes(n)).join(', ')+')'],
+    [aspOn(h7).filter(n=>MAL.includes(n)).length>=2,'two or more malefics aspect the 7th'],
+    [l7!=='Rahu'&&l7p.sign===pos('Rahu').sign,'Rahu with the 7th lord'],
+    [v.sign===ma.sign,'Venus with Mars'],
+    [avastha(v).startsWith('dead'),'Venus in dead (mrita) avastha'],
+    [ul2occ.some(n=>MAL.includes(n)),'malefic in the 2nd from Upapada ('+ul2occ.filter(n=>MAL.includes(n)).join(', ')+')']
+  ].filter(x=>x[0]).map(x=>x[1]);
+  L.push(`MULTIPLE-UNION INDICATORS: ${mu.length} present${mu.length?': '+mu.join('; '):''}. ${mu.length>=2?'Shows MORE THAN ONE significant union.':'Shows ONE main union.'}`);
+  L.push(`MARRIAGE-LASTING TEST (2nd from Upapada): ${ul2occ.some(n=>MAL.includes(n))?'malefic present, so a marriage tends to BREAK or a partner withdraws':'no malefic, so the marriage that forms tends to LAST'}${aspOn(ul).some(n=>n==='Jupiter'||n==='Venus')||inSign(ul).some(n=>n==='Jupiter'||n==='Venus')?'; Upapada protected by a benefic':''}.`);
   L.push(`Mars is ${(ma.sign-asc+12)%12+1} from Lagna, ${(ma.sign-P[1].sign+12)%12+1} from Moon, ${(ma.sign-v.sign+12)%12+1} from Venus (Mangal dosha houses: 1, 2, 4, 7, 8, 12)`);
 
   const same=(a,b)=>pos(a).sign===pos(b).sign;
@@ -3621,7 +3634,7 @@ async function loadPathReading(kind,el){
     summary=_pathSummary();
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_v4_${_L}_${_chartKey()}_${cur?cur.id:''}`;
+  const key=`jyoti_${kind}_v5_${_L}_${_chartKey()}_${cur?cur.id:''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
