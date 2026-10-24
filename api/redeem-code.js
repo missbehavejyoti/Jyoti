@@ -9,6 +9,8 @@ const GIFT_CODES = new Map([
   ['IVAN30TRIAL', 30],
   ['IVAN30TRIAL2', 30],
   ['SANJEEV7TRIAL', 7],
+  // Shared demo code: 24 hours from its FIRST use; works on any device inside that window
+  ['GLIMPSE24', 1],
 ]);
 
 async function _redisSetNX(key, value) {
