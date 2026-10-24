@@ -3574,7 +3574,7 @@ function _dharmaFactors(cd){
 
 function _pathSummary(){
   _syncLiveDasha();
-  const tl=_dashaTimeline(chartData,6);
+  const tl=_dashaTimeline(chartData,3);
   const f=t=>new Date(t).toLocaleDateString('en-GB',{month:'short',year:'numeric'});
   const text=`Name: ${userData.name}
 Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
@@ -3597,7 +3597,7 @@ function _renderPath(kind,d,box){
   const f=t=>new Date(t).toLocaleDateString(loc,{month:'short',year:'numeric'});
   const pl=n=>{const i=_GR.indexOf(n);return i>=0?T[_L].planets[i]:n;};
   // Live dates, past periods dropped; only periods the reading has words for are shown
-  const ahead=_dashaTimeline(chartData,6).filter(p=>d.windows&&d.windows[p.id]);
+  const ahead=_dashaTimeline(chartData,3).filter(p=>d.windows&&d.windows[p.id]);
   const win=ahead.length?hdr(tr("WHAT'S AHEAD",'आगे क्या है','LO QUE VIENE'))+ahead.map(p=>`
     <div style="padding:.55rem 0;border-bottom:1px solid rgba(200,169,74,.08)">
       <div style="font-size:.8rem;color:var(--gold)">${pl(p.maha)} · ${pl(p.antar)} &nbsp;${f(p.start)} → ${f(p.end)}${p.now?` · <strong>${tr('NOW','अभी','AHORA')}</strong>`:''}</div>
