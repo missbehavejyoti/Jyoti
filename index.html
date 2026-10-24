@@ -992,13 +992,16 @@ select option{background:var(--s2);color:var(--text)}
   <div class="modal-inner">
     <div class="modal-close"><button onclick="closeModal('privacy')">✕ Close</button></div>
     <div class="modal-title">Privacy Policy</div>
-    <div class="modal-section"><h3>What We Collect</h3><p>We collect your name, email address, date of birth, time of birth, place of birth, and preferred language. We also collect payment information (processed securely via Stripe) and app usage data.</p></div>
-    <div class="modal-section"><h3>Why We Collect It</h3><p>Your birth data is used solely to calculate your Nadi astrological chart and generate personalised readings and daily remedies. Your email is used to deliver your subscription, send daily remedy notifications, and communicate service updates.</p></div>
-    <div class="modal-section"><h3>How We Store It</h3><p>All personal data is stored securely with industry-standard encryption. Birth data and readings are stored on secure servers. We retain your data for the duration of your subscription plus 30 days following cancellation, after which it is permanently deleted upon request.</p></div>
-    <div class="modal-section"><h3>We Never Sell Your Data</h3><p>Your personal data is never sold, rented, or shared with third parties for commercial purposes. Data may be shared with service providers (such as payment processors) only to the extent necessary to operate the service, under strict confidentiality agreements.</p></div>
+    <div class="modal-section"><h3>What We Collect</h3><p>Your name, email address, date, time and place of birth, and preferred language. If you use these features, we also collect: the name and birth details of anyone you enter for a compatibility reading, any question or relationship context you type, and, optionally, whether a marriage or long partnership has ended for you before. Payment details are collected and processed by Stripe; Jyoti never sees your full card number. Jyoti does not use advertising or analytics trackers.</p></div>
+    <div class="modal-section"><h3>Why We Collect It</h3><p>Your birth data is used solely to calculate your Vedic chart and create your personalised readings, daily practices and compatibility readings. Your email is used to deliver your subscription, confirm your access, and send service messages.</p></div>
+    <div class="modal-section"><h3>Where Your Data Is Kept</h3><p>Your birth details, chart and readings are saved on your own device, in your browser's storage, not in a Jyoti database. Clearing your browser data removes them. If you turn on notifications, we store your first name, time zone, language and chosen notification times with your device's notification address so we can send reminders; this is deleted when you turn notifications off. Your IP address is held for up to 24 hours to prevent abuse of the service.</p></div>
+    <div class="modal-section"><h3>How Readings Are Created</h3><p>Readings are written by Claude, an AI model made by Anthropic. To create a reading, only the details that reading needs (your name, birth details and calculated chart, and any question, compatibility details or relationship history you have given) are sent securely to Anthropic. Under its commercial terms, Anthropic does not use this data to train its models.</p></div>
+    <div class="modal-section"><h3>Service Providers</h3><p>We share data only with the providers needed to run Jyoti: Anthropic (writing readings), Stripe (payments), Vercel (hosting and notification storage) and Resend (email). Your personal data is never sold, rented or shared for advertising or any other commercial purpose.</p></div>
+    <div class="modal-section"><h3>Overseas Disclosure</h3><p>These providers are based in the United States, so your information is processed outside Australia. By using Jyoti you consent to this, as permitted under Australian Privacy Principle 8. Each provider protects your data under its own security and privacy commitments.</p></div>
+    <div class="modal-section"><h3>Other People's Details</h3><p>Please only enter another person's name and birth details for a compatibility reading if you have their permission.</p></div>
     <div class="modal-section"><h3>Your Rights</h3><ul><li>Right to access your personal data</li><li>Right to correction of inaccurate data</li><li>Right to deletion of your data</li><li>Right to withdraw consent at any time</li><li>Right to data portability (EU/UK users)</li><li>Right to lodge a complaint with a supervisory authority</li></ul></div>
     <div class="modal-section"><h3>Australian Privacy Act 1988</h3><p>Jyoti complies with the Australian Privacy Principles under the Privacy Act 1988. Your information is handled with due care and in accordance with all applicable Australian privacy law.</p></div>
-    <div class="modal-section"><h3>GDPR (EU & UK Users)</h3><p>If you are located in the EU or UK, you have additional rights under the General Data Protection Regulation. Our lawful basis for processing is consent. You may withdraw consent at any time. Contact hellojyoti@proton.me for any GDPR requests.</p></div>
+    <div class="modal-section"><h3>GDPR (EU &amp; UK Users)</h3><p>If you are located in the EU or UK, you have additional rights under the General Data Protection Regulation. Our lawful basis for processing is consent. You may withdraw consent at any time. Contact hellojyoti@proton.me for any GDPR requests.</p></div>
     <div class="modal-section"><h3>Contact</h3><p>For any privacy requests including data access, correction, or deletion: hellojyoti@proton.me</p></div>
   </div>
 </div>
@@ -1243,10 +1246,13 @@ const LEGAL_L={
       {h:'10. Changes',p:['Jyoti reserves the right to update these Terms at any time. Continued use after changes constitutes acceptance. Material changes will be notified by email.']}
     ],footer:'Last updated: 2025. Contact: hellojyoti@proton.me'},
     privacy:{title:'Privacy Policy',sections:[
-      {h:'What We Collect',p:['We collect your name, email address, date of birth, time of birth, place of birth, and preferred language. We also collect payment information (processed securely via Stripe) and app usage data.']},
-      {h:'Why We Collect It',p:['Your birth data is used solely to calculate your Nadi astrological chart and generate personalised readings and daily remedies. Your email is used to deliver your subscription, send daily remedy notifications, and communicate service updates.']},
-      {h:'How We Store It',p:['All personal data is stored securely with industry-standard encryption. Birth data and readings are stored on secure servers. We retain your data for the duration of your subscription plus 30 days following cancellation, after which it is permanently deleted upon request.']},
-      {h:'We Never Sell Your Data',p:['Your personal data is never sold, rented, or shared with third parties for commercial purposes. Data may be shared with service providers (such as payment processors) only to the extent necessary to operate the service, under strict confidentiality agreements.']},
+      {h:'What We Collect',p:['Your name, email address, date, time and place of birth, and preferred language. If you use these features, we also collect: the name and birth details of anyone you enter for a compatibility reading, any question or relationship context you type, and, optionally, whether a marriage or long partnership has ended for you before. Payment details are collected and processed by Stripe; Jyoti never sees your full card number. Jyoti does not use advertising or analytics trackers.']},
+      {h:'Why We Collect It',p:['Your birth data is used solely to calculate your Vedic chart and create your personalised readings, daily practices and compatibility readings. Your email is used to deliver your subscription, confirm your access, and send service messages.']},
+      {h:'Where Your Data Is Kept',p:['Your birth details, chart and readings are saved on your own device, in your browser\'s storage, not in a Jyoti database. Clearing your browser data removes them. If you turn on notifications, we store your first name, time zone, language and chosen notification times with your device\'s notification address so we can send reminders; this is deleted when you turn notifications off. Your IP address is held for up to 24 hours to prevent abuse of the service.']},
+      {h:'How Readings Are Created',p:['Readings are written by Claude, an AI model made by Anthropic. To create a reading, only the details that reading needs (your name, birth details and calculated chart, and any question, compatibility details or relationship history you have given) are sent securely to Anthropic. Under its commercial terms, Anthropic does not use this data to train its models.']},
+      {h:'Service Providers',p:['We share data only with the providers needed to run Jyoti: Anthropic (writing readings), Stripe (payments), Vercel (hosting and notification storage) and Resend (email). Your personal data is never sold, rented or shared for advertising or any other commercial purpose.']},
+      {h:'Overseas Disclosure',p:['These providers are based in the United States, so your information is processed outside Australia. By using Jyoti you consent to this, as permitted under Australian Privacy Principle 8. Each provider protects your data under its own security and privacy commitments.']},
+      {h:'Other People\'s Details',p:['Please only enter another person\'s name and birth details for a compatibility reading if you have their permission.']},
       {h:'Your Rights',list:['Right to access your personal data','Right to correction of inaccurate data','Right to deletion of your data','Right to withdraw consent at any time','Right to data portability (EU/UK users)','Right to lodge a complaint with a supervisory authority']},
       {h:'Australian Privacy Act 1988',p:['Jyoti complies with the Australian Privacy Principles under the Privacy Act 1988. Your information is handled with due care and in accordance with all applicable Australian privacy law.']},
       {h:'GDPR (EU & UK Users)',p:['If you are located in the EU or UK, you have additional rights under the General Data Protection Regulation. Our lawful basis for processing is consent. You may withdraw consent at any time. Contact hellojyoti@proton.me for any GDPR requests.']},
@@ -1276,10 +1282,13 @@ const LEGAL_L={
       {h:'10. परिवर्तन',p:['ज्योति किसी भी समय इन शर्तों को अद्यतन करने का अधिकार सुरक्षित रखता है। परिवर्तनों के बाद निरंतर उपयोग स्वीकृति माना जाएगा। महत्वपूर्ण परिवर्तनों की सूचना ईमेल द्वारा दी जाएगी।']}
     ],footer:'अंतिम अद्यतन: 2025। संपर्क: hellojyoti@proton.me'},
     privacy:{title:'गोपनीयता नीति',sections:[
-      {h:'हम क्या एकत्र करते हैं',p:['हम आपका नाम, ईमेल पता, जन्म तिथि, जन्म समय, जन्म स्थान और पसंदीदा भाषा एकत्र करते हैं। हम भुगतान जानकारी (Stripe के माध्यम से सुरक्षित रूप से संसाधित) और ऐप उपयोग डेटा भी एकत्र करते हैं।']},
-      {h:'हम इसे क्यों एकत्र करते हैं',p:['आपके जन्म डेटा का उपयोग केवल आपकी नाडी ज्योतिष कुंडली की गणना करने और व्यक्तिगत रीडिंग व दैनिक उपाय उत्पन्न करने के लिए किया जाता है। आपके ईमेल का उपयोग आपकी सदस्यता प्रदान करने, दैनिक उपाय सूचनाएं भेजने और सेवा अपडेट संप्रेषित करने के लिए किया जाता है।']},
-      {h:'हम इसे कैसे संग्रहीत करते हैं',p:['सभी व्यक्तिगत डेटा उद्योग मानक एन्क्रिप्शन के साथ सुरक्षित रूप से संग्रहीत किया जाता है। जन्म डेटा और रीडिंग सुरक्षित सर्वरों पर संग्रहीत की जाती हैं। हम आपके डेटा को आपकी सदस्यता की अवधि के साथ साथ रद्दीकरण के बाद 30 दिनों तक बनाए रखते हैं, जिसके बाद अनुरोध पर इसे स्थायी रूप से हटा दिया जाता है।']},
-      {h:'हम आपका डेटा कभी नहीं बेचते',p:['आपका व्यक्तिगत डेटा कभी भी व्यावसायिक उद्देश्यों के लिए बेचा, किराए पर दिया या तीसरे पक्ष के साथ साझा नहीं किया जाता। सेवा प्रदाताओं (जैसे भुगतान प्रोसेसर) के साथ डेटा केवल सेवा संचालित करने के लिए आवश्यक सीमा तक, सख्त गोपनीयता समझौतों के तहत साझा किया जा सकता है।']},
+      {h:'हम क्या एकत्र करते हैं',p:['आपका नाम, ईमेल पता, जन्म तिथि, जन्म समय, जन्म स्थान और पसंदीदा भाषा। यदि आप इन सुविधाओं का उपयोग करते हैं, तो हम यह भी एकत्र करते हैं: अनुकूलता रीडिंग के लिए आपके द्वारा दर्ज किए गए किसी अन्य व्यक्ति का नाम और जन्म विवरण, आपके द्वारा लिखा गया कोई प्रश्न या संबंध संदर्भ, और वैकल्पिक रूप से, क्या पहले आपका कोई विवाह या लंबा संबंध समाप्त हुआ है। भुगतान विवरण Stripe द्वारा एकत्र और संसाधित किए जाते हैं; ज्योति कभी भी आपका पूरा कार्ड नंबर नहीं देखता। ज्योति विज्ञापन या एनालिटिक्स ट्रैकर का उपयोग नहीं करता।']},
+      {h:'हम इसे क्यों एकत्र करते हैं',p:['आपके जन्म डेटा का उपयोग केवल आपकी वैदिक कुंडली की गणना करने और आपकी व्यक्तिगत रीडिंग, दैनिक साधना और अनुकूलता रीडिंग बनाने के लिए किया जाता है। आपके ईमेल का उपयोग आपकी सदस्यता प्रदान करने, आपकी पहुंच की पुष्टि करने और सेवा संदेश भेजने के लिए किया जाता है।']},
+      {h:'आपका डेटा कहाँ रखा जाता है',p:['आपका जन्म विवरण, कुंडली और रीडिंग आपके अपने डिवाइस पर, आपके ब्राउज़र के स्टोरेज में सहेजे जाते हैं, ज्योति के किसी डेटाबेस में नहीं। ब्राउज़र डेटा साफ़ करने से वे हट जाते हैं। यदि आप सूचनाएं चालू करते हैं, तो हम रिमाइंडर भेजने के लिए आपके डिवाइस के सूचना पते के साथ आपका पहला नाम, समय क्षेत्र, भाषा और चुने गए सूचना समय संग्रहीत करते हैं; सूचनाएं बंद करने पर यह हटा दिया जाता है। सेवा के दुरुपयोग को रोकने के लिए आपका IP पता अधिकतम 24 घंटे तक रखा जाता है।']},
+      {h:'रीडिंग कैसे बनाई जाती हैं',p:['रीडिंग Anthropic द्वारा बनाए गए AI मॉडल Claude द्वारा लिखी जाती हैं। रीडिंग बनाने के लिए, केवल उस रीडिंग के लिए आवश्यक विवरण (आपका नाम, जन्म विवरण और गणना की गई कुंडली, और आपके द्वारा दिया गया कोई प्रश्न, अनुकूलता विवरण या संबंध इतिहास) सुरक्षित रूप से Anthropic को भेजे जाते हैं। अपनी व्यावसायिक शर्तों के तहत, Anthropic इस डेटा का उपयोग अपने मॉडलों को प्रशिक्षित करने के लिए नहीं करता।']},
+      {h:'सेवा प्रदाता',p:['हम डेटा केवल ज्योति चलाने के लिए आवश्यक प्रदाताओं के साथ साझा करते हैं: Anthropic (रीडिंग लिखना), Stripe (भुगतान), Vercel (होस्टिंग और सूचना संग्रहण) और Resend (ईमेल)। आपका व्यक्तिगत डेटा कभी भी बेचा, किराए पर दिया या विज्ञापन या किसी अन्य व्यावसायिक उद्देश्य के लिए साझा नहीं किया जाता।']},
+      {h:'विदेश में प्रकटीकरण',p:['ये प्रदाता संयुक्त राज्य अमेरिका में स्थित हैं, इसलिए आपकी जानकारी ऑस्ट्रेलिया के बाहर संसाधित होती है। ज्योति का उपयोग करके आप इसके लिए सहमति देते हैं, जैसा कि ऑस्ट्रेलियाई गोपनीयता सिद्धांत 8 के तहत अनुमत है। प्रत्येक प्रदाता अपनी सुरक्षा और गोपनीयता प्रतिबद्धताओं के तहत आपके डेटा की रक्षा करता है।']},
+      {h:'अन्य लोगों का विवरण',p:['कृपया अनुकूलता रीडिंग के लिए किसी अन्य व्यक्ति का नाम और जन्म विवरण केवल उनकी अनुमति से ही दर्ज करें।']},
       {h:'आपके अधिकार',list:['अपने व्यक्तिगत डेटा तक पहुंच का अधिकार','गलत डेटा के सुधार का अधिकार','अपने डेटा को हटाने का अधिकार','किसी भी समय सहमति वापस लेने का अधिकार','डेटा पोर्टेबिलिटी का अधिकार (EU/UK उपयोगकर्ता)','किसी पर्यवेक्षी प्राधिकरण के पास शिकायत दर्ज करने का अधिकार']},
       {h:'ऑस्ट्रेलियाई गोपनीयता अधिनियम 1988',p:['ज्योति गोपनीयता अधिनियम 1988 के तहत ऑस्ट्रेलियाई गोपनीयता सिद्धांतों का पालन करता है। आपकी जानकारी को उचित सावधानी के साथ और सभी लागू ऑस्ट्रेलियाई गोपनीयता कानून के अनुसार संभाला जाता है।']},
       {h:'GDPR (EU और UK उपयोगकर्ता)',p:['यदि आप EU या UK में स्थित हैं, तो आपके पास सामान्य डेटा सुरक्षा विनियमन के तहत अतिरिक्त अधिकार हैं। प्रसंस्करण के लिए हमारा कानूनी आधार सहमति है। आप किसी भी समय सहमति वापस ले सकते हैं। किसी भी GDPR अनुरोध के लिए hellojyoti@proton.me पर संपर्क करें।']},
@@ -1309,10 +1318,13 @@ const LEGAL_L={
       {h:'10. Cambios',p:['Jyoti se reserva el derecho de actualizar estos Términos en cualquier momento. El uso continuado después de los cambios constituye aceptación. Los cambios materiales se notificarán por correo electrónico.']}
     ],footer:'Última actualización: 2025. Contacto: hellojyoti@proton.me'},
     privacy:{title:'Política de Privacidad',sections:[
-      {h:'Qué Recopilamos',p:['Recopilamos tu nombre, dirección de correo electrónico, fecha de nacimiento, hora de nacimiento, lugar de nacimiento e idioma preferido. También recopilamos información de pago (procesada de forma segura a través de Stripe) y datos de uso de la aplicación.']},
-      {h:'Por Qué Lo Recopilamos',p:['Tus datos de nacimiento se utilizan únicamente para calcular tu carta astrológica Nadi y generar lecturas personalizadas y remedios diarios. Tu correo electrónico se utiliza para entregar tu suscripción, enviar notificaciones de remedios diarios y comunicar actualizaciones del servicio.']},
-      {h:'Cómo Lo Almacenamos',p:['Todos los datos personales se almacenan de forma segura con cifrado estándar de la industria. Los datos de nacimiento y las lecturas se almacenan en servidores seguros. Conservamos tus datos durante la duración de tu suscripción más 30 días después de la cancelación, tras lo cual se eliminan permanentemente a solicitud.']},
-      {h:'Nunca Vendemos Tus Datos',p:['Tus datos personales nunca se venden, alquilan ni comparten con terceros con fines comerciales. Los datos pueden compartirse con proveedores de servicios (como procesadores de pago) solo en la medida necesaria para operar el servicio, bajo estrictos acuerdos de confidencialidad.']},
+      {h:'Qué Recopilamos',p:['Tu nombre, correo electrónico, fecha, hora y lugar de nacimiento, e idioma preferido. Si usas estas funciones, también recopilamos: el nombre y los datos de nacimiento de cualquier persona que ingreses para una lectura de compatibilidad, cualquier pregunta o contexto de relación que escribas y, de forma opcional, si ha terminado antes para ti un matrimonio o una relación larga. Los datos de pago los recopila y procesa Stripe; Jyoti nunca ve el número completo de tu tarjeta. Jyoti no usa rastreadores de publicidad ni de analítica.']},
+      {h:'Por Qué Lo Recopilamos',p:['Tus datos de nacimiento se usan únicamente para calcular tu carta védica y crear tus lecturas personalizadas, prácticas diarias y lecturas de compatibilidad. Tu correo se usa para entregar tu suscripción, confirmar tu acceso y enviar mensajes del servicio.']},
+      {h:'Dónde Se Guardan Tus Datos',p:['Tus datos de nacimiento, tu carta y tus lecturas se guardan en tu propio dispositivo, en el almacenamiento de tu navegador, no en una base de datos de Jyoti. Borrar los datos del navegador los elimina. Si activas las notificaciones, guardamos tu nombre, zona horaria, idioma y horarios elegidos junto con la dirección de notificaciones de tu dispositivo para enviarte recordatorios; esto se elimina al desactivar las notificaciones. Tu dirección IP se conserva hasta 24 horas para evitar el abuso del servicio.']},
+      {h:'Cómo Se Crean las Lecturas',p:['Las lecturas las escribe Claude, un modelo de IA creado por Anthropic. Para crear una lectura, solo se envían de forma segura a Anthropic los datos que esa lectura necesita (tu nombre, datos de nacimiento y carta calculada, y cualquier pregunta, datos de compatibilidad o historial de relaciones que hayas indicado). Según sus términos comerciales, Anthropic no usa estos datos para entrenar sus modelos.']},
+      {h:'Proveedores de Servicios',p:['Solo compartimos datos con los proveedores necesarios para operar Jyoti: Anthropic (redacción de lecturas), Stripe (pagos), Vercel (alojamiento y almacenamiento de notificaciones) y Resend (correo). Tus datos personales nunca se venden, alquilan ni comparten con fines publicitarios ni comerciales.']},
+      {h:'Transferencia Internacional',p:['Estos proveedores están en los Estados Unidos, por lo que tu información se procesa fuera de Australia. Al usar Jyoti das tu consentimiento para ello, según lo permite el Principio de Privacidad Australiano 8. Cada proveedor protege tus datos según sus propios compromisos de seguridad y privacidad.']},
+      {h:'Datos de Otras Personas',p:['Ingresa el nombre y los datos de nacimiento de otra persona para una lectura de compatibilidad solo si cuentas con su permiso.']},
       {h:'Tus Derechos',list:['Derecho a acceder a tus datos personales','Derecho a la corrección de datos inexactos','Derecho a la eliminación de tus datos','Derecho a retirar el consentimiento en cualquier momento','Derecho a la portabilidad de datos (usuarios de UE/Reino Unido)','Derecho a presentar una queja ante una autoridad de supervisión']},
       {h:'Ley de Privacidad Australiana de 1988',p:['Jyoti cumple con los Principios de Privacidad Australianos bajo la Ley de Privacidad de 1988. Tu información se maneja con la debida diligencia y de acuerdo con toda la ley de privacidad australiana aplicable.']},
       {h:'RGPD (Usuarios de la UE y Reino Unido)',p:['Si te encuentras en la UE o el Reino Unido, tienes derechos adicionales bajo el Reglamento General de Protección de Datos. Nuestra base legal para el procesamiento es el consentimiento. Puedes retirar tu consentimiento en cualquier momento. Contacta a hellojyoti@proton.me para cualquier solicitud relacionada con el RGPD.']},
@@ -3572,7 +3584,14 @@ function _dharmaFactors(cd){
   return L.join('\n');
 }
 
-function _pathSummary(){
+// Optional self-reported history for Marriage Path; kept on this device only
+function _marriageHistory(){try{return localStorage.getItem('jyoti_mhist')||'';}catch(e){return'';}}
+function _setMarriageHistory(v){
+  try{v?localStorage.setItem('jyoti_mhist',v):localStorage.removeItem('jyoti_mhist');}catch(e){}
+  const d=document.querySelector('#marriage-path-wrap details');
+  if(d){d.dataset.loaded='';if(d.open)loadPathReading('marriage',d);}
+}
+function _pathSummary(kind){
   _syncLiveDasha();
   const tl=_dashaTimeline(chartData,3);
   const f=t=>new Date(t).toLocaleDateString('en-GB',{month:'short',year:'numeric'});
@@ -3582,7 +3601,8 @@ ${_dharmaFactors(chartData)}
 
 UPCOMING PERIODS (Maha/Antar):
 ${tl.map(p=>`${p.id}: ${f(p.start)} to ${f(p.end)}${p.now?' (NOW)':''}`).join('\n')}
-Today: ${new Date().toDateString()}`;
+Today: ${new Date().toDateString()}${kind==='marriage'?`
+RELATIONSHIP HISTORY (told by the person): ${({none:'No marriage or long partnership has ended',once:'One marriage or long partnership has ended',multiple:'More than one marriage or long partnership has ended'})[_marriageHistory()]||'Not shared'}`:''}`;
   return {tl,text};
 }
 
@@ -3640,10 +3660,10 @@ async function loadPathReading(kind,el){
   let summary;
   try{
     if(!chartData?.planets||!chartData.birthUT)throw new Error('no-chart');
-    summary=_pathSummary();
+    summary=_pathSummary(kind);
   }catch(e){box.innerHTML=retry;return;}
   const cur=summary.tl.find(p=>p.now);
-  const key=`jyoti_${kind}_v7_${_L}_${_chartKey()}_${cur?cur.id:''}`;
+  const key=`jyoti_${kind}_v7_${_L}_${_chartKey()}_${cur?cur.id:''}${kind==='marriage'?'_h'+(_marriageHistory()||'x'):''}`;
   try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c){_renderPath(kind,c,box);el.dataset.loaded='1';return;}}catch(e){}
   el.dataset.loading='1';
   box.innerHTML=`<p style="text-align:center;color:var(--dim);font-style:italic;font-size:.85rem;padding:1rem 0">${tr('Consulting the classical texts…','शास्त्रीय ग्रंथों से परामर्श…','Consultando los textos clásicos…')}</p>`;
@@ -3679,6 +3699,13 @@ function renderMarriageEntry(){
   wrap.innerHTML=`<div class="remedy-card" style="margin:0 0 1.4rem">
     <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('YOUR MARRIAGE PATH','आपका विवाह मार्ग','TU CAMINO DEL MATRIMONIO')}</div>
     <p style="font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.7;margin:0 0 .8rem">${tr('What your own chart says about partnership, from the Jaimini Sutras and Parashara: whether marriage favours you, the partner who fits, and when.','जैमिनी सूत्र और पाराशर के अनुसार आपकी कुंडली साझेदारी के बारे में क्या कहती है: विवाह आपके लिए अनुकूल है या नहीं, उपयुक्त साथी, और कब।','Lo que tu propia carta dice sobre la pareja, según los Jaimini Sutras y Parashara: si el matrimonio te favorece, la pareja adecuada y cuándo.')}</p>
+    <div class="field" style="margin:0 0 .9rem">
+      <label for="mp-history">${tr('Has a marriage or long partnership ended for you before?','क्या पहले आपका कोई विवाह या लंबा संबंध समाप्त हुआ है?','¿Ha terminado antes para ti un matrimonio o una relación larga?')}</label>
+      <select id="mp-history" onchange="_setMarriageHistory(this.value)">
+        ${[['',tr('Prefer not to say','बताना नहीं चाहते','Prefiero no decir')],['none',tr('No','नहीं','No')],['once',tr('Once','एक बार','Una vez')],['multiple',tr('More than once','एक से अधिक बार','Más de una vez')]].map(([v,t])=>`<option value="${v}"${_marriageHistory()===v?' selected':''}>${t}</option>`).join('')}
+      </select>
+      <div style="font-size:.75rem;color:var(--dim);font-style:italic;margin-top:.3rem">${tr('Optional. Saved only on your device and sent with your reading request.','वैकल्पिक। केवल आपके डिवाइस पर सहेजा जाता है और आपकी रीडिंग के अनुरोध के साथ भेजा जाता है।','Opcional. Se guarda solo en tu dispositivo y se envía con tu solicitud de lectura.')}</div>
+    </div>
     ${_pathDetails('marriage')}
   </div>`;
 }
