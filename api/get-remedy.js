@@ -28,7 +28,7 @@ function dedupePractices(arr, maxCount) {
 }
 
 // Every reading addresses the reader directly, never as a report about them
-const VOICE_PREFIX = 'VOICE: Always speak directly to the reader as "you" and "your". Never write about them in the third person ("she", "he", "they", "this person", "the native") or by name, except their first name once as a greeting.\n\n';
+const VOICE_PREFIX = 'VOICE: Always speak directly to the reader as "you" and "your". Never write about them in the third person ("she", "he", "they", "this person", "the native") or by name, except their first name once as a greeting. In Hindi always address them as "आप"; in Spanish always as "tú".\n\n';
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
