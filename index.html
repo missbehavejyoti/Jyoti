@@ -2135,14 +2135,15 @@ async function loadNakshatraReading(){
   const L = T[currentLang];
   const nakData = NAKSHATRA_DATA[currentLang]?.[nak] || NAKSHATRA_DATA['en'][nak];
   ['nak-name','nak-name-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.name;});
-  ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.desc;});
-  // Try to enhance with Claude for a more personalised touch
+  // Brief pause instead of flashing the fixed text and then swapping it; the fixed text is only the fallback
+  ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<span style="font-style:italic;color:var(--dim)">${currentLang==='hi'?'आपके नक्षत्र पढ़े जा रहे हैं…':currentLang==='es'?'Leyendo tus estrellas…':'Reading your stars…'}</span>`;});
+  const showFixed=()=>['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=nakData.desc;});
   try {
     const nakResp = await fetch('/api/get-remedy', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°, House ${(chartData.planets[1].sign-chartData.ascSign+12)%12+1} (whole-sign, computed; use exactly this house number). Nakshatra deity: ${_NAK_DEITY[nak]||''}. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
+        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°, House ${(chartData.planets[1].sign-chartData.ascSign+12)%12+1} (whole-sign, computed; use exactly this house number). Nakshatra deity: ${_NAK_DEITY[nak]||''}. Nakshatra power (shakti): ${_NAK_SHAKTI[nak]||''}. Moon's house governs: ${_HOUSE_MEANS[(chartData.planets[1].sign-chartData.ascSign+12)%12]||''}. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
         type: 'nakshatra'
       })
@@ -2150,7 +2151,8 @@ async function loadNakshatraReading(){
     const data = await nakResp.json();
     const text = (data.text || data.content?.[0]?.text || '').trim();
     if(text && text.length > 20) ['nak-reading','nak-reading-p5'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=text;});
-  } catch(e){ /* use static fallback already shown */ }
+    else showFixed();
+  } catch(e){ showFixed(); }
 }
 
 function shareNakshatra(){
@@ -3479,6 +3481,8 @@ function switchTab(tab,el){
 // the current Maha/Antar, so a fresh reading is written when a new sub-period begins.
 const _GR=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
 const _SLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+// Nakshatra shaktis (powers) in plain words, after the Taittiriya Brahmana canon
+const _NAK_SHAKTI=['to reach and heal swiftly','to carry away what must end, so life can renew','to burn and purify','to make things grow','to bring fulfilment','to gain through great effort','to renew and restore what was lost','to create spiritual strength','to bind and to see what is hidden','to honour the ancestors and leave the body behind','to create and delight','to unite and bring prosperity','to bring what is sought into your hands','to gather merit through what you create','to scatter what is stuck so that something new can grow','to reach many goals through steady purpose','to worship and to devote','to rise, to protect and to find courage','to uproot and reach the root of truth','to invigorate and to purify','to bring a victory that cannot be undone','to connect and to listen','to bring abundance and renown','to heal','to raise the spirit through inner fire','to bring the rain that nourishes','to nourish and guide safely home'];
 const _NAK_DEITY=['the Ashvins','Yama','Agni','Brahma','Soma','Rudra','Aditi','Brihaspati','the Nagas','the Pitris','Bhaga','Aryaman','Savitar','Tvashtar','Vayu','Indra and Agni','Mitra','Indra','Nirriti','the Waters (Apah)','the Vishvedevas','Vishnu','the Vasus','Varuna','Aja Ekapada','Ahirbudhnya','Pushan'];
 const _HOUSE_MEANS=['your own nature, body and self','money, speech and family','voice, learning, courage and siblings','home, mother, the heart and inner peace','intelligence, children, devotion and merit carried from past lives','daily work, service, health and obstacles overcome','partnership and marriage','what is hidden, deep change, inheritance and longevity','dharma itself: wisdom, teachers, faith and fortune','career, action and your place in the world','friendship, gains and wishes fulfilled','release, retreat, foreign lands and liberation'];
 
