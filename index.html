@@ -2043,7 +2043,7 @@ function showChart(){
 const NAKSHATRA_DATA = {
   en: [
     {name:"Ashwini",desc:"You carry the energy of the divine healer, swift, pioneering, and full of vital force. Your soul moves fast and your instincts are sharp. You are here to initiate, to heal, and to begin what others cannot."},
-    {name:"Bharani",desc:"You hold the sacred power of creation and transformation. Deep, magnetic, and unafraid of life's extremes, you carry the goddess Yama's wisdom: that birth and death are one continuous sacred river."},
+    {name:"Bharani",desc:"You hold the sacred power of creation and transformation. Deep, magnetic, and unafraid of life's extremes, you carry the wisdom of Yama, lord of dharma and death: that birth and death are one continuous sacred river."},
     {name:"Krittika",desc:"The fire of purification lives in you. Sharp, discerning, and luminous, you cut through illusion with natural precision. You are here to illumine, to refine, and to burn away what no longer serves."},
     {name:"Rohini",desc:"You are rooted in beauty, abundance, and the fertile earth. Creative, sensuous, and deeply magnetic, the Moon loves you most. You attract what you desire and your presence nourishes everyone around you."},
     {name:"Mrigashira",desc:"You are the eternal seeker, curious, gentle, and always searching for something just beyond the horizon. Your mind is luminous and restless. Your soul's gift is the journey itself, not only the destination."},
@@ -2101,7 +2101,7 @@ const NAKSHATRA_DATA = {
   ],
   es: [
     {name:"Ashwini",desc:"Llevas la energía del sanador divino, veloz, pionero y lleno de fuerza vital. Tu alma se mueve rápido y tus instintos son agudos. Estás aquí para iniciar, sanar y comenzar lo que otros no pueden."},
-    {name:"Bharani",desc:"Sostienes el sagrado poder de la creación y la transformación. Profundo, magnético e intrépido ante los extremos de la vida, llevas la sabiduría de la diosa Yama: que el nacimiento y la muerte son un río sagrado continuo."},
+    {name:"Bharani",desc:"Sostienes el sagrado poder de la creación y la transformación. Profundo, magnético e intrépido ante los extremos de la vida, llevas la sabiduría de Yama, señor del dharma y de la muerte: que el nacimiento y la muerte son un río sagrado continuo."},
     {name:"Krittika",desc:"El fuego de la purificación vive en ti. Agudo, discerniente y luminoso, cortas la ilusión con precisión natural. Estás aquí para iluminar, refinar y quemar lo que ya no sirve."},
     {name:"Rohini",desc:"Estás enraizado en la belleza, la abundancia y la tierra fértil. Creativo, sensual y profundamente magnético, la Luna te ama más. Atraes lo que deseas y tu presencia nutre a todos a tu alrededor."},
     {name:"Mrigashira",desc:"Eres el eterno buscador, curioso, gentil, siempre en búsqueda de algo más allá del horizonte. Tu mente es luminosa e inquieta. El don de tu alma es el viaje en sí, no solo el destino."},
@@ -2142,7 +2142,7 @@ async function loadNakshatraReading(){
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
+        chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°, House ${(chartData.planets[1].sign-chartData.ascSign+12)%12+1} (whole-sign, computed; use exactly this house number). Nakshatra deity: ${_NAK_DEITY[nak]||''}. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
         type: 'nakshatra'
       })
