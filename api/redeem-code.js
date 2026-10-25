@@ -14,7 +14,7 @@ const GIFT_CODES = new Map([
 // Shared demo codes with a fixed end time: valid on any device until that moment,
 // then dead for everyone, regardless of when (or whether) they were first used.
 const FIXED_CODES = new Map([
-  ['GLIMPSE24', Date.parse('2026-10-25T20:59:00Z')], // Mon 26 Oct 2026, 6:59am AEST
+  ['LOTUS24', Date.parse('2026-10-26T22:55:00Z')], // Tue 27 Oct 2026, 8:55am AEST
 ]);
 
 async function _redisSetNX(key, value) {
