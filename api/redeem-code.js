@@ -15,6 +15,7 @@ const GIFT_CODES = new Map([
 // then dead for everyone, regardless of when (or whether) they were first used.
 const FIXED_CODES = new Map([
   ['LOTUS24', Date.parse('2026-10-26T22:55:00Z')], // Tue 27 Oct 2026, 8:55am AEST
+  ['MOON24', Date.parse('2026-10-26T23:42:00Z')], // Tue 27 Oct 2026, 9:42am AEST
 ]);
 
 async function _redisSetNX(key, value) {
