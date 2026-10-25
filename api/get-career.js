@@ -14,8 +14,11 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'career' })) return;
-  if (!await dailyLimit(req, res, { max: 50, prefix: 'career-day' })) return;
+  // Verified subscribers (and owner/tester codes) get a higher ceiling than anonymous callers
+  let _sub = false;
+  try { _sub = !!verify((req.body || {}).token); } catch (_) {}
+  if (!await rateLimit(req, res, { max: _sub ? 60 : 20, windowSecs: 3600, prefix: _sub ? 'career-sub' : 'career' })) return;
+  if (!await dailyLimit(req, res, { max: _sub ? 150 : 50, prefix: _sub ? 'career-sub-day' : 'career-day' })) return;
 
   const { chartSummary, lang, type, context, token } = req.body || {};
 

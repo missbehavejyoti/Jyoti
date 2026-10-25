@@ -2145,7 +2145,8 @@ async function loadNakshatraReading(){
       body: JSON.stringify({
         chartSummary: `Name: ${userData.name}. Moon nakshatra: ${T['en'].nakshatras[nak]}, Pada ${chartData.planets?.[1]?.pada||''} (nakshatra ${nak+1} of 27). Moon in ${T['en'].signs[chartData.planets[1].sign]} at ${chartData.planets[1].degree}°, House ${(chartData.planets[1].sign-chartData.ascSign+12)%12+1} (whole-sign, computed; use exactly this house number). Nakshatra deity: ${_NAK_DEITY[nak]||''}. Nakshatra power (shakti): ${_NAK_SHAKTI[nak]||''}. Moon's house governs: ${_HOUSE_MEANS[(chartData.planets[1].sign-chartData.ascSign+12)%12]||''}. Sun in ${T['en'].signs[chartData.planets[0].sign]}. Ascendant: ${T['en'].signs[chartData.ascSign]}.${chartData.dashaPeriod?` Current Vimshottari Dasha: ${chartData.dashaPeriod.lord} (${chartData.dashaPeriod.remaining} years remaining).`:''} Write their personalised nakshatra reading.`,
         lang: currentLang,
-        type: 'nakshatra'
+        type: 'nakshatra',
+        token: localStorage.getItem('jyoti_access_token')
       })
     });
     const data = await nakResp.json();
