@@ -3,6 +3,9 @@ const { rateLimit, dailyLimit } = require('./_rateLimit');
 const { sanitizeDeep } = require('./_sanitize');
 const { verify } = require('./_token');
 
+// Every reading addresses the reader directly, never as a report about them
+const VOICE_PREFIX = 'VOICE: Always speak directly to the reader as "you" and "your". Never write about them in the third person ("she", "he", "they", "this person", "the native") or by name, except their first name once as a greeting.\n\n';
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -177,7 +180,7 @@ Return JSON only in this exact format — no backticks, no code blocks:
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: lang === 'hi' ? 1400 : lang === 'es' ? 1200 : 1000,
-          system: LANG_PREFIX + systemPrompt,
+          system: LANG_PREFIX + VOICE_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),
         signal: ctrl.signal

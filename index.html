@@ -1109,7 +1109,7 @@ let chantCurrent=0,chantTarget=108;
 // Readings stored as [{pratLord, pratEnd, text}], newest first, max 30
 // Refreshes only when the Pratyantara Dasha lord changes — ~3-6 months
 function soulArchiveKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc5_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_soul_arc5_default_'+currentLang;}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc6_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_soul_arc6_default_'+currentLang;}
 }
 function getSoulArchive(){
   try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
@@ -3092,7 +3092,7 @@ async function loadSoulReading(){
   const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const soulSummary=`Name: ${userData.name||'the seeker'}
 Ascendant (Lagna): ${ascSn} ${cd.asc.degree}°, House 1
-${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}°, House ${houseOf(cd.planets[i])}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}
 Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
 Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const soulCtrl=new AbortController();
@@ -3183,7 +3183,7 @@ function showSoulError(detail){
 // ── PLANET READINGS ──
 function planetReadingsKey(lang){
   const l=lang||currentLang;
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets5_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets5_default_'+l;}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets6_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets6_default_'+l;}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;
@@ -3216,7 +3216,7 @@ async function loadPlanetReadings(){
   const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const summary=`Name: ${userData.name||'the seeker'}
 Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
-${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}°, House ${houseOf(cd.planets[i])}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
   const doFetch=async(batchType)=>{
     for(let attempt=0;attempt<3;attempt++){
       const ctrl=new AbortController();
@@ -3483,6 +3483,15 @@ const _GR=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu
 const _SLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
 // Nakshatra shaktis (powers) in plain words, after the Taittiriya Brahmana canon
 const _NAK_SHAKTI=['to reach and heal swiftly','to carry away what must end, so life can renew','to burn and purify','to make things grow','to bring fulfilment','to gain through great effort','to renew and restore what was lost','to create spiritual strength','to bind and to see what is hidden','to honour the ancestors and leave the body behind','to create and delight','to unite and bring prosperity','to bring what is sought into your hands','to gather merit through what you create','to scatter what is stuck so that something new can grow','to reach many goals through steady purpose','to worship and to devote','to rise, to protect and to find courage','to uproot and reach the root of truth','to invigorate and to purify','to bring a victory that cannot be undone','to connect and to listen','to bring abundance and renown','to heal','to raise the spirit through inner fire','to bring the rain that nourishes','to nourish and guide safely home'];
+function _planetFacts(cd,i){
+  const n=_GR[i],p=cd.planets[i],S=T.en.signs,d9=Math.floor(p.lon*9/30)%12;
+  const EX={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6},DEB={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[2,5],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  const FR={Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],Saturn:['Mercury','Venus']};
+  const EN={Sun:['Venus','Saturn'],Moon:[],Mars:['Mercury'],Mercury:['Moon'],Jupiter:['Mercury','Venus'],Venus:['Sun','Moon'],Saturn:['Sun','Moon','Mars']};
+  const dg=!FR[n]?'':EX[n]===p.sign?'exalted':DEB[n]===p.sign?'debilitated':OWN[n].includes(p.sign)?'own sign':FR[n].includes(_SLORD[p.sign])?"friend's sign":EN[n].includes(_SLORD[p.sign])?"enemy's sign":'neutral sign';
+  return `${dg?', '+dg:''}, Navamsa ${S[d9]}`;
+}
 const _NAK_DEITY=['the Ashvins','Yama','Agni','Brahma','Soma','Rudra','Aditi','Brihaspati','the Nagas','the Pitris','Bhaga','Aryaman','Savitar','Tvashtar','Vayu','Indra and Agni','Mitra','Indra','Nirriti','the Waters (Apah)','the Vishvedevas','Vishnu','the Vasus','Varuna','Aja Ekapada','Ahirbudhnya','Pushan'];
 const _HOUSE_MEANS=['your own nature, body and self','money, speech and family','voice, learning, courage and siblings','home, mother, the heart and inner peace','intelligence, children, devotion and merit carried from past lives','daily work, service, health and obstacles overcome','partnership and marriage','what is hidden, deep change, inheritance and longevity','dharma itself: wisdom, teachers, faith and fortune','career, action and your place in the world','friendship, gains and wishes fulfilled','release, retreat, foreign lands and liberation'];
 
@@ -3769,7 +3778,7 @@ async function showCareerReading(){
   const L_en=T['en'];
   const p=chartData.planets;
 
-  const cacheKey='jyoti_career_'+capturedLang+'_'+_chartKey()+'_'+_dashaTag;
+  const cacheKey='jyoti_career2_'+capturedLang+'_'+_chartKey()+'_'+_dashaTag;
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
     if(cached&&cached.reading){
