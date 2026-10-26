@@ -2469,7 +2469,7 @@ CURRENT PLANETARY TRANSITS, exact positions right now (${now.toUTCString()}):
 Location used for transit ascendant: ${_birthLat.toFixed(2)}°N ${_birthLon.toFixed(2)}°E (birth location)
 Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
   Transit Sun: ${S[tr[0].sign]} ${tr[0].degree}°, natal House ${trHouse(0)}${trConj(0)}
-  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°, natal House ${trHouse(1)}${trConj(1)}, Nakshatra: ${_n(tr[1])||'unknown'}
+  Transit Moon: ${S[tr[1].sign]} ${tr[1].degree}°, natal House ${trHouse(1)}${trConj(1)}, Nakshatra: ${_n(tr[1])||'unknown'}${_nd(tr[1])}
   Transit Mars: ${S[tr[2].sign]} ${tr[2].degree}°, natal House ${trHouse(2)}${trConj(2)}
   Transit Mercury: ${S[tr[3].sign]} ${tr[3].degree}°, natal House ${trHouse(3)}${trConj(3)}
   Transit Jupiter: ${S[tr[4].sign]} ${tr[4].degree}°, natal House ${trHouse(4)}${trConj(4)}
@@ -2480,13 +2480,13 @@ Transit Ascendant (Lagna right now): ${S[trAsc.sign]} ${trAsc.degree}°
   const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
   const _llName=_rulers[chartData.ascSign];
   const _llIdx=_pn.indexOf(_llName);
-  const _ll=_llIdx>=0?`\nLagna Lord: ${_llName} in ${L_en.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${_h(p[_llIdx])}, Nakshatra: ${_n(p[_llIdx])}`:'';
+  const _ll=_llIdx>=0?`\nLagna Lord: ${_llName} in ${L_en.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${_h(p[_llIdx])}, Nakshatra: ${_n(p[_llIdx])}${_nd(p[_llIdx])}`:'';
   const _nakLords=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury',
     'Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury',
     'Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
   const _nakLordName=typeof tr[1].nakshatra==='number'?(_nakLords[tr[1].nakshatra]||''):'';
   const _nlIdx={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8}[_nakLordName]??-1;
-  const _nakLordBlock=_nakLordName&&_nlIdx>=0?`\nTransit Moon nakshatra lord: ${_nakLordName} (rules ${_n(tr[1])||'transit nakshatra'})\n  ${_nakLordName} natal: ${L_en.signs[p[_nlIdx].sign]} ${p[_nlIdx].degree}°${_dg(_nlIdx,p[_nlIdx].sign)}, House ${_h(p[_nlIdx])}, Nakshatra: ${_n(p[_nlIdx])}\n  ${_nakLordName} transit: ${S[tr[_nlIdx].sign]} ${tr[_nlIdx].degree}°, natal House ${trHouse(_nlIdx)}${trConj(_nlIdx)}`:'';
+  const _nakLordBlock=_nakLordName&&_nlIdx>=0?`\nTransit Moon nakshatra lord: ${_nakLordName} (rules ${_n(tr[1])||'transit nakshatra'})\n  ${_nakLordName} natal: ${L_en.signs[p[_nlIdx].sign]} ${p[_nlIdx].degree}°${_dg(_nlIdx,p[_nlIdx].sign)}, House ${_h(p[_nlIdx])}, Nakshatra: ${_n(p[_nlIdx])}${_nd(p[_nlIdx])}\n  ${_nakLordName} transit: ${S[tr[_nlIdx].sign]} ${tr[_nlIdx].degree}°, natal House ${trHouse(_nlIdx)}${trConj(_nlIdx)}`:'';
   // Nakshatra nature (Muhurta quality) — colours the felt quality of the day
   const _nakNature={
     Ashwini:'Laghu (light, swift — favours starting things, quick actions)',
@@ -2525,15 +2525,15 @@ Name: ${userData.name}
 Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userData.pob}
 NATAL CHART:
 Ascendant (Lagna): ${L_en.signs[chartData.ascSign]} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°${_ll}
-Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} pada ${p[0].pada||''} | House ${_h(p[0])}
-Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} pada ${p[1].pada||''} | House ${_h(p[1])}
-Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | Nakshatra: ${_n(p[2])} | House ${_h(p[2])}
-Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | Nakshatra: ${_n(p[3])} | House ${_h(p[3])}
-Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])} | House ${_h(p[4])}
-Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | Nakshatra: ${_n(p[5])} | House ${_h(p[5])}
-Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])} | House ${_h(p[6])}
-Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])} | House ${_h(p[7])}
-Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])} | House ${_h(p[8])}
+Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])}${_nd(p[0])} pada ${p[0].pada||''} | House ${_h(p[0])}
+Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])}${_nd(p[1])} pada ${p[1].pada||''} | House ${_h(p[1])}
+Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | Nakshatra: ${_n(p[2])}${_nd(p[2])} | House ${_h(p[2])}
+Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | Nakshatra: ${_n(p[3])}${_nd(p[3])} | House ${_h(p[3])}
+Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])}${_nd(p[4])} | House ${_h(p[4])}
+Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | Nakshatra: ${_n(p[5])}${_nd(p[5])} | House ${_h(p[5])}
+Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])}${_nd(p[6])} | House ${_h(p[6])}
+Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])}${_nd(p[7])} | House ${_h(p[7])}
+Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])}${_nd(p[8])} | House ${_h(p[8])}
 ${dashaContext}
 ${transitBlock}${_nakLordBlock}${_nakNatureBlock}
 Malefic influences (natal): ${chartData.malefics.map(m=>m.name).join(', ')}
@@ -2550,7 +2550,7 @@ Vara lord (weekday ruler): ${[
 Vara lord natal placement: ${(()=>{
   const pi=[0,1,2,3,4,5,6][practiceDate.getDay()];
   const pl=p[pi];
-  return pl?`${L_en.planets[pi]} in ${L_en.signs[pl.sign]} ${pl.degree}°${_dg(pi,pl.sign)}, House ${_h(pl)}, Nakshatra: ${_n(pl)}`:'unknown';
+  return pl?`${L_en.planets[pi]} in ${L_en.signs[pl.sign]} ${pl.degree}°${_dg(pi,pl.sign)}, House ${_h(pl)}, Nakshatra: ${_n(pl)}${_nd(pl)}`:'unknown';
 })()}${practiceDate.getDay()===2?`\nKetu natal placement: ${L_en.signs[p[8].sign]} ${p[8].degree}°, House ${_h(p[8])}`:''}${practiceDate.getDay()===6?`\nRahu natal placement: ${L_en.signs[p[7].sign]} ${p[7].degree}°, House ${_h(p[7])}`:''}
 Today's date: ${practiceDate.toDateString()}
 Days until month end: ${new Date(practiceDate.getFullYear(),practiceDate.getMonth()+1,0).getDate()-practiceDate.getDate()}
@@ -3359,13 +3359,13 @@ async function showWeeklyReading(){
   const _rulers=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
   const _llName=_rulers[chartData.ascSign];
   const _llIdx=_pn.indexOf(_llName);
-  const _ll=_llIdx>=0?`\nLagna Lord: ${_llName} in ${L_en.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${_h(p[_llIdx])}, Nakshatra: ${_n(p[_llIdx])}`:'';
+  const _ll=_llIdx>=0?`\nLagna Lord: ${_llName} in ${L_en.signs[p[_llIdx].sign]} ${p[_llIdx].degree}°${_dg(_llIdx,p[_llIdx].sign)}, House ${_h(p[_llIdx])}, Nakshatra: ${_n(p[_llIdx])}${_nd(p[_llIdx])}`:'';
   const _wNakLords=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury',
     'Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury',
     'Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
   const _wNakLordName=typeof trW[1].nakshatra==='number'?(_wNakLords[trW[1].nakshatra]||''):'';
   const _wNlIdx={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8}[_wNakLordName]??-1;
-  const _wNakLordBlock=_wNakLordName&&_wNlIdx>=0?`\nMoon nakshatra lord at week start: ${_wNakLordName}\n  ${_wNakLordName} natal: ${L_en.signs[p[_wNlIdx].sign]} ${p[_wNlIdx].degree}°${_dg(_wNlIdx,p[_wNlIdx].sign)}, House ${_h(p[_wNlIdx])}, Nakshatra: ${_n(p[_wNlIdx])}\n  ${_wNakLordName} transit at week start: ${S[trW[_wNlIdx].sign]} ${trW[_wNlIdx].degree}°, natal House ${trHW(_wNlIdx)}`:'';
+  const _wNakLordBlock=_wNakLordName&&_wNlIdx>=0?`\nMoon nakshatra lord at week start: ${_wNakLordName}\n  ${_wNakLordName} natal: ${L_en.signs[p[_wNlIdx].sign]} ${p[_wNlIdx].degree}°${_dg(_wNlIdx,p[_wNlIdx].sign)}, House ${_h(p[_wNlIdx])}, Nakshatra: ${_n(p[_wNlIdx])}${_nd(p[_wNlIdx])}\n  ${_wNakLordName} transit at week start: ${S[trW[_wNlIdx].sign]} ${trW[_wNlIdx].degree}°, natal House ${trHW(_wNlIdx)}`:'';
   const dashaCtx=dasha?`
 VIMSHOTTARI DASHA — PRIMARY LENS FOR WEEKLY READING:
   ► ANTAR DASHA (weeks-to-months, primary): ${antr?.lord||dasha.lord}, ends ${antr?.endDate||'?'}
@@ -3376,13 +3376,13 @@ Date of Birth: ${userData.dob}  Time: ${userData.tob||'unknown'}  Place: ${userD
 Week: ${wStart} to ${wEnd}
 NATAL CHART:
 Ascendant (Lagna): ${ascSn} ${parseFloat(chartData.asc?.degree||0).toFixed(1)}°${_ll}
-Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} | House ${_h(p[0])}
-Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} | House ${_h(p[1])}
-Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}° | Nakshatra: ${_n(p[2])} | House ${_h(p[2])}
-Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}° | Nakshatra: ${_n(p[3])} | House ${_h(p[3])}
-Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])} | House ${_h(p[4])}
-Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}° | Nakshatra: ${_n(p[5])} | House ${_h(p[5])}
-Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])} | House ${_h(p[6])}
+Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])}${_nd(p[0])} | House ${_h(p[0])}
+Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])}${_nd(p[1])} | House ${_h(p[1])}
+Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}° | Nakshatra: ${_n(p[2])}${_nd(p[2])} | House ${_h(p[2])}
+Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}° | Nakshatra: ${_n(p[3])}${_nd(p[3])} | House ${_h(p[3])}
+Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])}${_nd(p[4])} | House ${_h(p[4])}
+Venus: ${L_en.signs[p[5].sign]} ${p[5].degree}° | Nakshatra: ${_n(p[5])}${_nd(p[5])} | House ${_h(p[5])}
+Saturn: ${L_en.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])}${_nd(p[6])} | House ${_h(p[6])}
 Rahu: ${L_en.signs[p[7].sign]} ${p[7].degree}° | House ${_h(p[7])}
 Ketu: ${L_en.signs[p[8].sign]} ${p[8].degree}° | House ${_h(p[8])}
 ${dashaCtx}
@@ -3395,7 +3395,7 @@ Sun: ${S[trW[0].sign]} ${trW[0].degree}°, natal House ${trHW(0)}
 Venus: ${S[trW[5].sign]} ${trW[5].degree}°, natal House ${trHW(5)}
 Mars: ${S[trW[2].sign]} ${trW[2].degree}°, natal House ${trHW(2)}
 Mercury: ${S[trW[3].sign]} ${trW[3].degree}°, natal House ${trHW(3)}
-Moon at week start: ${S[trW[1].sign]} ${trW[1].degree}°, Nakshatra: ${_n(trW[1])||'unknown'} (travels ~3 signs this week)${_wNakLordBlock}`;
+Moon at week start: ${S[trW[1].sign]} ${trW[1].degree}°, Nakshatra: ${_n(trW[1])||'unknown'}${_nd(trW[1])} (travels ~3 signs this week)${_wNakLordBlock}`;
   try{
     const resp=await _paidFetch('/api/get-remedy',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chartSummary,lang:capturedLang,type:'weekly',token:localStorage.getItem('jyoti_access_token')})});
@@ -3489,6 +3489,8 @@ const _GR=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu
 const _SLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
 // Nakshatra shaktis (powers) in plain words, after the Taittiriya Brahmana canon
 const _NAK_SHAKTI=['to reach and heal swiftly','to carry away what must end, so life can renew','to burn and purify','to make things grow','to bring fulfilment','to gain through great effort','to renew and restore what was lost','to create spiritual strength','to bind and to see what is hidden','to honour the ancestors and leave the body behind','to create and delight','to unite and bring prosperity','to bring what is sought into your hands','to gather merit through what you create','to scatter what is stuck so that something new can grow','to reach many goals through steady purpose','to worship and to devote','to rise, to protect and to find courage','to uproot and reach the root of truth','to invigorate and to purify','to bring a victory that cannot be undone','to connect and to listen','to bring abundance and renown','to heal','to raise the spirit through inner fire','to bring the rain that nourishes','to nourish and guide safely home'];
+// Nakshatra deity and power, appended wherever a reading's chart data names a nakshatra
+function _nd(pl){return typeof pl?.nakshatra==='number'&&_NAK_DEITY[pl.nakshatra]?` (deity ${_NAK_DEITY[pl.nakshatra]}; power: ${_NAK_SHAKTI[pl.nakshatra]})`:'';}
 function _planetFacts(cd,i){
   const n=_GR[i],p=cd.planets[i],S=T.en.signs,d9=Math.floor(p.lon*9/30)%12;
   const EX={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6},DEB={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
@@ -3876,8 +3878,8 @@ Ascendant (Lagna): ${L_en.signs[chartData.ascSign]} ${parseFloat(chartData.asc?.
 Lagna Lord: ${_rulers[chartData.ascSign]} in ${(()=>{const li=_pni[_rulers[chartData.ascSign]];return li!==undefined&&p[li]?L_en.signs[p[li].sign]+''+_dg(li,p[li].sign)+', House '+_h(p[li]):'?'})()}
 
 NATAL CHART:
-Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | House ${_h(p[0])} | Nakshatra: ${_n(p[0])}
-Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | House ${_h(p[1])} | Nakshatra: ${_n(p[1])}
+Sun: ${L_en.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | House ${_h(p[0])} | Nakshatra: ${_n(p[0])}${_nd(p[0])}
+Moon: ${L_en.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | House ${_h(p[1])} | Nakshatra: ${_n(p[1])}${_nd(p[1])}
 Mars: ${L_en.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | House ${_h(p[2])}
 Mercury: ${L_en.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | House ${_h(p[3])}
 Jupiter: ${L_en.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | House ${_h(p[4])}
@@ -4917,16 +4919,16 @@ function buildSynChartSummary(user,chart,label){
   const metaLine=`\nAyanamsa (Lahiri): ${chart.ayanamsa||''}°  |  Birth UT: ${chart.birthUT||''}`;
   return `${label}, born ${user.dob} at ${user.tob||'unknown'}, birth place: ${user.pob} (current location may differ) [pronouns: ${pronounStr}]
 Ascendant: ${L.signs[chart.ascSign]} ${parseFloat(chart.asc.degree).toFixed(1)}°${_ll}
-Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])} pada ${p[0].pada} | House ${h(p[0])}
-Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])} pada ${p[1].pada} | House ${h(p[1])}
-Moon nakshatra lord: ${(()=>{const _snl=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];const _sn=typeof p[1].nakshatra==='number'?(_snl[p[1].nakshatra]||''):'';const _si={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8}[_sn]??-1;return _sn&&_si>=0?`${_sn} in ${L.signs[p[_si].sign]} ${p[_si].degree}°${_dg(_si,p[_si].sign)}, House ${h(p[_si])}, Nakshatra: ${_n(p[_si])}`:'unknown';})()}
-Mars: ${L.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | Nakshatra: ${_n(p[2])} pada ${p[2].pada} | House ${h(p[2])}
-Mercury: ${L.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | Nakshatra: ${_n(p[3])} pada ${p[3].pada} | House ${h(p[3])}
-Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])} pada ${p[4].pada} | House ${h(p[4])}
-Venus: ${L.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | Nakshatra: ${_n(p[5])} pada ${p[5].pada} | House ${h(p[5])}
-Saturn: ${L.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])} pada ${p[6].pada} | House ${h(p[6])}
-Rahu: ${L.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])} pada ${p[7].pada} | House ${h(p[7])}
-Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])} pada ${p[8].pada} | House ${h(p[8])}${maleficsLine}${dashaLine}${metaLine}`;
+Sun: ${L.signs[p[0].sign]} ${p[0].degree}°${_dg(0,p[0].sign)} | Nakshatra: ${_n(p[0])}${_nd(p[0])} pada ${p[0].pada} | House ${h(p[0])}
+Moon: ${L.signs[p[1].sign]} ${p[1].degree}°${_dg(1,p[1].sign)} | Nakshatra: ${_n(p[1])}${_nd(p[1])} pada ${p[1].pada} | House ${h(p[1])}
+Moon nakshatra lord: ${(()=>{const _snl=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];const _sn=typeof p[1].nakshatra==='number'?(_snl[p[1].nakshatra]||''):'';const _si={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6,Rahu:7,Ketu:8}[_sn]??-1;return _sn&&_si>=0?`${_sn} in ${L.signs[p[_si].sign]} ${p[_si].degree}°${_dg(_si,p[_si].sign)}, House ${h(p[_si])}, Nakshatra: ${_n(p[_si])}${_nd(p[_si])}`:'unknown';})()}
+Mars: ${L.signs[p[2].sign]} ${p[2].degree}°${_dg(2,p[2].sign)} | Nakshatra: ${_n(p[2])}${_nd(p[2])} pada ${p[2].pada} | House ${h(p[2])}
+Mercury: ${L.signs[p[3].sign]} ${p[3].degree}°${_dg(3,p[3].sign)} | Nakshatra: ${_n(p[3])}${_nd(p[3])} pada ${p[3].pada} | House ${h(p[3])}
+Jupiter: ${L.signs[p[4].sign]} ${p[4].degree}°${_dg(4,p[4].sign)} | Nakshatra: ${_n(p[4])}${_nd(p[4])} pada ${p[4].pada} | House ${h(p[4])}
+Venus: ${L.signs[p[5].sign]} ${p[5].degree}°${_dg(5,p[5].sign)} | Nakshatra: ${_n(p[5])}${_nd(p[5])} pada ${p[5].pada} | House ${h(p[5])}
+Saturn: ${L.signs[p[6].sign]} ${p[6].degree}°${_dg(6,p[6].sign)} | Nakshatra: ${_n(p[6])}${_nd(p[6])} pada ${p[6].pada} | House ${h(p[6])}
+Rahu: ${L.signs[p[7].sign]} ${p[7].degree}° | Nakshatra: ${_n(p[7])}${_nd(p[7])} pada ${p[7].pada} | House ${h(p[7])}
+Ketu: ${L.signs[p[8].sign]} ${p[8].degree}° | Nakshatra: ${_n(p[8])}${_nd(p[8])} pada ${p[8].pada} | House ${h(p[8])}${maleficsLine}${dashaLine}${metaLine}`;
 }
 
 async function beginSynastry(){

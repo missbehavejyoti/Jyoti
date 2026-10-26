@@ -28,6 +28,7 @@ function dedupePractices(arr, maxCount) {
 }
 
 // Every reading addresses the reader directly, never as a report about them
+const ACCURACY_PREFIX = 'ACCURACY: Use only the facts given in the chart data. Never work out or guess a planet\'s house, dignity, Navamsa sign, nakshatra deity or nakshatra power yourself; if the data does not give it, do not state it. Never describe a debilitated planet as strong. Name a classical yoga only if its full condition holds in the data. Never claim planets share a degree or are close unless their given degrees are within 3 degrees. Attribute a statement to a named text (BPHS, Brihat Jataka, Phaladeepika and so on) only when that text genuinely says it; otherwise say "the tradition".\n\n';
 const VOICE_PREFIX = 'VOICE: Always speak directly to the reader as "you" and "your". Never write about them in the third person ("she", "he", "they", "this person", "the native") or by name, except their first name once as a greeting. In Hindi always address them as "आप" and never use "जातक"; in Spanish always as "tú".\n\n';
 
 module.exports = async (req, res) => {
@@ -501,7 +502,7 @@ JSON structure:
             if (isMarriage)    return hi ? 3600 : es ? 2900 : 2400;
             return                                    hi ? 3800 : es ? 3200 : 2800; // daily legacy
           })(),
-          system: LANG_PREFIX + VOICE_PREFIX + systemPrompt,
+          system: LANG_PREFIX + VOICE_PREFIX + ACCURACY_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),
         signal: ctrl.signal
