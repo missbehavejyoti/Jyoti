@@ -158,6 +158,7 @@ Always develop on the dev branch, then merge to main when confirmed working.
 - Mantra always in Sanskrit Devanagari script regardless of language
 - `mantra_translit` always plain Roman transliteration
 - Classical depth hidden underneath — user feels human truth, not astrology jargon
+- `ACCURACY_PREFIX` (get-remedy/get-career, inline in get-synastry) leads every prompt: only given facts, never guess house/dignity/Navamsa/deity/power, no yoga unless its condition holds, no degree claims beyond 3°, no false text attributions. `_nd()` appends nakshatra deity and power wherever chart data names a nakshatra
 - Every reading speaks to the reader as "you" (`VOICE_PREFIX` in get-remedy/get-career; in get-synastry the "Your chart" person is "you", the other person by name)
 - Soul Map and Planetary Blueprint receive each planet's dignity and Navamsa sign via `_planetFacts()`; the AI must never infer dignity or name a yoga whose full condition it can't verify from the data
 - Tradition: Vedic/Jyotish ONLY — sidereal zodiac, Lahiri ayanamsa, never Western/tropical
