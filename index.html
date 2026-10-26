@@ -1114,7 +1114,7 @@ let chantCurrent=0,chantTarget=108;
 // Readings stored as [{pratLord, pratEnd, text}], newest first, max 30
 // Refreshes only when the Pratyantara Dasha lord changes — ~3-6 months
 function soulArchiveKey(){
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc6_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_soul_arc6_default_'+currentLang;}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_soul_arc7_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+currentLang;}catch(e){return'jyoti_soul_arc7_default_'+currentLang;}
 }
 function getSoulArchive(){
   try{return JSON.parse(localStorage.getItem(soulArchiveKey())||'[]');}catch(e){return[];}
@@ -3098,7 +3098,7 @@ async function loadSoulReading(){
   const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const soulSummary=`Name: ${userData.name||'the seeker'}
 Ascendant (Lagna): ${ascSn} ${cd.asc.degree}°, House 1
-${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${cd.planets[i].degree}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''} (deity ${_NAK_DEITY[cd.planets[i].nakshatra]||'?'}; power: ${_NAK_SHAKTI[cd.planets[i].nakshatra]||'?'})`).join('\n')}
 Vimshottari Dasha: ${cd.dashaPeriod.lord} Maha Dasha / ${cd.dashaPeriod.antar?.lord||''} Antar / ${cd.dashaPeriod.pratyantara?.lord||''} Pratyantara
 Karmic intensities: ${cd.malefics?.map(m=>m.name).join(', ')||'none'}`;
     const soulCtrl=new AbortController();
@@ -3189,7 +3189,7 @@ function showSoulError(detail){
 // ── PLANET READINGS ──
 function planetReadingsKey(lang){
   const l=lang||currentLang;
-  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets6_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets6_default_'+l;}
+  try{const u=JSON.parse(localStorage.getItem('jyoti_user')||'{}');return'jyoti_planets7_'+btoa((u.dob||'')+(u.pob||'')).slice(0,16)+'_'+l;}catch(e){return'jyoti_planets7_default_'+l;}
 }
 let planetReadingsCache=null;
 let planetLoadingInProgress=false;
@@ -3222,7 +3222,7 @@ async function loadPlanetReadings(){
   const ascSn=cd.asc.signName||L_en.signs[cd.ascSign]||'';
   const summary=`Name: ${userData.name||'the seeker'}
 Ascendant: ${ascSn} ${parseFloat(cd.asc.degree||0).toFixed(1)}°
-${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''}`).join('\n')}`;
+${pnames.map((n,i)=>`${n}: ${sn(i)} ${parseFloat(cd.planets[i].degree||0).toFixed(1)}°, House ${houseOf(cd.planets[i])}${_planetFacts(cd,i)}, Nakshatra: ${nn(i)} Pada ${cd.planets[i].pada||''} (deity ${_NAK_DEITY[cd.planets[i].nakshatra]||'?'}; power: ${_NAK_SHAKTI[cd.planets[i].nakshatra]||'?'})`).join('\n')}`;
   const doFetch=async(batchType)=>{
     for(let attempt=0;attempt<3;attempt++){
       const ctrl=new AbortController();
