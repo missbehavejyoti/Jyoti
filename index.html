@@ -3639,7 +3639,7 @@ ${_dharmaFactors(chartData)}
 UPCOMING PERIODS (Maha/Antar):
 ${tl.map(p=>`${p.id}: ${f(p.start)} to ${f(p.end)}${p.now?' (NOW)':''}`).join('\n')}
 Today: ${new Date().toDateString()}${kind==='marriage'?`
-RELATIONSHIP HISTORY (told by the person): ${({none:'No marriage or long partnership has ended',once:'One marriage or long partnership has ended',multiple:'More than one marriage or long partnership has ended'})[_marriageHistory()]||'Not shared'}`:''}`;
+RELATIONSHIP HISTORY (told by the person): ${({none:'No marriage or long partnership has ended',once:'One marriage or long partnership has ended',multiple:'More than one marriage or long partnership has ended',celibate:'Has CHOSEN not to marry: a celibate or spiritual path by choice'})[_marriageHistory()]||'Not shared'}`:''}`;
   return {tl,text};
 }
 
@@ -3756,9 +3756,9 @@ function renderMarriageEntry(){
     <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--gold);margin-bottom:.5rem">✦ ${tr('YOUR RELATIONSHIP PATH','आपका संबंध मार्ग','TU CAMINO DE LAS RELACIONES')}</div>
     <p style="font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.7;margin:0 0 .8rem">${tr('What your own chart says about partnership, from the Jaimini Sutras and Parashara: whether marriage or long partnership favours you, the partner who fits, and when.','जैमिनी सूत्र और पाराशर के अनुसार आपकी कुंडली साझेदारी के बारे में क्या कहती है: विवाह या दीर्घ संबंध आपके लिए अनुकूल है या नहीं, उपयुक्त साथी, और कब।','Lo que tu propia carta dice sobre la pareja, según los Jaimini Sutras y Parashara: si el matrimonio o una relación larga te favorece, la pareja adecuada y cuándo.')}</p>
     <div class="field" style="margin:0 0 .9rem">
-      <label for="mp-history">${tr('Has a marriage or long partnership ended for you before?','क्या पहले आपका कोई विवाह या लंबा संबंध समाप्त हुआ है?','¿Ha terminado antes para ti un matrimonio o una relación larga?')}</label>
+      <label for="mp-history">${tr('Your relationship history','आपका संबंध इतिहास','Tu historia de relaciones')}</label>
       <select id="mp-history" onchange="_setMarriageHistory(this.value)">
-        ${[['',tr('Prefer not to say','बताना नहीं चाहते','Prefiero no decir')],['none',tr('No','नहीं','No')],['once',tr('Once','एक बार','Una vez')],['multiple',tr('More than once','एक से अधिक बार','Más de una vez')]].map(([v,t])=>`<option value="${v}"${_marriageHistory()===v?' selected':''}>${t}</option>`).join('')}
+        ${[['',tr('Prefer not to say','बताना नहीं चाहते','Prefiero no decir')],['none',tr('No marriage or long partnership has ended','कोई विवाह या लंबा संबंध समाप्त नहीं हुआ','No ha terminado ningún matrimonio ni relación larga')],['once',tr('One has ended','एक समाप्त हुआ है','Ha terminado uno')],['multiple',tr('More than one has ended','एक से अधिक समाप्त हुए हैं','Ha terminado más de uno')],['celibate',tr('I have chosen not to marry','मैंने विवाह न करने का चुनाव किया है','He elegido no casarme')]].map(([v,t])=>`<option value="${v}"${_marriageHistory()===v?' selected':''}>${t}</option>`).join('')}
       </select>
       <div style="font-size:.75rem;color:var(--dim);font-style:italic;margin-top:.3rem">${tr('Optional. Saved only on your device and sent with your reading request.','वैकल्पिक। केवल आपके डिवाइस पर सहेजा जाता है और आपकी रीडिंग के अनुरोध के साथ भेजा जाता है।','Opcional. Se guarda solo en tu dispositivo y se envía con tu solicitud de lectura.')}</div>
     </div>
