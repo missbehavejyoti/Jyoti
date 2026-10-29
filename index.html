@@ -229,7 +229,7 @@ details[open]>.reveal-btn{background:transparent;color:var(--gold);border:1px so
 .modal{display:none;position:fixed;inset:0;background:var(--overlay-bg);z-index:200;overflow-y:auto;backdrop-filter:blur(6px)}
 .modal.open{display:block}
 .modal-inner{max-width:700px;margin:2rem auto;padding:0 1.5rem 3rem}
-.modal-close{display:flex;justify-content:flex-end;padding:1rem 0}
+.modal-close{display:flex;justify-content:flex-end;position:sticky;top:0;z-index:1;margin:0 -1.5rem;padding:calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;background:var(--bg)}
 .modal-close button{background:transparent;border:1px solid var(--s4);color:var(--muted);border-radius:8px;padding:.4rem 1rem;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;cursor:pointer;transition:.2s}
 .modal-close button:hover{border-color:var(--gold);color:var(--gold)}
 .modal-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:.1em;color:var(--gold);margin-bottom:1.5rem;text-align:center}
@@ -4225,7 +4225,11 @@ function closeChant(){
 
 // ── MODALS ──
 function openModal(type){
-  document.getElementById('modal-'+type).classList.add('open');
+  const m=document.getElementById('modal-'+type);
+  // Lift out of .wrap: its z-index:1 stacking context otherwise traps the modal
+  // under the language bar, which then covers the Close button
+  if(m.parentElement!==document.body)document.body.appendChild(m);
+  m.classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closeModal(type){
