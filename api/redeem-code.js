@@ -47,11 +47,57 @@ async function _redisGet(key) {
   return result[0]?.result ?? null;
 }
 
+// Usage stats: a running count of successful redemptions per code, plus a rough
+// count of distinct visitors (HyperLogLog over IPs, so no IP is ever stored).
+// Never blocks access: any Redis failure is swallowed.
+async function _recordUse(req, code) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return;
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  try {
+    await fetch(`${url}/pipeline`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify([['INCR', `codeuses:${code}`], ['PFADD', `codevisitors:${code}`, ip]]),
+    });
+  } catch {}
+}
+
+// Owner view: GET /api/redeem-code?key=PUSH_CRON_SECRET lists usage for every
+// code currently in this file.
+async function _usageReport(res) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return res.status(500).json({ error: 'Redis not configured' });
+  const codes = [...FIXED_CODES.keys(), ...GIFT_CODES.keys()];
+  const resp = await fetch(`${url}/pipeline`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(codes.flatMap(c => [['GET', `codeuses:${c}`], ['PFCOUNT', `codevisitors:${c}`]])),
+  });
+  if (!resp.ok) return res.status(502).json({ error: 'Redis unavailable' });
+  const result = await resp.json();
+  const usage = codes.map((code, i) => ({
+    code,
+    redemptions: Number(result[i * 2]?.result || 0),
+    visitors: Number(result[i * 2 + 1]?.result || 0),
+  }));
+  return res.status(200).json({ usage });
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'GET') {
+    const key = req.query?.key;
+    if (!process.env.PUSH_CRON_SECRET || key !== process.env.PUSH_CRON_SECRET) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    return _usageReport(res);
+  }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (!await rateLimit(req, res, { max: 10, windowSecs: 3600, prefix: 'redeem-code' })) return;
@@ -60,6 +106,7 @@ module.exports = async (req, res) => {
   const until = FIXED_CODES.get(code);
   if (until) {
     if (Date.now() > until) return res.status(200).json({ ok: false });
+    await _recordUse(req, code);
     return res.status(200).json({ ok: true, expiresAt: until, token: sign({ tier: 'gift', exp: until }) });
   }
   const days = GIFT_CODES.get(code);
@@ -85,6 +132,7 @@ module.exports = async (req, res) => {
 
   const expiresAt = redeemedAt + days * 86400000;
   if (Date.now() > expiresAt) return res.status(200).json({ ok: false });
+  await _recordUse(req, code);
   const token = sign({ tier: 'gift', exp: expiresAt });
   return res.status(200).json({ ok: true, expiresAt, token });
 };
