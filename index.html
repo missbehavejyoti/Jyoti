@@ -943,7 +943,7 @@ details[open]>.reveal-btn{background:transparent;color:var(--gold);border:1px so
     <p style="margin-top:.4rem" data-en="© 2025 Jyoti. All rights reserved. ABN registered Australia." data-hi="© 2025 ज्योति। सर्वाधिकार सुरक्षित।" data-es="© 2025 Jyoti. Todos los derechos reservados.">© 2025 Jyoti. All rights reserved. ABN registered Australia.</p>
     <p style="margin-top:.3rem;font-size:.68rem;color:var(--s5)">If you need support: Lifeline 13 11 14 · Beyond Blue 1300 22 4636</p>
     <div class="legal-links">
-      <a href="/sources.html" data-en="Our Sources" data-hi="हमारे स्रोत" data-es="Nuestras Fuentes">Our Sources</a>
+      <a href="/sources.html" id="sources-link" hidden data-en="Our Sources" data-hi="हमारे स्रोत" data-es="Nuestras Fuentes">Our Sources</a>
       <a href="#" onclick="openModal('terms')" data-en="Terms of Service" data-hi="सेवा की शर्तें" data-es="Términos de Servicio">Terms of Service</a>
       <a href="#" onclick="openModal('privacy')" data-en="Privacy Policy" data-hi="गोपनीयता नीति" data-es="Política de Privacidad">Privacy Policy</a>
       <a href="#" onclick="openModal('disclaimer')" data-en="Disclaimer" data-hi="अस्वीकरण" data-es="Aviso Legal">Disclaimer</a>
@@ -4599,6 +4599,9 @@ function _syncManageSubLink(){
   const email=localStorage.getItem('jyoti_sub_email');
   const box=document.getElementById('manage-sub-box');
   if(box)box.style.display=((tier==='full'||tier==='compat')&&email)?'block':'none';
+  // Sources page link is a subscriber touch, shown only once inside the paid app
+  const src=document.getElementById('sources-link');
+  if(src)src.hidden=!['full','compat','gift','beta'].includes(tier);
 }
 
 async function openBillingPortal(){
