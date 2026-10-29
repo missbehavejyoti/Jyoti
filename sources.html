@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="The classical texts, sages and Nadi traditions behind Jyoti's readings.">
+<link rel="icon" href="/icons/icon-192.png">
+<title>The Sources of Jyoti</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+<style>
+/* Layout: one narrow reading column, like a palm-leaf scroll; lineage drawn as a vertical thread */
+:root {
+  --bg: #0c0918;
+  --surface: #151026;
+  --text: #F2EBD8;
+  --muted: #A89880;
+  --gold: #C8A94A;
+  --gold-l: #E8D070;
+  --line: rgba(200,169,74,.22);
+  --display: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --body: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #FFFCF6; --surface: #F7F0E2; --text: #1C1410; --muted: #4A3D30;
+    --gold: #8B6609; --gold-l: #856710; --line: rgba(139,102,9,.25); color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #FFFCF6; --surface: #F7F0E2; --text: #1C1410; --muted: #4A3D30;
+  --gold: #8B6609; --gold-l: #856710; --line: rgba(139,102,9,.25); color-scheme: light;
+}
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--body); font-size: 1.12rem; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2.5rem 3rem;
+}
+main { max-width: 36rem; margin: 0 auto; display: flex; flex-direction: column; gap: 2.4rem; }
+header { text-align: center; display: flex; flex-direction: column; gap: .5rem; }
+.eyebrow { font-family: var(--display); font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--display); font-weight: 500; font-size: clamp(1.7rem, 7vw, 2.3rem); color: var(--gold); margin: 0; letter-spacing: .06em; text-wrap: balance; }
+.lede { color: var(--muted); font-style: italic; margin: 0; }
+h2 { font-family: var(--display); font-weight: 500; font-size: 1.15rem; color: var(--gold-l); margin: 0; letter-spacing: .04em; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 500; font-size: .98rem; color: var(--gold); margin: 0; letter-spacing: .03em; }
+p { margin: 0; }
+.meta { font-family: var(--display); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 1.4rem; }
+.divider { text-align: center; color: var(--gold); letter-spacing: 1em; font-size: .8rem; opacity: .7; }
+
+/* Lineage thread */
+.lineage { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.4rem 1.2rem; display: flex; flex-direction: column; gap: 1rem; }
+.thread { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.thread li { position: relative; padding: 0 0 1rem 1.6rem; }
+.thread li:last-child { padding-bottom: 0; }
+.thread li::before { content: ""; position: absolute; left: .32rem; top: .55rem; width: .5rem; height: .5rem; border-radius: 50%; background: var(--gold); }
+.thread li:not(:last-child)::after { content: ""; position: absolute; left: .53rem; top: 1.2rem; bottom: .1rem; width: 1px; background: var(--line); }
+.thread b { font-family: var(--display); font-weight: 500; color: var(--gold-l); letter-spacing: .04em; }
+.thread span { display: block; color: var(--muted); font-size: .98rem; }
+
+/* Source entries */
+.source { display: flex; flex-direction: column; gap: .5rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.source:first-of-type { border-top: 0; padding-top: 0; }
+.source em { color: var(--gold-l); font-style: italic; }
+.legacy { color: var(--muted); }
+.legacy strong { color: var(--text); font-weight: 500; }
+footer { text-align: center; color: var(--muted); font-size: .95rem; display: flex; flex-direction: column; gap: .4rem; border-top: 1px solid var(--line); padding-top: 1.6rem; }
+footer a { color: var(--gold); }
+footer .brand { font-family: var(--display); color: var(--gold); letter-spacing: .2em; }
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Nadi Jyotish · Sidereal · Lahiri</div>
+    <h1>The Sources of Jyoti</h1>
+    <p class="lede">The classical texts, sages and traditions your daily practice is drawn from.</p>
+  </header>
+
+  <div class="lineage">
+    <h2>One lineage, master to disciple</h2>
+    <ol class="thread">
+      <li><b>Vasishtha</b><span>One of the seven great rishis</span></li>
+      <li><b>Shakti</b><span>His son</span></li>
+      <li><b>Parashara</b><span>Author of the Brihat Parashara Hora Shastra</span></li>
+      <li><b>Vyasa</b><span>Compiler of the Vedas, the Mahabharata and the Bhagavad Gita</span></li>
+      <li><b>Jaimini</b><span>Vyasa's disciple, author of the Jaimini Sutras</span></li>
+    </ol>
+  </div>
+
+  <section>
+    <h2>The great texts</h2>
+
+    <article class="source">
+      <h3>Brihat Parashara Hora Shastra</h3>
+      <div class="meta">Maharishi Parashara</div>
+      <p>Tradition remembers Parashara as the grandson of Vasishtha and the father of Vyasa. When his father Shakti was killed by a rakshasa, Parashara began a fire ritual to destroy all rakshasas. Vasishtha and the sage Pulastya persuaded him to stop, and Pulastya blessed him to become the author of the <em>Vishnu Purana</em>. The text is a dialogue in which Parashara teaches his disciple Maitreya. Scholars believe the version we have today was gathered and edited over many centuries.</p>
+      <p class="legacy"><strong>Legacy:</strong> the foundation of Vedic astrology. The twelve houses, the divisional charts including Navamsa, the yogas, the remedies, and the Vimshottari dasha system Jyoti uses to time the periods of your life.</p>
+    </article>
+
+    <article class="source">
+      <h3>Jaimini Sutras</h3>
+      <div class="meta">Maharishi Jaimini</div>
+      <p>A disciple of Vyasa, and so Parashara's grand-disciple. Jaimini is also honoured as the founder of Purva Mimamsa, the philosophy of Vedic ritual and duty. The sutras are short, coded verses, often written in a number code called <em>katapayadi</em>.</p>
+      <p class="legacy"><strong>Legacy:</strong> the soul indicators in Jyoti's Dharma Path and Relationship Path: the Atmakaraka (soul planet), Darakaraka (partner planet), Karakamsha, Upapada and Ishta Devata, your personal guiding deity.</p>
+    </article>
+
+    <article class="source">
+      <h3>Brihat Jataka</h3>
+      <div class="meta">Varahamihira · c. 505 to 587 CE · Ujjain</div>
+      <p>A historical astronomer and the son of Adityadasa, a worshipper of the Sun. Legend counts him among the nine gems of King Vikramaditya's court. He foretold that the king's son would be killed by a boar at eighteen. Though the prince was closely guarded, it came to pass, and the king gave him the title <em>Varaha</em>, the boar. He also wrote the <em>Brihat Samhita</em> and the <em>Pancha Siddhantika</em>.</p>
+      <p class="legacy"><strong>Legacy:</strong> concise and authoritative, still one of the most respected works on the birth chart.</p>
+    </article>
+
+    <article class="source">
+      <h3>Saravali</h3>
+      <div class="meta">Kalyanavarma · c. 9th to 10th century</div>
+      <p>A prince and scholar who wrote it to expand Varahamihira's brief verses.</p>
+      <p class="legacy"><strong>Legacy:</strong> renowned for its detail on planets joined together and how their energies combine.</p>
+    </article>
+
+    <article class="source">
+      <h3>Phaladeepika</h3>
+      <div class="meta">Mantreswara · South India · c. 13th to 16th century</div>
+      <p>"The Lamp that Illuminates the Results." Tradition remembers Mantreswara as a devout worshipper of the Goddess who studied deeply and later lived as a renunciate.</p>
+      <p class="legacy"><strong>Legacy:</strong> a practical guide to what each house and planetary period brings into your life.</p>
+    </article>
+
+    <article class="source">
+      <h3>Jataka Parijata</h3>
+      <div class="meta">Vaidyanatha Dikshita · c. 15th century</div>
+      <p>"The Celestial Wish-Tree of Birth Charts."</p>
+      <p class="legacy"><strong>Legacy:</strong> a great compendium that gathers the earlier masters together.</p>
+    </article>
+
+    <article class="source">
+      <h3>Muhurta Chintamani</h3>
+      <div class="meta">Rama Daivajna · c. 1600 CE · Varanasi</div>
+      <p>Written by a member of a family of astronomers in the holy city of Kashi.</p>
+      <p class="legacy"><strong>Legacy:</strong> the classic text on auspicious timing, which shapes the rhythm of your daily practice.</p>
+    </article>
+  </section>
+
+  <div class="divider" aria-hidden="true">✦ ✦ ✦</div>
+
+  <section>
+    <h2>The Nadi traditions</h2>
+    <p>Nadi texts are palm-leaf manuscripts kept mainly in Tamil Nadu, at places such as Vaitheeswaran Koil. Tradition says the ancient rishis foresaw the lives of individual souls and wrote them down for those who would one day come seeking.</p>
+
+    <article class="source">
+      <h3>Bhrigu Nandi Nadi</h3>
+      <div class="meta">Sage Bhrigu, in dialogue with Nandi</div>
+      <p>Bhrigu is a mind-born son of Brahma and one of the great Prajapatis. In his best-known story he tested the three great gods by kicking Vishnu on the chest. Vishnu answered only with humility, and Bhrigu declared him the greatest. Nandi is Shiva's sacred bull and gatekeeper.</p>
+      <p class="legacy"><strong>Legacy:</strong> reads the moving planets through the planets of your birth chart. Revived in the 20th century by R.G. Rao.</p>
+    </article>
+
+    <article class="source">
+      <h3>Chandra Kala Nadi</h3>
+      <div class="meta">Also called Deva Keralam</div>
+      <p>A Sanskrit Nadi text preserved in Kerala. Its author is not known for certain.</p>
+    </article>
+
+    <article class="source">
+      <h3>Dhruva Nadi</h3>
+      <div class="meta">Satyacharya</div>
+      <p>Linked to Satyacharya, an early teacher whom Varahamihira himself quotes.</p>
+    </article>
+
+    <article class="source">
+      <h3>The South Indian Nadi oral tradition</h3>
+      <p>The living knowledge passed from teacher to student that holds all of these together.</p>
+    </article>
+  </section>
+
+  <div class="divider" aria-hidden="true">✦ ✦ ✦</div>
+
+  <section>
+    <h2>Mantras and modern foundations</h2>
+
+    <article class="source">
+      <h3>Mantra sources</h3>
+      <p>The <em>Rig Veda</em> and <em>Atharva Veda</em>, the oldest sacred hymns, including the planetary mantras. The Shaiva and Vaishnava devotional traditions of Shiva and Vishnu. The <em>Mahabharata</em> and <em>Bhagavad Gita</em>, traditionally credited to Vyasa, Parashara's son, which brings the lineage full circle.</p>
+    </article>
+
+    <article class="source">
+      <h3>Lahiri ayanamsa</h3>
+      <div class="meta">N.C. Lahiri · 1904 to 1980</div>
+      <p>The adjustment that aligns your chart with the actual stars, which makes it sidereal. India's Calendar Reform Committee adopted it in the 1950s and it became the Indian government standard. Every chart in Jyoti is calculated with it.</p>
+    </article>
+  </section>
+
+  <footer>
+    <div class="brand">✦ JYOTI ✦</div>
+    <p>Your sacred daily practice · <a href="/">jyotiapp.app</a></p>
+  </footer>
+</main>
+</body>
+</html>
