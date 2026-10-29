@@ -3,6 +3,7 @@
 // Portal session so subscribers can manage/cancel their own subscription.
 // Merged into one file to stay under Vercel Hobby's 12-serverless-function cap.
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { rateLimit } = require('./_rateLimit');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,6 +22,8 @@ module.exports = async (req, res) => {
   const origin = `${protocol}://${host}`;
 
   if (req.query.action === 'portal') {
+    // Email lookups reveal who subscribes, so cap how fast anyone can try addresses
+    if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'portal' })) return;
     try {
       const customers = await stripe.customers.list({ email: email.toLowerCase().trim(), limit: 1 });
       if (!customers.data.length) {

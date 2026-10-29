@@ -119,18 +119,22 @@ module.exports = async (req, res) => {
       const name = session.customer_details?.name || '';
       console.log('New subscriber:', email, '| session:', session.id, '| customer:', session.customer);
       if (email) {
-        sendWelcomeEmail(email, name).catch(e => console.error('Welcome email failed:', e.message));
-        sendOwnerNotification('New Jyoti subscriber', [
-          `<strong>New subscriber:</strong> ${email}`,
-          name ? `Name: ${name}` : '',
-        ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message));
+        // Awaited: Vercel can freeze the function as soon as the response is sent,
+        // which silently drops emails that are still in flight.
+        await Promise.all([
+          sendWelcomeEmail(email, name).catch(e => console.error('Welcome email failed:', e.message)),
+          sendOwnerNotification('New Jyoti subscriber', [
+            `<strong>New subscriber:</strong> ${email}`,
+            name ? `Name: ${name}` : '',
+          ].filter(Boolean)).catch(e => console.error('Owner notification failed:', e.message)),
+        ]);
       }
     }
 
     if (event.type === 'customer.subscription.deleted') {
       const sub = event.data.object;
       console.log('Subscription cancelled:', sub.id, '| customer:', sub.customer);
-      sendOwnerNotification('Jyoti subscription cancelled', [
+      await sendOwnerNotification('Jyoti subscription cancelled', [
         `<strong>Subscription cancelled.</strong>`,
         `Customer ID: ${sub.customer}`,
       ]).catch(e => console.error('Owner notification failed:', e.message));
@@ -139,7 +143,7 @@ module.exports = async (req, res) => {
     if (event.type === 'invoice.payment_failed') {
       const invoice = event.data.object;
       console.log('Payment failed for customer:', invoice.customer, '| email:', invoice.customer_email);
-      sendOwnerNotification('Jyoti payment failed', [
+      await sendOwnerNotification('Jyoti payment failed', [
         `<strong>Payment failed.</strong>`,
         invoice.customer_email ? `Email: ${invoice.customer_email}` : '',
         `Customer ID: ${invoice.customer}`,

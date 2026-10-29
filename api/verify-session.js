@@ -4,6 +4,7 @@
 // into one file to stay under Vercel Hobby's 12-serverless-function cap.
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { sign } = require('./_token');
+const { rateLimit } = require('./_rateLimit');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,6 +14,8 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (req.query.action === 'check-subscriber') {
+    // Email lookups reveal who subscribes, so cap how fast anyone can try addresses
+    if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'check-subscriber' })) return;
     const { email } = req.body || {};
     if (!email || !email.includes('@')) {
       return res.status(400).json({ error: 'Valid email required' });
