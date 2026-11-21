@@ -41,40 +41,55 @@ module.exports = async (req, res) => {
   if (req.query.action === 'check-subscriber') {
     // Email lookups reveal who subscribes, so cap how fast anyone can try addresses
     if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'check-subscriber' })) return;
-    const { email: rawEmail, token: priorToken, restoreCode } = req.body || {};
+    const { email: rawEmail, token: priorToken, restoreCode, cardLast4 } = req.body || {};
     if (!rawEmail || !rawEmail.includes('@')) {
       return res.status(400).json({ error: 'Valid email required' });
     }
     const email = rawEmail.toLowerCase().trim();
-    // Renewal needs the subscriber token already saved on this device. A bare
-    // email (new device, or someone typing another person's address) gets
-    // needsVerification instead, never a token.
-    let claimed = null;
+    // Email alone is never proof. Accepted proof: the subscriber token already
+    // saved on this device, a one-time restore code from Alana, or the last 4
+    // digits of a card on the subscriber's Stripe account (new-device restore).
+    let claimed = null, needCard = null;
     if (!subscriberProof(priorToken, email)) {
       const code = String(restoreCode || '').trim().toUpperCase();
-      claimed = code ? await _claimRestoreCode(code, email) : null;
-      if (!claimed) return res.status(200).json({ subscribed: false, needsVerification: true, badCode: !!code });
-      // Free the code again if this email turns out not to be subscribed
-      req._restoreCode = code;
+      const last4 = String(cardLast4 || '').replace(/\D/g, '');
+      if (code) {
+        claimed = await _claimRestoreCode(code, email);
+        if (!claimed) return res.status(200).json({ subscribed: false, needsVerification: true, badCode: true });
+        req._restoreCode = code;
+      } else if (last4.length === 4) {
+        // At most 5 card guesses per email per day, so the 4 digits can't be brute-forced
+        const day = new Date().toISOString().slice(0, 10);
+        const n = await _redis([['INCR', `restore-card:${email}:${day}`], ['EXPIRE', `restore-card:${email}:${day}`, 86400]]);
+        const tries = n && n[0]?.result;
+        if (!tries) return res.status(503).json({ error: 'Please try again shortly' });
+        if (tries > 5) return res.status(200).json({ subscribed: false, needsVerification: true, tooManyTries: true });
+        needCard = last4;
+      } else {
+        return res.status(200).json({ subscribed: false, needsVerification: true });
+      }
     }
+    const release = async () => { if (claimed === 'new') await _redis([['DEL', `restorecode:${req._restoreCode}`]]); };
     try {
       const customers = await stripe.customers.list({ email, limit: 5 });
-      if (!customers.data.length) {
-        if (claimed === 'new') await _redis([['DEL', `restorecode:${req._restoreCode}`]]);
-        return res.status(200).json({ subscribed: false });
-      }
-
       for (const customer of customers.data) {
         const subs = await stripe.subscriptions.list({ customer: customer.id, status: 'active', limit: 1 });
-        if (subs.data.length > 0) {
-          const token = sign({ tier: 'full', email, exp: Date.now() + 3 * 86400000 });
-          return res.status(200).json({ subscribed: true, email: customer.email, token });
+        if (!subs.data.length) continue;
+        if (needCard) {
+          const pms = await stripe.paymentMethods.list({ customer: customer.id, type: 'card', limit: 10 });
+          const match = pms.data.some(pm => pm.card && (pm.card.last4 === needCard || pm.card.wallet?.dynamic_last4 === needCard));
+          if (!match) continue;
         }
+        const token = sign({ tier: 'full', email, exp: Date.now() + 3 * 86400000 });
+        return res.status(200).json({ subscribed: true, email: customer.email, token });
       }
-      if (claimed === 'new') await _redis([['DEL', `restorecode:${req._restoreCode}`]]);
+      await release();
+      // Same answer whether the email or the card was wrong, so card checks
+      // can't be used to find out who subscribes
+      if (needCard) return res.status(200).json({ subscribed: false, needsVerification: true, badCard: true });
       return res.status(200).json({ subscribed: false });
     } catch (e) {
-      if (claimed === 'new') await _redis([['DEL', `restorecode:${req._restoreCode}`]]);
+      await release();
       return res.status(500).json({ error: e.message });
     }
   }

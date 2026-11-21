@@ -677,13 +677,13 @@ details[open]>.reveal-btn{background:transparent;color:var(--gold);border:1px so
           <span data-en="Already subscribed? Restore access" data-hi="पहले से सदस्य हैं? पहुंच पुनः प्राप्त करें" data-es="¿Ya suscrito? Restaurar acceso">Already subscribed? Restore access</span>
         </button>
         <div id="restore-box" style="display:none;margin-top:.7rem;background:rgba(200,169,74,.05);border:1px solid rgba(200,169,74,.18);border-radius:10px;padding:.9rem 1rem;text-align:left">
-          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.45rem" data-en="Enter your subscription email to restore access" data-hi="पहुंच पुनः प्राप्त करने के लिए सदस्यता ईमेल दर्ज करें" data-es="Ingresa tu email de suscripción para restaurar el acceso">Enter your subscription email to restore access</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.45rem" data-en="Enter your subscription email and the last 4 digits of the card you subscribe with" data-hi="अपना सदस्यता ईमेल और जिस कार्ड से सदस्यता है उसके अंतिम 4 अंक दर्ज करें" data-es="Ingresa tu email de suscripción y los últimos 4 dígitos de la tarjeta con la que te suscribes">Enter your subscription email and the last 4 digits of the card you subscribe with</div>
           <div style="display:flex;gap:.5rem">
             <input type="email" id="restore-email" placeholder="your@email.com" style="flex:1">
             <button class="btn btn-gold" onclick="restoreAccess()" style="font-size:.72rem;padding:.6rem 1rem;white-space:nowrap" data-en="Restore ✦" data-hi="पुनः प्राप्त करें ✦" data-es="Restaurar ✦">Restore ✦</button>
           </div>
           <div id="restore-code-row" style="display:flex;gap:.5rem;margin-top:.5rem">
-            <input type="text" id="restore-code" placeholder="Restore code (if Jyoti sent you one)" autocapitalize="characters" autocomplete="off" style="flex:1">
+            <input type="text" id="restore-code" placeholder="Last 4 card digits" inputmode="text" autocapitalize="characters" autocomplete="off" maxlength="16" style="flex:1">
           </div>
           <p id="restore-msg" style="font-size:.8rem;margin-top:.4rem;min-height:1.1em"></p>
         </div>
@@ -1496,13 +1496,17 @@ async function restoreAccess(){
   if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'जाँच हो रही है…':currentLang==='es'?'Verificando…':'Checking…';}
   try{
     const codeEl=document.getElementById('restore-code');
-    const restoreCode=((codeEl&&codeEl.value)||'').trim();
-    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token'),restoreCode})});
+    // One field takes either the last 4 card digits or a restore code Jyoti sent
+    const proofVal=((codeEl&&codeEl.value)||'').trim();
+    const isDigits=/^\d{4}$/.test(proofVal);
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token'),cardLast4:isDigits?proofVal:'',restoreCode:isDigits?'':proofVal})});
     const data=await resp.json();
     if(data.needsVerification){
       const row=document.getElementById('restore-code-row');if(row)row.style.display='flex';
+      if(data.tooManyTries){if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'आज बहुत अधिक प्रयास हो गए। कृपया कल पुनः प्रयास करें या hellojyoti@proton.me पर लिखें।':currentLang==='es'?'Demasiados intentos hoy. Inténtalo mañana o escribe a hellojyoti@proton.me.':'Too many attempts today. Please try again tomorrow or write to hellojyoti@proton.me.';}return;}
+      if(data.badCard){if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'ये विवरण किसी सक्रिय सदस्यता से मेल नहीं खाते। ईमेल और कार्ड के अंक जाँचें।':currentLang==='es'?'Estos datos no coinciden con una suscripción activa. Revisa el email y los dígitos de la tarjeta.':'Those details don\'t match an active subscription. Please check your email and card digits.';}return;}
       if(data.badCode){if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'यह पुनर्स्थापना कोड मान्य नहीं है। कृपया कोड जाँचें या hellojyoti@proton.me पर लिखें।':currentLang==='es'?'Este código de restauración no es válido. Revísalo o escribe a hellojyoti@proton.me.':'That restore code isn\'t valid. Please check it or write to hellojyoti@proton.me.';}return;}
-      if(msgEl){msgEl.style.color='var(--gold)';msgEl.textContent=currentLang==='hi'?'आपकी सुरक्षा के लिए, नए डिवाइस पर पहुँच बहाल करने हेतु पुनर्स्थापना कोड आवश्यक है। ज्योति द्वारा भेजा गया कोड ऊपर दर्ज करें और पुनः प्राप्त करें दबाएँ, या hellojyoti@proton.me पर लिखें।':currentLang==='es'?'Por tu seguridad, restaurar en un dispositivo nuevo requiere un código de restauración. Ingresa arriba el código que te envió Jyoti y toca Restaurar, o escribe a hellojyoti@proton.me.':'For your security, restoring on a new device needs a restore code. Enter the code Jyoti sent you above and tap Restore, or write to hellojyoti@proton.me from your subscription email.';}
+      if(msgEl){msgEl.style.color='var(--gold)';msgEl.textContent=currentLang==='hi'?'आपकी सुरक्षा के लिए, जिस कार्ड से आपकी सदस्यता है उसके अंतिम 4 अंक भी दर्ज करें, फिर पुनः प्राप्त करें दबाएँ।':currentLang==='es'?'Por tu seguridad, ingresa también los últimos 4 dígitos de la tarjeta con la que te suscribes y toca Restaurar.':'For your security, please also enter the last 4 digits of the card you subscribe with, then tap Restore.';}
       return;
     }
     if(data.subscribed){
