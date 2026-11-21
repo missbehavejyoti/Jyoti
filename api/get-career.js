@@ -152,7 +152,13 @@ HOW TO ANALYSE (do this silently before writing):
 5. Match the Antar + Pratyantara house combinations against the CAREER TYPE SIGNATURES to identify what field is being activated
 6. Assess if the Antar + Pratyantara carry positive career houses (2, 6, 7, 10, 11) or challenge houses (5, 8, 12)
 7. Note the Pratyantara lord's connections — this is the immediate trigger, active in the current weeks
-8. Identify 2-3 vocational strengths from the natal chart (planets in 10th/11th, Atmakaraka/Amatyakaraka, strong planets)
+8. Identify 2-3 vocational strengths from the natal chart, taking them from the anchors below
+CLASSICAL ANCHORS FOR THE "reading" AND "strengths" FIELDS (the core of every career reading; use only what the data states):
+  a. The 10th house: its sign and every planet in it. This is the nature and visibility of the work.
+  b. The 10th lord: the house and sign it sits in, and its dignity if the data gives one. This shows where career energy is directed and what it is tied to.
+  c. The Amatyakaraka (career minister): its sign and house. This is how the person works best and what makes them valued.
+  d. One supporting factor, only if the data shows it: planets in the 11th (income through career), or an exalted or own-sign planet linked to the 10th.
+  Build the "reading" from a, b and c, in that order, and how they combine. Each of the three "strengths" comes from a different anchor. Do not lead with the career type signatures; they only colour the current period and timing fields.
 9. Select a mantra appropriate to the planet most relevant to this career situation
 
 WRITING RULES:
