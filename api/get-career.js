@@ -184,6 +184,9 @@ Return JSON only in this exact format — no backticks, no code blocks:
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: lang === 'hi' ? 1400 : lang === 'es' ? 1200 : 1000,
+          // Low variety: a career reading is rewritten at each new sub-period and on a
+          // new device, and should read the same way each time for the same chart
+          temperature: 0.3,
           system: LANG_PREFIX + VOICE_PREFIX + ACCURACY_PREFIX + systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         }),

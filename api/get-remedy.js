@@ -489,6 +489,8 @@ JSON structure:
         },
         body: JSON.stringify({
           model: (isPlanetA || isPlanetB || isPlanetC || isPlanetD || isWeekly || isDailyQuick) ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
+          // Birth-chart readings stay steady across rewrites; daily and weekly keep full variety
+          temperature: (isDailyQuick || isDailyDepth || isWeekly) ? 1 : 0.3,
           max_tokens: (()=>{
             // Hindi/Spanish need more tokens — Devanagari ~40% more, Spanish ~20% more
             const hi = lang === 'hi', es = lang === 'es';
