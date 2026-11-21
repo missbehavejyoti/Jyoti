@@ -9,6 +9,7 @@ const GIFT_CODES = new Map([
   ['IVAN30TRIAL', 30],
   ['IVAN30TRIAL2', 30],
   ['SANJEEV7TRIAL', 7],
+  ['WELCOME3P79Q', 30], // backup access for a subscriber restoring on a new device
 ]);
 
 // Shared demo codes with a fixed end time: valid on any device until that moment,
