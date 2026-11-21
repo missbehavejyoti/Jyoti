@@ -682,6 +682,9 @@ details[open]>.reveal-btn{background:transparent;color:var(--gold);border:1px so
             <input type="email" id="restore-email" placeholder="your@email.com" style="flex:1">
             <button class="btn btn-gold" onclick="restoreAccess()" style="font-size:.72rem;padding:.6rem 1rem;white-space:nowrap" data-en="Restore ✦" data-hi="पुनः प्राप्त करें ✦" data-es="Restaurar ✦">Restore ✦</button>
           </div>
+          <div id="restore-code-row" style="display:none;gap:.5rem;margin-top:.5rem">
+            <input type="text" id="restore-code" placeholder="Restore code" autocapitalize="characters" autocomplete="off" style="flex:1">
+          </div>
           <p id="restore-msg" style="font-size:.8rem;margin-top:.4rem;min-height:1.1em"></p>
         </div>
       </div>
@@ -1492,10 +1495,14 @@ async function restoreAccess(){
   }
   if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'जाँच हो रही है…':currentLang==='es'?'Verificando…':'Checking…';}
   try{
-    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token')})});
+    const codeEl=document.getElementById('restore-code');
+    const restoreCode=((codeEl&&codeEl.value)||'').trim();
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token'),restoreCode})});
     const data=await resp.json();
     if(data.needsVerification){
-      if(msgEl){msgEl.style.color='var(--gold)';msgEl.textContent=currentLang==='hi'?'आपकी सुरक्षा के लिए, नए डिवाइस पर सदस्यता बहाल करने हेतु ईमेल सत्यापन आवश्यक है। कृपया अपने सदस्यता ईमेल से hellojyoti@proton.me पर लिखें, हम आपकी पहुँच बहाल कर देंगे।':currentLang==='es'?'Por tu seguridad, restaurar tu suscripción en un dispositivo nuevo requiere verificar tu correo. Escribe a hellojyoti@proton.me desde el correo de tu suscripción y restauraremos tu acceso.':'For your security, restoring your subscription on a new device needs email verification. Please write to hellojyoti@proton.me from your subscription email and we\'ll restore your access.';}
+      const row=document.getElementById('restore-code-row');if(row)row.style.display='flex';
+      if(data.badCode){if(msgEl){msgEl.style.color='var(--rose)';msgEl.textContent=currentLang==='hi'?'यह पुनर्स्थापना कोड मान्य नहीं है। कृपया कोड जाँचें या hellojyoti@proton.me पर लिखें।':currentLang==='es'?'Este código de restauración no es válido. Revísalo o escribe a hellojyoti@proton.me.':'That restore code isn\'t valid. Please check it or write to hellojyoti@proton.me.';}return;}
+      if(msgEl){msgEl.style.color='var(--gold)';msgEl.textContent=currentLang==='hi'?'आपकी सुरक्षा के लिए, नए डिवाइस पर पहुँच बहाल करने हेतु पुनर्स्थापना कोड आवश्यक है। ज्योति द्वारा भेजा गया कोड ऊपर दर्ज करें और पुनः प्राप्त करें दबाएँ, या hellojyoti@proton.me पर लिखें।':currentLang==='es'?'Por tu seguridad, restaurar en un dispositivo nuevo requiere un código de restauración. Ingresa arriba el código que te envió Jyoti y toca Restaurar, o escribe a hellojyoti@proton.me.':'For your security, restoring on a new device needs a restore code. Enter the code Jyoti sent you above and tap Restore, or write to hellojyoti@proton.me from your subscription email.';}
       return;
     }
     if(data.subscribed){
