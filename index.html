@@ -1492,8 +1492,12 @@ async function restoreAccess(){
   }
   if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'जाँच हो रही है…':currentLang==='es'?'Verificando…':'Checking…';}
   try{
-    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token')})});
     const data=await resp.json();
+    if(data.needsVerification){
+      if(msgEl){msgEl.style.color='var(--gold)';msgEl.textContent=currentLang==='hi'?'आपकी सुरक्षा के लिए, नए डिवाइस पर सदस्यता बहाल करने हेतु ईमेल सत्यापन आवश्यक है। कृपया अपने सदस्यता ईमेल से hellojyoti@proton.me पर लिखें, हम आपकी पहुँच बहाल कर देंगे।':currentLang==='es'?'Por tu seguridad, restaurar tu suscripción en un dispositivo nuevo requiere verificar tu correo. Escribe a hellojyoti@proton.me desde el correo de tu suscripción y restauraremos tu acceso.':'For your security, restoring your subscription on a new device needs email verification. Please write to hellojyoti@proton.me from your subscription email and we\'ll restore your access.';}
+      return;
+    }
     if(data.subscribed){
       try{localStorage.setItem('jyoti_tier','full');localStorage.setItem('jyoti_sub_email',email);if(data.token)localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
       if(msgEl){msgEl.style.color='var(--teal)';msgEl.textContent=currentLang==='hi'?'✦ सदस्यता की पुष्टि हुई! एप्लिकेशन खोल रहे हैं…':currentLang==='es'?'✦ ¡Suscripción confirmada! Abriendo la app…':'✦ Subscription confirmed! Opening the app…';}
@@ -4532,9 +4536,10 @@ function _renewAccessToken(){
   if(_renewing)return _renewing;
   _renewing=(async()=>{
     try{
-      const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token')})});
       if(!resp.ok)return null;
       const data=await resp.json();
+      if(data.needsVerification)return null; // can't prove it from this device — don't wipe their access
       if(!data.subscribed||!data.token)return false;
       try{localStorage.setItem('jyoti_access_token',data.token);}catch(e){}
       return data.token;
@@ -4565,6 +4570,7 @@ async function requireAccess(){
     try{
       const resp=await fetch('/api/check-subscriber',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
       const data=await resp.json();
+      if(data.needsVerification)return null; // no proof on this device yet — keep their data, don't grant
       if(!data.subscribed||!data.token){_clearAccess();return null;}
       token=data.token;
       try{localStorage.setItem('jyoti_access_token',token);}catch(e){}
@@ -4612,7 +4618,7 @@ async function openBillingPortal(){
     return;
   }
   try{
-    const resp=await fetch('/api/create-portal-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const resp=await fetch('/api/create-portal-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token:localStorage.getItem('jyoti_access_token')})});
     const data=await resp.json();
     if(!resp.ok||!data.url)throw new Error(data.error||'Portal unavailable');
     window.location.href=data.url;

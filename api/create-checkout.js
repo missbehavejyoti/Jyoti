@@ -4,6 +4,7 @@
 // Merged into one file to stay under Vercel Hobby's 12-serverless-function cap.
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { rateLimit } = require('./_rateLimit');
+const { subscriberProof } = require('./_token');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,8 +25,12 @@ module.exports = async (req, res) => {
   if (req.query.action === 'portal') {
     // Email lookups reveal who subscribes, so cap how fast anyone can try addresses
     if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'portal' })) return;
+    // The billing page shows card and invoice details and allows cancelling, so it
+    // needs this device's subscriber token, not just an email anyone could type.
+    const proof = subscriberProof((req.body || {}).token, email.toLowerCase().trim());
+    if (!proof) return res.status(403).json({ error: 'Please open the app on the device you subscribed with, or contact hellojyoti@proton.me' });
     try {
-      const customers = await stripe.customers.list({ email: email.toLowerCase().trim(), limit: 1 });
+      const customers = await stripe.customers.list({ email: proof.email || email.toLowerCase().trim(), limit: 1 });
       if (!customers.data.length) {
         return res.status(404).json({ error: 'No subscription found for this email' });
       }

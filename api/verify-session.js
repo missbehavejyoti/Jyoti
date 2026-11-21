@@ -3,7 +3,7 @@
 // an email has an active Stripe subscription (used for returning users). Merged
 // into one file to stay under Vercel Hobby's 12-serverless-function cap.
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { sign } = require('./_token');
+const { sign, subscriberProof } = require('./_token');
 const { rateLimit } = require('./_rateLimit');
 
 module.exports = async (req, res) => {
@@ -16,18 +16,25 @@ module.exports = async (req, res) => {
   if (req.query.action === 'check-subscriber') {
     // Email lookups reveal who subscribes, so cap how fast anyone can try addresses
     if (!await rateLimit(req, res, { max: 20, windowSecs: 3600, prefix: 'check-subscriber' })) return;
-    const { email } = req.body || {};
-    if (!email || !email.includes('@')) {
+    const { email: rawEmail, token: priorToken } = req.body || {};
+    if (!rawEmail || !rawEmail.includes('@')) {
       return res.status(400).json({ error: 'Valid email required' });
     }
+    const email = rawEmail.toLowerCase().trim();
+    // Renewal needs the subscriber token already saved on this device. A bare
+    // email (new device, or someone typing another person's address) gets
+    // needsVerification instead, never a token.
+    if (!subscriberProof(priorToken, email)) {
+      return res.status(200).json({ subscribed: false, needsVerification: true });
+    }
     try {
-      const customers = await stripe.customers.list({ email: email.toLowerCase().trim(), limit: 5 });
+      const customers = await stripe.customers.list({ email, limit: 5 });
       if (!customers.data.length) return res.status(200).json({ subscribed: false });
 
       for (const customer of customers.data) {
         const subs = await stripe.subscriptions.list({ customer: customer.id, status: 'active', limit: 1 });
         if (subs.data.length > 0) {
-          const token = sign({ tier: 'full', exp: Date.now() + 3 * 86400000 });
+          const token = sign({ tier: 'full', email, exp: Date.now() + 3 * 86400000 });
           return res.status(200).json({ subscribed: true, email: customer.email, token });
         }
       }
@@ -46,7 +53,7 @@ module.exports = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(session_id);
     if (session.status === 'complete' || session.payment_status === 'paid') {
       const email = session.customer_details?.email || session.customer_email;
-      const token = sign({ tier: 'full', exp: Date.now() + 3 * 86400000 });
+      const token = sign({ tier: 'full', email: (email || '').toLowerCase().trim() || undefined, exp: Date.now() + 3 * 86400000 });
       return res.status(200).json({ subscribed: true, email, token });
     }
     return res.status(200).json({ subscribed: false });

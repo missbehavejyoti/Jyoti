@@ -23,7 +23,9 @@ function sign(payload) {
   return `${body}.${mac}`;
 }
 
-function verify(token) {
+// Signature check only, ignoring expiry: lets an expired subscriber token prove
+// "this device was granted access before" when renewing.
+function verifySignature(token) {
   if (!token || typeof token !== 'string' || token.split('.').length !== 2) return null;
   const [body, mac] = token.split('.');
   const expected = _b64url(crypto.createHmac('sha256', _secret()).update(body).digest());
@@ -31,8 +33,24 @@ function verify(token) {
   if (!crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expected))) return null;
   let payload;
   try { payload = JSON.parse(_unb64url(body).toString()); } catch { return null; }
-  if (!payload || !payload.exp || Date.now() > payload.exp) return null;
+  if (!payload || !payload.exp) return null;
   return payload;
 }
 
-module.exports = { sign, verify };
+function verify(token) {
+  const payload = verifySignature(token);
+  if (!payload || Date.now() > payload.exp) return null;
+  return payload;
+}
+
+// A paid subscriber token (live or expired within the last year) whose email, if
+// it carries one, matches. Email alone is never proof: anyone can type an address.
+function subscriberProof(token, email) {
+  const p = verifySignature(token);
+  if (!p || (p.tier !== 'full' && p.tier !== 'compat')) return null;
+  if (Date.now() > p.exp + 365 * 86400000) return null;
+  if (p.email && email && p.email !== email) return null;
+  return p;
+}
+
+module.exports = { sign, verify, verifySignature, subscriberProof };

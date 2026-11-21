@@ -109,6 +109,7 @@ The AI silently analyses:
 
 ## Access Tokens
 - Subscriber tokens (`api/_token.js`) expire after 3 days. `_renewAccessToken()` re-checks Stripe via the saved email and mints a fresh one; `_paidFetch()` retries paid API calls once after a 401. Without this, an expired token silently shows the daily fallback card and locks subscribers out on reopen.
+- Email alone is never proof of subscription. `/api/check-subscriber` (renewal/restore) and the billing portal require the device's saved subscriber token (`subscriberProof()`: full/compat tier, expired up to a year is fine, email must match if the token carries one); new tokens carry the email. A bare email gets `needsVerification`, which the client treats as "don't wipe, don't grant". New-device restore currently says to email hellojyoti@proton.me; the planned fix is an emailed login link once a Resend domain is verified.
 
 ## Push Notifications
 - Cron fires every ~15 min (external service hitting `/api/send-push?key=SECRET`)
